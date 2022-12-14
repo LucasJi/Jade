@@ -3,7 +3,7 @@ import { Avatar, Slogan } from '@components';
 
 export default function Home() {
   return (
-    <div className="">
+    <div className="w-screen">
       <Head>
         <title>{`Lucas Ji's Blog`}</title>
         <link rel="icon" href="/favicon.ico" />
@@ -15,7 +15,7 @@ export default function Home() {
 
       <Avatar />
 
-      <Slogan />
+      <Slogan className="mt-8" />
 
       {/* <footer>Copyright by Lucas Ji</footer> */}
     </div>

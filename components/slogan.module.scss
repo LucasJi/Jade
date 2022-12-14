@@ -1,0 +1,44 @@
+.slogan {
+  position: relative;
+  background-color: white;
+  width: max-content;
+  text-align: center;
+  font-style: italic;
+  margin-left: auto;
+  margin-right: auto;
+  color: black;
+  &::before,
+  &::after {
+    content: '';
+    background-color: white;
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    // 39 is the length of the slogan
+    animation: typewriter 3s steps(39) 1s forwards;
+  }
+  &::after {
+    width: 2px;
+    border-radius: 1em;
+    background-color: gray;
+    animation: typewriter 3s steps(39) 1s forwards,
+      flashing 0.5s ease-out forwards infinite;
+  }
+
+  @keyframes typewriter {
+    to {
+      left: 100%;
+    }
+  }
+
+  @keyframes flashing {
+    from,
+    to {
+      background: transparent;
+    }
+    50% {
+      background: black;
+    }
+  }
+}
