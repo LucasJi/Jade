@@ -1,6 +1,7 @@
 .slogan {
   position: relative;
   background-color: white;
+  letter-spacing: 0.15em;
   width: max-content;
   text-align: center;
   font-style: italic;
@@ -23,7 +24,7 @@
     border-radius: 1em;
     background-color: gray;
     animation: typewriter 3s steps(39) 1s forwards,
-      flashing 0.5s ease-out forwards infinite;
+      flashing 0.6s ease-out forwards infinite;
   }
 
   @keyframes typewriter {
