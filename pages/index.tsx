@@ -9,15 +9,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* <main>
-        <Markdown />
-      </main> */}
-
       <Avatar />
 
       <Slogan className="mt-8" />
-
-      {/* <footer>Copyright by Lucas Ji</footer> */}
     </div>
   );
 }
