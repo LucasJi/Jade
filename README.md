@@ -8,5 +8,6 @@ In this `README`, I'd like to record all my thoughts and efforts on building my 
 
 - [ ] Resolve markdown files to html files
 - [ ] **Home** page
-- [ ] **Tags** page
-- [ ] **About** page
+- [ ] Resolve all/specific markdowns in Obsidian vault
+- [ ] ~~**Tags** page~~
+- [ ] ~~**About** page~~
