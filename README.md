@@ -11,3 +11,7 @@ In this `README`, I'd like to record all my thoughts and efforts on building my 
 - [ ] Resolve all/specific markdowns in Obsidian vault
 - [ ] ~~**Tags** page~~
 - [ ] ~~**About** page~~
+
+## Thanks for
+
+- [react-markdown](https://github.com/remarkjs/react-markdown)
