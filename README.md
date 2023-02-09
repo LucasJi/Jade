@@ -4,7 +4,7 @@ In this `README`, I'd like to record all my thoughts and efforts on building my 
 
 ## How to run this project
 
-`pnpm run dev`
+`pnpm dev`
 
 ## Version: v0.1.0
 

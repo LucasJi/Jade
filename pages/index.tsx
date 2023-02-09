@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { Avatar, Slogan, Test } from '@components';
+import { Avatar, Slogan, Test, Markdown } from '@components';
 
 export default function Home() {
   return (
@@ -13,7 +13,9 @@ export default function Home() {
 
       <Slogan className="mt-8" />
 
-      <Test />
+      {/* <Test /> */}
+
+      <Markdown />
     </div>
   );
 }
