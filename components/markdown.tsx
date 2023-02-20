@@ -12,6 +12,10 @@ console.log('It works!')
     <ReactMarkdown
       components={{
         code({ node, inline, className, children, ...props }) {
+          console.log('node', node);
+          console.log('inline', inline);
+          console.log('className', className);
+          console.log('children', children);
           const match = /language-(\w+)/.exec(className || '');
           return !inline && match ? (
             <Custom>{String(children).replace(/\n$/, '')}</Custom>
