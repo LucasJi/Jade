@@ -8,14 +8,14 @@ export default function Home() {
         <title>{`Lucas Ji's Blog`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      {/* 
       <Avatar />
 
-      <Slogan className="mt-8" />
+      <Slogan className="mt-8" /> */}
 
-      {/* <Test /> */}
+      <Test />
 
-      <Markdown />
+      {/* <Markdown /> */}
     </div>
   );
 }
