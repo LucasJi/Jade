@@ -23,7 +23,8 @@ function Test() {
       .process('[[Hello World]]')
       .then((file) => {
         console.error(reporter(file));
-        setContent(String(file));
+        // setContent(String(file));
+        console.log(String(file));
       });
   }, []);
 
