@@ -14,7 +14,18 @@ interface TestProps {
 
 function WikiLink(props: any) {
   const omittedProps = omit(props, ['className']);
-  return <a className="underline decoration-pink-300" {...omittedProps} />;
+  return (
+    <a
+      className="underline decoration-pink-300"
+      {...omittedProps}
+      onMouseEnter={() => {
+        console.log('onMouseEnter');
+      }}
+      onMouseLeave={() => {
+        console.log('onMouseLeave');
+      }}
+    />
+  );
 }
 
 export default function Test({ file = '' }: TestProps) {
