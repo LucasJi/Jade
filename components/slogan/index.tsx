@@ -1,9 +1,9 @@
 import Typewriter from 'typewriter-effect';
 
-export default function Slogan({ className }: { className?: string }) {
+export default function Slogan() {
   return (
     <Typewriter
-      onInit={(typewriter) => {
+      onInit={typewriter => {
         typewriter
           .typeString('Hi, I am a full stack developer!')
           .pauseFor(1500)

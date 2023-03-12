@@ -12,24 +12,27 @@ function wikiLinkTransclusionFormat(extension) {
   ];
 
   const supportedFormat = extension.match(
-    transclusionFormats.filter((r) => extension.match(r))[0]
+    transclusionFormats.filter(r => extension.match(r))[0],
   )[0];
   const strippedExtension = extension.match(/\.[0-9a-z]{1,4}$/gi);
 
-  if (!supportedFormat)
+  if (!supportedFormat) {
     return [false, strippedExtension && strippedExtension[0].replace('.', '')];
+  }
 
   return [true, supportedFormat.replace('.', '')];
 }
 
 function fromMarkdown(opts = {}) {
   const permalinks = opts.permalinks || [];
-  const defaultPageResolver = (name) => [name.replace(/ /g, '-').toLowerCase()];
+  const defaultPageResolver = name => [name.replace(/ /g, '-').toLowerCase()];
   const pageResolver = opts.pageResolver || defaultPageResolver;
   const newClassName = opts.newClassName || 'new';
   const wikiLinkClassName = opts.wikiLinkClassName || 'internal';
-  const defaultHrefTemplate = (permalink) => {
-    if (permalink.startsWith('#')) return permalink;
+  const defaultHrefTemplate = permalink => {
+    if (permalink.startsWith('#')) {
+      return permalink;
+    }
     return `/${permalink}`;
   };
   const hrefTemplate = opts.hrefTemplate || defaultHrefTemplate;
@@ -46,7 +49,7 @@ function fromMarkdown(opts = {}) {
           exists: null,
         },
       },
-      token
+      token,
     );
   }
 
@@ -75,7 +78,7 @@ function fromMarkdown(opts = {}) {
     const wikiLinkTransclusion = wikiLink.isType === 'transclusions';
 
     const pagePermalinks = pageResolver(wikiLink.value);
-    let permalink = pagePermalinks.find((p) => {
+    let permalink = pagePermalinks.find(p => {
       let heading = '';
 
       if (!wikiLinkTransclusion && p.match(/#/)) {
@@ -102,7 +105,6 @@ function fromMarkdown(opts = {}) {
         displayName = `Document type ${
           transclusionFormat[1] ? transclusionFormat[1].toUpperCase() : null
         } is not yet supported for transclusion`;
-        console.warn(displayName);
         wikiLink.data.hName = 'span';
         wikiLink.data.hChildren = [
           {

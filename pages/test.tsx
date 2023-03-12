@@ -1,12 +1,7 @@
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import rehypeDocument from 'rehype-document';
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
 import { wikiLinkPlugin } from 'utils';
-import { reporter } from 'vfile-reporter';
-import { useEffect, useState } from 'react';
-import { GetServerSideProps, GetStaticProps } from 'next/types';
+import { GetStaticProps } from 'next/types';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import fs from 'fs';
 import { join } from 'path';
@@ -38,12 +33,12 @@ export default function Test({ file = '' }: TestProps) {
   return (
     <div>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, wikiLinkPlugin]}
-        rehypePlugins={[rehypeFormat, rehypeStringify]}
         components={{
           a: ({ className, ...props }) =>
             overwriteWikiLink({ className, ...props }),
         }}
+        rehypePlugins={[rehypeFormat, rehypeStringify]}
+        remarkPlugins={[remarkGfm, wikiLinkPlugin]}
       >
         {file}
       </ReactMarkdown>
@@ -51,7 +46,7 @@ export default function Test({ file = '' }: TestProps) {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = () => {
   const postsDirectory = join(process.cwd(), 'posts');
   console.log('post directory:', postsDirectory);
 

@@ -2,19 +2,21 @@ import { wikiLinkTransclusionFormat } from './fromMarkdown.js';
 
 function html(opts = {}) {
   const permalinks = opts.permalinks || [];
-  const defaultPageResolver = (name) => {
+  const defaultPageResolver = name => {
     const image = wikiLinkTransclusionFormat(name)[1];
     return image ? [name] : [name.replace(/ /g, '_').toLowerCase()];
   };
   const pageResolver = opts.pageResolver || defaultPageResolver;
   const newClassName = opts.newClassName || 'new';
   const wikiLinkClassName = opts.wikiLinkClassName || 'internal';
-  const defaultHrefTemplate = (permalink) => `/${permalink}`;
+  const defaultHrefTemplate = permalink => `/${permalink}`;
   const hrefTemplate = opts.hrefTemplate || defaultHrefTemplate;
 
   function enterWikiLink() {
     let stack = this.getData('wikiLinkStack');
-    if (!stack) this.setData('wikiLinkStack', (stack = []));
+    if (!stack) {
+      this.setData('wikiLinkStack', (stack = []));
+    }
 
     stack.push({});
   }
@@ -40,7 +42,7 @@ function html(opts = {}) {
     const wikiLinkTransclusion = wikiLink.isType === 'transclusions';
 
     const pagePermalinks = pageResolver(wikiLink.target);
-    let permalink = pagePermalinks.find((p) => permalinks.indexOf(p) !== -1);
+    let permalink = pagePermalinks.find(p => permalinks.indexOf(p) !== -1);
     const exists = permalink !== undefined;
     if (!exists) {
       permalink = pagePermalinks[0];
@@ -64,19 +66,19 @@ function html(opts = {}) {
       } else if (transclusionFormat[1] === 'pdf') {
         this.tag(
           `<embed width="100%" data="${hrefTemplate(
-            permalink
-          )}" class="${classNames}" type="application/pdf"/>`
+            permalink,
+          )}" class="${classNames}" type="application/pdf"/>`,
         );
       } else {
         this.tag(
           `<img src="${hrefTemplate(
-            permalink
-          )}" alt="${displayName}" class="${classNames}" />`
+            permalink,
+          )}" alt="${displayName}" class="${classNames}" />`,
         );
       }
     } else {
       this.tag(
-        '<a href="' + hrefTemplate(permalink) + '" class="' + classNames + '">'
+        '<a href="' + hrefTemplate(permalink) + '" class="' + classNames + '">',
       );
       this.raw(displayName);
       this.tag('</a>');

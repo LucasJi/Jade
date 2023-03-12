@@ -1,7 +1,5 @@
-// @ts-ignore
 import { toMarkdown } from 'mdast-util-wiki-link';
 import { syntax } from './lib/syntax';
-import { getFiles } from './lib/getFiles.js';
 import {
   fromMarkdown,
   wikiLinkTransclusionFormat,
@@ -13,8 +11,11 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
   const data = this.data();
 
   function add(field, value) {
-    if (data[field]) data[field].push(value);
-    else data[field] = [value];
+    if (data[field]) {
+      data[field].push(value);
+    } else {
+      data[field] = [value];
+    }
   }
 
   if (
@@ -28,7 +29,7 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
   ) {
     warningIssued = true;
     console.warn(
-      '[remark-wiki-link] Warning: please upgrade to remark 13 to use this plugin'
+      '[remark-wiki-link] Warning: please upgrade to remark 13 to use this plugin',
     );
   }
 
@@ -37,7 +38,7 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
     aliasDivider: opts.aliasDivider ? opts.aliasDivider : '|',
     pageResolver: opts.pageResolver
       ? opts.pageResolver
-      : (name) => {
+      : name => {
           const image = wikiLinkTransclusionFormat(name)[1];
           let heading = '';
           if (!image && !name.startsWith('#') && name.match(/#/)) {
@@ -46,14 +47,15 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
           }
           if (opts.permalinks || opts.markdownFolder) {
             const url = opts.permalinks.find(
-              (p) =>
+              p =>
                 p === name ||
                 (p.split('/').pop() === name &&
-                  !opts.permalinks.includes(p.split('/').pop()))
+                  !opts.permalinks.includes(p.split('/').pop())),
             );
             if (url) {
-              if (heading)
+              if (heading) {
                 return [`${url}#${heading}`.replace(/ /g, '-').toLowerCase()];
+              }
               return image ? [url] : [url.replace(/ /g, '-').toLowerCase()];
             }
           }
