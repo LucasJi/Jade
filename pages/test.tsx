@@ -7,24 +7,49 @@ import fs from 'fs';
 import { join } from 'path';
 import remarkGfm from 'remark-gfm';
 import { omit } from 'lodash';
+import {
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  useDisclosure,
+} from '@chakra-ui/react';
 
 interface TestProps {
   file?: string;
 }
 
 function WikiLink(props: any) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const omittedProps = omit(props, ['className']);
   return (
-    <a
-      className="underline decoration-pink-300"
-      {...omittedProps}
-      onMouseEnter={() => {
-        console.log('onMouseEnter');
-      }}
-      onMouseLeave={() => {
-        console.log('onMouseLeave');
-      }}
-    />
+    <Popover
+      closeOnBlur={false}
+      isLazy
+      isOpen={isOpen}
+      onClose={onClose}
+      onOpen={onOpen}
+      placement="auto"
+      returnFocusOnClose={false}
+    >
+      <PopoverTrigger>
+        <a
+          className="underline decoration-pink-300"
+          {...omittedProps}
+          onMouseEnter={() => {
+            console.log('onMouseEnter');
+            onOpen();
+          }}
+          onMouseLeave={() => {
+            console.log('onMouseLeave');
+            onClose();
+          }}
+        />
+      </PopoverTrigger>
+      <PopoverContent>
+        <PopoverBody>Popover Content</PopoverBody>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -45,6 +70,8 @@ export default function Test({ file = '' }: TestProps) {
     <div>
       <ReactMarkdown
         components={{
+          // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+          p: ({ node, ...props }) => <div {...props} />,
           a: ({ className, ...props }) =>
             overwriteWikiLink({ className, ...props }),
         }}

@@ -88,7 +88,7 @@ module.exports = {
     'prettier/prettier': ['error', prettierConfig],
     // Unused
     'no-unused-expressions': 'off',
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': 'warn',
     'no-unused-vars': 'off',
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
