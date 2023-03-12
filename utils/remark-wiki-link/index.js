@@ -63,6 +63,7 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
     /*     permalinks: opts.markdownFolder
       ? getFiles(opts.markdownFolder).map((file) => file.replace(/\.mdx?$/, ''))
       : opts.permalinks, */
+    wikiLinkClassName: 'wiki-link',
   };
 
   add('micromarkExtensions', syntax(opts));

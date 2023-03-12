@@ -99,6 +99,10 @@ ReactDOM.render(
 );
 ```
 
+## Wiki Link
+
+[[Hello Wiki Link]]
+
 ## More info?
 
 Much more info is available in the
