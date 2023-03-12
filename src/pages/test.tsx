@@ -4,27 +4,16 @@ import remarkRehype from 'remark-rehype';
 import rehypeDocument from 'rehype-document';
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
-import { wikiLinkPlugin } from '../utils';
+import { wikiLinkPlugin } from '@utils';
 import { reporter } from 'vfile-reporter';
 import { useEffect, useState } from 'react';
-import { GetServerSideProps } from 'next/types';
+import { GetServerSideProps, GetStaticProps } from 'next/types';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
-Test.getInitialProps = async () => {
-  let fileStr = '';
-  await unified()
-    .use(wikiLinkPlugin)
-    .use(remarkParse)
-    .use(remarkRehype)
-    .use(rehypeDocument, { title: '👋🌍' })
-    .use(rehypeFormat)
-    .use(rehypeStringify)
-    .process('[[Hello World]]')
-    .then((file) => {
-      console.error(reporter(file));
-      fileStr = String(file);
-    });
-  console.log('getInitialProps:', fileStr);
-  return { file: fileStr };
+export const getStaticProps: GetStaticProps = async (context) => {
+  return {
+    props: {},
+  };
 };
 
 export default function Test({ file = '' }: { file?: string }) {
@@ -32,5 +21,11 @@ export default function Test({ file = '' }: { file?: string }) {
 
   // useEffect(() => {}, []);
 
-  return <div>test page</div>;
+  const markdown: string = '[[Hello Wiki Link!]]';
+
+  return (
+    <div>
+      <ReactMarkdown remarkPlugins={[wikiLinkPlugin]}>{markdown}</ReactMarkdown>
+    </div>
+  );
 }

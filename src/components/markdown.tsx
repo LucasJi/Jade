@@ -1,13 +1,7 @@
 import { useEffect } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
-export default function Markdown() {
-  const markdown = `Here is some JavaScript code:
-
-~~~js
-console.log('It works!')
-~~~
-`;
+export default function Markdown({ markdown = '' }: { markdown?: string }) {
   return (
     <ReactMarkdown
       components={{
@@ -32,6 +26,7 @@ console.log('It works!')
   );
 }
 
+// TODO Delete
 function Custom({ children }: { children: any }) {
   useEffect(() => {
     console.log("I'm a custom component!");
