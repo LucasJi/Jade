@@ -19,7 +19,12 @@ interface TestProps {
   file?: string;
 }
 
-function WikiLink(props: any) {
+function WikiLink(
+  props: React.DetailedHTMLProps<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    HTMLAnchorElement
+  >,
+) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const omittedProps = omit(props, ['className']);
   return (
@@ -71,6 +76,7 @@ export default function Test({ file = '' }: TestProps) {
       <ReactMarkdown
         components={{
           // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+          // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
           p: ({ node, ...props }) => <div {...props} />,
           a: ({ className, ...props }) =>
             overwriteWikiLink({ className, ...props }),
