@@ -26,7 +26,7 @@ module.exports = {
   },
   plugins: ['react', 'unused-imports'],
   rules: {
-    // Possible errors
+    '@typescript-eslint/no-var-requires': 'off', // Possible errors
     'no-console': 'warn',
     // Best practices
     'dot-notation': 'error',
