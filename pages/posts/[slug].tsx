@@ -3,7 +3,7 @@ import rehypeStringify from 'rehype-stringify';
 import { wikiLinkPlugin } from 'utils';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import fs from 'fs';
-import { join } from 'path';
+import path, { join } from 'path';
 import remarkGfm from 'remark-gfm';
 import { WikiLink } from '@components';
 
@@ -18,9 +18,23 @@ type Props = {
   file: string;
 };
 
-const postDir = join(process.cwd(), 'posts');
-
 export const getStaticPaths = async () => {
+  // list all posts
+  const postDir = join(process.cwd(), 'posts');
+  const postFullPaths: string[] = [];
+  const traverseDir = (dir: string) => {
+    fs.readdirSync(dir).forEach(file => {
+      const fullPath = path.join(dir, file);
+      if (fs.lstatSync(fullPath).isDirectory()) {
+        traverseDir(fullPath);
+      } else {
+        postFullPaths.push(fullPath);
+      }
+    });
+  };
+  traverseDir(postDir);
+  console.log('post full paths:', postFullPaths);
+
   const slugs = fs
     .readdirSync(postDir)
     .map(postName => postName.replace(/\.md$/, ''));
