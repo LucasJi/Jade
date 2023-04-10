@@ -1,67 +1,33 @@
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
-import { wikiLinkPlugin } from 'utils';
+import { wikiLinkPlugin } from '@utils';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import fs from 'fs';
-import path, { join } from 'path';
 import remarkGfm from 'remark-gfm';
 import { WikiLink } from '@components';
+import { getAllPosts, getPostBySlug } from '@utils/postUtil';
 
-type Params = {
+type PathParamsType = {
   params: {
     slug: string;
+    content: string;
   };
 };
 
-type Props = {
+type PropsType = {
   slug: string;
-  file: string;
+  content: string;
 };
 
-export const getStaticPaths = async () => {
-  // list all posts
-  const postDir = join(process.cwd(), 'posts');
-  const postFullPaths: string[] = [];
-  const traverseDir = (dir: string) => {
-    fs.readdirSync(dir).forEach(file => {
-      const fullPath = path.join(dir, file);
-      if (fs.lstatSync(fullPath).isDirectory()) {
-        traverseDir(fullPath);
-      } else {
-        postFullPaths.push(fullPath);
-      }
-    });
-  };
-  traverseDir(postDir);
-  console.log('post full paths:', postFullPaths);
-
-  const slugs = fs
-    .readdirSync(postDir)
-    .map(postName => postName.replace(/\.md$/, ''));
-
-  console.log('slugs:', slugs);
-
-  return {
-    paths: slugs.map(slug => {
-      return {
-        params: {
-          slug,
-        },
-      };
-    }),
-    fallback: false,
-  };
+type PostType = {
+  slug: string;
+  fullPath: string;
+  content: string;
 };
 
-export const getStaticProps = async ({ params }: Params) => {
-  return {
-    props: {
-      slug: params.slug,
-    },
-  };
-};
+export default function Post({ slug, content }: PropsType) {
+  console.log('slug:', slug);
+  console.log('content:', content);
 
-export default function Post({ slug, file }: Props) {
   const overwriteWikiLink = ({
     className,
     ...props
@@ -87,8 +53,33 @@ export default function Post({ slug, file }: Props) {
         rehypePlugins={[rehypeFormat, rehypeStringify]}
         remarkPlugins={[remarkGfm, wikiLinkPlugin]}
       >
-        {file}
+        {content}
       </ReactMarkdown>
     </div>
   );
+}
+
+export async function getStaticProps({ params }: PathParamsType) {
+  const post = getPostBySlug(params.slug, ['slug', 'content']);
+
+  return {
+    props: {
+      post,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const posts = getAllPosts(['slug']);
+
+  return {
+    paths: posts.map(post => {
+      return {
+        params: {
+          slug: post.slug,
+        },
+      };
+    }),
+    fallback: false,
+  };
 }
