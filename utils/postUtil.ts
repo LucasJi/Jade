@@ -3,13 +3,29 @@ import { join } from 'path';
 
 const postsDirectory = join(process.cwd(), '_posts');
 
-export function getPostSlugs() {
-  return fs.readdirSync(postsDirectory);
+export function getPostFullPaths() {
+  return walkFilesRecursively(postsDirectory);
 }
 
-export function getPostBySlug(slug: string, fields: string[] = []) {
-  const realSlug = slug.replace(/\.md$/, '');
-  const fullPath = join(postsDirectory, `${realSlug}.md`);
+function walkFilesRecursively(dir: string, fileNameArray: string[] = []) {
+  const files = fs.readdirSync(dir);
+  let innerFileNameArray = fileNameArray || [];
+
+  files.forEach(file => {
+    const path = join(dir, file);
+    if (fs.statSync(path).isDirectory()) {
+      innerFileNameArray = walkFilesRecursively(path, innerFileNameArray);
+    } else {
+      innerFileNameArray.push(path);
+    }
+  });
+
+  return innerFileNameArray;
+}
+
+export function getPostBySlug(name: string, fields: string[] = []) {
+  const slug = name.replace(/\.md$/, '');
+  const fullPath = join(postsDirectory, name);
   const content = fs.readFileSync(fullPath, 'utf8');
 
   type Items = {
@@ -21,7 +37,7 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
   // Ensure only the minimal needed data is exposed
   fields.forEach(field => {
     if (field === 'slug') {
-      items[field] = realSlug;
+      items[field] = slug;
     }
     if (field === 'content') {
       items[field] = content;
@@ -32,9 +48,8 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
 }
 
 export function getAllPosts(fields: string[] = []) {
-  const slugs = getPostSlugs();
-  const posts = slugs.map(slug => getPostBySlug(slug, fields));
-  // sort posts by date in descending order
-  // .sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
+  const fullPaths = getPostFullPaths();
+  console.log('post full paths:', fullPaths);
+  const posts = fullPaths.map(name => getPostBySlug(name, fields));
   return posts;
 }
