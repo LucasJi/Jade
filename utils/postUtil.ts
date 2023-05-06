@@ -3,7 +3,7 @@ import { join } from 'path';
 
 const postsDirectory = join(process.cwd(), '_posts');
 
-export function getPostFullPaths() {
+export function getPostSlugs() {
   return walkFilesRecursively(postsDirectory);
 }
 
@@ -48,8 +48,14 @@ export function getPostBySlug(name: string, fields: string[] = []) {
 }
 
 export function getAllPosts(fields: string[] = []) {
-  const fullPaths = getPostFullPaths();
+  const fullPaths = getPostSlugs();
   console.log('post full paths:', fullPaths);
-  const posts = fullPaths.map(name => getPostBySlug(name, fields));
+  const posts = fullPaths.map(fullPath => getPostBySlug(fullPath, fields));
   return posts;
 }
+
+export type Post = {
+  slug: string;
+  fullPath: string;
+  content: string;
+};

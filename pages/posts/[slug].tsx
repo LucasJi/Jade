@@ -18,12 +18,6 @@ type PropsType = {
   content: string;
 };
 
-type PostType = {
-  slug: string;
-  fullPath: string;
-  content: string;
-};
-
 export default function Post({ slug, content }: PropsType) {
   console.log('slug:', slug);
   console.log('content:', content);
