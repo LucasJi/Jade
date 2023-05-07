@@ -8,13 +8,13 @@ import { getAllPosts, getPostBySlug } from '@utils/postUtil';
 
 type PathParamsType = {
   params: {
-    slug: string;
+    slug: string[];
     content: string;
   };
 };
 
 type PropsType = {
-  slug: string;
+  slug: string[];
   content: string;
 };
 

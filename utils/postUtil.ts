@@ -1,11 +1,21 @@
 import fs from 'fs';
 import { join } from 'path';
 
-const postsDirectory = join(process.cwd(), '_posts');
+const SEPARATOR = '/';
+const postsDirectory = join(process.cwd(), '_posts', SEPARATOR);
 
 export function getPostSlugs() {
-  return walkFilesRecursively(postsDirectory);
+  const fileFullPaths = walkFilesRecursively(postsDirectory);
+  const slugs = fileFullPaths.map(fullPath => getSlugFromFullPath(fullPath));
+  return slugs;
 }
+
+const getSlugFromFullPath = (fullPath: string) => {
+  const relativePath = fullPath.replace(postsDirectory, '');
+  const slug = relativePath.split(SEPARATOR);
+  slug[slug.length - 1] = slug[slug.length - 1].replace(/\.md$/, '');
+  return slug;
+};
 
 function walkFilesRecursively(dir: string, fileNameArray: string[] = []) {
   const files = fs.readdirSync(dir);
@@ -23,18 +33,26 @@ function walkFilesRecursively(dir: string, fileNameArray: string[] = []) {
   return innerFileNameArray;
 }
 
-export function getPostBySlug(name: string, fields: string[] = []) {
-  const slug = name.replace(/\.md$/, '');
-  const fullPath = join(postsDirectory, name);
+const getFullPathFromSlug = (slug: string[]) => {
+  slug[slug.length - 1] = slug[slug.length - 1] + '.md';
+  const fullPath = join(postsDirectory, ...slug);
+  return fullPath;
+};
+
+export function getPostBySlug(slug: string[], fields: string[] = []) {
+  const fullPath = getFullPathFromSlug(slug);
+
+  console.log('full path:', fullPath);
+
   const content = fs.readFileSync(fullPath, 'utf8');
 
   type Items = {
-    [key: string]: string;
+    [key: string]: string | string[];
   };
 
   const items: Items = {};
 
-  // Ensure only the minimal needed data is exposed
+  // ensure only the minimal needed data is exposed
   fields.forEach(field => {
     if (field === 'slug') {
       items[field] = slug;
@@ -44,13 +62,14 @@ export function getPostBySlug(name: string, fields: string[] = []) {
     }
   });
 
+  console.log('items:', items);
+
   return items;
 }
 
 export function getAllPosts(fields: string[] = []) {
-  const fullPaths = getPostSlugs();
-  console.log('post full paths:', fullPaths);
-  const posts = fullPaths.map(fullPath => getPostBySlug(fullPath, fields));
+  const slugs = getPostSlugs();
+  const posts = slugs.map(slug => getPostBySlug(slug, fields));
   return posts;
 }
 
