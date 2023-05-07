@@ -39,42 +39,17 @@ const getFullPathFromSlug = (slug: string[]) => {
   return fullPath;
 };
 
-export function getPostBySlug(slug: string[], fields: string[] = []) {
+export function getPostBySlug(slug: string[]) {
   const fullPath = getFullPathFromSlug(slug);
-
-  console.log('full path:', fullPath);
-
   const content = fs.readFileSync(fullPath, 'utf8');
-
-  type Items = {
-    [key: string]: string | string[];
+  const post: Post = {
+    slug,
+    content,
   };
-
-  const items: Items = {};
-
-  // ensure only the minimal needed data is exposed
-  fields.forEach(field => {
-    if (field === 'slug') {
-      items[field] = slug;
-    }
-    if (field === 'content') {
-      items[field] = content;
-    }
-  });
-
-  console.log('items:', items);
-
-  return items;
-}
-
-export function getAllPosts(fields: string[] = []) {
-  const slugs = getPostSlugs();
-  const posts = slugs.map(slug => getPostBySlug(slug, fields));
-  return posts;
+  return post;
 }
 
 export type Post = {
-  slug: string;
-  fullPath: string;
+  slug: string[];
   content: string;
 };

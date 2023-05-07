@@ -35,7 +35,7 @@ ReactDOM.render(
   <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
     {'# Your markdown here'}
   </ReactMarkdown>,
-  document.querySelector('#content')
+  document.querySelector('#content'),
 );
 ```
 
@@ -95,13 +95,13 @@ ReactDOM.render(
   >
     # Your markdown here
   </ReactMarkdown>,
-  document.querySelector('#content')
+  document.querySelector('#content'),
 );
 ```
 
 ## Wiki Link
 
-[[Hello Wiki Link]]
+[[wiki-link-demo/sub-folder/reference]]
 
 ## More info?
 

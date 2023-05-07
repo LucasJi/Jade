@@ -14,7 +14,12 @@ export default function WikiLink(
   >,
 ) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const omittedProps = omit(props, ['className']);
+
+  console.log('WikiLink props:', props);
+
+  let { href } = props;
+  href = '/posts' + href;
+  const omittedProps = omit(props, ['className', 'href']);
   return (
     <Popover
       closeOnBlur={false}
@@ -28,6 +33,7 @@ export default function WikiLink(
       <PopoverTrigger>
         <a
           className="underline decoration-pink-300"
+          href={href}
           {...omittedProps}
           onMouseEnter={() => {
             console.log('onMouseEnter');

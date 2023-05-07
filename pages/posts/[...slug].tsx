@@ -4,7 +4,7 @@ import { wikiLinkPlugin } from '@utils';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { WikiLink } from '@components';
-import { getAllPosts, getPostBySlug } from '@utils/postUtil';
+import { getPostBySlug, getPostSlugs, Post } from '@utils/postUtil';
 
 type PathParamsType = {
   params: {
@@ -14,14 +14,11 @@ type PathParamsType = {
 };
 
 type PropsType = {
-  slug: string[];
-  content: string;
+  post: Post;
 };
 
-export default function Post({ slug, content }: PropsType) {
-  console.log('slug:', slug);
-  console.log('content:', content);
-
+export default function PostPage({ post }: PropsType) {
+  const { content } = post;
   const overwriteWikiLink = ({
     className,
     ...props
@@ -54,7 +51,7 @@ export default function Post({ slug, content }: PropsType) {
 }
 
 export async function getStaticProps({ params }: PathParamsType) {
-  const post = getPostBySlug(params.slug, ['slug', 'content']);
+  const post = getPostBySlug(params.slug);
 
   return {
     props: {
@@ -64,16 +61,22 @@ export async function getStaticProps({ params }: PathParamsType) {
 }
 
 export async function getStaticPaths() {
-  const posts = getAllPosts(['slug']);
+  const slugs = getPostSlugs();
 
-  return {
-    paths: posts.map(post => {
+  console.log('slugs:', slugs);
+
+  const staticPaths = {
+    paths: slugs.map(slug => {
       return {
         params: {
-          slug: post.slug,
+          slug,
         },
       };
     }),
     fallback: false,
   };
+
+  console.log('staticPaths:', staticPaths.paths);
+
+  return staticPaths;
 }
