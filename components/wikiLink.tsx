@@ -6,6 +6,8 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { omit } from 'lodash';
+import { useEffect } from 'react';
+import client from '@utils/axios';
 
 export default function WikiLink(
   props: React.DetailedHTMLProps<
@@ -14,8 +16,12 @@ export default function WikiLink(
   >,
 ) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-
-  console.log('WikiLink props:', props);
+  useEffect(() => {
+    let { href } = props;
+    href = href?.replace('/', '');
+    const data = { slug: href?.split('/') };
+    client.post('api/post', data);
+  }, [props.href]);
 
   let { href } = props;
   href = '/posts' + href;
@@ -36,11 +42,9 @@ export default function WikiLink(
           href={href}
           {...omittedProps}
           onMouseEnter={() => {
-            console.log('onMouseEnter');
             onOpen();
           }}
           onMouseLeave={() => {
-            console.log('onMouseLeave');
             onClose();
           }}
         />

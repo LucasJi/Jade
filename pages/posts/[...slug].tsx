@@ -25,9 +25,7 @@ export default function PostPage({ post }: PropsType) {
   }: {
     className: string | undefined;
   }) => {
-    console.log(className);
     const isWikiLink = className?.includes('wiki-link');
-    console.log('className contains wiki-link:', isWikiLink);
     return isWikiLink ? <WikiLink {...props} /> : <a {...props} />;
   };
 
@@ -75,8 +73,6 @@ export async function getStaticPaths() {
     }),
     fallback: false,
   };
-
-  console.log('staticPaths:', staticPaths.paths);
 
   return staticPaths;
 }
