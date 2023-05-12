@@ -6,8 +6,10 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { omit } from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
+import { AxiosResponse } from 'axios';
+import { Post } from '@utils/postUtil';
 
 export default function WikiLink(
   props: React.DetailedHTMLProps<
@@ -16,11 +18,17 @@ export default function WikiLink(
   >,
 ) {
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const [content, setContent] = useState<string>('');
+
   useEffect(() => {
     let { href } = props;
     href = href?.replace('/', '');
     const data = { slug: href?.split('/') };
-    httpClient.post('api/post', data);
+
+    httpClient.post('api/post', data).then((res: AxiosResponse<Post>) => {
+      console.log(res.data);
+      setContent(res.data.content);
+    });
   }, [props.href]);
 
   let { href } = props;
@@ -50,7 +58,7 @@ export default function WikiLink(
         />
       </PopoverTrigger>
       <PopoverContent>
-        <PopoverBody>Popover Content</PopoverBody>
+        <PopoverBody>{content}</PopoverBody>
       </PopoverContent>
     </Popover>
   );
