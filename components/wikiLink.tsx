@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { omit } from 'lodash';
 import { useEffect } from 'react';
-import client from '@utils/axios';
+import httpClient from '@utils/axios';
 
 export default function WikiLink(
   props: React.DetailedHTMLProps<
@@ -20,7 +20,7 @@ export default function WikiLink(
     let { href } = props;
     href = href?.replace('/', '');
     const data = { slug: href?.split('/') };
-    client.post('api/post', data);
+    httpClient.post('api/post', data);
   }, [props.href]);
 
   let { href } = props;

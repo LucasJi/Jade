@@ -12,8 +12,8 @@ export default function handler(
     return;
   }
 
-  const slug = req.body;
-  const post = getPostBySlug(JSON.parse(slug));
+  const { slug } = req.body;
+  const post = getPostBySlug(slug);
 
   res.status(200).json(post);
 }

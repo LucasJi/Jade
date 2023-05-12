@@ -8,12 +8,16 @@ export default function Navbar() {
       </div>
 
       <div>
+        <Link href="/posts">Posts</Link>
+      </div>
+
+      {/* <div>
         <Link href="/tags">Tags</Link>
       </div>
 
       <div>
         <Link href="/about">About</Link>
-      </div>
+      </div> */}
     </div>
   );
 }
