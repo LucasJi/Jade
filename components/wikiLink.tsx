@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
 import { AxiosResponse } from 'axios';
 import { Post } from '@utils/postUtil';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 export default function WikiLink(
   props: React.DetailedHTMLProps<
@@ -26,7 +27,7 @@ export default function WikiLink(
     const data = { slug: href?.split('/') };
 
     httpClient.post('api/post', data).then((res: AxiosResponse<Post>) => {
-      console.log(res.data);
+      console.log('api/post response data', res.data);
       setContent(res.data.content);
     });
   }, [props.href]);
@@ -58,7 +59,9 @@ export default function WikiLink(
         />
       </PopoverTrigger>
       <PopoverContent>
-        <PopoverBody>{content}</PopoverBody>
+        <PopoverBody>
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </PopoverBody>
       </PopoverContent>
     </Popover>
   );
