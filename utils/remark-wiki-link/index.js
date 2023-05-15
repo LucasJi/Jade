@@ -10,6 +10,8 @@ let warningIssued;
 function wikiLinkPlugin(opts = { markdownFolder: '' }) {
   const data = this.data();
 
+  console.log('data:', data);
+
   function add(field, value) {
     if (data[field]) {
       data[field].push(value);
@@ -39,6 +41,7 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
     pageResolver: opts.pageResolver
       ? opts.pageResolver
       : name => {
+          console.log('pageResolve name', name);
           const image = wikiLinkTransclusionFormat(name)[1];
           let heading = '';
           if (!image && !name.startsWith('#') && name.match(/#/)) {
@@ -68,6 +71,7 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
     wikiLinkClassName: 'wiki-link',
   };
 
+  console.log('opts', opts);
   add('micromarkExtensions', syntax(opts));
   add('fromMarkdownExtensions', fromMarkdown(opts));
   add('toMarkdownExtensions', toMarkdown(opts));
