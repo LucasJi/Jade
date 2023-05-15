@@ -31,6 +31,10 @@ export default function PostPage({ post }: PropsType) {
 
   return (
     <div>
+      <div className="">
+        markdown title part This part can be hidden when there is only one
+        markdown in the page.
+      </div>
       <ReactMarkdown
         components={{
           // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
