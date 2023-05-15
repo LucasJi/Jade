@@ -11,8 +11,6 @@ export default function Home() {
       <Avatar />
 
       <Slogan className="mt-8" /> */}
-
-      {/* <Markdown /> */}
     </div>
   );
 }

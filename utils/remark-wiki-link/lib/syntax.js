@@ -45,9 +45,8 @@ function wikiLink(opts = {}) {
         effects.enter('wikiLinkMarker', { isType: 'transclusions' });
 
         return consumeStart(code);
-      } else {
-        return nok(code);
       }
+      return nok(code);
     }
 
     function consumeStart(code) {
@@ -61,12 +60,13 @@ function wikiLink(opts = {}) {
         code === imageStartMarker.charCodeAt(startMarkerCursor)
       ) {
         effects.consume(code);
-        if (code === 91) startMarkerCursor++;
+        if (code === 91) {
+          startMarkerCursor++;
+        }
 
         return consumeStart;
-      } else {
-        return nok(code);
       }
+      return nok(code);
     }
 
     function consumeData(code) {
@@ -81,14 +81,18 @@ function wikiLink(opts = {}) {
 
     function consumeTarget(code) {
       if (code === aliasMarker.charCodeAt(aliasCursor)) {
-        if (!data) return nok(code);
+        if (!data) {
+          return nok(code);
+        }
         effects.exit('wikiLinkTarget');
         effects.enter('wikiLinkAliasMarker');
         return consumeAliasMarker(code);
       }
 
       if (code === endMarker.charCodeAt(endMarkerCursor)) {
-        if (!data) return nok(code);
+        if (!data) {
+          return nok(code);
+        }
         effects.exit('wikiLinkTarget');
         effects.exit('wikiLinkData');
         effects.enter('wikiLinkMarker');
@@ -127,7 +131,9 @@ function wikiLink(opts = {}) {
 
     function consumeAlias(code) {
       if (code === endMarker.charCodeAt(endMarkerCursor)) {
-        if (!alias) return nok(code);
+        if (!alias) {
+          return nok(code);
+        }
         effects.exit('wikiLinkAlias');
         effects.exit('wikiLinkData');
         effects.enter('wikiLinkMarker');

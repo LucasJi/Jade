@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
+// TODO delete if not used in future
 export default function Markdown({ markdown = '' }: { markdown?: string }) {
   return (
     <ReactMarkdown
