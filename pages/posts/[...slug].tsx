@@ -30,24 +30,23 @@ export default function PostPage({ post }: PropsType) {
   };
 
   return (
-    <div>
-      <div className="">
-        markdown title part This part can be hidden when there is only one
-        markdown in the page.
+    <div className="flex flex-row">
+      <div className="[writing-mode:vertical-lr]">Post Title</div>
+      <div>
+        <ReactMarkdown
+          components={{
+            // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+            // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+            p: ({ node, ...props }) => <div {...props} />,
+            a: ({ className, ...props }) =>
+              overwriteWikiLink({ className, ...props }),
+          }}
+          rehypePlugins={[rehypeFormat, rehypeStringify]}
+          remarkPlugins={[remarkGfm, wikiLinkPlugin]}
+        >
+          {content}
+        </ReactMarkdown>
       </div>
-      <ReactMarkdown
-        components={{
-          // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-          // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-          p: ({ node, ...props }) => <div {...props} />,
-          a: ({ className, ...props }) =>
-            overwriteWikiLink({ className, ...props }),
-        }}
-        rehypePlugins={[rehypeFormat, rehypeStringify]}
-        remarkPlugins={[remarkGfm, wikiLinkPlugin]}
-      >
-        {content}
-      </ReactMarkdown>
     </div>
   );
 }
