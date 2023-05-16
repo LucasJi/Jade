@@ -64,10 +64,8 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
           }
           return image ? [name] : [name.replace(/ /g, '-').toLowerCase()];
         },
+    // TODO: hwo to deal with the permalinks can reference: https://yoast.com/what-is-a-permalink/
     permalinks: opts.permalinks,
-    /*     permalinks: opts.markdownFolder
-      ? getFiles(opts.markdownFolder).map((file) => file.replace(/\.mdx?$/, ''))
-      : opts.permalinks, */
     wikiLinkClassName: 'wiki-link',
   };
 

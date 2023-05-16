@@ -8,13 +8,15 @@ In this `README`, I'd like to record all my thoughts and efforts on building my 
 
 ## Version: v0.1.0
 
-> [More details](docs/v0_1_0.md)
+### Targets
 
-- [ ] Resolve markdown files to html files
+- [x] Resolve markdown files to html files
 - [ ] **Home** page
 - [ ] Resolve all/specific markdowns in Obsidian vault
 - [ ] ~~**Tags** page~~
 - [ ] ~~**About** page~~
+
+> [More details](docs/v0_1_0.md)
 
 ## Thanks for
 
