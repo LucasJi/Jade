@@ -46,17 +46,19 @@ export default function WikiLink(
       returnFocusOnClose={false}
     >
       <PopoverTrigger>
-        <a
+        <div
           className="underline decoration-pink-300"
-          href={href}
-          {...omittedProps}
+          // href={href}
+          // {...omittedProps}
           onMouseEnter={() => {
             onOpen();
           }}
           onMouseLeave={() => {
             onClose();
           }}
-        />
+        >
+          {href}
+        </div>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverBody>

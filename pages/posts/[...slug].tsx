@@ -5,7 +5,7 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { WikiLink } from '@components';
 import { getPostBySlug, getPostSlugs, Post } from '@utils/postUtil';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type PathParamsType = {
   params: {
@@ -30,7 +30,16 @@ export default function PostPage({ post }: PropsType) {
     return isWikiLink ? <WikiLink {...props} /> : <a {...props} />;
   };
 
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>([post]);
+
+  const appendPost = (appended: Post) => {
+    posts.push(appended);
+    setPosts([...posts]);
+  };
+
+  useEffect(() => {
+    console.log('posts:', posts);
+  }, [posts]);
 
   return (
     <div className="flex flex-row">
