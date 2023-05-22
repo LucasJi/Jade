@@ -44,7 +44,7 @@ export default function PostPage({ post }: PropsType) {
   return (
     <div className="flex flex-row">
       <div className="[writing-mode:vertical-lr]">Post Title</div>
-      <div>
+      <div className="w-1/3">
         <ReactMarkdown
           components={{
             // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519

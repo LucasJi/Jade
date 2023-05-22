@@ -1,16 +1,10 @@
-import {
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  useDisclosure,
-} from '@chakra-ui/react';
 import { omit } from 'lodash';
 import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
 import { AxiosResponse } from 'axios';
 import { Post } from '@utils/postUtil';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import * as Popover from '@radix-ui/react-popover';
 
 export default function WikiLink(
   props: React.DetailedHTMLProps<
@@ -18,7 +12,6 @@ export default function WikiLink(
     HTMLAnchorElement
   >,
 ) {
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const [content, setContent] = useState<string>('');
 
   useEffect(() => {
@@ -36,35 +29,15 @@ export default function WikiLink(
   href = '/posts' + href;
   const omittedProps = omit(props, ['className', 'href']);
   return (
-    <Popover
-      closeOnBlur={false}
-      isLazy
-      isOpen={isOpen}
-      onClose={onClose}
-      onOpen={onOpen}
-      placement="auto"
-      returnFocusOnClose={false}
-    >
-      <PopoverTrigger>
-        <div
-          className="underline decoration-pink-300"
-          // href={href}
-          // {...omittedProps}
-          onMouseEnter={() => {
-            onOpen();
-          }}
-          onMouseLeave={() => {
-            onClose();
-          }}
-        >
-          {href}
-        </div>
-      </PopoverTrigger>
-      <PopoverContent>
-        <PopoverBody>
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button>{href}</button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content className="bg-green-100 border-black h-80 w-80 text-ellipsis">
           <ReactMarkdown>{content}</ReactMarkdown>
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
