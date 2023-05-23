@@ -4,7 +4,8 @@ import { wikiLinkPlugin } from '@utils';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { WikiLink } from '@components';
-import { getPostBySlug, getPostSlugs, Post } from '@utils/postUtil';
+import { getPostBySlug, getPostSlugs } from '@utils/postUtil';
+import { Post } from '@utils/typeUtil';
 import { useEffect, useState } from 'react';
 
 type PathParamsType = {

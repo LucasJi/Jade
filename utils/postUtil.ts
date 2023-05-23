@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
+import { Post } from './typeUtil';
 
 const SEPARATOR = '/';
 const postsDirectory = join(process.cwd(), '_posts', SEPARATOR);
@@ -40,6 +41,10 @@ const getFullPathFromSlug = (slug: string[]) => {
 };
 
 export function getPostBySlug(slug: string[]) {
+  if (slug === undefined || slug.length === 0) {
+    return {};
+  }
+
   const fullPath = getFullPathFromSlug(slug);
   const content = fs.readFileSync(fullPath, 'utf8');
   const post: Post = {
@@ -48,8 +53,3 @@ export function getPostBySlug(slug: string[]) {
   };
   return post;
 }
-
-export type Post = {
-  slug: string[];
-  content: string;
-};
