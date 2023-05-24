@@ -1,5 +1,5 @@
 import { toMarkdown } from 'mdast-util-wiki-link';
-import { syntax } from './lib/syntax';
+import { html, syntax } from './lib/syntax';
 import {
   fromMarkdown,
   wikiLinkTransclusionFormat,
@@ -9,8 +9,6 @@ let warningIssued;
 
 function wikiLinkPlugin(opts = { markdownFolder: '' }) {
   const data = this.data();
-
-  console.log('data:', data);
 
   function add(field, value) {
     if (data[field]) {
@@ -40,19 +38,19 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
     aliasDivider: opts.aliasDivider ? opts.aliasDivider : '|',
     pageResolver: opts.pageResolver
       ? opts.pageResolver
-      : name => {
-          console.log('pageResolve name', name);
-          const image = wikiLinkTransclusionFormat(name)[1];
+      : wikilink => {
+          console.log('pageResolve wikilink', wikilink);
+          const image = wikiLinkTransclusionFormat(wikilink)[1];
           let heading = '';
-          if (!image && !name.startsWith('#') && name.match(/#/)) {
-            [, heading] = name.split('#');
-            name = name.replace(`#${heading}`, '');
+          if (!image && !wikilink.startsWith('#') && wikilink.match(/#/)) {
+            [, heading] = wikilink.split('#');
+            wikilink = wikilink.replace(`#${heading}`, '');
           }
           if (opts.permalinks || opts.markdownFolder) {
             const url = opts.permalinks.find(
               p =>
-                p === name ||
-                (p.split('/').pop() === name &&
+                p === wikilink ||
+                (p.split('/').pop() === wikilink &&
                   !opts.permalinks.includes(p.split('/').pop())),
             );
             if (url) {
@@ -62,7 +60,9 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
               return image ? [url] : [url.replace(/ /g, '-').toLowerCase()];
             }
           }
-          return image ? [name] : [name.replace(/ /g, '-').toLowerCase()];
+          return image
+            ? [wikilink]
+            : [wikilink.replace(/ /g, '-').toLowerCase()];
         },
     // TODO: hwo to deal with the permalinks can reference: https://yoast.com/what-is-a-permalink/
     permalinks: opts.permalinks,
@@ -72,7 +72,9 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
   console.log('opts', opts);
   add('micromarkExtensions', syntax(opts));
   add('fromMarkdownExtensions', fromMarkdown(opts));
+  add('htmlExtensions', html(opts));
   add('toMarkdownExtensions', toMarkdown(opts));
+  console.log('data:', data);
 }
 
 export default wikiLinkPlugin;

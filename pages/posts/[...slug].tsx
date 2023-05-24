@@ -58,7 +58,7 @@ export default function PostPage({ post }: PropsType) {
     <div className="flex flex-row">
       {posts.map(post => {
         return (
-          <div key={post.slug.join('-')}>
+          <div key={post.wikilink}>
             <div className="[writing-mode:vertical-lr]">Post Title</div>
             <ReactMarkdown
               className="w-1/3"

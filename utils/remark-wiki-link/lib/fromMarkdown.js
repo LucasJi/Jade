@@ -25,7 +25,9 @@ function wikiLinkTransclusionFormat(extension) {
 
 function fromMarkdown(opts = {}) {
   const permalinks = opts.permalinks || [];
-  const defaultPageResolver = name => [name.replace(/ /g, '-').toLowerCase()];
+  const defaultPageResolver = wikilink => [
+    wikilink.replace(/ /g, '-').toLowerCase(),
+  ];
   const pageResolver = opts.pageResolver || defaultPageResolver;
   const newClassName = opts.newClassName || 'new';
   const wikiLinkClassName = opts.wikiLinkClassName || 'internal';
@@ -61,6 +63,13 @@ function fromMarkdown(opts = {}) {
     const alias = this.sliceSerialize(token);
     const current = top(this.stack);
     current.data.alias = alias;
+
+    console.log(
+      'fromMarkdown exitWikiLinkAlias token alias current',
+      token,
+      alias,
+      current,
+    );
   }
 
   function exitWikiLinkTarget(token) {
