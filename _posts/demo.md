@@ -101,7 +101,7 @@ ReactDOM.render(
 
 ## Wiki Link
 
-[[wiki-link-demo/sub-folder/reference]]
+[[wiki-link-demo/wiki-link]]
 
 ## More info?
 

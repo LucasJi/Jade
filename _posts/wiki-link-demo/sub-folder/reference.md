@@ -99,10 +99,6 @@ ReactDOM.render(
 );
 ```
 
-## Wiki Link
-
-[[wiki-link-demo/sub-folder/reference]]
-
 ## More info?
 
 Much more info is available in the
