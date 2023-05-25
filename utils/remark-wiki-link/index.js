@@ -70,9 +70,9 @@ function wikiLinkPlugin(opts = { markdownFolder: '' }) {
   };
 
   console.log('opts', opts);
-  add('micromarkExtensions', syntax(opts));
   add('fromMarkdownExtensions', fromMarkdown(opts));
   add('htmlExtensions', html(opts));
+  add('micromarkExtensions', syntax(opts));
   add('toMarkdownExtensions', toMarkdown(opts));
   console.log('data:', data);
 }

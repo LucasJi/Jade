@@ -32,9 +32,12 @@ function wikiLink(opts = {}) {
     var startMarkerCursor = 0;
     var endMarkerCursor = 0;
 
+    console.log('syntax - effects:', effects);
+
     return start;
 
     function start(code) {
+      console.log('code', code);
       if (code === startMarker.charCodeAt(startMarkerCursor)) {
         effects.enter('wikiLink');
         effects.enter('wikiLinkMarker');

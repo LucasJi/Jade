@@ -1,6 +1,6 @@
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
-import { wikiLinkPlugin } from '@utils';
+import { remarkDemo } from '@utils';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { WikiLink } from '@components';
@@ -70,7 +70,7 @@ export default function PostPage({ post }: PropsType) {
                   overwriteWikiLink({ className, href }),
               }}
               rehypePlugins={[rehypeFormat, rehypeStringify]}
-              remarkPlugins={[remarkGfm, wikiLinkPlugin]}
+              remarkPlugins={[remarkGfm, remarkDemo]}
             >
               {post.content}
             </ReactMarkdown>
