@@ -5,7 +5,7 @@ import { Post } from '@utils/typeUtil';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import * as Popover from '@radix-ui/react-popover';
 
-export default function WikiLink({
+export default function Wikilink({
   href = '',
   onClick,
 }: {

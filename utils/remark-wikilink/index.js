@@ -24,3 +24,4 @@ function wikilinkPlugin(opts = {}) {
 }
 
 export default wikilinkPlugin;
+export { wikilinkPlugin };

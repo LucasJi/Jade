@@ -1,11 +1,11 @@
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
-import { remarkDemo } from '@utils';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
-import { WikiLink } from '@components';
+import { Wikilink } from '@components';
 import { getPostBySlug, getPostSlugs } from '@utils/postUtil';
 import { Post } from '@utils/typeUtil';
+import { wikilinkPlugin } from '@utils';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
 
@@ -31,7 +31,7 @@ export default function PostPage({ post }: PropsType) {
   }) => {
     const isWikiLink = className?.includes('wiki-link');
     return isWikiLink ? (
-      <WikiLink href={href} onClick={appendPost} />
+      <Wikilink href={href} onClick={appendPost} />
     ) : (
       <a href={href} {...props} />
     );
@@ -70,7 +70,7 @@ export default function PostPage({ post }: PropsType) {
                   overwriteWikiLink({ className, href }),
               }}
               rehypePlugins={[rehypeFormat, rehypeStringify]}
-              remarkPlugins={[remarkGfm, remarkDemo]}
+              remarkPlugins={[remarkGfm, wikilinkPlugin]}
             >
               {post.content}
             </ReactMarkdown>
