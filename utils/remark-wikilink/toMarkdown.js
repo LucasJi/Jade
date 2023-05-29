@@ -43,4 +43,4 @@ function toMarkdown(opts = {}) {
   };
 }
 
-export { toMarkdown };
+export default toMarkdown;

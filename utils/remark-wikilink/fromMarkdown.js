@@ -86,4 +86,4 @@ function fromMarkdown(opts = {}) {
   };
 }
 
-export { fromMarkdown };
+export default fromMarkdown;
