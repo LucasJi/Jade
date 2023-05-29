@@ -15,7 +15,7 @@ function toMarkdown(opts = {}) {
   ];
 
   function handler(node, _, context) {
-    const exit = context.enter('wikiLink');
+    const exit = context.enter('wikilink');
 
     const nodeValue = safe(context, node.value, { before: '[', after: ']' });
     const nodeAlias = safe(context, node.data.alias, {
@@ -38,7 +38,7 @@ function toMarkdown(opts = {}) {
   return {
     unsafe: unsafe,
     handlers: {
-      wikiLink: handler,
+      wikilink: handler,
     },
   };
 }

@@ -3,6 +3,7 @@ const codes = {
   virtualSpace: -1,
   nul: 0,
   eof: null,
+  // ' '
   space: 32,
 };
 
@@ -15,7 +16,7 @@ function markdownLineEnding(code) {
 }
 
 function syntax(opts = {}) {
-  const aliasDivider = opts.aliasDivider || ':';
+  const aliasDivider = opts.aliasDivider || '|';
 
   const aliasMarker = aliasDivider;
   const startMarker = '[[';
@@ -36,15 +37,15 @@ function syntax(opts = {}) {
         return nok(code);
       }
 
-      effects.enter('wikiLink');
-      effects.enter('wikiLinkMarker');
+      effects.enter('wikilink');
+      effects.enter('wikilinkMarker');
 
       return consumeStart(code);
     }
 
     function consumeStart(code) {
       if (startMarkerCursor === startMarker.length) {
-        effects.exit('wikiLinkMarker');
+        effects.exit('wikilinkMarker');
         return consumeData(code);
       }
 
@@ -63,8 +64,8 @@ function syntax(opts = {}) {
         return nok(code);
       }
 
-      effects.enter('wikiLinkData');
-      effects.enter('wikiLinkTarget');
+      effects.enter('wikilinkData');
+      effects.enter('wikilinkTarget');
       return consumeTarget(code);
     }
 
@@ -73,8 +74,8 @@ function syntax(opts = {}) {
         if (!data) {
           return nok(code);
         }
-        effects.exit('wikiLinkTarget');
-        effects.enter('wikiLinkAliasMarker');
+        effects.exit('wikilinkTarget');
+        effects.enter('wikilinkAliasMarker');
         return consumeAliasMarker(code);
       }
 
@@ -82,9 +83,9 @@ function syntax(opts = {}) {
         if (!data) {
           return nok(code);
         }
-        effects.exit('wikiLinkTarget');
-        effects.exit('wikiLinkData');
-        effects.enter('wikiLinkMarker');
+        effects.exit('wikilinkTarget');
+        effects.exit('wikilinkData');
+        effects.enter('wikilinkMarker');
         return consumeEnd(code);
       }
 
@@ -103,8 +104,8 @@ function syntax(opts = {}) {
 
     function consumeAliasMarker(code) {
       if (aliasCursor === aliasMarker.length) {
-        effects.exit('wikiLinkAliasMarker');
-        effects.enter('wikiLinkAlias');
+        effects.exit('wikilinkAliasMarker');
+        effects.enter('wikilinkAlias');
         return consumeAlias(code);
       }
 
@@ -123,9 +124,9 @@ function syntax(opts = {}) {
         if (!alias) {
           return nok(code);
         }
-        effects.exit('wikiLinkAlias');
-        effects.exit('wikiLinkData');
-        effects.enter('wikiLinkMarker');
+        effects.exit('wikilinkAlias');
+        effects.exit('wikilinkData');
+        effects.enter('wikilinkMarker');
         return consumeEnd(code);
       }
 
@@ -144,8 +145,8 @@ function syntax(opts = {}) {
 
     function consumeEnd(code) {
       if (endMarkerCursor === endMarker.length) {
-        effects.exit('wikiLinkMarker');
-        effects.exit('wikiLink');
+        effects.exit('wikilinkMarker');
+        effects.exit('wikilink');
         return ok(code);
       }
 
