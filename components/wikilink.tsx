@@ -26,7 +26,9 @@ export default function Wikilink({
 
   useEffect(() => {
     httpClient.post('api/post', { slug }).then((res: AxiosResponse<Post>) => {
-      setContent(res.data.content);
+      if (res.data) {
+        setContent(res.data.content);
+      }
     });
   }, [slug]);
 

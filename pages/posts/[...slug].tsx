@@ -58,10 +58,9 @@ export default function PostPage({ post }: PropsType) {
     <div className="flex flex-row">
       {posts.map(post => {
         return (
-          <div key={post.wikilink}>
+          <div className="w-1/3" key={post.wikilink}>
             <div className="[writing-mode:vertical-lr]">Post Title</div>
             <ReactMarkdown
-              className="w-1/3"
               components={{
                 // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
                 // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
