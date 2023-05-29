@@ -5,7 +5,7 @@ import { Post } from '@utils/typeUtil';
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Post>,
+  res: NextApiResponse<Post | null>,
 ) {
   if (req.method !== 'POST') {
     res.status(400);
@@ -14,6 +14,8 @@ export default function handler(
   }
 
   const { slug } = req.body;
+
+  console.log('api/post body:', slug);
 
   const post = getPostBySlug(slug);
 

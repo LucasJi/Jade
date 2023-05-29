@@ -42,7 +42,7 @@ const getFullPathFromSlug = (slug: string[]) => {
 
 export function getPostBySlug(slug: string[]) {
   if (slug === undefined || slug.length === 0) {
-    return {};
+    return null;
   }
 
   const fullPath = getFullPathFromSlug(slug);

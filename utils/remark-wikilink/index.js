@@ -2,7 +2,7 @@ import syntax from './syntax';
 import fromMarkdown from './fromMarkdown';
 import toMarkdown from './toMarkdown';
 
-function wikilinkPlugin(opts = {}) {
+function wikilinkPlugin(opts = { markdownFolder: 'page' }) {
   const data = this.data();
 
   function add(field, value) {
@@ -15,7 +15,8 @@ function wikilinkPlugin(opts = {}) {
 
   opts = {
     ...opts,
-    wikilinkClassName: 'wiki-link',
+    wikilinkClassName: 'wikilink',
+    hrefTemplate: permalink => `${permalink}`,
   };
 
   add('micromarkExtensions', syntax(opts));

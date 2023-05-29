@@ -17,8 +17,11 @@ export default function Wikilink({
   const [slug, setSlug] = useState<string[]>([]);
 
   useEffect(() => {
-    const hrefWithoutFirstForwardSlash = href.replace('/', '');
-    setSlug([...hrefWithoutFirstForwardSlash.split('/')]);
+    let postRelativePath = href;
+    if (href.startsWith('/')) {
+      postRelativePath = href.replace('/', '');
+    }
+    setSlug([...postRelativePath.split('/')]);
   }, [href]);
 
   useEffect(() => {
@@ -38,8 +41,6 @@ export default function Wikilink({
     });
   };
 
-  const wikilink = '/posts' + href;
-
   return (
     <Popover.Root onOpenChange={setOpen} open={open}>
       <Popover.Trigger
@@ -51,7 +52,7 @@ export default function Wikilink({
           setOpen(false);
         }}
       >
-        <button onClick={e => handleClick(e)}>{wikilink}</button>
+        <button onClick={e => handleClick(e)}>{href}</button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

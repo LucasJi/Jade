@@ -29,7 +29,7 @@ export default function PostPage({ post }: PropsType) {
     className: string | undefined;
     href: string | undefined;
   }) => {
-    const isWikiLink = className?.includes('wiki-link');
+    const isWikiLink = className?.includes('wikilink');
     return isWikiLink ? (
       <Wikilink href={href} onClick={appendPost} />
     ) : (
