@@ -61,6 +61,7 @@ export default function PostPage({ post }: PropsType) {
       return;
     }
 
+    // the number of posts shown is up to 3
     if (expendedPosts.length < 3) {
       setExpendedPosts([...expendedPosts, post.wikilink]);
     } else {
