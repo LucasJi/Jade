@@ -109,6 +109,8 @@ export default function PostPage({ post }: PropsType) {
 export async function getStaticProps({ params }: PathParamsType) {
   const post = getPostBySlug(params.slug);
 
+  console.log('call getStaticProps');
+
   return {
     props: {
       post,
