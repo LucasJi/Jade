@@ -78,7 +78,7 @@ export default function PostPage({ post }: PropsType) {
 
   return (
     <div className="flex flex-row">
-      {posts.map(({ wikilink, content }) =>
+      {posts.map(({ wikilink, content, title }) =>
         isExpended(wikilink) ? (
           <ReactMarkdown
             className="w-1/4"
@@ -97,7 +97,7 @@ export default function PostPage({ post }: PropsType) {
           </ReactMarkdown>
         ) : (
           <div className="[writing-mode:vertical-lr]" key={wikilink}>
-            Post Title
+            {title}
           </div>
         ),
       )}

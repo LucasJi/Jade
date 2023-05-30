@@ -3,6 +3,7 @@ import { join } from 'path';
 import { Post } from './typeUtil';
 
 const SEPARATOR = '/';
+const TITLE_REG = /^#\s+.+/;
 const postsDirectory = join(process.cwd(), '_posts', SEPARATOR);
 
 export function getPostSlugs() {
@@ -47,10 +48,20 @@ export function getPostBySlug(slug: string[]) {
 
   const fullPath = getFullPathFromSlug(slug);
   const content = fs.readFileSync(fullPath, 'utf8');
+  const title = getTitle(content);
   const post: Post = {
     wikilink: join(...slug),
     slug,
     content,
+    title,
   };
   return post;
 }
+
+const getTitle = (content: string) => {
+  const tokens = content.split('\n');
+  let title = tokens.find(token => TITLE_REG.test(token)) || '';
+  // '# Title Demo' => 'Title Demo'
+  title = title.replace('#', '').trim();
+  return title;
+};
