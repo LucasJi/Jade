@@ -21,6 +21,9 @@ type PropsType = {
 };
 
 export default function PostPage({ post }: PropsType) {
+  const [posts, setPosts] = useState<Post[]>([post]);
+  const [expendedPosts, setExpendedPosts] = useState<string[]>([post.wikilink]);
+
   const overwriteWikiLink = ({
     className,
     href,
@@ -31,23 +34,38 @@ export default function PostPage({ post }: PropsType) {
   }) => {
     const isWikiLink = className?.includes('wikilink');
     return isWikiLink ? (
-      <Wikilink href={href} onClick={appendPost} />
+      <Wikilink href={href} onClick={handleClickViewPost} />
     ) : (
       <a href={href} {...props} />
     );
   };
 
-  const [posts, setPosts] = useState<Post[]>([post]);
-
   const isPostExists = (post: Post) =>
     posts.some(p => _.isEqual(p.slug, post.slug));
 
-  const appendPost = (appended: Post) => {
-    if (isPostExists(appended)) {
+  const handleClickViewPost = (viewedPost: Post) => {
+    addPost(viewedPost);
+    adjustExpendedPosts(viewedPost);
+  };
+
+  const addPost = (post: Post) => {
+    if (isPostExists(post)) {
       return;
     }
-    posts.push(appended);
+    posts.push(post);
     setPosts([...posts]);
+  };
+
+  const adjustExpendedPosts = (post: Post) => {
+    if (expendedPosts.length < 3) {
+      setExpendedPosts([...expendedPosts, post.wikilink]);
+    } else {
+      setExpendedPosts([expendedPosts[1], expendedPosts[2], post.wikilink]);
+    }
+  };
+
+  const isExpended = (wikilink: string) => {
+    return expendedPosts.some(p => _.isEqual(p, wikilink));
   };
 
   useEffect(() => {
@@ -56,23 +74,26 @@ export default function PostPage({ post }: PropsType) {
 
   return (
     <div className="flex flex-row">
-      {posts.map(post => {
+      {posts.map(({ wikilink, content }) => {
         return (
-          <div className="w-1/4" key={post.wikilink}>
-            <div className="[writing-mode:vertical-lr]">Post Title</div>
-            <ReactMarkdown
-              components={{
-                // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-                // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                p: ({ node, ...props }) => <div {...props} />,
-                a: ({ className, href }) =>
-                  overwriteWikiLink({ className, href }),
-              }}
-              rehypePlugins={[rehypeFormat, rehypeStringify]}
-              remarkPlugins={[remarkGfm, wikilinkPlugin]}
-            >
-              {post.content}
-            </ReactMarkdown>
+          <div className="w-1/4" key={wikilink}>
+            {isExpended(wikilink) ? (
+              <ReactMarkdown
+                components={{
+                  // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+                  // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+                  p: ({ node, ...props }) => <div {...props} />,
+                  a: ({ className, href }) =>
+                    overwriteWikiLink({ className, href }),
+                }}
+                rehypePlugins={[rehypeFormat, rehypeStringify]}
+                remarkPlugins={[remarkGfm, wikilinkPlugin]}
+              >
+                {content}
+              </ReactMarkdown>
+            ) : (
+              <div className="[writing-mode:vertical-lr]">Post Title</div>
+            )}
           </div>
         );
       })}
