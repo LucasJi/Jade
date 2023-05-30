@@ -57,6 +57,10 @@ export default function PostPage({ post }: PropsType) {
   };
 
   const adjustExpendedPosts = (post: Post) => {
+    if (isExpended(post.wikilink)) {
+      return;
+    }
+
     if (expendedPosts.length < 3) {
       setExpendedPosts([...expendedPosts, post.wikilink]);
     } else {
@@ -74,29 +78,29 @@ export default function PostPage({ post }: PropsType) {
 
   return (
     <div className="flex flex-row">
-      {posts.map(({ wikilink, content }) => {
-        return (
-          <div className="w-1/4" key={wikilink}>
-            {isExpended(wikilink) ? (
-              <ReactMarkdown
-                components={{
-                  // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-                  // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                  p: ({ node, ...props }) => <div {...props} />,
-                  a: ({ className, href }) =>
-                    overwriteWikiLink({ className, href }),
-                }}
-                rehypePlugins={[rehypeFormat, rehypeStringify]}
-                remarkPlugins={[remarkGfm, wikilinkPlugin]}
-              >
-                {content}
-              </ReactMarkdown>
-            ) : (
-              <div className="[writing-mode:vertical-lr]">Post Title</div>
-            )}
+      {posts.map(({ wikilink, content }) =>
+        isExpended(wikilink) ? (
+          <ReactMarkdown
+            className="w-1/4"
+            components={{
+              // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+              // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+              p: ({ node, ...props }) => <div {...props} />,
+              a: ({ className, href }) =>
+                overwriteWikiLink({ className, href }),
+            }}
+            key={wikilink}
+            rehypePlugins={[rehypeFormat, rehypeStringify]}
+            remarkPlugins={[remarkGfm, wikilinkPlugin]}
+          >
+            {content}
+          </ReactMarkdown>
+        ) : (
+          <div className="[writing-mode:vertical-lr]" key={wikilink}>
+            Post Title
           </div>
-        );
-      })}
+        ),
+      )}
     </div>
   );
 }
