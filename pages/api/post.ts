@@ -8,7 +8,7 @@ export default function handler(
   res: NextApiResponse<Post | null>,
 ) {
   if (req.method !== 'POST') {
-    res.status(400);
+    res.status(405);
     res.statusMessage = 'only supports POST method';
     return;
   }
