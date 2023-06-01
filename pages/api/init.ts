@@ -20,6 +20,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const redis = createRedisInstance();
 
   const slugs = [];
+  const wikilinkNode: Node[] = [];
   const posts: Array<Post | null> = [];
   const postFullPaths = walkPosts();
 
@@ -31,22 +32,21 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     posts.push(post);
   });
 
-  const demo = posts[0];
-  let tree = null;
-  const wikilinkNode: Node[] = [];
-  if (demo) {
-    tree = fromMarkdown(demo.content, {
-      extensions: [syntax()],
-      mdastExtensions: [remarkFromMarkdown()],
-    });
+  posts
+    .filter(post => post !== null)
+    .forEach(post => {
+      const tree = fromMarkdown(post.content, {
+        extensions: [syntax()],
+        mdastExtensions: [remarkFromMarkdown()],
+      });
 
-    console.log('tree', tree);
+      console.log('tree', tree);
 
-    visit(tree, 'wikilink', node => {
-      console.log(node);
-      wikilinkNode.push(node);
+      visit(tree, 'wikilink', node => {
+        console.log(node);
+        wikilinkNode.push(node);
+      });
     });
-  }
 
   res.status(200).json(wikilinkNode);
 }
