@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { Redis } from 'ioredis';
 import { join } from 'path';
 import { Post, Slug } from './typeUtil';
 
@@ -81,3 +82,18 @@ const getTitle = (content: string) => {
   title = title.replace('#', '').trim();
   return title;
 };
+
+export async function getCachedPostBySlug(slug: Slug, redis: Redis) {
+  const wikilink = getWikilinkFromSlug(slug);
+  let post = null;
+  const postJson = await redis.get(wikilink);
+  if (postJson !== null) {
+    console.log('read post from redis');
+    post = JSON.parse(postJson);
+  } else {
+    console.log('read post from file');
+    post = getPostBySlug(slug);
+  }
+
+  return post;
+}
