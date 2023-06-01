@@ -8,9 +8,8 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     httpClient.post('api/init').then(resp => {
       const { data } = resp;
-      console.log(data);
+      console.log('scan posts', data);
     });
-    console.log('scan posts');
   }, []);
   return (
     <div className="p-4 w-screen h-screen">

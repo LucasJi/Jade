@@ -19,14 +19,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const redis = createRedisInstance();
 
-  const slugs = [];
   const posts: Array<Post> = [];
   const postFullPaths = walkPosts();
 
   postFullPaths.forEach(p => {
     const slug = getSlugFromFullPath(p);
-    slugs.push(slug);
-
+    console.log('slug', slug);
     const post = getPostBySlug(slug);
     if (post !== null) {
       posts.push(post);

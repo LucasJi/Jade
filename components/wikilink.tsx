@@ -12,7 +12,7 @@ export default function Wikilink({
   href: string | undefined;
   onClick: (post: Post) => void;
 }) {
-  const [content, setContent] = useState<string>('');
+  const [post, setPost] = useState<Post | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [slug, setSlug] = useState<string[]>([]);
 
@@ -27,7 +27,7 @@ export default function Wikilink({
   useEffect(() => {
     httpClient.post('api/post', { slug }).then((res: AxiosResponse<Post>) => {
       if (res.data) {
-        setContent(res.data.content);
+        setPost(res.data);
       }
     });
   }, [slug]);
@@ -36,11 +36,9 @@ export default function Wikilink({
     // prevent displaying content by clicking the button
     // only display the content by mouse enter event
     e.preventDefault();
-
-    httpClient.post('api/post', { slug }).then((res: AxiosResponse<Post>) => {
-      const post = res.data;
+    if (post !== null) {
       onClick(post);
-    });
+    }
   };
 
   return (
@@ -62,7 +60,7 @@ export default function Wikilink({
           side="right"
           sideOffset={50}
         >
-          <ReactMarkdown>{content}</ReactMarkdown>
+          <ReactMarkdown>{post ? post.content : ''}</ReactMarkdown>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

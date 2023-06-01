@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
-import { Post } from './typeUtil';
+import { Post, Slug } from './typeUtil';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
@@ -44,8 +44,9 @@ export function walkPosts() {
 }
 
 const getFullPathFromSlug = (slug: string[]) => {
-  slug[slug.length - 1] = slug[slug.length - 1] + '.md';
-  const fullPath = join(POST_DIR, ...slug);
+  const slugClone = [...slug];
+  slugClone[slugClone.length - 1] = slugClone[slugClone.length - 1] + '.md';
+  const fullPath = join(POST_DIR, ...slugClone);
   return fullPath;
 };
 
@@ -62,8 +63,15 @@ export function getPostBySlug(slug: string[]) {
     slug,
     content,
     title,
+    forwardWikilinks: [],
+    backWikilinks: [],
   };
+
   return post;
+}
+
+export function getWikilinkFromSlug(slug: Slug) {
+  return join(...slug);
 }
 
 const getTitle = (content: string) => {

@@ -74,7 +74,7 @@ export default function PostPage({ post }: PropsType) {
   };
 
   useEffect(() => {
-    console.log('posts:', posts);
+    console.log('slug refresh:', posts);
   }, [posts]);
 
   return (
@@ -108,8 +108,6 @@ export default function PostPage({ post }: PropsType) {
 
 export async function getStaticProps({ params }: PathParamsType) {
   const post = getPostBySlug(params.slug);
-
-  console.log('call getStaticProps');
 
   return {
     props: {
