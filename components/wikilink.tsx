@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
-import { AxiosResponse } from 'axios';
 import { Post } from '@utils/typeUtil';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import * as Popover from '@radix-ui/react-popover';
+import { AxiosResponse } from 'axios';
 
 export default function Wikilink({
   href = '',

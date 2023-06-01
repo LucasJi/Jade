@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Post } from '@utils/typeUtil';
+import { Post, Slug } from '@utils/typeUtil';
 import { getPostBySlug, getSlugFromFullPath, walkPosts } from '@utils/postUtil';
 import { createRedisInstance } from 'redis';
 import { fromMarkdown } from 'mdast-util-from-markdown';
@@ -20,16 +20,19 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const redis = createRedisInstance();
 
   const posts: Array<Post> = [];
+  const slugs: Array<Slug> = [];
   const postFullPaths = walkPosts();
 
   postFullPaths.forEach(p => {
     const slug = getSlugFromFullPath(p);
-    console.log('slug', slug);
+    slugs.push(slug);
     const post = getPostBySlug(slug);
     if (post !== null) {
       posts.push(post);
     }
   });
+
+  redis.set('slugs', JSON.stringify(slugs));
 
   posts.forEach(post => {
     if (post !== null) {
