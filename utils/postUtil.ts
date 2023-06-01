@@ -4,22 +4,26 @@ import { Post } from './typeUtil';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
-const postsDirectory = join(process.cwd(), '_posts', SEPARATOR);
+export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
 export function getPostSlugs() {
-  const fileFullPaths = walkFilesRecursively(postsDirectory);
+  const fileFullPaths = walkFilesRecursively(POST_DIR);
   const slugs = fileFullPaths.map(fullPath => getSlugFromFullPath(fullPath));
   return slugs;
 }
 
-const getSlugFromFullPath = (fullPath: string) => {
-  const relativePath = fullPath.replace(postsDirectory, '');
+export const getSlugFromFullPath = (fullPath: string) => {
+  const relativePath = fullPath.replace(POST_DIR, '');
   const slug = relativePath.split(SEPARATOR);
+  // someFolder/post.md -> ['someFolder', 'post.md'] -> ['someFolder', 'post']
   slug[slug.length - 1] = slug[slug.length - 1].replace(/\.md$/, '');
   return slug;
 };
 
-function walkFilesRecursively(dir: string, fileNameArray: string[] = []) {
+export function walkFilesRecursively(
+  dir: string,
+  fileNameArray: string[] = [],
+) {
   const files = fs.readdirSync(dir);
   let innerFileNameArray = fileNameArray || [];
 
@@ -35,9 +39,13 @@ function walkFilesRecursively(dir: string, fileNameArray: string[] = []) {
   return innerFileNameArray;
 }
 
+export function walkPosts() {
+  return walkFilesRecursively(POST_DIR);
+}
+
 const getFullPathFromSlug = (slug: string[]) => {
   slug[slug.length - 1] = slug[slug.length - 1] + '.md';
-  const fullPath = join(postsDirectory, ...slug);
+  const fullPath = join(POST_DIR, ...slug);
   return fullPath;
 };
 

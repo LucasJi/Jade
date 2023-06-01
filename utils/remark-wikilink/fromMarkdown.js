@@ -3,7 +3,7 @@ function fromMarkdown(opts = {}) {
   const defaultPageResolver = name => [name.replace(/ /g, '_').toLowerCase()];
   const pageResolver = opts.pageResolver || defaultPageResolver;
   const newClassName = opts.newClassName || 'new';
-  const wikilinkClassName = opts.wikilinkClassName || 'internal';
+  const wikilinkClassName = opts.wikilinkClassName || 'wikilink';
   const defaultHrefTemplate = permalink => `#/page/${permalink}`;
   const hrefTemplate = opts.hrefTemplate || defaultHrefTemplate;
 
@@ -40,7 +40,6 @@ function fromMarkdown(opts = {}) {
 
   function exitWikilink(token) {
     const wikilink = this.exit(token);
-
     const pagePermalinks = pageResolver(wikilink.value);
     let permalink = pagePermalinks.find(p => permalinks.indexOf(p) !== -1);
     const exists = permalink !== undefined;
@@ -52,10 +51,10 @@ function fromMarkdown(opts = {}) {
       displayName = wikilink.data.alias;
     }
 
-    let classNames = wikilinkClassName;
-    if (!exists) {
-      classNames += ' ' + newClassName;
-    }
+    const classNames = wikilinkClassName;
+    // if (!exists) {
+    //   classNames += ' ' + newClassName;
+    // }
 
     wikilink.data.alias = displayName;
     wikilink.data.permalink = permalink;
