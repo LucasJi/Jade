@@ -5,4 +5,6 @@ export type Post = {
   slug: Slug;
   content: string;
   title: string;
+  forwardWikilinks: string[];
+  backWikilinks: string[];
 };

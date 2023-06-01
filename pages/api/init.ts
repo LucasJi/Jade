@@ -20,8 +20,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const redis = createRedisInstance();
 
   const slugs = [];
-  const wikilinkNode: Node[] = [];
-  const posts: Array<Post | null> = [];
+  const posts: Array<Post> = [];
   const postFullPaths = walkPosts();
 
   postFullPaths.forEach(p => {
@@ -29,24 +28,30 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     slugs.push(slug);
 
     const post = getPostBySlug(slug);
-    posts.push(post);
+    if (post !== null) {
+      posts.push(post);
+    }
   });
 
-  posts
-    .filter(post => post !== null)
-    .forEach(post => {
+  posts.forEach(post => {
+    if (post !== null) {
       const tree = fromMarkdown(post.content, {
         extensions: [syntax()],
         mdastExtensions: [remarkFromMarkdown()],
       });
 
-      console.log('tree', tree);
+      const forwardWikilinks: string[] = [];
 
       visit(tree, 'wikilink', node => {
-        console.log(node);
-        wikilinkNode.push(node);
+        const { value } = node;
+        forwardWikilinks.push(value);
       });
-    });
 
-  res.status(200).json(wikilinkNode);
+      post.forwardWikilinks = forwardWikilinks;
+
+      redis.set(post.wikilink, JSON.stringify(post));
+    }
+  });
+
+  res.status(200).json(posts);
 }
