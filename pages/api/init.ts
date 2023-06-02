@@ -54,5 +54,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
   });
 
+  // TODO generate post graph
+
   res.status(200).json(posts);
 }
