@@ -59,13 +59,15 @@ export function getPostBySlug(slug: string[]) {
   const fullPath = getFullPathFromSlug(slug);
   const content = fs.readFileSync(fullPath, 'utf8');
   const title = getTitle(content);
+  const wikilink = join(...slug);
   const post: Post = {
-    wikilink: join(...slug),
+    wikilink,
     slug,
     content,
     title,
     forwardWikilinks: [],
     backWikilinks: [],
+    href: `posts/${wikilink}`,
   };
 
   return post;

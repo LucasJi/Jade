@@ -7,4 +7,5 @@ export type Post = {
   title: string;
   forwardWikilinks: string[];
   backWikilinks: string[];
+  href: string;
 };

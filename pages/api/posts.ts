@@ -5,7 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const slugs = await getCachedPosts();
+  const posts = await getCachedPosts();
 
-  res.status(200).json(slugs);
+  res.status(200).json(posts);
 }

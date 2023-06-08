@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
 import { Post } from 'types';
 import { AxiosResponse } from 'axios';
+import Link from 'next/link';
 
 function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -16,8 +17,10 @@ function Posts() {
   return (
     <div>
       <h1>Posts</h1>
-      {posts.map(post => (
-        <div key={post.wikilink}>{post.title}</div>
+      {posts.map(({ wikilink, title }) => (
+        <Link href={wikilink} key={wikilink}>
+          {title}
+        </Link>
       ))}
     </div>
   );
