@@ -7,7 +7,7 @@ import { getCachedPostBySlug, getPostSlugs } from '@utils/postUtil';
 import { wikilinkPlugin } from '@utils';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { createRedisInstance } from '@utils/redisUtil';
+import { redis } from '@utils/redisUtil';
 import { Post, Slug } from 'types';
 
 type PathParamsType = {
@@ -120,7 +120,6 @@ export async function getStaticProps({ params }: PathParamsType) {
 }
 
 export async function getStaticPaths() {
-  const redis = createRedisInstance();
   const slugsJson = await redis.get('slugs');
 
   let slugs: Array<Slug>;

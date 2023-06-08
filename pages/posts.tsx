@@ -17,8 +17,8 @@ function Posts() {
   return (
     <div>
       <h1>Posts</h1>
-      {posts.map(({ wikilink, title }) => (
-        <Link href={wikilink} key={wikilink}>
+      {posts.map(({ wikilink, title, href }) => (
+        <Link href={href} key={wikilink}>
           {title}
         </Link>
       ))}

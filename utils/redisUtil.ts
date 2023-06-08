@@ -1,11 +1,11 @@
 import Redis, { RedisOptions } from 'ioredis';
 import { redisConfig, RedisConfig } from '../application';
 
-function getRedisConfiguration(): RedisConfig {
+const getRedisConfiguration = (): RedisConfig => {
   return redisConfig;
-}
+};
 
-function createRedisInstance(config = getRedisConfiguration()): Redis {
+const createRedisInstance = (config = getRedisConfiguration()): Redis => {
   try {
     const options: RedisOptions = {
       host: config.host,
@@ -40,7 +40,7 @@ function createRedisInstance(config = getRedisConfiguration()): Redis {
   } catch (e) {
     throw new Error('[Redis] Could not create a Redis instance');
   }
-}
+};
 
 const redis = createRedisInstance();
 
