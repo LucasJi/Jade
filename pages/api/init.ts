@@ -1,23 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Post, Slug } from '@utils/typeUtil';
 import { getPostBySlug, getSlugFromFullPath, walkPosts } from '@utils/postUtil';
-import { createRedisInstance } from 'redis';
+import { redis } from '@utils/redisUtil';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import {
   fromMarkdown as remarkFromMarkdown,
   syntax,
 } from '@utils/remark-wikilink';
 import { visit } from 'unist-util-visit';
+import { Post, Slug } from 'types';
 
-// this api is used to initialize the state of all posts
+// this api is used to read and store posts in redis
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.status(405);
     res.statusMessage = 'only supports POST method';
     return;
   }
-
-  const redis = createRedisInstance();
 
   const posts: Array<Post> = [];
   const slugs: Array<Slug> = [];
@@ -53,6 +51,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       redis.set(post.wikilink, JSON.stringify(post));
     }
   });
+
+  redis.set('posts', JSON.stringify(posts));
 
   // TODO generate post graph
 

@@ -4,11 +4,11 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Wikilink } from '@components';
 import { getCachedPostBySlug, getPostSlugs } from '@utils/postUtil';
-import { Post, Slug } from '@utils/typeUtil';
 import { wikilinkPlugin } from '@utils';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { createRedisInstance } from 'redis';
+import { createRedisInstance } from '@utils/redisUtil';
+import { Post, Slug } from 'types';
 
 type PathParamsType = {
   params: {
@@ -110,7 +110,7 @@ export default function PostPage({ post }: PropsType) {
 export async function getStaticProps({ params }: PathParamsType) {
   const slug: Slug = params.slug;
 
-  const post = await getCachedPostBySlug(slug, createRedisInstance());
+  const post = await getCachedPostBySlug(slug);
 
   return {
     props: {

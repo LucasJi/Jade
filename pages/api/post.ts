@@ -1,8 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCachedPostBySlug } from '@utils/postUtil';
-import { Post } from '@utils/typeUtil';
-import { createRedisInstance } from 'redis';
+import { Post } from 'types';
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,7 +9,7 @@ export default async function handler(
 ) {
   const { slug } = req.body;
 
-  const post = await getCachedPostBySlug(slug, createRedisInstance());
+  const post = await getCachedPostBySlug(slug);
 
   res.status(200).json(post);
 }

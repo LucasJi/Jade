@@ -1,7 +1,7 @@
 import fs from 'fs';
-import { Redis } from 'ioredis';
 import { join } from 'path';
-import { Post, Slug } from './typeUtil';
+import { Post, Slug } from 'types';
+import { redis } from './redisUtil';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
@@ -83,7 +83,7 @@ const getTitle = (content: string) => {
   return title;
 };
 
-export async function getCachedPostBySlug(slug: Slug, redis: Redis) {
+export async function getCachedPostBySlug(slug: Slug) {
   const wikilink = getWikilinkFromSlug(slug);
   let post = null;
   const postJson = await redis.get(wikilink);
@@ -96,4 +96,9 @@ export async function getCachedPostBySlug(slug: Slug, redis: Redis) {
   }
 
   return post;
+}
+
+export async function getCachedPosts(): Promise<Post[]> {
+  const postsJson = await redis.get('posts');
+  return postsJson !== null ? JSON.parse(postsJson) : postsJson;
 }
