@@ -4,11 +4,12 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Wikilink } from '@components';
 import { getCachedPostBySlug, getPostSlugs } from '@utils/postUtil';
-import { wikilinkPlugin } from '@utils';
+import { wikilinkPlugin } from '@utils/remark-wikilink';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { redis } from '@utils/redisUtil';
 import { Post, Slug } from 'types';
+import Link from 'next/link';
 
 type PathParamsType = {
   params: {
@@ -103,6 +104,8 @@ export default function PostPage({ post }: PropsType) {
           </div>
         ),
       )}
+      {/* TODO: Refactor */}
+      <Link href="/posts">BACK</Link>
     </div>
   );
 }

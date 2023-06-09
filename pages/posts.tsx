@@ -17,11 +17,13 @@ function Posts() {
   return (
     <div>
       <h1>Posts</h1>
-      {posts.map(({ wikilink, title, href }) => (
-        <Link href={href} key={wikilink}>
-          {title}
-        </Link>
-      ))}
+      <div className="flex flex-col">
+        {posts.map(({ wikilink, title, href }) => (
+          <Link href={href} key={wikilink}>
+            {title}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
