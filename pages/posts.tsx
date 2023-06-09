@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
+
   useEffect(() => {
     httpClient.get('api/posts').then((res: AxiosResponse<Post[]>) => {
       const posts = res.data;
@@ -14,6 +15,7 @@ function Posts() {
       }
     });
   }, []);
+
   return (
     <div>
       <h1>Posts</h1>
