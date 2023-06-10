@@ -77,7 +77,7 @@ const getTitle = (content: string) => {
   return title;
 };
 
-export const getCachedPostBySlug = async (slug: Slug) => {
+export const getCachedPostBySlug = async (slug: Slug): Promise<Post> => {
   const wikilink = getWikilinkFromSlug(slug);
   let post = null;
   const postJson = await redis.get(wikilink);
@@ -114,32 +114,26 @@ const getPostBySlug = (slug: string[]) => {
 };
 
 export const getCachedPosts = async (): Promise<Post[]> => {
-  const key = 'posts';
-  const postsJson = await redis.get(key);
-
-  if (postsJson !== null) {
-    return JSON.parse(postsJson);
-  }
-
   const posts: Array<Post> = [];
-  const postFullPaths = walkFilesRecursively(POST_DIR);
-  postFullPaths.forEach(p => {
-    const slug = getSlugFromFullPath(p);
+  const slugs = await getCachedSlugs();
+  for (const slug of slugs) {
     const post = getPostBySlug(slug);
     if (post !== null) {
       posts.push(post);
     }
-  });
-
-  redis.set(key, JSON.stringify(posts));
-
+  }
   return posts;
 };
 
 export const initPosts = async (): Promise<Post[]> => {
-  const posts = await getCachedPosts();
+  let posts = await getCachedPosts();
+  await resolveWikilinks(posts);
+  posts = await getCachedPosts();
+  return posts;
+};
 
-  posts.forEach(post => {
+const resolveWikilinks = async (posts: Post[]) => {
+  for (const post of posts) {
     if (post !== null) {
       const tree = fromMarkdown(post.content, {
         extensions: [syntax()],
@@ -155,9 +149,18 @@ export const initPosts = async (): Promise<Post[]> => {
 
       post.forwardWikilinks = forwardWikilinks;
 
-      redis.set(post.wikilink, JSON.stringify(post));
+      for (const fl of forwardWikilinks) {
+        const fp = await getCachedPostBySlug(getSlugFromWikilink(fl));
+        fp.backWikilinks.push(post.wikilink);
+        updateCachedPost(fp.wikilink, fp);
+      }
     }
-  });
-
-  return posts;
+  }
 };
+
+const updateCachedPost = (wikilink: string, post: Post) => {
+  redis.set(wikilink, JSON.stringify(post));
+};
+
+const getSlugFromWikilink = (wikilink: string): Slug =>
+  wikilink.split(SEPARATOR);
