@@ -3,11 +3,10 @@ import rehypeStringify from 'rehype-stringify';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Wikilink } from '@components';
-import { getCachedPostBySlug, getPostSlugs } from '@utils/postUtil';
+import { getCachedPostBySlug, getCachedSlugs } from '@utils/postUtil';
 import { wikilinkPlugin } from '@utils/remark-wikilink';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { redis } from '@utils/redisUtil';
 import { Post, Slug } from 'types';
 import Link from 'next/link';
 
@@ -123,14 +122,7 @@ export async function getStaticProps({ params }: PathParamsType) {
 }
 
 export async function getStaticPaths() {
-  const slugsJson = await redis.get('slugs');
-
-  let slugs: Array<Slug>;
-  if (slugsJson === null) {
-    slugs = getPostSlugs();
-  } else {
-    slugs = JSON.parse(slugsJson);
-  }
+  const slugs = await getCachedSlugs();
 
   const staticPaths = {
     paths: slugs.map(slug => {
