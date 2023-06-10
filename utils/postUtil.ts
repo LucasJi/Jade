@@ -20,7 +20,7 @@ export const getCachedSlugs = async (): Promise<Slug[]> => {
   let slugs: Array<Slug>;
   if (slugsJson === null) {
     slugs = getPostSlugs();
-    redis.set(key, JSON.stringify(slugs));
+    await redis.set(key, JSON.stringify(slugs));
   } else {
     slugs = JSON.parse(slugsJson);
   }
@@ -85,7 +85,7 @@ export const getCachedPostBySlug = async (slug: Slug): Promise<Post> => {
     post = JSON.parse(postJson);
   } else {
     post = getPostBySlug(slug);
-    redis.set(wikilink, JSON.stringify(post));
+    await redis.set(wikilink, JSON.stringify(post));
   }
 
   return post;
@@ -117,7 +117,7 @@ export const getCachedPosts = async (): Promise<Post[]> => {
   const posts: Array<Post> = [];
   const slugs = await getCachedSlugs();
   for (const slug of slugs) {
-    const post = getPostBySlug(slug);
+    const post = await getCachedPostBySlug(slug);
     if (post !== null) {
       posts.push(post);
     }
@@ -126,13 +126,32 @@ export const getCachedPosts = async (): Promise<Post[]> => {
 };
 
 export const initPosts = async (): Promise<Post[]> => {
-  let posts = await getCachedPosts();
-  await resolveWikilinks(posts);
-  posts = await getCachedPosts();
+  const posts = getPosts();
+  resolveWikilinks(posts);
+
+  for (const post of posts) {
+    updateCachedPost(post);
+  }
   return posts;
 };
 
-const resolveWikilinks = async (posts: Post[]) => {
+const getPosts = () => {
+  const posts: Array<Post> = [];
+  const slugs = getPostSlugs();
+  for (const slug of slugs) {
+    const post = getPostBySlug(slug);
+    if (post !== null) {
+      posts.push(post);
+    }
+  }
+  return posts;
+};
+
+const resolveWikilinks = (posts: Post[]) => {
+  const findPostByWikilink = (wikilink: string): Post | undefined => {
+    return posts.find(p => p.wikilink === wikilink);
+  };
+
   for (const post of posts) {
     if (post !== null) {
       const tree = fromMarkdown(post.content, {
@@ -140,26 +159,29 @@ const resolveWikilinks = async (posts: Post[]) => {
         mdastExtensions: [remarkFromMarkdown()],
       });
 
-      const forwardWikilinks: string[] = [];
+      const forwardWikilinks: Set<string> = new Set();
 
       visit(tree, 'wikilink', node => {
         const { value } = node;
-        forwardWikilinks.push(value);
+        forwardWikilinks.add(value);
       });
 
-      post.forwardWikilinks = forwardWikilinks;
+      post.forwardWikilinks = Array.from(forwardWikilinks);
 
       for (const fl of forwardWikilinks) {
-        const fp = await getCachedPostBySlug(getSlugFromWikilink(fl));
-        fp.backWikilinks.push(post.wikilink);
-        updateCachedPost(fp.wikilink, fp);
+        const fp = findPostByWikilink(fl);
+        if (fp) {
+          const bls = new Set(fp.backWikilinks);
+          bls.add(post.wikilink);
+          fp.backWikilinks = Array.from(bls);
+        }
       }
     }
   }
 };
 
-const updateCachedPost = (wikilink: string, post: Post) => {
-  redis.set(wikilink, JSON.stringify(post));
+const updateCachedPost = async (post: Post) => {
+  await redis.set(post.wikilink, JSON.stringify(post));
 };
 
 const getSlugFromWikilink = (wikilink: string): Slug =>

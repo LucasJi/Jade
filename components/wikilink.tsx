@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
-import { Post } from '@utils/typeUtil';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import * as Popover from '@radix-ui/react-popover';
 import { AxiosResponse } from 'axios';
+import { Post } from 'types';
 
 export default function Wikilink({
-  href = '',
+  wikilink = '',
   onClick,
 }: {
-  href: string | undefined;
+  wikilink: string | undefined;
   onClick: (post: Post) => void;
 }) {
   const [post, setPost] = useState<Post | null>(null);
@@ -17,12 +17,12 @@ export default function Wikilink({
   const [slug, setSlug] = useState<string[]>([]);
 
   useEffect(() => {
-    let postRelativePath = href;
-    if (href.startsWith('/')) {
-      postRelativePath = href.replace('/', '');
+    let postRelativePath = wikilink;
+    if (wikilink.startsWith('/')) {
+      postRelativePath = wikilink.replace('/', '');
     }
     setSlug([...postRelativePath.split('/')]);
-  }, [href]);
+  }, [wikilink]);
 
   useEffect(() => {
     httpClient.post('api/post', { slug }).then((res: AxiosResponse<Post>) => {
@@ -52,7 +52,7 @@ export default function Wikilink({
           setOpen(false);
         }}
       >
-        <button onClick={e => handleClick(e)}>{href}</button>
+        <button onClick={e => handleClick(e)}>{wikilink}</button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

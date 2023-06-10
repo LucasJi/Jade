@@ -14,7 +14,5 @@ export default async function handler(
 
   const posts = await initPosts();
 
-  // TODO generate post graph
-
   res.status(200).json(posts);
 }

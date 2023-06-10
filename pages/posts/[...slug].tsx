@@ -35,7 +35,7 @@ export default function PostPage({ post }: PropsType) {
   }) => {
     const isWikiLink = className?.includes('wikilink');
     return isWikiLink ? (
-      <Wikilink href={href} onClick={handleClickViewPost} />
+      <Wikilink onClick={handleClickViewPost} wikilink={href} />
     ) : (
       <a href={href} {...props} />
     );
@@ -80,23 +80,36 @@ export default function PostPage({ post }: PropsType) {
 
   return (
     <div className="flex flex-row">
-      {posts.map(({ wikilink, content, title }) =>
+      {posts.map(({ wikilink, content, title, backWikilinks }) =>
         isExpended(wikilink) ? (
-          <ReactMarkdown
-            className="w-1/4"
-            components={{
-              // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-              // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-              p: ({ node, ...props }) => <div {...props} />,
-              a: ({ className, href }) =>
-                overwriteWikiLink({ className, href }),
-            }}
-            key={wikilink}
-            rehypePlugins={[rehypeFormat, rehypeStringify]}
-            remarkPlugins={[remarkGfm, wikilinkPlugin]}
-          >
-            {content}
-          </ReactMarkdown>
+          <div className="w-1/4" key={wikilink}>
+            <ReactMarkdown
+              components={{
+                // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+                // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+                p: ({ node, ...props }) => <div {...props} />,
+                a: ({ className, href }) =>
+                  overwriteWikiLink({ className, href }),
+              }}
+              rehypePlugins={[rehypeFormat, rehypeStringify]}
+              remarkPlugins={[remarkGfm, wikilinkPlugin]}
+            >
+              {content}
+            </ReactMarkdown>
+            <div>
+              Back Wikilinks
+              <br />
+              {backWikilinks.map(bl => {
+                return (
+                  <Wikilink
+                    key={bl}
+                    onClick={handleClickViewPost}
+                    wikilink={bl}
+                  />
+                );
+              })}
+            </div>
+          </div>
         ) : (
           <div className="[writing-mode:vertical-lr]" key={wikilink}>
             {title}
