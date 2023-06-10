@@ -114,8 +114,26 @@ const getPostBySlug = (slug: string[]) => {
 };
 
 export const getCachedPosts = async (): Promise<Post[]> => {
-  const postsJson = await redis.get('posts');
-  return postsJson !== null ? JSON.parse(postsJson) : postsJson;
+  const key = 'posts';
+  const postsJson = await redis.get(key);
+
+  if (postsJson !== null) {
+    return JSON.parse(postsJson);
+  }
+
+  const posts: Array<Post> = [];
+  const postFullPaths = walkFilesRecursively(POST_DIR);
+  postFullPaths.forEach(p => {
+    const slug = getSlugFromFullPath(p);
+    const post = getPostBySlug(slug);
+    if (post !== null) {
+      posts.push(post);
+    }
+  });
+
+  redis.set(key, JSON.stringify(posts));
+
+  return posts;
 };
 
 export const initPosts = async (): Promise<Post[]> => {
