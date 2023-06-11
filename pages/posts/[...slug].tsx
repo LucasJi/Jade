@@ -78,7 +78,7 @@ export default function PostPage({ post }: PropsType) {
   }, [posts]);
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row h-full">
       {posts.map(({ wikilink, content, title, backWikilinks }) =>
         isExpended(wikilink) ? (
           <div className="w-1/4" key={wikilink}>

@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
     });
   }, []);
   return (
-    <div className="p-4 w-screen h-screen">
+    <div className="p-4 w-screen h-full">
       <Navbar />
       <Component {...pageProps} />
     </div>

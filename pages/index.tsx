@@ -1,3 +1,4 @@
+import { Avatar, Slogan } from '@components';
 import Head from 'next/head';
 
 export default function Home() {
@@ -7,10 +8,8 @@ export default function Home() {
         <title>{"Lucas Ji's Blog"}</title>
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      {/* 
       <Avatar />
-
-      <Slogan className="mt-8" /> */}
+      <Slogan className="mt-8 text-center" />
     </div>
   );
 }
