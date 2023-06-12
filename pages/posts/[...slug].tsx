@@ -8,7 +8,6 @@ import { wikilinkPlugin } from '@utils/remark-wikilink';
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Post, Slug } from 'types';
-import Link from 'next/link';
 
 type PathParamsType = {
   params: {
@@ -97,29 +96,30 @@ export default function PostPage({ post }: PropsType) {
               {content}
             </ReactMarkdown>
             <div>
-              Back Wikilinks
-              <br />
-              {backWikilinks.map(bl => {
-                return (
+              <div className="bg-green-200 font-bold">Backlinks</div>
+              {backWikilinks.length > 0 ? (
+                backWikilinks.map(bl => (
                   <Wikilink
                     key={bl}
                     onClick={handleClickViewPost}
                     wikilink={bl}
                   />
-                );
-              })}
+                ))
+              ) : (
+                <div className="bg-yellow-600">No Backlinks</div>
+              )}
             </div>
           </div>
         ) : (
-          <div className="[writing-mode:vertical-lr]" key={wikilink}>
-            {title}
-          </div>
+          <VerticalLrTitle key={wikilink} title={title} />
         ),
       )}
-      {/* TODO: Refactor */}
-      <Link href="/posts">BACK</Link>
     </div>
   );
+}
+
+function VerticalLrTitle({ title }: { title: string }) {
+  return <div className="[writing-mode:vertical-lr]">{title}</div>;
 }
 
 export async function getStaticProps({ params }: PathParamsType) {

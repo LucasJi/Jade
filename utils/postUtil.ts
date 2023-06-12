@@ -3,10 +3,7 @@ import { join } from 'path';
 import { Post, Slug } from 'types';
 import { redis } from './redisUtil';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import {
-  fromMarkdown as remarkFromMarkdown,
-  syntax,
-} from '@utils/remark-wikilink';
+import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import { visit } from 'unist-util-visit';
 
 const SEPARATOR = '/';
@@ -156,7 +153,7 @@ const resolveWikilinks = (posts: Post[]) => {
     if (post !== null) {
       const tree = fromMarkdown(post.content, {
         extensions: [syntax()],
-        mdastExtensions: [remarkFromMarkdown()],
+        mdastExtensions: [fromMarkdownWikilink()],
       });
 
       const forwardWikilinks: Set<string> = new Set();

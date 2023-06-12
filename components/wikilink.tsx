@@ -32,6 +32,13 @@ export default function Wikilink({
     });
   }, [slug]);
 
+  const postContentLengthLimiter = (content: string) => {
+    const maxLength = 200;
+    return content.length < maxLength
+      ? content
+      : content.substring(content.length - 200);
+  };
+
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     // prevent displaying content by clicking the button
     // only display the content by mouse enter event
@@ -56,11 +63,13 @@ export default function Wikilink({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-green-100 border-black h-60 w-60 text-ellipsis"
+          className="bg-green-100 h-60 w-60 border-white"
           side="right"
           sideOffset={50}
         >
-          <ReactMarkdown>{post ? post.content : ''}</ReactMarkdown>
+          <ReactMarkdown>
+            {post ? postContentLengthLimiter(post.content) : ''}
+          </ReactMarkdown>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

@@ -25,4 +25,9 @@ function wikilinkPlugin(opts = { markdownFolder: 'page' }) {
 }
 
 export default wikilinkPlugin;
-export { wikilinkPlugin, fromMarkdown, toMarkdown, syntax };
+export {
+  wikilinkPlugin,
+  fromMarkdown as fromMarkdownWikilink,
+  toMarkdown,
+  syntax,
+};
