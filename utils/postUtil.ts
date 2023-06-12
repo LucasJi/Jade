@@ -156,12 +156,11 @@ const resolveWikilinks = (posts: Post[]) => {
         mdastExtensions: [fromMarkdownWikilink()],
       });
 
-      console.log(tree);
-
       const forwardWikilinks: Set<string> = new Set();
 
       visit(tree, 'wikilink', node => {
         const { value } = node;
+        console.log(node);
         forwardWikilinks.add(value);
       });
 

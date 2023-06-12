@@ -1,7 +1,7 @@
 import safe from 'mdast-util-to-markdown/lib/util/safe';
 
 function toMarkdown(opts = {}) {
-  const aliasDivider = opts.aliasDivider || ':';
+  const aliasDivider = opts.aliasDivider || '|';
 
   const unsafe = [
     {

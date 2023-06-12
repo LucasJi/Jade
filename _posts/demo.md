@@ -4,4 +4,4 @@
 
 [[wiki-link-demo/wiki-link]]
 
-[[remark]]
+[[remark|remarkAlias]]

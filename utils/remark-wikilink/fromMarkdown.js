@@ -4,7 +4,7 @@ function fromMarkdown(opts = {}) {
   const pageResolver = opts.pageResolver || defaultPageResolver;
   const newClassName = opts.newClassName || 'new';
   const wikilinkClassName = opts.wikilinkClassName || 'wikilink';
-  const defaultHrefTemplate = permalink => `#/page/${permalink}`;
+  const defaultHrefTemplate = permalink => `posts/${permalink}`;
   const hrefTemplate = opts.hrefTemplate || defaultHrefTemplate;
 
   function enterWikilink(token) {
@@ -56,7 +56,7 @@ function fromMarkdown(opts = {}) {
     //   classNames += ' ' + newClassName;
     // }
 
-    wikilink.data.alias = displayName;
+    // wikilink.data.alias = displayName;
     wikilink.data.permalink = permalink;
     wikilink.data.exists = exists;
 
