@@ -87,8 +87,11 @@ export default function PostPage({ post }: PropsType) {
                 // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
                 // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
                 p: ({ node, ...props }) => <div {...props} />,
-                a: ({ className, href }) =>
-                  overwriteWikiLink({ className, href }),
+                a: props => {
+                  const { node, className, href } = props;
+                  console.log(props);
+                  return overwriteWikiLink({ className, href });
+                },
               }}
               rehypePlugins={[rehypeFormat, rehypeStringify]}
               remarkPlugins={[remarkGfm, wikilinkPlugin]}

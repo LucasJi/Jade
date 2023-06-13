@@ -21,7 +21,8 @@ function wikilinkPlugin(opts = { markdownFolder: 'page' }) {
 
   add('micromarkExtensions', syntax(opts));
   add('fromMarkdownExtensions', fromMarkdown(opts));
-  add('toMarkdownExtensions', toMarkdown(opts));
+  // TODO: toMarkdown extension seems doesn't work
+  // add('toMarkdownExtensions', toMarkdown(opts));
 }
 
 export default wikilinkPlugin;

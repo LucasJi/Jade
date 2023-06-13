@@ -160,7 +160,6 @@ const resolveWikilinks = (posts: Post[]) => {
 
       visit(tree, 'wikilink', node => {
         const { value } = node;
-        console.log(node);
         forwardWikilinks.add(value);
       });
 

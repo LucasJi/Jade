@@ -24,6 +24,8 @@ function toMarkdown(opts = {}) {
     });
 
     let value;
+    console.log('nodeAlias', nodeAlias);
+    console.log('nodeValue', nodeValue);
     if (nodeAlias !== nodeValue) {
       value = `[[${nodeValue}${aliasDivider}${nodeAlias}]]`;
     } else {
