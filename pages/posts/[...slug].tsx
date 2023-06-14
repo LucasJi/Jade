@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { Wikilink } from '@components';
 import { getCachedPostBySlug, getCachedSlugs } from '@utils/postUtil';
 import { wikilinkPlugin } from '@utils/remark-wikilink';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Post, Slug } from 'types';
 
@@ -27,14 +27,18 @@ export default function PostPage({ post }: PropsType) {
   const overwriteWikiLink = ({
     className,
     href,
+    children,
     ...props
   }: {
     className: string | undefined;
     href: string | undefined;
+    children: ReactNode;
   }) => {
     const isWikiLink = className?.includes('wikilink');
     return isWikiLink ? (
-      <Wikilink onClick={handleClickViewPost} wikilink={href} />
+      <Wikilink onClick={handleClickViewPost} wikilink={href}>
+        {children}
+      </Wikilink>
     ) : (
       <a href={href} {...props} />
     );
@@ -88,9 +92,8 @@ export default function PostPage({ post }: PropsType) {
                 // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
                 p: ({ node, ...props }) => <div {...props} />,
                 a: props => {
-                  const { node, className, href } = props;
-                  console.log(props);
-                  return overwriteWikiLink({ className, href });
+                  const { className, href, children } = props;
+                  return overwriteWikiLink({ className, href, children });
                 },
               }}
               rehypePlugins={[rehypeFormat, rehypeStringify]}
@@ -106,7 +109,9 @@ export default function PostPage({ post }: PropsType) {
                     key={bl}
                     onClick={handleClickViewPost}
                     wikilink={bl}
-                  />
+                  >
+                    {bl}
+                  </Wikilink>
                 ))
               ) : (
                 <div className="bg-yellow-600">No Backlinks</div>

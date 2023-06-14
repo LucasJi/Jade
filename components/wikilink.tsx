@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import * as Popover from '@radix-ui/react-popover';
@@ -7,10 +7,12 @@ import { Post } from 'types';
 
 export default function Wikilink({
   wikilink = '',
+  children,
   onClick,
 }: {
   wikilink: string | undefined;
   onClick: (post: Post) => void;
+  children: ReactNode;
 }) {
   const [post, setPost] = useState<Post | null>(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -59,7 +61,7 @@ export default function Wikilink({
           setOpen(false);
         }}
       >
-        <button onClick={e => handleClick(e)}>{wikilink}</button>
+        <button onClick={e => handleClick(e)}>{children}</button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

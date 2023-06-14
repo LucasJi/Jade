@@ -64,7 +64,6 @@ function fromMarkdown(opts = {}) {
     wikilink.data.hProperties = {
       className: classNames,
       href: hrefTemplate(permalink),
-      alias: displayName,
     };
     wikilink.data.hChildren = [
       {
@@ -72,6 +71,8 @@ function fromMarkdown(opts = {}) {
         value: displayName,
       },
     ];
+
+    console.log('wikilink', wikilink);
   }
 
   return {
