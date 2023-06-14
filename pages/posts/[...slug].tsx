@@ -85,7 +85,7 @@ export default function PostPage({ post }: PropsType) {
     <div className="flex flex-row h-full">
       {posts.map(({ wikilink, content, title, backWikilinks }) =>
         isExpended(wikilink) ? (
-          <div className="w-1/4" key={wikilink}>
+          <div className="w-1/4 break-words" key={wikilink}>
             <ReactMarkdown
               components={{
                 // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
@@ -95,6 +95,9 @@ export default function PostPage({ post }: PropsType) {
                   const { className, href, children } = props;
                   return overwriteWikiLink({ className, href, children });
                 },
+                pre: ({ node, ...props }) => (
+                  <pre className="overflow-x-auto" {...props} />
+                ),
               }}
               rehypePlugins={[rehypeFormat, rehypeStringify]}
               remarkPlugins={[remarkGfm, wikilinkPlugin]}

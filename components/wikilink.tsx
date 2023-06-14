@@ -4,6 +4,10 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import * as Popover from '@radix-ui/react-popover';
 import { AxiosResponse } from 'axios';
 import { Post } from 'types';
+import wikilinkPlugin from '@utils/remark-wikilink';
+import rehypeFormat from 'rehype-format';
+import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
 
 export default function Wikilink({
   wikilink = '',
@@ -34,13 +38,6 @@ export default function Wikilink({
     });
   }, [slug]);
 
-  const postContentLengthLimiter = (content: string) => {
-    const maxLength = 200;
-    return content.length < maxLength
-      ? content
-      : content.substring(content.length - 200);
-  };
-
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     // prevent displaying content by clicking the button
     // only display the content by mouse enter event
@@ -57,20 +54,23 @@ export default function Wikilink({
         onMouseEnter={() => {
           setOpen(true);
         }}
-        onMouseLeave={() => {
-          setOpen(false);
-        }}
+        // onMouseLeave={() => {
+        //   setOpen(false);
+        // }}
       >
         <button onClick={e => handleClick(e)}>{children}</button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-green-100 h-60 w-60 border-white"
+          className="bg-green-100  border-white h-96 w-96 overflow-y-auto break-all"
           side="right"
           sideOffset={50}
         >
-          <ReactMarkdown>
-            {post ? postContentLengthLimiter(post.content) : ''}
+          <ReactMarkdown
+            rehypePlugins={[rehypeFormat, rehypeStringify]}
+            remarkPlugins={[remarkGfm, wikilinkPlugin]}
+          >
+            {post?.content || ''}
           </ReactMarkdown>
         </Popover.Content>
       </Popover.Portal>
