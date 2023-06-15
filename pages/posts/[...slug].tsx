@@ -83,7 +83,7 @@ export default function PostPage({ post }: PropsType) {
 
   return (
     <div className="flex flex-row h-full">
-      {posts.map(({ wikilink, content, title, backWikilinks }) =>
+      {posts.map(({ wikilink, content, title, backlinks }) =>
         isExpended(wikilink) ? (
           <div className="w-1/4 break-words" key={wikilink}>
             <ReactMarkdown
@@ -106,8 +106,8 @@ export default function PostPage({ post }: PropsType) {
             </ReactMarkdown>
             <div>
               <div className="bg-green-200 font-bold">Backlinks</div>
-              {backWikilinks.length > 0 ? (
-                backWikilinks.map(bl => (
+              {backlinks.length > 0 ? (
+                backlinks.map(bl => (
                   <Wikilink
                     key={bl}
                     onClick={handleClickViewPost}

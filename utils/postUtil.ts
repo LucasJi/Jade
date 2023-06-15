@@ -103,7 +103,7 @@ const getPostBySlug = (slug: string[]) => {
     content,
     title,
     forwardWikilinks: [],
-    backWikilinks: [],
+    backlinks: [],
     href: `posts/${wikilink}`,
   };
 
@@ -168,9 +168,9 @@ const resolveWikilinks = (posts: Post[]) => {
       for (const fl of forwardWikilinks) {
         const fp = findPostByWikilink(fl);
         if (fp) {
-          const bls = new Set(fp.backWikilinks);
+          const bls = new Set(fp.backlinks);
           bls.add(post.wikilink);
-          fp.backWikilinks = Array.from(bls);
+          fp.backlinks = Array.from(bls);
         }
       }
     }
