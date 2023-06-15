@@ -10,6 +10,10 @@ export default function Navbar() {
       <div>
         <Link href="/posts">Posts</Link>
       </div>
+
+      <div>
+        <Link href="/posts">Roam Research</Link>
+      </div>
     </div>
   );
 }

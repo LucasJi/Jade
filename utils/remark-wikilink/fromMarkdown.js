@@ -71,8 +71,6 @@ function fromMarkdown(opts = {}) {
         value: displayName,
       },
     ];
-
-    console.log('wikilink', wikilink);
   }
 
   return {
