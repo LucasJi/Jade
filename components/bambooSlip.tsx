@@ -14,7 +14,7 @@ function VerticalLrTitle({ title }: { title: string }) {
 function BambooSlip({ post }: { post: Post }) {
   const [posts, setPosts] = useState<Post[]>([post]);
   // always display the selected one and its next two posts(only if it has)
-  const [anchor, setAnchor] = useState<string>();
+  const [anchor, setAnchor] = useState<number>(0);
 
   const wikilinkRender = ({
     className,
@@ -28,7 +28,7 @@ function BambooSlip({ post }: { post: Post }) {
   }) => {
     const isWikiLink = className?.includes('wikilink');
     return isWikiLink && href ? (
-      <Wikilink onClick={() => handleClickShowPost(href)} wikilink={href}>
+      <Wikilink onClick={() => viewPost(href)} wikilink={href}>
         {children}
       </Wikilink>
     ) : (
@@ -36,39 +36,69 @@ function BambooSlip({ post }: { post: Post }) {
     );
   };
 
-  const handleClickShowPost =
-    (currentPostWikilink: string) => (viewed: Post) => {
-      const currentPostIdx = posts.findIndex(
-        p => p.wikilink === currentPostWikilink,
-      );
+  const viewPost = (currentPostWikilink: string) => (toView: Post) => {
+    const currentPostIdx = posts.findIndex(
+      p => p.wikilink === currentPostWikilink,
+    );
 
-      if (currentPostIdx + 1 <= posts.length - 1) {
-        const theNextPost = posts[currentPostIdx + 1];
-        if (theNextPost.wikilink !== viewed.wikilink) {
-          const adjustedPosts = posts.slice(0, currentPostIdx);
-          adjustedPosts.push(viewed);
-          setPosts(adjustedPosts);
-        } else {
-          // adjust expended posts
-        }
+    if (isViewed(toView)) {
+      viewViewedPost(toView);
+    } else {
+      viewNewPost(currentPostIdx, toView);
+    }
+
+    if (currentPostIdx + 1 <= posts.length - 1) {
+      const theNextPost = posts[currentPostIdx + 1];
+      if (theNextPost.wikilink !== toView.wikilink) {
+        const adjustedPosts = posts.slice(0, currentPostIdx);
+        adjustedPosts.push(toView);
+        setPosts(adjustedPosts);
+      } else if (isViewed(toView)) {
+        setAnchor(posts.findIndex(p => p.wikilink === toView.wikilink));
       } else {
-        // current post is the last one in posts
-        // push the viewed post to the posts array directly
-        posts.push(viewed);
-        setPosts([...posts]);
+        // adjust expended posts
+        const viewedIdx = currentPostIdx + 1;
+        if (viewedIdx + 2 <= posts.length - 1) {
+          setAnchor(viewedIdx);
+        }
       }
-    };
+    } else {
+      // current post is the last one in posts
+      // push the viewed post to the posts array directly
+      posts.push(toView);
+      if (posts.length - anchor > 3) {
+        setAnchor(pre => pre + 1);
+      }
+      setPosts([...posts]);
+    }
+  };
+
+  const isViewed = (toView: Post) =>
+    posts.some(p => p.wikilink === toView.wikilink);
+
+  const viewViewedPost = (toView: Post) => {
+    console.log('TODO');
+  };
+
+  const viewNewPost = (from: number, toView: Post) => {
+    const adjustedPosts = posts.slice(0, from);
+    adjustedPosts.push(toView);
+    setPosts(adjustedPosts);
+
+    // adjust expended posts
+    if (adjustedPosts.length - anchor > 3) {
+      setAnchor(pre => pre + 1);
+    }
+  };
 
   const isExpended = (wikilink: string) => {
-    const anchorPostIdx = posts.findIndex(p => p.wikilink === anchor);
-
     let expendedPosts;
-    if (anchorPostIdx + 2 <= posts.length - 1) {
-      expendedPosts = posts.slice(anchorPostIdx, anchorPostIdx + 2);
-    } else if (anchorPostIdx + 1 <= posts.length - 1) {
-      expendedPosts = posts.slice(anchorPostIdx, anchorPostIdx + 1);
+    if (anchor + 2 <= posts.length - 1) {
+      expendedPosts = posts.slice(anchor, anchor + 2);
+    } else if (anchor + 1 <= posts.length - 1) {
+      expendedPosts = posts.slice(anchor, anchor + 1);
     } else {
-      expendedPosts = [posts[anchorPostIdx]];
+      expendedPosts = [posts[anchor]];
     }
 
     return expendedPosts.some(p => p.wikilink === wikilink);
