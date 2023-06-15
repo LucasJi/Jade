@@ -46,38 +46,18 @@ function BambooSlip({ post }: { post: Post }) {
     } else {
       viewNewPost(currentPostIdx, toView);
     }
-
-    if (currentPostIdx + 1 <= posts.length - 1) {
-      const theNextPost = posts[currentPostIdx + 1];
-      if (theNextPost.wikilink !== toView.wikilink) {
-        const adjustedPosts = posts.slice(0, currentPostIdx);
-        adjustedPosts.push(toView);
-        setPosts(adjustedPosts);
-      } else if (isViewed(toView)) {
-        setAnchor(posts.findIndex(p => p.wikilink === toView.wikilink));
-      } else {
-        // adjust expended posts
-        const viewedIdx = currentPostIdx + 1;
-        if (viewedIdx + 2 <= posts.length - 1) {
-          setAnchor(viewedIdx);
-        }
-      }
-    } else {
-      // current post is the last one in posts
-      // push the viewed post to the posts array directly
-      posts.push(toView);
-      if (posts.length - anchor > 3) {
-        setAnchor(pre => pre + 1);
-      }
-      setPosts([...posts]);
-    }
   };
 
   const isViewed = (toView: Post) =>
     posts.some(p => p.wikilink === toView.wikilink);
 
   const viewViewedPost = (toView: Post) => {
-    console.log('TODO');
+    const toViewIdx = posts.findIndex(p => p.wikilink === toView.wikilink);
+
+    if (toViewIdx + 2 <= posts.length - 1) {
+      setAnchor(toViewIdx);
+      return;
+    }
   };
 
   const viewNewPost = (from: number, toView: Post) => {
