@@ -3,13 +3,13 @@ import Head from 'next/head';
 
 export default function Home() {
   return (
-    <div className="w-screen">
+    <div className="flex-col">
       <Head>
         <title>{"Lucas Ji's Blog"}</title>
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      <Avatar />
-      <Slogan className="mt-8 text-center" />
+      <Avatar className="self-center" />
+      <Slogan className="mt-8 text-center self-center" />
     </div>
   );
 }
