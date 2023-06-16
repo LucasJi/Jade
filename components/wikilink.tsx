@@ -54,9 +54,9 @@ export default function Wikilink({
         onMouseEnter={() => {
           setOpen(true);
         }}
-        // onMouseLeave={() => {
-        //   setOpen(false);
-        // }}
+        onMouseLeave={() => {
+          setOpen(false);
+        }}
       >
         <button onClick={e => handleClick(e)}>{children}</button>
       </Popover.Trigger>

@@ -16,8 +16,6 @@ function BambooSlip({ post }: { post: Post }) {
   // always display the selected one and its next two posts(only if it has)
   const [anchor, setAnchor] = useState<number>(0);
 
-  console.log('posts', posts);
-
   const wikilinkRender = ({
     className,
     href,
@@ -41,14 +39,9 @@ function BambooSlip({ post }: { post: Post }) {
   };
 
   const viewPost = (currentPostWikilink: string) => (toView: Post) => {
-    console.log('current wikilink', currentPostWikilink);
-
     const currentPostIdx = posts.findIndex(
       p => p.wikilink === currentPostWikilink,
     );
-
-    console.log('posts', posts);
-    console.log('current idx', currentPostIdx);
 
     if (isViewed(toView)) {
       viewViewedPost(currentPostIdx, toView);
@@ -138,13 +131,7 @@ function BambooSlip({ post }: { post: Post }) {
               <div className="bg-green-200 font-bold">Backlinks</div>
               {backlinks.length > 0 ? (
                 backlinks.map(bl => (
-                  <Wikilink
-                    key={bl}
-                    onClick={() => {
-                      console.log('show backlink');
-                    }}
-                    wikilink={bl}
-                  >
+                  <Wikilink key={bl} onClick={viewPost(wikilink)} wikilink={bl}>
                     {bl}
                   </Wikilink>
                 ))
