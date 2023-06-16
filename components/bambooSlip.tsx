@@ -42,7 +42,7 @@ function BambooSlip({ post }: { post: Post }) {
     );
 
     if (isViewed(toView)) {
-      viewViewedPost(toView);
+      viewViewedPost(currentPostIdx, toView);
     } else {
       viewNewPost(currentPostIdx, toView);
     }
@@ -51,12 +51,11 @@ function BambooSlip({ post }: { post: Post }) {
   const isViewed = (toView: Post) =>
     posts.some(p => p.wikilink === toView.wikilink);
 
-  const viewViewedPost = (toView: Post) => {
+  const viewViewedPost = (from: number, toView: Post) => {
     const toViewIdx = posts.findIndex(p => p.wikilink === toView.wikilink);
 
-    if (toViewIdx + 2 <= posts.length - 1) {
+    if (Math.abs(toViewIdx - from) > 1 && toViewIdx + 2 <= posts.length - 1) {
       setAnchor(toViewIdx);
-      return;
     }
   };
 
