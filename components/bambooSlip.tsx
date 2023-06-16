@@ -8,7 +8,7 @@ import { Post } from 'types';
 import Wikilink from './wikilink';
 
 function VerticalLrTitle({ title }: { title: string }) {
-  return <div className="[writing-mode:vertical-lr]">{title}</div>;
+  return <div className="[writing-mode:vertical-lr] text-2xl">{title}</div>;
 }
 
 function BambooSlip({ post }: { post: Post }) {
@@ -99,7 +99,7 @@ function BambooSlip({ post }: { post: Post }) {
   };
 
   return (
-    <div className="flex flex-row h-full w-full">
+    <div className="flex flex-row w-full min-h-[90vh]">
       {posts.map(({ title, content, wikilink, backlinks }, idx) => (
         <>
           {idx !== 0 && (
@@ -109,7 +109,10 @@ function BambooSlip({ post }: { post: Post }) {
             />
           )}
           {isExpended(wikilink) ? (
-            <div className="break-words flex w-1/4" key={`content-${wikilink}`}>
+            <div
+              className="break-words flex w-1/4 text-base"
+              key={`content-${wikilink}`}
+            >
               <div>
                 <ReactMarkdown
                   components={{
