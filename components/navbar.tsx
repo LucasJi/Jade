@@ -1,8 +1,18 @@
 import Link from 'next/link';
+import classNames from 'classnames';
 
-export default function Navbar() {
+export default function Navbar({ className }: { className?: string }) {
   return (
-    <div className="flex flex-row justify-end gap-8 text-xl">
+    <div
+      className={classNames(
+        'flex',
+        'flex-row',
+        'justify-end',
+        'gap-8',
+        'text-xl',
+        className,
+      )}
+    >
       <div>
         <Link href="/">Home</Link>
       </div>

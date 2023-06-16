@@ -11,10 +11,13 @@ export default function App({ Component, pageProps }: AppProps) {
       console.log('init posts', data);
     });
   }, []);
+
   return (
-    <div className="p-4 w-screen h-full">
-      <Navbar />
-      <Component {...pageProps} />
+    <div className="p-4 w-screen h-screen">
+      <Navbar className="h-[10%]" />
+      <div className="h-[90%]">
+        <Component {...pageProps} />
+      </div>
     </div>
   );
 }
