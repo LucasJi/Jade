@@ -1,4 +1,5 @@
 import wikilinkPlugin from '@utils/remark-wikilink';
+import classNames from 'classnames';
 import { ReactNode, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeFormat from 'rehype-format';
@@ -7,8 +8,21 @@ import remarkGfm from 'remark-gfm';
 import { Post } from 'types';
 import Wikilink from './wikilink';
 
-function VerticalLrTitle({ title }: { title: string }) {
-  return <div className="[writing-mode:vertical-lr] text-2xl">{title}</div>;
+function VerticalLrTitle({
+  title,
+  onClick,
+}: {
+  title: string;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      className="[writing-mode:vertical-lr] text-2xl h-full hover:bg-[#ebf4ff] duration-300"
+      onClick={onClick}
+    >
+      {title}
+    </div>
+  );
 }
 
 function BambooSlip({ post }: { post: Post }) {
@@ -98,69 +112,85 @@ function BambooSlip({ post }: { post: Post }) {
     return expendedPosts.some(p => p.wikilink === wikilink);
   };
 
+  const handleClickTitle = (wikilink: string) => {
+    const idx = posts.findIndex(p => p.wikilink === wikilink);
+    if (idx === posts.length - 1) {
+      setAnchor(idx - 2);
+    } else {
+      setAnchor(idx);
+    }
+  };
+
   return (
     <div className="flex flex-row w-full min-h-[90vh]">
-      {posts.map(({ title, content, wikilink, backlinks }, idx) => (
-        <>
-          {idx !== 0 && (
-            <div
-              className="divider divider-horizontal"
-              key={`divider-${wikilink}`}
-            />
-          )}
-          {isExpended(wikilink) ? (
-            <div
-              className="break-words flex w-1/4 text-base"
-              key={`content-${wikilink}`}
-            >
-              <div>
-                <ReactMarkdown
-                  components={{
-                    // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-                    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                    p: ({ node, ...props }) => <div {...props} />,
-                    a: props => {
-                      const { className, href, children } = props;
-                      return wikilinkRender({
-                        className,
-                        href,
-                        children,
-                        currentPostWikilink: wikilink,
-                      });
-                    },
-                    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                    pre: ({ node, ...props }) => (
-                      <pre className="overflow-x-auto" {...props} />
-                    ),
-                  }}
-                  rehypePlugins={[rehypeFormat, rehypeStringify]}
-                  remarkPlugins={[remarkGfm, wikilinkPlugin]}
-                >
-                  {content}
-                </ReactMarkdown>
+      {posts.map(({ title, content, wikilink, backlinks }, idx) => {
+        const isNotTitle = isExpended(wikilink);
+        return (
+          <div
+            className={classNames({
+              'border-l': idx !== 0,
+              'w-1/4': isNotTitle,
+            })}
+            key={wikilink}
+          >
+            {isNotTitle ? (
+              <div
+                className={classNames('break-words', 'flex', 'text-base')}
+                key={`content-${wikilink}`}
+              >
                 <div>
-                  <div className="bg-green-200 font-bold">Backlinks</div>
-                  {backlinks.length > 0 ? (
-                    backlinks.map(bl => (
-                      <Wikilink
-                        key={bl}
-                        onClick={viewPost(wikilink)}
-                        wikilink={bl}
-                      >
-                        {bl}
-                      </Wikilink>
-                    ))
-                  ) : (
-                    <div className="bg-yellow-600">No Backlinks</div>
-                  )}
+                  <ReactMarkdown
+                    components={{
+                      // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+                      // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+                      p: ({ node, ...props }) => <div {...props} />,
+                      a: props => {
+                        const { className, href, children } = props;
+                        return wikilinkRender({
+                          className,
+                          href,
+                          children,
+                          currentPostWikilink: wikilink,
+                        });
+                      },
+                      // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+                      pre: ({ node, ...props }) => (
+                        <pre className="overflow-x-auto" {...props} />
+                      ),
+                    }}
+                    rehypePlugins={[rehypeFormat, rehypeStringify]}
+                    remarkPlugins={[remarkGfm, wikilinkPlugin]}
+                  >
+                    {content}
+                  </ReactMarkdown>
+                  <div>
+                    <div className="bg-green-200 font-bold">Backlinks</div>
+                    {backlinks.length > 0 ? (
+                      backlinks.map(bl => (
+                        <Wikilink
+                          key={bl}
+                          onClick={viewPost(wikilink)}
+                          wikilink={bl}
+                        >
+                          {bl}
+                        </Wikilink>
+                      ))
+                    ) : (
+                      <div className="bg-yellow-600">No Backlinks</div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <VerticalLrTitle key={`title-${wikilink}`} title={title} />
-          )}
-        </>
-      ))}
+            ) : (
+              <VerticalLrTitle
+                key={`title-${wikilink}`}
+                onClick={() => handleClickTitle(wikilink)}
+                title={title}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
