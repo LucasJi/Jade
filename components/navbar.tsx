@@ -13,6 +13,7 @@ export default function Navbar({ className }: { className?: string }) {
         className,
         'border-b',
         'items-center',
+        'pr-4',
       )}
     >
       <div>

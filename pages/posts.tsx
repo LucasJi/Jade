@@ -17,7 +17,7 @@ function Posts() {
   }, []);
 
   return (
-    <div>
+    <div className="pt-4 pl-4">
       <h1>Posts</h1>
       <div className="flex flex-col">
         {posts.map(({ wikilink, title, href }) => (
