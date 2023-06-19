@@ -15,7 +15,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className="w-screen h-screen">
       <Navbar className="h-[10%]" />
-      <div className="min-h-[90%]">
+      <div className="h-[90%]">
         <Component {...pageProps} />
       </div>
     </div>

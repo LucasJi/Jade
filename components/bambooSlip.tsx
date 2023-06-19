@@ -122,7 +122,7 @@ function BambooSlip({ post }: { post: Post }) {
   };
 
   return (
-    <div className="flex flex-row w-full min-h-[90vh]">
+    <div className="flex flex-row w-full h-full">
       {posts.map(({ title, content, wikilink, backlinks }, idx) => {
         const isNotTitle = isExpended(wikilink);
         return (
@@ -138,52 +138,53 @@ function BambooSlip({ post }: { post: Post }) {
                 className={classNames(
                   'break-words',
                   'flex',
+                  'flex-col',
                   'text-base',
                   'px-4',
+                  'overflow-y-auto',
+                  'h-full',
                 )}
                 key={`content-${wikilink}`}
               >
+                <ReactMarkdown
+                  components={{
+                    // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
+                    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+                    p: ({ node, ...props }) => <div {...props} />,
+                    a: props => {
+                      const { className, href, children } = props;
+                      return wikilinkRender({
+                        className,
+                        href,
+                        children,
+                        currentPostWikilink: wikilink,
+                      });
+                    },
+                    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+                    pre: ({ node, ...props }) => (
+                      <pre className="overflow-x-auto" {...props} />
+                    ),
+                  }}
+                  rehypePlugins={[rehypeFormat, rehypeStringify]}
+                  remarkPlugins={[remarkGfm, wikilinkPlugin]}
+                >
+                  {content}
+                </ReactMarkdown>
                 <div>
-                  <ReactMarkdown
-                    components={{
-                      // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-                      // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                      p: ({ node, ...props }) => <div {...props} />,
-                      a: props => {
-                        const { className, href, children } = props;
-                        return wikilinkRender({
-                          className,
-                          href,
-                          children,
-                          currentPostWikilink: wikilink,
-                        });
-                      },
-                      // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                      pre: ({ node, ...props }) => (
-                        <pre className="overflow-x-auto" {...props} />
-                      ),
-                    }}
-                    rehypePlugins={[rehypeFormat, rehypeStringify]}
-                    remarkPlugins={[remarkGfm, wikilinkPlugin]}
-                  >
-                    {content}
-                  </ReactMarkdown>
-                  <div>
-                    <div className="bg-green-200 font-bold">Backlinks</div>
-                    {backlinks.length > 0 ? (
-                      backlinks.map(bl => (
-                        <Wikilink
-                          key={bl}
-                          onClick={viewPost(wikilink)}
-                          wikilink={bl}
-                        >
-                          {bl}
-                        </Wikilink>
-                      ))
-                    ) : (
-                      <div className="bg-yellow-600">No Backlinks</div>
-                    )}
-                  </div>
+                  <div className="bg-green-200 font-bold">Backlinks</div>
+                  {backlinks.length > 0 ? (
+                    backlinks.map(bl => (
+                      <Wikilink
+                        key={bl}
+                        onClick={viewPost(wikilink)}
+                        wikilink={bl}
+                      >
+                        {bl}
+                      </Wikilink>
+                    ))
+                  ) : (
+                    <div className="bg-yellow-600">No Backlinks</div>
+                  )}
                 </div>
               </div>
             ) : (
