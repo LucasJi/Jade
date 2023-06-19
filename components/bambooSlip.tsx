@@ -127,10 +127,13 @@ function BambooSlip({ post }: { post: Post }) {
         const isNotTitle = isExpended(wikilink);
         return (
           <div
-            className={classNames({
-              'border-l': idx !== 0,
-              'w-2/5': isNotTitle,
-            })}
+            className={classNames(
+              {
+                'border-l': idx !== 0,
+                'w-2/5': isNotTitle,
+              },
+              'pt-4',
+            )}
             key={wikilink}
           >
             {isNotTitle ? (
