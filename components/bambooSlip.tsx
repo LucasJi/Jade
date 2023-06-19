@@ -129,7 +129,7 @@ function BambooSlip({ post }: { post: Post }) {
           <div
             className={classNames({
               'border-l': idx !== 0,
-              'w-1/4': isNotTitle,
+              'w-2/5': isNotTitle,
             })}
             key={wikilink}
           >

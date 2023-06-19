@@ -11,6 +11,8 @@ export default function Navbar({ className }: { className?: string }) {
         'gap-8',
         'text-xl',
         className,
+        'border-b',
+        'items-center',
       )}
     >
       <div>
