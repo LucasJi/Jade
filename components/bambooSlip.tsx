@@ -20,7 +20,7 @@ function VerticalLrTitle({
       className="[writing-mode:vertical-lr] text-2xl h-full hover:bg-[#ebf4ff] duration-300"
       onClick={onClick}
     >
-      {title}
+      <div className="pt-4">{title}</div>
     </div>
   );
 }
@@ -127,13 +127,10 @@ function BambooSlip({ post }: { post: Post }) {
         const isNotTitle = isExpended(wikilink);
         return (
           <div
-            className={classNames(
-              {
-                'border-l': idx !== 0,
-                'w-2/5': isNotTitle,
-              },
-              'pt-4',
-            )}
+            className={classNames({
+              'border-l': idx !== 0,
+              'w-2/5': isNotTitle,
+            })}
             key={wikilink}
           >
             {isNotTitle ? (
@@ -146,6 +143,7 @@ function BambooSlip({ post }: { post: Post }) {
                   'px-4',
                   'overflow-y-auto',
                   'h-full',
+                  'pt-4',
                 )}
                 key={`content-${wikilink}`}
               >
