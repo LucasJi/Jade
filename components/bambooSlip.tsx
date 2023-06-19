@@ -135,7 +135,12 @@ function BambooSlip({ post }: { post: Post }) {
           >
             {isNotTitle ? (
               <div
-                className={classNames('break-words', 'flex', 'text-base')}
+                className={classNames(
+                  'break-words',
+                  'flex',
+                  'text-base',
+                  'px-4',
+                )}
                 key={`content-${wikilink}`}
               >
                 <div>
