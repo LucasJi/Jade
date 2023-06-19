@@ -8,21 +8,25 @@ import { visit } from 'unist-util-visit';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
+const SLUGS_KEY = 'slugs';
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
 export const getCachedSlugs = async (): Promise<Slug[]> => {
-  const key = 'slugs';
-  const slugsJson = await redis.get(key);
+  const slugsJson = await redis.get(SLUGS_KEY);
 
   let slugs: Array<Slug>;
   if (slugsJson === null) {
     slugs = getPostSlugs();
-    await redis.set(key, JSON.stringify(slugs));
+    await redis.set(SLUGS_KEY, JSON.stringify(slugs));
   } else {
     slugs = JSON.parse(slugsJson);
   }
 
   return slugs;
+};
+
+const clearCachedSlugs = () => {
+  redis.del(SLUGS_KEY);
 };
 
 const getPostSlugs = () => {
@@ -123,6 +127,8 @@ export const getCachedPosts = async (): Promise<Post[]> => {
 };
 
 export const initPosts = async (): Promise<Post[]> => {
+  clearCachedSlugs();
+
   const posts = getPosts();
   resolveWikilinks(posts);
 
