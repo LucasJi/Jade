@@ -2,4 +2,4 @@
 
 It's the forth post.
 
-[[tests/1]]
+[[tests/5]]
