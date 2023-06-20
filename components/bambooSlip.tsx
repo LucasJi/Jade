@@ -137,11 +137,18 @@ function BambooSlip({ post }: { post: Post }) {
         const isNotTitle = isExpended(wikilink);
         return (
           <div
-            className={classNames({
-              'border-l': idx !== 0,
-              'w-2/5': isNotTitle,
-            })}
+            className={classNames(
+              {
+                'border-l': idx !== 0,
+                'w-2/5': isNotTitle,
+              },
+              'sticky',
+              'left-16',
+            )}
             key={wikilink}
+            style={{
+              left: `${idx * 3}rem`,
+            }}
           >
             {isNotTitle ? (
               <div
@@ -199,7 +206,12 @@ function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
-                className={classNames('text-2xl', ' h-full')}
+                className={classNames(
+                  'text-2xl',
+                  ' h-full',
+                  'absolute',
+                  'left-0',
+                )}
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
                 // style={{
