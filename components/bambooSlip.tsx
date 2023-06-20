@@ -18,7 +18,15 @@ function VerticalLrTitle({
   className?: string;
 }) {
   return (
-    <div className={className} onClick={onClick}>
+    <div
+      className={classNames(
+        '[writing-mode:vertical-lr]',
+        'hover:bg-[#ebf4ff]',
+        'duration-300',
+        className,
+      )}
+      onClick={onClick}
+    >
       <div className="pt-4">{title}</div>
     </div>
   );
@@ -188,7 +196,7 @@ function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
-                className="[writing-mode:vertical-lr] text-2xl h-full hover:bg-[#ebf4ff] duration-300"
+                className="text-2xl h-full "
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
                 title={title}
