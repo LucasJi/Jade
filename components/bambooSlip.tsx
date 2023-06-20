@@ -1,6 +1,6 @@
 import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
-import { ReactNode, useState } from 'react';
+import { CSSProperties, ReactNode, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
@@ -12,10 +12,12 @@ function VerticalLrTitle({
   title,
   onClick,
   className,
+  style,
 }: {
   title: string;
   onClick: () => void;
   className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <div
@@ -26,6 +28,7 @@ function VerticalLrTitle({
         className,
       )}
       onClick={onClick}
+      style={style}
     >
       <div className="pt-4">{title}</div>
     </div>
@@ -196,9 +199,12 @@ function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
-                className="text-2xl h-full "
+                className={classNames('text-2xl', ' h-full')}
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
+                // style={{
+                //   left: idx > 0 ? `${idx * 15}px` : '0',
+                // }}
                 title={title}
               />
             )}
