@@ -11,15 +11,14 @@ import Wikilink from './wikilink';
 function VerticalLrTitle({
   title,
   onClick,
+  className,
 }: {
   title: string;
   onClick: () => void;
+  className?: string;
 }) {
   return (
-    <div
-      className="[writing-mode:vertical-lr] text-2xl h-full hover:bg-[#ebf4ff] duration-300"
-      onClick={onClick}
-    >
+    <div className={className} onClick={onClick}>
       <div className="pt-4">{title}</div>
     </div>
   );
@@ -139,7 +138,6 @@ function BambooSlip({ post }: { post: Post }) {
                   'break-words',
                   'flex',
                   'flex-col',
-                  'text-base',
                   'px-4',
                   'overflow-y-auto',
                   'h-full',
@@ -190,6 +188,7 @@ function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
+                className="[writing-mode:vertical-lr] text-2xl h-full hover:bg-[#ebf4ff] duration-300"
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
                 title={title}

@@ -8,4 +8,7 @@ module.exports = {
     extend: {},
   },
   plugins: [require('daisyui')],
+  corePlugins: {
+    preflight: false,
+  },
 };
