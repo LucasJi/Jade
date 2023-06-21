@@ -25,12 +25,14 @@ function VerticalLrTitle({
         '[writing-mode:vertical-lr]',
         'hover:bg-[#ebf4ff]',
         'duration-300',
+        'flex',
+        'w-full',
         className,
       )}
       onClick={onClick}
       style={style}
     >
-      <div className="pt-4">{title}</div>
+      <span className="pt-4 inline-block self-center">{title}</span>
     </div>
   );
 }
@@ -140,14 +142,18 @@ function BambooSlip({ post }: { post: Post }) {
             className={classNames(
               {
                 'border-l': idx !== 0,
-                'w-2/5': isNotTitle,
               },
-              'sticky',
-              'left-16',
+              {
+                'w-1/3': isNotTitle && posts.length <= 3,
+                'w-1/4': isNotTitle && posts.length > 3,
+                'w-10': !isNotTitle,
+              },
+              'absolute',
             )}
             key={wikilink}
             style={{
-              left: `${idx * 3}rem`,
+              left: `${idx * 1.4}rem`,
+              zIndex: idx,
             }}
           >
             {isNotTitle ? (
@@ -206,12 +212,7 @@ function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
-                className={classNames(
-                  'text-2xl',
-                  ' h-full',
-                  'absolute',
-                  'left-0',
-                )}
+                className={classNames('text-2xl', ' h-full')}
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
                 // style={{
