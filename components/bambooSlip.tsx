@@ -5,17 +5,10 @@ import Wikilink from './wikilink';
 import VerticalLrTitle from './verticalLrTitle';
 import { SlipMarkdown } from './slipMarkdown';
 
-type Title = {
-  title: string;
-  wikilink: string;
-};
-
 export default function BambooSlip({ post }: { post: Post }) {
   const [posts, setPosts] = useState<Post[]>([post]);
   // always display the selected one and its next two posts(only if it has)
   const [anchor, setAnchor] = useState<number>(0);
-  const [leftSideTitles, setLeftSideTitles] = useState<Title[]>();
-  const [rightSideTitles, setRightSideTitles] = useState<Title[]>();
 
   const viewPost = (currentPostWikilink: string) => (toView: Post) => {
     const currentPostIdx = posts.findIndex(
