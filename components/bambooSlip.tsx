@@ -83,8 +83,8 @@ export default function BambooSlip({ post }: { post: Post }) {
     }
   };
 
-  const isExpended = (wikilink: string) => {
-    let expendedPosts;
+  const getExpendedPosts = () => {
+    let expendedPosts: Post[] = [];
     if (anchor + 2 <= posts.length - 1) {
       expendedPosts = posts.slice(anchor, anchor + 3);
     } else if (anchor + 1 <= posts.length - 1) {
@@ -92,7 +92,11 @@ export default function BambooSlip({ post }: { post: Post }) {
     } else {
       expendedPosts = [posts[anchor]];
     }
+    return expendedPosts;
+  };
 
+  const isExpended = (wikilink: string) => {
+    const expendedPosts = getExpendedPosts();
     return expendedPosts.some(p => p.wikilink === wikilink);
   };
 
@@ -105,23 +109,33 @@ export default function BambooSlip({ post }: { post: Post }) {
     }
   };
 
+  const calcPostWidth = (isTitle: boolean) => {
+    // unit: rem
+    const titleWidth = 2.5;
+
+    if (isTitle) {
+      return `${titleWidth}rem`;
+    }
+
+    const postSize = posts.length;
+    const expendedPostSize = getExpendedPosts().length;
+    const titleSize = postSize - expendedPostSize;
+    return `calc(100% - (${titleWidth}rem) * ${titleSize} / ${postSize})`;
+  };
+
   return (
     <div className="flex flex-row w-full h-full">
       {posts.map(({ title, content, wikilink, backlinks }, idx) => {
         const isNotTitle = isExpended(wikilink);
         return (
           <div
-            className={classNames(
-              {
-                'border-l': idx !== 0,
-              },
-              {
-                'w-1/3': isNotTitle && posts.length <= 3,
-                'w-1/4': isNotTitle && posts.length > 3,
-                'w-10': !isNotTitle,
-              },
-            )}
+            className={classNames({
+              'border-l': idx !== 0,
+            })}
             key={wikilink}
+            style={{
+              width: calcPostWidth(!isNotTitle),
+            }}
           >
             {isNotTitle ? (
               <div
@@ -182,9 +196,6 @@ export default function BambooSlip({ post }: { post: Post }) {
                 className={classNames('text-2xl', ' h-full')}
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
-                // style={{
-                //   left: idx > 0 ? `${idx * 15}px` : '0',
-                // }}
                 title={title}
               />
             )}

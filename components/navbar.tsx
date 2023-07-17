@@ -21,8 +21,6 @@ export default function Navbar({ className }: { className?: string }) {
       <Link href="/posts">Posts</Link>
 
       <Link href="/posts">Roam Research</Link>
-
-      <Link href="/test">TEST</Link>
     </div>
   );
 }
