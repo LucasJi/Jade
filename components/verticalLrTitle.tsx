@@ -15,7 +15,7 @@ export default function VerticalLrTitle({
   return (
     <div
       className={classNames(
-        'text-2xl',
+        'text-4xl',
         '[writing-mode:vertical-lr]',
         'hover:bg-[#ebf4ff]',
         'hover:scale-105',
