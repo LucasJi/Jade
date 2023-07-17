@@ -62,7 +62,7 @@ export default function Wikilink({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-green-100  border-white h-96 w-96 overflow-y-auto break-all"
+          className="bg-green-100 border-white h-96 w-96 overflow-y-auto break-all"
           side="right"
           sideOffset={50}
         >

@@ -1,43 +1,15 @@
 import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
-import { CSSProperties, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeFormat from 'rehype-format';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
 import { Post } from 'types';
 import Wikilink from './wikilink';
+import VerticalLrTitle from './verticalLrTitle';
 
-function VerticalLrTitle({
-  title,
-  onClick,
-  className,
-  style,
-}: {
-  title: string;
-  onClick: () => void;
-  className?: string;
-  style?: CSSProperties;
-}) {
-  return (
-    <div
-      className={classNames(
-        '[writing-mode:vertical-lr]',
-        'hover:bg-[#ebf4ff]',
-        'duration-300',
-        'flex',
-        'w-full',
-        className,
-      )}
-      onClick={onClick}
-      style={style}
-    >
-      <span className="pt-4 inline-block self-center">{title}</span>
-    </div>
-  );
-}
-
-function BambooSlip({ post }: { post: Post }) {
+export default function BambooSlip({ post }: { post: Post }) {
   const [posts, setPosts] = useState<Post[]>([post]);
   // always display the selected one and its next two posts(only if it has)
   const [anchor, setAnchor] = useState<number>(0);
@@ -148,13 +120,8 @@ function BambooSlip({ post }: { post: Post }) {
                 'w-1/4': isNotTitle && posts.length > 3,
                 'w-10': !isNotTitle,
               },
-              'absolute',
             )}
             key={wikilink}
-            style={{
-              left: `${idx * 1.4}rem`,
-              zIndex: idx,
-            }}
           >
             {isNotTitle ? (
               <div
@@ -227,5 +194,3 @@ function BambooSlip({ post }: { post: Post }) {
     </div>
   );
 }
-
-export default BambooSlip;
