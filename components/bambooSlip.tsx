@@ -147,7 +147,7 @@ export default function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
-                className="h-full, w-[inherit]"
+                className="h-full w-[inherit]"
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
                 title={title}
