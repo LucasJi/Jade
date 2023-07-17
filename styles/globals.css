@@ -1,14 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'preflight.css';
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
 
 html,
 body {
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  box-sizing: border-box;
+}
+
+html {
+  /*
+   This defines what 1rem is(10px/16px=0.625, the browser's default font size is 16px).
+   */
+  font-size: 62.5%;
 }
 
 a {
@@ -16,14 +31,12 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
-}
 
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+
   body {
     color: white;
     background: black;

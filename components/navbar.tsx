@@ -16,17 +16,13 @@ export default function Navbar({ className }: { className?: string }) {
         'pr-4',
       )}
     >
-      <div>
-        <Link href="/">Home</Link>
-      </div>
+      <Link href="/">Home</Link>
 
-      <div>
-        <Link href="/posts">Posts</Link>
-      </div>
+      <Link href="/posts">Posts</Link>
 
-      <div>
-        <Link href="/posts">Roam Research</Link>
-      </div>
+      <Link href="/posts">Roam Research</Link>
+
+      <Link href="/test">TEST</Link>
     </div>
   );
 }
