@@ -1,40 +1,21 @@
-import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
-import { ReactNode, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeFormat from 'rehype-format';
-import rehypeStringify from 'rehype-stringify';
-import remarkGfm from 'remark-gfm';
+import { useState } from 'react';
 import { Post } from 'types';
 import Wikilink from './wikilink';
 import VerticalLrTitle from './verticalLrTitle';
+import { SlipMarkdown } from './slipMarkdown';
+
+type Title = {
+  title: string;
+  wikilink: string;
+};
 
 export default function BambooSlip({ post }: { post: Post }) {
   const [posts, setPosts] = useState<Post[]>([post]);
   // always display the selected one and its next two posts(only if it has)
   const [anchor, setAnchor] = useState<number>(0);
-
-  const wikilinkRender = ({
-    className,
-    href,
-    children,
-    currentPostWikilink,
-    ...props
-  }: {
-    className: string | undefined;
-    href: string | undefined;
-    currentPostWikilink: string;
-    children: ReactNode;
-  }) => {
-    const isWikiLink = className?.includes('wikilink');
-    return isWikiLink && href ? (
-      <Wikilink onClick={viewPost(currentPostWikilink)} wikilink={href}>
-        {children}
-      </Wikilink>
-    ) : (
-      <a href={href} {...props} />
-    );
-  };
+  const [leftSideTitles, setLeftSideTitles] = useState<Title[]>();
+  const [rightSideTitles, setRightSideTitles] = useState<Title[]>();
 
   const viewPost = (currentPostWikilink: string) => (toView: Post) => {
     const currentPostIdx = posts.findIndex(
@@ -150,30 +131,10 @@ export default function BambooSlip({ post }: { post: Post }) {
                 )}
                 key={`content-${wikilink}`}
               >
-                <ReactMarkdown
-                  components={{
-                    // Must to do so to avoid the problem: https://github.com/facebook/react/issues/24519
-                    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                    p: ({ node, ...props }) => <div {...props} />,
-                    a: props => {
-                      const { className, href, children } = props;
-                      return wikilinkRender({
-                        className,
-                        href,
-                        children,
-                        currentPostWikilink: wikilink,
-                      });
-                    },
-                    // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-                    pre: ({ node, ...props }) => (
-                      <pre className="overflow-x-auto" {...props} />
-                    ),
-                  }}
-                  rehypePlugins={[rehypeFormat, rehypeStringify]}
-                  remarkPlugins={[remarkGfm, wikilinkPlugin]}
-                >
-                  {content}
-                </ReactMarkdown>
+                <SlipMarkdown
+                  content={content}
+                  onClickViewPost={viewPost(wikilink)}
+                />
                 <div>
                   <div className="bg-green-200 font-bold">Backlinks</div>
                   {backlinks.length > 0 ? (
