@@ -109,18 +109,18 @@ export default function BambooSlip({ post }: { post: Post }) {
     }
   };
 
-  const calcPostWidth = (isTitle: boolean) => {
+  const calcWidth = (isTitle: boolean) => {
     // unit: rem
-    const titleWidth = 2.5;
+    const titleWidth = 4;
+    const postCount = posts.length;
+    const expendedPostCount = getExpendedPosts().length;
+    const titleCount = postCount - expendedPostCount;
 
     if (isTitle) {
       return `${titleWidth}rem`;
     }
 
-    const postSize = posts.length;
-    const expendedPostSize = getExpendedPosts().length;
-    const titleSize = postSize - expendedPostSize;
-    return `calc(100% - (${titleWidth}rem) * ${titleSize} / ${postSize})`;
+    return `calc(100% - (${titleWidth}rem) * ${titleCount} / ${postCount})`;
   };
 
   return (
@@ -134,7 +134,7 @@ export default function BambooSlip({ post }: { post: Post }) {
             })}
             key={wikilink}
             style={{
-              width: calcPostWidth(!isNotTitle),
+              width: calcWidth(!isNotTitle),
             }}
           >
             {isNotTitle ? (
@@ -193,7 +193,7 @@ export default function BambooSlip({ post }: { post: Post }) {
               </div>
             ) : (
               <VerticalLrTitle
-                className={classNames('text-2xl', ' h-full')}
+                className={classNames('h-full', 'w-[inherit]')}
                 key={`title-${wikilink}`}
                 onClick={() => handleClickTitle(wikilink)}
                 title={title}

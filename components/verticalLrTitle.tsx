@@ -15,11 +15,15 @@ export default function VerticalLrTitle({
   return (
     <div
       className={classNames(
+        'text-2xl',
         '[writing-mode:vertical-lr]',
         'hover:bg-[#ebf4ff]',
-        'duration-300',
+        'hover:scale-105',
+        'hover:shadow',
+        'hover:border',
+        'hover:rounded',
+        'duration-200',
         'flex',
-        'w-full',
         className,
       )}
       onClick={onClick}
