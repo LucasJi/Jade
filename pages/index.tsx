@@ -29,7 +29,7 @@ function Box(props: ThreeElements['mesh']) {
 }
 
 function Lines() {
-  return <div></div>;
+  return <div>LINES</div>;
 }
 
 export default function Home() {
