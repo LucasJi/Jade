@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import classNames from 'classnames';
+import { GitHubLogoIcon } from '@radix-ui/react-icons';
 
 export default function Navbar({ className }: { className?: string }) {
   return (
@@ -19,8 +20,7 @@ export default function Navbar({ className }: { className?: string }) {
       <Link href="/">Home</Link>
 
       <Link href="/posts">Posts</Link>
-
-      <Link href="/posts">Roam Research</Link>
+      <GitHubLogoIcon />
     </div>
   );
 }
