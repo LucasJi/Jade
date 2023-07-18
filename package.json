@@ -20,6 +20,7 @@
     "classnames": "^2.3.2",
     "daisyui": "^3.1.0",
     "eslint": "8.29.0",
+    "feather-icons": "^4.29.0",
     "framer-motion": "^10.2.4",
     "ioredis": "^5.3.2",
     "lodash": "^4.17.21",
