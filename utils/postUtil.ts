@@ -31,8 +31,7 @@ const clearCachedSlugs = () => {
 
 const getPostSlugs = () => {
   const fileFullPaths = walkFilesRecursively(POST_DIR);
-  const slugs = fileFullPaths.map(fullPath => getSlugFromFullPath(fullPath));
-  return slugs;
+  return fileFullPaths.map(fullPath => getSlugFromFullPath(fullPath));
 };
 
 const getSlugFromFullPath = (fullPath: string) => {
@@ -62,8 +61,7 @@ const walkFilesRecursively = (dir: string, fileNameArray: string[] = []) => {
 const getFullPathFromSlug = (slug: string[]) => {
   const slugClone = [...slug];
   slugClone[slugClone.length - 1] = slugClone[slugClone.length - 1] + '.md';
-  const fullPath = join(POST_DIR, ...slugClone);
-  return fullPath;
+  return join(POST_DIR, ...slugClone);
 };
 
 const getWikilinkFromSlug = (slug: Slug) => {
@@ -133,7 +131,7 @@ export const initPosts = async (): Promise<Post[]> => {
   resolveWikilinks(posts);
 
   for (const post of posts) {
-    updateCachedPost(post);
+    await updateCachedPost(post);
   }
   return posts;
 };
