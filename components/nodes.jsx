@@ -150,16 +150,24 @@ export const Node = forwardRef(
       document.body.style.cursor = hovered ? 'grab' : 'auto';
     }, [hovered]);
 
-    const bind = useDrag(({ down, xy: [x, y] }) => {
+    const bind = useDrag(({ down, xy: [x, y], movement: [mx, my] }) => {
       document.body.style.cursor = down ? 'grabbing' : 'grab';
 
-      // console.log('x,y:', x, y);
-      // console.log('center of circle:', pos);
+      // TODO: find suitable position data
+      const [originalX, originalY] = denormalize(
+        pos.x,
+        pos.y,
+        size.width,
+        size.height,
+      );
+
+      console.log('original', originalX, originalY);
+      console.log('movement', mx, my);
 
       // camera's normalized device coordinate (NDC) space
       const [normalizedX, normalizedY] = normalize(
-        x,
-        y,
+        originalX + mx,
+        originalY + my,
         size.width,
         size.height,
       );
@@ -168,15 +176,7 @@ export const Node = forwardRef(
         .multiply(new Vector3(1, 1, 0))
         .clone();
 
-      const [denormalizedX, denormalizedY] = denormalize(
-        0,
-        0,
-        size.width,
-        size.height,
-      );
-      console.log(denormalizedX, denormalizedY);
-
-      // setPos(newPos);
+      setPos(newPos);
     }, {});
     return (
       <Circle
