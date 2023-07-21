@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import {
   createContext,
   forwardRef,
@@ -13,14 +13,29 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { QuadraticBezierLine, Text } from '@react-three/drei';
 import { useDrag } from '@use-gesture/react';
 
+const outerCircleRadius = 0.5;
+const innerCircleRadius = outerCircleRadius / 2;
+const junctionCircleRadius = 0.05;
+
+const normalize = (x, y, width, height) => [
+  (x / width) * 2 - 1,
+  -(y / height) * 2 + 1,
+];
+
+const denormalize = (x, y, width, height) => [
+  (width / 2) * (x + 1),
+  (height / 2) * (1 - y),
+];
+
 const context = createContext();
+
 const Circle = forwardRef(
   (
     {
       children,
       opacity = 1,
-      radius = 0.05,
-      segments = 32,
+      radius = junctionCircleRadius,
+      segments = 64,
       color = '#ff1050',
       ...props
     },
@@ -41,6 +56,20 @@ const Circle = forwardRef(
 export function Nodes({ children }) {
   const group = useRef();
   const [nodes, set] = useState([]);
+  /*
+  {
+    "start": {
+        "x": -1.65,
+        "y": 2,
+        "z": 0
+    },
+    "end": {
+        "x": 1.65,
+        "y": -3,
+        "z": 0
+    }
+}
+   */
   const lines = useMemo(() => {
     const lines = [];
     for (const node of nodes) {
@@ -62,15 +91,12 @@ export function Nodes({ children }) {
     ),
   );
 
-  console.log('lines:', lines);
-
   return (
     <context.Provider value={set}>
       <group ref={group}>
-        {lines.map((line, index) => (
-          <group key={new Date()}>
+        {lines.map(line => (
+          <group key={Math.random()}>
             <QuadraticBezierLine
-              key={new Date()}
               {...line}
               color="white"
               dashed
@@ -78,7 +104,6 @@ export function Nodes({ children }) {
               gapSize={20}
             />
             <QuadraticBezierLine
-              key={new Date()}
               {...line}
               color="white"
               lineWidth={0.5}
@@ -106,7 +131,8 @@ export const Node = forwardRef(
   ) => {
     const set = useContext(context);
     const { size, camera } = useThree();
-    const [pos, setPos] = useState(() => new THREE.Vector3(...position));
+    const [x, y, z] = position;
+    const [pos, setPos] = useState(() => new Vector3(x, y, z));
     const state = useMemo(
       () => ({ position: pos, connectedTo }),
       [pos, connectedTo],
@@ -114,27 +140,44 @@ export const Node = forwardRef(
     // Register this node on mount, unregister on unmount
     useLayoutEffect(() => {
       set(nodes => [...nodes, state]);
-      return () => void set(nodes => nodes.filter(n => n !== state));
+      return () => {
+        set(nodes => nodes.filter(n => n !== state));
+      };
     }, [state, pos]);
     // Drag n drop, hover
     const [hovered, setHovered] = useState(false);
-    useEffect(
-      () => void (document.body.style.cursor = hovered ? 'grab' : 'auto'),
-      [hovered],
-    );
+    useEffect(() => {
+      document.body.style.cursor = hovered ? 'grab' : 'auto';
+    }, [hovered]);
+
     const bind = useDrag(({ down, xy: [x, y] }) => {
       document.body.style.cursor = down ? 'grabbing' : 'grab';
-      setPos(
-        new THREE.Vector3(
-          (x / size.width) * 2 - 1,
-          -(y / size.height) * 2 + 1,
-          0,
-        )
-          .unproject(camera)
-          .multiply({ x: 1, y: 1, z: 0 })
-          .clone(),
+
+      // console.log('x,y:', x, y);
+      // console.log('center of circle:', pos);
+
+      // camera's normalized device coordinate (NDC) space
+      const [normalizedX, normalizedY] = normalize(
+        x,
+        y,
+        size.width,
+        size.height,
       );
-    });
+      const newPos = new Vector3(normalizedX, normalizedY, 0)
+        .unproject(camera)
+        .multiply(new Vector3(1, 1, 0))
+        .clone();
+
+      const [denormalizedX, denormalizedY] = denormalize(
+        0,
+        0,
+        size.width,
+        size.height,
+      );
+      console.log(denormalizedX, denormalizedY);
+
+      // setPos(newPos);
+    }, {});
     return (
       <Circle
         ref={ref}
@@ -142,7 +185,7 @@ export const Node = forwardRef(
         color={color}
         opacity={0.2}
         position={pos}
-        radius={0.5}
+        radius={outerCircleRadius}
         {...props}
       >
         <Circle
@@ -150,9 +193,9 @@ export const Node = forwardRef(
           onPointerOut={() => setHovered(false)}
           onPointerOver={() => setHovered(true)}
           position={[0, 0, 0.1]}
-          radius={0.25}
+          radius={innerCircleRadius}
         >
-          <Text fontSize={0.25} position={[0, 0, 1]}>
+          <Text fontSize={0.25} position={[0, 0, 0]}>
             {name}
           </Text>
         </Circle>
