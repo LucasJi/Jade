@@ -138,6 +138,7 @@ export const Node = forwardRef(
 
     const [x, y, z] = position;
     const [pos, setPos] = useState(() => new Vector3(x, y, z));
+    // DNC(device normalized coordinate) -> project -> de-normalized => world coordinate(screen pixel coordinate)
     const deviceCoordinate = useRef(
       denormalize(pos.clone().project(camera), size),
     );
