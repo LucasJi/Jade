@@ -84,6 +84,9 @@ export function Nodes({ children }) {
     }
     return lines;
   }, [nodes]);
+
+  console.log('lines:', lines);
+
   useFrame((_, delta) =>
     group.current.children.forEach(
       group =>
@@ -94,20 +97,22 @@ export function Nodes({ children }) {
   return (
     <context.Provider value={set}>
       <group ref={group}>
-        {lines.map(line => (
+        {lines.map(({ start, end }) => (
           <group key={Math.random()}>
             <QuadraticBezierLine
-              {...line}
               color="white"
               dashed
               dashScale={50}
+              end={end}
               gapSize={20}
+              start={start}
             />
             <QuadraticBezierLine
-              {...line}
               color="white"
+              end={end}
               lineWidth={0.5}
               opacity={0.1}
+              start={start}
               transparent
             />
           </group>

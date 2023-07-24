@@ -32,11 +32,12 @@ export default function Graph() {
 
         <Node
           color="#204090"
-          // connectedTo={[b, c, e]}
+          connectedTo={[b]}
           name="a"
           position={[0, 0, 0]}
           ref={a}
         />
+        <Node color="#904020" name="b" position={[2, -3, 0]} ref={b} />
       </Nodes>
     </Canvas>
   );
