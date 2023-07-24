@@ -17,15 +17,15 @@ const outerCircleRadius = 0.5;
 const innerCircleRadius = outerCircleRadius / 2;
 const junctionCircleRadius = 0.05;
 
-const normalize = (x, y, width, height) => [
-  (x / width) * 2 - 1,
-  -(y / height) * 2 + 1,
-];
+const normalize = (vec, size) =>
+  new Vector3((vec.x / size.width) * 2 - 1, -(vec.y / size.height) * 2 + 1, 0);
 
-const denormalize = (x, y, width, height) => [
-  (width / 2) * (x + 1),
-  (height / 2) * (1 - y),
-];
+const denormalize = (vec, size) =>
+  new Vector3(
+    (size.width / 2) * (vec.x + 1),
+    (size.height / 2) * (1 - vec.y),
+    vec.z,
+  );
 
 const context = createContext();
 
@@ -85,8 +85,6 @@ export function Nodes({ children }) {
     return lines;
   }, [nodes]);
 
-  console.log('lines:', lines);
-
   useFrame((_, delta) =>
     group.current.children.forEach(
       group =>
@@ -140,10 +138,9 @@ export const Node = forwardRef(
 
     const [x, y, z] = position;
     const [pos, setPos] = useState(() => new Vector3(x, y, z));
-    const initPos = useRef({
-      initNormalizedDeviceX: pos.x,
-      initNormalizedDeviceY: pos.y,
-    });
+    const deviceCoordinate = useRef(
+      denormalize(pos.clone().project(camera), size),
+    );
 
     const state = useMemo(
       () => ({ position: pos, connectedTo }),
@@ -167,25 +164,16 @@ export const Node = forwardRef(
     const bind = useDrag(({ down, movement: [mx, my] }) => {
       document.body.style.cursor = down ? 'grabbing' : 'grab';
 
-      const { initNormalizedDeviceX, initNormalizedDeviceY } = initPos.current;
-      const [initDeviceX, initDeviceY] = denormalize(
-        initNormalizedDeviceX,
-        initNormalizedDeviceY,
-        size.width,
-        size.height,
+      const movedDeviceCoordinate = deviceCoordinate.current
+        .clone()
+        .add(new Vector3(mx, my, 0));
+
+      const normalizedMovedDeviceCoordinate = normalize(
+        movedDeviceCoordinate,
+        size,
       );
 
-      // camera's normalized device coordinate (NDC) space
-      const movedDeviceX = initDeviceX + mx;
-      const movedDeviceY = initDeviceY + my;
-      const [normalizedDeviceX, normalizedDeviceY] = normalize(
-        movedDeviceX,
-        movedDeviceY,
-        size.width,
-        size.height,
-      );
-
-      const nextPos = new Vector3(normalizedDeviceX, normalizedDeviceY, 0)
+      const nextPos = normalizedMovedDeviceCoordinate
         .unproject(camera)
         .multiply(new Vector3(1, 1, 0))
         .clone();
@@ -193,10 +181,7 @@ export const Node = forwardRef(
 
       // When stopping dragging, update the initial normalized device coordinate for next-time dragging operation.
       if (!down) {
-        initPos.current = {
-          initNormalizedDeviceX: normalizedDeviceX,
-          initNormalizedDeviceY: normalizedDeviceY,
-        };
+        deviceCoordinate.current = movedDeviceCoordinate;
       }
     }, {});
     return (
