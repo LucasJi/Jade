@@ -186,6 +186,7 @@ export const Node = forwardRef(
         .clone();
       setPos(nextPos);
 
+      // When stopping dragging, update the initial normalized device coordinate for next-time dragging operation.
       if (!down) {
         initPos.current = {
           initNormalizedDeviceX: normalizedDeviceX,
