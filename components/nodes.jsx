@@ -130,13 +130,21 @@ export const Node = forwardRef(
     ref,
   ) => {
     const set = useContext(context);
+
     const { size, camera } = useThree();
+
     const [x, y, z] = position;
     const [pos, setPos] = useState(() => new Vector3(x, y, z));
+    const initPos = useRef({
+      initNormalizedDeviceX: pos.x,
+      initNormalizedDeviceY: pos.y,
+    });
+
     const state = useMemo(
       () => ({ position: pos, connectedTo }),
       [pos, connectedTo],
     );
+
     // Register this node on mount, unregister on unmount
     useLayoutEffect(() => {
       set(nodes => [...nodes, state]);
@@ -144,39 +152,46 @@ export const Node = forwardRef(
         set(nodes => nodes.filter(n => n !== state));
       };
     }, [state, pos]);
+
     // Drag n drop, hover
     const [hovered, setHovered] = useState(false);
     useEffect(() => {
       document.body.style.cursor = hovered ? 'grab' : 'auto';
     }, [hovered]);
 
-    const bind = useDrag(({ down, xy: [x, y], movement: [mx, my] }) => {
+    const bind = useDrag(({ down, movement: [mx, my] }) => {
       document.body.style.cursor = down ? 'grabbing' : 'grab';
 
-      // TODO: find suitable position data
-      const [originalX, originalY] = denormalize(
-        pos.x,
-        pos.y,
+      const { initNormalizedDeviceX, initNormalizedDeviceY } = initPos.current;
+      const [initDeviceX, initDeviceY] = denormalize(
+        initNormalizedDeviceX,
+        initNormalizedDeviceY,
         size.width,
         size.height,
       );
-
-      console.log('original', originalX, originalY);
-      console.log('movement', mx, my);
 
       // camera's normalized device coordinate (NDC) space
-      const [normalizedX, normalizedY] = normalize(
-        originalX + mx,
-        originalY + my,
+      const movedDeviceX = initDeviceX + mx;
+      const movedDeviceY = initDeviceY + my;
+      const [normalizedDeviceX, normalizedDeviceY] = normalize(
+        movedDeviceX,
+        movedDeviceY,
         size.width,
         size.height,
       );
-      const newPos = new Vector3(normalizedX, normalizedY, 0)
+
+      const nextPos = new Vector3(normalizedDeviceX, normalizedDeviceY, 0)
         .unproject(camera)
         .multiply(new Vector3(1, 1, 0))
         .clone();
+      setPos(nextPos);
 
-      setPos(newPos);
+      if (!down) {
+        initPos.current = {
+          initNormalizedDeviceX: normalizedDeviceX,
+          initNormalizedDeviceY: normalizedDeviceY,
+        };
+      }
     }, {});
     return (
       <Circle
