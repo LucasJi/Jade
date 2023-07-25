@@ -4,6 +4,7 @@ import Avatar from './avatar';
 import Slogan from './slogan';
 import Wikilink from './wikilink';
 import BambooSlip from './bambooSlip';
-import { Node, Nodes } from './nodes';
+import Node from './node';
+import Circle from './circle';
 
-export { Navbar, Markdown, Avatar, Slogan, Wikilink, BambooSlip, Nodes, Node };
+export { Navbar, Markdown, Avatar, Slogan, Wikilink, BambooSlip, Node, Circle };
