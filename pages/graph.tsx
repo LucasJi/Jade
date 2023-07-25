@@ -7,23 +7,27 @@ import useStore from '@store';
 import { Line } from '@types';
 
 export default function Graph() {
-  const { nodes } = useStore();
+  const { nodeMap } = useStore();
+
   const lines = useMemo(() => {
     const lines: Line[] = [];
-    for (const node of nodes) {
-      node.connectedTo
-        .map(target => [node.position, target])
-        .forEach(([start, end]) => {
-          if (start && end) {
-            lines.push({
-              start: start.clone().add(new Vector3(0.35, 0, 0)),
-              end: end.clone().add(new Vector3(-0.35, 0, 0)),
-            });
-          }
+
+    Object.keys(nodeMap).forEach(name => {
+      const node = nodeMap[name];
+      const connectedTo = node.connectedTo.map(
+        connectedToName => nodeMap[connectedToName].position,
+      );
+
+      connectedTo.forEach(target => {
+        lines.push({
+          start: node.position.clone().add(new Vector3(0.35, 0, 0)),
+          end: target.clone().add(new Vector3(-0.35, 0, 0)),
         });
-    }
+      });
+    });
+
     return lines;
-  }, [nodes]);
+  }, [nodeMap]);
 
   console.log('graph renders - lines:', lines);
 
@@ -62,15 +66,21 @@ export default function Graph() {
         ))}
       </group>
       {/*<Nodes>*/}
-      {nodes.map(node => (
-        <Node
-          color={node.color}
-          connectedTo={node.connectedTo}
-          key={node.name}
-          name={node.name}
-          position={node.position}
-        />
-      ))}
+      {Object.keys(nodeMap).map(name => {
+        const node = nodeMap[name];
+        const connectedTo = node.connectedTo.map(
+          connectedToName => nodeMap[connectedToName].position,
+        );
+        return (
+          <Node
+            color={node.color}
+            connectedTo={connectedTo}
+            key={name}
+            name={name}
+            position={node.position}
+          />
+        );
+      })}
       {/*</Nodes>*/}
       {/*<Node*/}
       {/*  color="#204090"*/}

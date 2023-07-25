@@ -1,41 +1,37 @@
 import { create, StateCreator } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { NodeProps } from '@types';
+import { NodeMap } from '@types';
 import { Vector3 } from 'three';
 
 const middleware = (f: StateCreator<StoreState>) => devtools(f);
 
 // TODO: migrate to post entities
-const nodes = [
-  {
-    name: 'a',
+const nodeMap: NodeMap = {
+  a: {
     position: new Vector3(0, 0, 0),
-    connectedTo: [new Vector3(2, -3, 0)],
+    connectedTo: ['b'],
     color: '#204090',
   },
-  {
-    name: 'b',
+  b: {
     position: new Vector3(2, -3, 0),
     color: '#904020',
     connectedTo: [],
   },
-];
+};
 
 interface StoreState {
-  nodes: NodeProps[];
+  nodeMap: NodeMap;
   updateNodePos: (name: string, pos: Vector3) => void;
 }
 
 const useStore = create<StoreState>()(
   middleware(set => ({
-    nodes,
+    nodeMap,
     updateNodePos: (name: string, pos: Vector3) =>
-      set(({ nodes }) => {
-        const toBeUpdated = nodes.find(n => n.name === name);
-        if (toBeUpdated) {
-          toBeUpdated.position = pos;
-        }
-        return { nodes: [...nodes] };
+      set(({ nodeMap }) => {
+        return {
+          nodeMap: { ...nodeMap, [name]: { ...nodeMap[name], position: pos } },
+        };
       }),
   })),
 );

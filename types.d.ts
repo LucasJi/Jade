@@ -33,3 +33,11 @@ export type Line = {
   start: Vector3;
   end: Vector3;
 };
+
+export type NodeMap = {
+  [name: string]: {
+    color: MeshBasicMaterialProps['color'];
+    connectedTo: string[];
+    position: Vector3;
+  };
+};
