@@ -45,7 +45,8 @@
     "unified": "^10.1.2",
     "unist-util-is": "^5.2.1",
     "unist-util-visit": "^4.1.2",
-    "vfile-reporter": "^7.0.4"
+    "vfile-reporter": "^7.0.4",
+    "zustand": "^4.3.9"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
