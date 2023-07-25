@@ -1,15 +1,12 @@
-import useStore from '@store';
 import { Fragment, useMemo, useRef } from 'react';
 import { Group, Vector3 } from 'three';
-import { Line } from '@types';
+import { Line, NodeMap } from '@types';
 import { useFrame } from '@react-three/fiber';
 import { QuadraticBezierLine } from '@react-three/drei';
 import { Circle, Node } from './index';
 import { Line2 } from 'three-stdlib';
 
-const Nodes = () => {
-  const { nodeMap } = useStore();
-
+const Nodes = ({ nodeMap }: { nodeMap: NodeMap }) => {
   const lineGroupRef = useRef<Group>(null);
 
   const lines = useMemo(() => {
@@ -47,7 +44,9 @@ const Nodes = () => {
     <Fragment>
       <group ref={lineGroupRef}>
         {lines.map(({ start, end }) => (
-          <group key={`${start}-${end}`}>
+          <group
+            key={`${start.x},${start.y},${start.z}-${end.x},${end.y},${end.z}`}
+          >
             <QuadraticBezierLine
               color="white"
               dashed
@@ -83,7 +82,10 @@ const Nodes = () => {
         );
       })}
       {lines.map(({ start, end }) => (
-        <group key={`${start}-${end}`} position-z={1}>
+        <group
+          key={`${start.x},${start.y},${start.z}-${end.x},${end.y},${end.z}`}
+          position-z={1}
+        >
           <Circle position={start} />
           <Circle position={end} />
         </group>

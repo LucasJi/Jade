@@ -1,14 +1,16 @@
 import { Canvas } from '@react-three/fiber';
 import { Nodes } from '@components';
+import useStore from '@store';
 
 export default function Graph() {
+  const { nodeMap } = useStore();
   return (
     <Canvas
       camera={{ zoom: 80 }}
       className="bg-[#151520] w-[500px] h-[500px] m-auto"
       orthographic
     >
-      <Nodes />
+      <Nodes nodeMap={nodeMap} />
       {/*<Node*/}
       {/*  color="#204090"*/}
       {/*  connectedTo={[b, c, e]}*/}
