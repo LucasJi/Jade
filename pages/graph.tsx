@@ -1,25 +1,18 @@
-import { createRef, useMemo, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Circle, Node } from '@components';
-import { Group, Object3D, Vector3 } from 'three';
-import { NodePosProps } from '@types';
+import { Vector3 } from 'three';
+import { Fragment, useMemo } from 'react';
 import { QuadraticBezierLine } from '@react-three/drei';
+import useStore from '@store';
+import { Line } from '@types';
 
 export default function Graph() {
-  const group = useRef<Group>(null);
-  const [nodes, set] = useState<NodePosProps[]>([]);
-  const [[a, b, c, d, e]] = useState(() =>
-    [...Array(5)].map(createRef<Object3D>),
-  );
-
+  const { nodes } = useStore();
   const lines = useMemo(() => {
-    const lines: {
-      start: Vector3;
-      end: Vector3;
-    }[] = [];
+    const lines: Line[] = [];
     for (const node of nodes) {
       node.connectedTo
-        .map(ref => [node.position, ref.current?.position])
+        .map(target => [node.position, target])
         .forEach(([start, end]) => {
           if (start && end) {
             lines.push({
@@ -32,12 +25,7 @@ export default function Graph() {
     return lines;
   }, [nodes]);
 
-  // useFrame((_, delta) =>
-  //   group.current.children.forEach(
-  //     group =>
-  //       (group.children[0].material.uniforms.dashOffset.value -= delta * 10),
-  //   ),
-  // );
+  console.log('graph renders - lines:', lines);
 
   return (
     <Canvas
@@ -45,10 +33,10 @@ export default function Graph() {
       className="bg-[#151520] w-[500px] h-[500px] m-auto"
       orthographic
     >
-      <>
-        <group ref={group}>
-          {lines.map(({ start, end }) => (
-            <group key={Math.random()}>
+      <group>
+        {lines.map(({ start, end }) => (
+          <Fragment key={`${start}-${end}`}>
+            <group>
               <QuadraticBezierLine
                 color="white"
                 dashed
@@ -66,30 +54,24 @@ export default function Graph() {
                 transparent
               />
             </group>
-          ))}
-        </group>
-        <Node
-          color="#204090"
-          connectedTo={[b]}
-          name="a"
-          position={new Vector3(0, 0, 0)}
-          ref={a}
-          set={set}
-        />
-        <Node
-          color="#904020"
-          name="b"
-          position={new Vector3(2, -3, 0)}
-          ref={b}
-          set={set}
-        />
-        {lines.map(({ start, end }, index) => (
-          <group key={index} position-z={1}>
-            <Circle position={start} />
-            <Circle position={end} />
-          </group>
+            <group position-z={1}>
+              <Circle position={start} />
+              <Circle position={end} />
+            </group>
+          </Fragment>
         ))}
-      </>
+      </group>
+      {/*<Nodes>*/}
+      {nodes.map(node => (
+        <Node
+          color={node.color}
+          connectedTo={node.connectedTo}
+          key={node.name}
+          name={node.name}
+          position={node.position}
+        />
+      ))}
+      {/*</Nodes>*/}
       {/*<Node*/}
       {/*  color="#204090"*/}
       {/*  connectedTo={[b, c, e]}*/}

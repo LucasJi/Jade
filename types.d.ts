@@ -1,6 +1,6 @@
-import { Mesh, Object3D, Vector3 } from 'three';
+import { Mesh, Vector3 } from 'three';
 import { MeshBasicMaterialProps } from '@react-three/fiber';
-import { Dispatch, ReactNode, RefObject, SetStateAction } from 'react';
+import { ReactNode } from 'react';
 
 export type Slug = string[];
 
@@ -14,7 +14,7 @@ export type Post = {
   href: string;
 };
 
-export type Circle = {
+export type CircleProps = {
   children?: ReactNode;
   color?: MeshBasicMaterialProps['color'];
   opacity?: MeshBasicMaterialProps['opacity'];
@@ -22,17 +22,14 @@ export type Circle = {
   segments?: number;
 } & Partial<Pick<Mesh, 'onPointerOut', 'onPointerOver'>>;
 
-export type NodeType = {
-  set: Dispatch<
-    SetStateAction<{ position: Vector3; connectedTo: RefObject<any>[] }[]>
-  >;
+export type NodeProps = {
   name: string;
   color?: MeshBasicMaterialProps['color'];
-  connectedTo?: RefObject<Object3D>[];
-  position?: Vector3;
+  connectedTo: Vector3[];
+  position: Vector3;
 };
 
-export type NodePosProps = {
-  position: Vector3;
-  connectedTo: RefObject<Object3D>[];
+export type Line = {
+  start: Vector3;
+  end: Vector3;
 };

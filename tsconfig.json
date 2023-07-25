@@ -37,6 +37,9 @@
       ],
       "@types": [
         "types.d.ts"
+      ],
+      "@store": [
+        "store"
       ]
     }
   },
