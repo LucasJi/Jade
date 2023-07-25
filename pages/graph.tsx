@@ -1,87 +1,14 @@
 import { Canvas } from '@react-three/fiber';
-import { Circle, Node } from '@components';
-import { Vector3 } from 'three';
-import { Fragment, useMemo } from 'react';
-import { QuadraticBezierLine } from '@react-three/drei';
-import useStore from '@store';
-import { Line } from '@types';
+import { Nodes } from '@components';
 
 export default function Graph() {
-  const { nodeMap } = useStore();
-
-  const lines = useMemo(() => {
-    const lines: Line[] = [];
-
-    Object.keys(nodeMap).forEach(name => {
-      const node = nodeMap[name];
-      const connectedTo = node.connectedTo.map(
-        connectedToName => nodeMap[connectedToName].position,
-      );
-
-      connectedTo.forEach(target => {
-        lines.push({
-          start: node.position.clone().add(new Vector3(0.35, 0, 0)),
-          end: target.clone().add(new Vector3(-0.35, 0, 0)),
-        });
-      });
-    });
-
-    return lines;
-  }, [nodeMap]);
-
-  console.log('graph renders - lines:', lines);
-
   return (
     <Canvas
       camera={{ zoom: 80 }}
       className="bg-[#151520] w-[500px] h-[500px] m-auto"
       orthographic
     >
-      <group>
-        {lines.map(({ start, end }) => (
-          <Fragment key={`${start}-${end}`}>
-            <group>
-              <QuadraticBezierLine
-                color="white"
-                dashed
-                dashScale={50}
-                end={end}
-                gapSize={20}
-                start={start}
-              />
-              <QuadraticBezierLine
-                color="white"
-                end={end}
-                lineWidth={0.5}
-                opacity={0.1}
-                start={start}
-                transparent
-              />
-            </group>
-            <group position-z={1}>
-              <Circle position={start} />
-              <Circle position={end} />
-            </group>
-          </Fragment>
-        ))}
-      </group>
-      {/*<Nodes>*/}
-      {Object.keys(nodeMap).map(name => {
-        const node = nodeMap[name];
-        const connectedTo = node.connectedTo.map(
-          connectedToName => nodeMap[connectedToName].position,
-        );
-        return (
-          <Node
-            color={node.color}
-            connectedTo={connectedTo}
-            key={name}
-            name={name}
-            position={node.position}
-          />
-        );
-      })}
-      {/*</Nodes>*/}
+      <Nodes />
       {/*<Node*/}
       {/*  color="#204090"*/}
       {/*  connectedTo={[b, c, e]}*/}
