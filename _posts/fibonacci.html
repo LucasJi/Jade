@@ -5,7 +5,7 @@
   <title>FibonacciSequence</title>
 </head>
 <body>
-<canvas id="myCanvas" width="1000" height="800" style="background-color:#ddd;"></canvas>
+<canvas id="myCanvas" width="800" height="800" style="background-color:#ddd;"></canvas>
 
 <input type="text" onchange="draw_many(parseInt(this.value))"/>
 
@@ -31,10 +31,10 @@
   function draw(n) {
     for (var i = 1; i < n; i++) {
       var len = fib(i);
-      //ctx.strokeRect(0,0,len,len)//画矩形的，可以看到产生的原理
+      ctx.strokeRect(0, 0, len, len)//画矩形的，可以看到产生的原理
       //画扇形
       ctx.beginPath();
-      ctx.arc(len, 0, len, Math.PI / 2, 2 * Math.PI / 2);
+      // ctx.arc(len, 0, len, Math.PI / 2, 2 * Math.PI / 2);
       ctx.stroke();
 
       //把原点移到原来原点的对角线上，然后旋转270度
@@ -42,7 +42,6 @@
       ctx.translate(len, len)
       ctx.rotate(3 * Math.PI / 2);
     }
-    ;
   }
 
   //画好多条螺旋线，漂亮
@@ -57,14 +56,39 @@
       ctx.translate(400, 400);
       //画一条旋转一点
       ctx.rotate(360 / total * i * Math.PI / 180);
-      draw(15);
+      draw(10);
       //恢复状态
       ctx.restore();
     }
   }
 
   //画180条线，很漂亮
-  draw_many(180)
+  // draw_many(1)
+
+  //中心移到画布中间
+  ctx.translate(400, 400);
+
+  ctx.arc(0, 0, 5, 0, Math.PI * 2);
+  // 指定“填充”属性
+  ctx.fillStyle = 'red';
+  // 执行“填充”操作
+  ctx.fill();
+  //画矩形的，可以看到产生的原理
+  ctx.strokeRect(0, 0, 100, 100);
+  ctx.beginPath()
+  ctx.arc(0, 0, 100, 0, Math.PI / 2);
+  ctx.stroke()
+
+  ctx.translate(0, 100);
+  ctx.rotate(Math.PI / 10);
+  ctx.beginPath();
+  ctx.arc(0, 0, 5, 0, Math.PI * 2);
+  ctx.fillStyle = 'red';
+  ctx.fill();
+  ctx.stroke()
+
+  // draw(15);
+
 
 </script>
 </body>
