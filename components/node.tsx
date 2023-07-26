@@ -6,7 +6,7 @@ import { useDrag } from '@use-gesture/react';
 import { NodeProps } from '@types';
 import { denormalize, normalize } from '@utils/graphUtil';
 import { Circle } from '@components';
-import useStore from '@store';
+import useStarryStore from '@store';
 
 const outerCircleRadius = 0.5;
 const innerCircleRadius = outerCircleRadius / 2;
@@ -17,7 +17,7 @@ const Node = ({
   connectedTo = [],
   position = new Vector3(0, 0, 0),
 }: NodeProps) => {
-  const { updateNodePos } = useStore();
+  const { updateNodePos } = useStarryStore();
   const { size, camera } = useThree();
   const [x, y, z] = position;
   const [pos, setPos] = useState(() => new Vector3(x, y, z));

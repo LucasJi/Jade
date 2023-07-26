@@ -1,9 +1,20 @@
 import { Canvas } from '@react-three/fiber';
 import { Nodes } from '@components';
-import useStore from '@store';
+import useStarryStore from '@store';
+import { useEffect } from 'react';
+import httpClient from '@utils/axios';
 
 export default function Graph() {
-  const { nodeMap } = useStore();
+  const { nodeMap, postMap, initPostMap } = useStarryStore();
+  useEffect(() => {
+    httpClient.post('api/getPostMap').then(res => {
+      const { data } = res;
+      initPostMap(data);
+    });
+  }, []);
+
+  console.log('postMap:', postMap);
+
   return (
     <Canvas
       camera={{ zoom: 80 }}

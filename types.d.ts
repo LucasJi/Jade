@@ -14,6 +14,10 @@ export type Post = {
   href: string;
 };
 
+export type PostMap = {
+  [wikilink: string]: Post;
+};
+
 export type CircleProps = {
   children?: ReactNode;
   color?: MeshBasicMaterialProps['color'];

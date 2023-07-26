@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
-import { Post, Slug } from 'types';
+import { Post, PostMap, Slug } from 'types';
 import { redis } from './redisUtil';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
@@ -122,6 +122,15 @@ export const getCachedPosts = async (): Promise<Post[]> => {
     }
   }
   return posts;
+};
+
+export const getCachedPostMap = async (): Promise<PostMap> => {
+  const posts = await getCachedPosts();
+  const postMap: PostMap = {};
+  posts.forEach(post => {
+    postMap[post.wikilink] = post;
+  });
+  return postMap;
 };
 
 export const initPosts = async (): Promise<Post[]> => {

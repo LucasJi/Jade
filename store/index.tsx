@@ -1,6 +1,6 @@
 import { create, StateCreator } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { NodeMap } from '@types';
+import { NodeMap, PostMap } from '@types';
 import { Vector3 } from 'three';
 
 const middleware = (f: StateCreator<StoreState>) => devtools(f);
@@ -22,9 +22,11 @@ const nodeMap: NodeMap = {
 interface StoreState {
   nodeMap: NodeMap;
   updateNodePos: (name: string, pos: Vector3) => void;
+  postMap: PostMap;
+  initPostMap: (initPostMap: PostMap) => void;
 }
 
-const useStore = create<StoreState>()(
+const useStarryStore = create<StoreState>()(
   middleware(set => ({
     nodeMap,
     updateNodePos: (name: string, pos: Vector3) =>
@@ -33,6 +35,11 @@ const useStore = create<StoreState>()(
           nodeMap: { ...nodeMap, [name]: { ...nodeMap[name], position: pos } },
         };
       }),
+    postMap: {},
+    initPostMap: (initPostMap: PostMap) =>
+      set(() => {
+        return { postMap: initPostMap };
+      }),
   })),
 );
-export default useStore;
+export default useStarryStore;
