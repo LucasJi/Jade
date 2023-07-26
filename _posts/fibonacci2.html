@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html"/>
+  <meta name="keywords" content="不用临时变量进行两个值的变换"/>
+  <meta name="description" content="不使用临时变量进行两值的变换"/>
+  <meta name="author" content="KG"/>
+  <title>不是用临时变量，进行两个值的交换</title>
+  <link rel="shortcut icon" href="favicon.icon"/>
+</head>
+<body>
+<canvas></canvas>
+<script>
+  // 不用临时变量进行两个值的变换
+  // function swap(a, b) {
+  //   a = a + b;
+  //   b = a - b;
+  //   a = a - b;
+  //   console.log(a, b)
+  // }
+  //
+  // swap(4, 5);
+
+  // 斐波那契数列的获取，长度为11个；
+  // function fiboArr(len) {
+  //   let fiboArr = [];
+  //   for (var i = 0; i < len; i++) {
+  //     if (i <= 1) {
+  //       fiboArr.push(i);
+  //     } else {
+  //       fiboArr.push(fiboArr[i - 1] + fiboArr[i - 2]);
+  //     }
+  //   }
+  //   return fiboArr;
+  // }
+  //
+  // console.log(fiboArr(11));
+
+  // 斐波那契曲线
+  let canvas = document.getElementsByTagName('canvas')[0]
+  canvas.width = 800
+  canvas.height = 800
+  let coor = {
+    x: 400,
+    y: 400,
+  }
+  //先取背景图中的中间点作为一开始的圆点
+
+  let ctx = canvas.getContext('2d')
+  //获取该canvas的2D绘图环境对象
+
+  /*
+  绘制曲线方法
+  @param prevR 这是斐波那契数列中前一位的数值，也就是上一截曲线的半径
+  @param n 这是斐波那契数列中的下标
+  @param r 这是斐波那契数列当前下标的值，也就是将画曲线的半径
+  */
+
+  /*圆心变化规律
+  ctx.arc(300, 240, 5, Math.PI, 0.5 * Math.PI, true);//1
+  ctx.arc(300, 235, 10, Math.PI * 0.5, 0, true);//2
+  ctx.arc(295, 235, 15, 0, Math.PI * 1.5, true);//3
+  ctx.arc(295, 245, 25, Math.PI * 1.5, Math.PI, true);//4
+  ctx.arc(310, 245, 40, Math.PI, Math.PI * 0.5, true);
+  ctx.arc(310, 220, 65, Math.PI * 0.5, 0, true);
+  ctx.arc(270, 220, 105, 0, Math.PI * 1.5, true);
+  ctx.arc(270, 285, 170, Math.PI * 1.5, Math.PI, true);
+  */
+
+  function draw(prevR, n, curR) {
+    let radius = curR * 5
+    //五倍半径画，不然太小了
+
+    let startAngle = Math.PI
+    let endAngle = Math.PI * 0.5
+    //每个半径只画1/4个圆，所以开始角度和结束角度刚好相差 1/4 * PI
+
+    let anticlockwise = true
+    //设置为逆时针方向画
+
+    //改变圆点坐标、开始角度和结束角度
+    //第三个元素的圆点坐标、开始角度和结束角度上面已经给出，所以从第四个元素开始改变圆点坐标、开始角度和结束角度，也就是从n > 2开始
+    if (n > 2) {
+      //下面坐标的改变可以参考上面的图和直接用canvas画的代码。
+      switch (n % 4) {
+        case 0:
+          coor.x = coor.x + (5 * prevR) - radius
+          startAngle = 0
+          endAngle = Math.PI * 1.5
+          break;
+        case 1:
+          coor.y = coor.y - (5 * prevR) + radius
+          startAngle = Math.PI * 1.5
+          endAngle = Math.PI
+          break;
+        case 2:
+          coor.x = coor.x - (5 * prevR) + radius
+          startAngle = Math.PI
+          endAngle = Math.PI * 0.5
+          break;
+        case 3:
+          coor.y = coor.y + (5 * prevR) - radius
+          startAngle = Math.PI * 0.5
+          endAngle = 0
+          break;
+      }
+    }
+    ctx.beginPath();
+    ctx.arc(coor.x, coor.y, radius, startAngle, endAngle, anticlockwise);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#a77a7a';
+    ctx.stroke();
+  }
+
+  //获取斐波那契数列
+  function getFibonacci(n) {
+    let arr = []
+    let i = 0
+    while (i < n) {
+      if (i <= 1) {
+        arr.push(i)
+      } else {
+        arr.push(arr[i - 1] + arr[i - 2])
+      }
+      i++
+    }
+    return arr
+  }
+
+  let fibonacci = getFibonacci(10);
+  for (let i = 0; i < fibonacci.length; i++) {
+    //从第三个元素开始画，符合斐波那契数列的规律
+    if (i >= 2) {
+      draw(fibonacci[i - 1], i, fibonacci[i])
+    }
+  }
+</script>
+</body>
+</html>

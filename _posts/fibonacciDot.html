@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>斐波那契曲线点</title>
+</head>
+<body>
+<canvas id="myCanvas" width="800" height="800" style="background-color:#ddd;"></canvas>
+
+<script type="text/javascript">
+
+  const canvas = document.getElementById('myCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // 在(top: 100, left: 100)的位置绘制一个半径为5px的圆
+  ctx.arc(400, 400, 5, 0, Math.PI * 2);
+  // 指定“填充”属性
+  ctx.fillStyle = 'red';
+  // 执行“填充”操作
+  ctx.fill();
+</script>
+</body>
+</html>
