@@ -30,7 +30,7 @@
   //n表示计算数列到多少
   function draw(n) {
     for (var i = 1; i < n; i++) {
-      var len = fib(i) * 13;
+      var len = fib(i) * 10;
       const x = len;
       const y = 0;
       //画矩形的，可以看到产生的原理
@@ -43,7 +43,7 @@
       const circleNumber = i;
       const baseAngle = Math.PI / 2;
       const angle = baseAngle / circleNumber;
-      if (i <= 3 && i > 1) {
+      if (i <= 3 && i > 2) {
         console.log(i)
         ctx.beginPath();
         const cX = x;
@@ -90,7 +90,7 @@
 
   //中心移到画布中间
   ctx.translate(400, 400);
-  draw(15);
+  draw(11);
 
 </script>
 </body>
