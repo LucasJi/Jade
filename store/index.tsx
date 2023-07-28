@@ -13,7 +13,7 @@ const nodeMap: NodeMap = {
     color: '#204090',
   },
   b: {
-    position: new Vector3(2, -3, 0),
+    position: new Vector3(2.2836140246613965, 11.480502970952694, 0),
     color: '#904020',
     connectedTo: [],
   },
