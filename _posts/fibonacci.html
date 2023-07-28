@@ -43,15 +43,15 @@
       const circleNumber = i;
       const baseAngle = Math.PI / 2;
       const angle = baseAngle / circleNumber;
-      if (i <= 4) {
+      if (i <= 3 && i > 1) {
         console.log(i)
         ctx.beginPath();
         const cX = x;
         const cY = y;
         ctx.arc(cX, cY, 5, 0, 2 * Math.PI);
         ctx.stroke();
-      } else {
-        for (let count = 1; count <= circleNumber; count++) {
+      } else if (i > 3) {
+        for (let count = 1; count <= circleNumber - 3; count++) {
           ctx.beginPath();
           const cX = x - len * Math.cos(angle * count);
           const cY = y + len * Math.sin(angle * count);
