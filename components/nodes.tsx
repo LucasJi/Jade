@@ -1,35 +1,56 @@
-import { Fragment, useMemo, useRef } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { Group, Vector3 } from 'three';
-import { Line, NodeMap } from '@types';
-import { useFrame } from '@react-three/fiber';
+import { Line, PostMap } from '@types';
+import { useFrame, useThree } from '@react-three/fiber';
 import { QuadraticBezierLine } from '@react-three/drei';
 import { Circle, Node } from './index';
 import { Line2 } from 'three-stdlib';
+import useStarryStore from '@store';
+import httpClient from '@utils/axios';
+import { AxiosResponse } from 'axios';
+import { generateRandomCoordinate, wcToDnc } from '@utils/graphUtil';
 
-const Nodes = ({ nodeMap }: { nodeMap: NodeMap }) => {
+const Nodes = () => {
   const lineGroupRef = useRef<Group>(null);
+  const { size, camera } = useThree();
+  const { postMap, initPostMap } = useStarryStore();
+
+  useEffect(() => {
+    const radius = Math.min(size.width, size.height) / 2;
+    httpClient.post('api/getPostMap').then((res: AxiosResponse<PostMap>) => {
+      const { data } = res;
+
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        const [x, y] = generateRandomCoordinate(size.width, size.height);
+        value.position = new Vector3(x, y, 0);
+      });
+
+      initPostMap(data);
+    });
+  }, []);
 
   const lines = useMemo(() => {
     const lines: Line[] = [];
 
-    Object.keys(nodeMap).forEach(name => {
-      const node = nodeMap[name];
-      const connectedTo = node.connectedTo.map(
-        connectedToName => nodeMap[connectedToName].position,
+    Object.keys(postMap).forEach(name => {
+      const post = postMap[name];
+      const connectedTo = post.forwardWikilinks.map(
+        wikilink => postMap[wikilink].position,
       );
 
       connectedTo.forEach(target => {
         lines.push({
-          start: node.position.clone().add(new Vector3(0.35, 0, 0)),
-          end: target.clone().add(new Vector3(-0.35, 0, 0)),
+          start: wcToDnc(camera, size, post.position).add(
+            new Vector3(0.35, 0, 0),
+          ),
+          end: wcToDnc(camera, size, target).add(new Vector3(-0.35, 0, 0)),
         });
       });
     });
 
     return lines;
-  }, [nodeMap]);
-
-  console.log('graph renders - lines:', lines);
+  }, [postMap]);
 
   useFrame((_, delta) => {
     if (lineGroupRef.current) {
@@ -39,6 +60,8 @@ const Nodes = ({ nodeMap }: { nodeMap: NodeMap }) => {
       });
     }
   });
+
+  console.log(postMap);
 
   return (
     <Fragment>
@@ -66,18 +89,18 @@ const Nodes = ({ nodeMap }: { nodeMap: NodeMap }) => {
           </group>
         ))}
       </group>
-      {Object.keys(nodeMap).map(name => {
-        const node = nodeMap[name];
-        const connectedTo = node.connectedTo.map(
-          connectedToName => nodeMap[connectedToName].position,
+      {Object.keys(postMap).map(name => {
+        const post = postMap[name];
+        const connectedTo = post.forwardWikilinks.map(
+          wikilink => postMap[wikilink].position,
         );
         return (
           <Node
-            color={node.color}
+            color="#204090"
             connectedTo={connectedTo}
             key={name}
             name={name}
-            position={node.position}
+            position={post.position}
           />
         );
       })}

@@ -4,7 +4,7 @@ import { useThree } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import { useDrag } from '@use-gesture/react';
 import { NodeProps } from '@types';
-import { denormalize, normalize } from '@utils/graphUtil';
+import { dncToWc, wcToDnc } from '@utils/graphUtil';
 import { Circle } from '@components';
 import useStarryStore from '@store';
 
@@ -17,14 +17,12 @@ const Node = ({
   connectedTo = [],
   position = new Vector3(0, 0, 0),
 }: NodeProps) => {
-  const { updateNodePos } = useStarryStore();
+  const { updatePostPos } = useStarryStore();
   const { size, camera } = useThree();
-  const [x, y, z] = position;
-  const [pos, setPos] = useState(() => new Vector3(x, y, z));
+  const [dnc, setDnc] = useState(() => wcToDnc(camera, size, position));
   // DNC(device normalized coordinate) -> project -> de-normalized => world coordinate(screen pixel coordinate)
-  const deviceCoordinate = useRef(
-    denormalize(pos.clone().project(camera), size),
-  );
+  // denormalize(dnc.clone().project(camera), size),
+  const worldCoordinate = useRef(position.clone());
   // Drag n drop, hover
   const [hovered, setHovered] = useState(false);
   useEffect(() => {
@@ -34,33 +32,28 @@ const Node = ({
   const bind = useDrag(({ down, movement: [mx, my] }) => {
     document.body.style.cursor = down ? 'grabbing' : 'grab';
 
-    const movedDeviceCoordinate = deviceCoordinate.current
+    const movedWorldCoordinate = worldCoordinate.current
       .clone()
       .add(new Vector3(mx, my, 0));
 
-    const normalizedMovedDeviceCoordinate = normalize(
-      movedDeviceCoordinate,
-      size,
-    );
+    const nextDnc = wcToDnc(camera, size, movedWorldCoordinate);
 
-    const nextPos = normalizedMovedDeviceCoordinate
-      .unproject(camera)
-      .multiply(new Vector3(1, 1, 0))
-      .clone();
-    setPos(nextPos);
-    updateNodePos(name, nextPos);
+    setDnc(nextDnc);
+
+    updatePostPos(name, dncToWc(camera, size, nextDnc));
 
     // When stopping dragging, update the initial device coordinate for next-time dragging operation.
     if (!down) {
-      deviceCoordinate.current = movedDeviceCoordinate;
+      worldCoordinate.current = movedWorldCoordinate;
     }
   }, {});
+
   return (
     <Circle
       {...bind()}
       color={color}
       opacity={0.2}
-      position={pos}
+      position={dnc}
       radius={outerCircleRadius}
     >
       <Circle
