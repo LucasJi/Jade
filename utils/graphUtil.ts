@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { Size } from '@react-three/fiber';
+import { Camera, Size } from '@react-three/fiber';
 
 const normalize = (vec: Vector3, size: Size): Vector3 =>
   new Vector3((vec.x / size.width) * 2 - 1, -(vec.y / size.height) * 2 + 1, 0);
@@ -25,4 +25,12 @@ const directSamplingInCircle = (
   ];
 };
 
-export { normalize, denormalize, directSamplingInCircle };
+// convert world coordinate to normalized device coordinate
+const wcToDnc = (camera: Camera, size: Size, position: Vector3) =>
+  normalize(position, size).unproject(camera).multiply(new Vector3(1, 1, 0));
+
+// convert normalized device coordinate to world coordinate
+const dncToWc = (camera: Camera, size: Size, dnc: Vector3) =>
+  denormalize(dnc.clone().project(camera), size).multiply(new Vector3(1, 1, 0));
+
+export { normalize, denormalize, directSamplingInCircle, wcToDnc, dncToWc };

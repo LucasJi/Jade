@@ -15,7 +15,7 @@ export type Post = {
 };
 
 export type PostMap = {
-  [wikilink: string]: Post;
+  [wikilink: string]: Post & { position: Vector3 };
 };
 
 export type CircleProps = {
@@ -36,12 +36,4 @@ export type NodeProps = {
 export type Line = {
   start: Vector3;
   end: Vector3;
-};
-
-export type NodeMap = {
-  [name: string]: {
-    color: MeshBasicMaterialProps['color'];
-    connectedTo: string[];
-    position: Vector3;
-  };
 };

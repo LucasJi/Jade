@@ -8,12 +8,12 @@ import { Line2 } from 'three-stdlib';
 import useStarryStore from '@store';
 import httpClient from '@utils/axios';
 import { AxiosResponse } from 'axios';
-import { directSamplingInCircle } from '@utils/graphUtil';
+import { directSamplingInCircle, wcToDnc } from '@utils/graphUtil';
 
 const Nodes = () => {
   const lineGroupRef = useRef<Group>(null);
-  const { size } = useThree();
-  const { nodeMap, postMap, initPostMap } = useStarryStore();
+  const { size, camera } = useThree();
+  const { postMap, initPostMap } = useStarryStore();
 
   useEffect(() => {
     httpClient.post('api/getPostMap').then((res: AxiosResponse<PostMap>) => {
@@ -21,11 +21,12 @@ const Nodes = () => {
 
       Object.keys(data).forEach(key => {
         const value = data[key];
-        const randomCoordinate = directSamplingInCircle(
+        const [x, y] = directSamplingInCircle(
           Math.min(size.height, size.width),
-          0,
-          0,
+          size.width / 2,
+          size.height / 2,
         );
+        value.position = new Vector3(x, y, 0);
       });
 
       initPostMap(data);
@@ -35,22 +36,24 @@ const Nodes = () => {
   const lines = useMemo(() => {
     const lines: Line[] = [];
 
-    Object.keys(nodeMap).forEach(name => {
-      const node = nodeMap[name];
-      const connectedTo = node.connectedTo.map(
-        connectedToName => nodeMap[connectedToName].position,
+    Object.keys(postMap).forEach(name => {
+      const post = postMap[name];
+      const connectedTo = post.forwardWikilinks.map(
+        wikilink => postMap[wikilink].position,
       );
 
       connectedTo.forEach(target => {
         lines.push({
-          start: node.position.clone().add(new Vector3(0.35, 0, 0)),
-          end: target.clone().add(new Vector3(-0.35, 0, 0)),
+          start: wcToDnc(camera, size, post.position).add(
+            new Vector3(0.35, 0, 0),
+          ),
+          end: wcToDnc(camera, size, target).add(new Vector3(-0.35, 0, 0)),
         });
       });
     });
 
     return lines;
-  }, [nodeMap]);
+  }, [postMap]);
 
   useFrame((_, delta) => {
     if (lineGroupRef.current) {
@@ -60,6 +63,8 @@ const Nodes = () => {
       });
     }
   });
+
+  console.log(postMap);
 
   return (
     <Fragment>
@@ -87,18 +92,18 @@ const Nodes = () => {
           </group>
         ))}
       </group>
-      {Object.keys(nodeMap).map(name => {
-        const node = nodeMap[name];
-        const connectedTo = node.connectedTo.map(
-          connectedToName => nodeMap[connectedToName].position,
+      {Object.keys(postMap).map(name => {
+        const post = postMap[name];
+        const connectedTo = post.forwardWikilinks.map(
+          wikilink => postMap[wikilink].position,
         );
         return (
           <Node
-            color={node.color}
+            color="#204090"
             connectedTo={connectedTo}
             key={name}
             name={name}
-            position={node.position}
+            position={post.position}
           />
         );
       })}

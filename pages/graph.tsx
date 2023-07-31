@@ -1,48 +1,9 @@
 import { Canvas } from '@react-three/fiber';
 import { Nodes } from '@components';
 
-// const fibVal = [0, 1];
-// const fib = (n: number) => {
-//   const len = fibVal.length;
-//
-//   if (n <= len - 1) {
-//     return fibVal[n];
-//   }
-//
-//   for (let i = len; i <= n; i++) {
-//     fibVal.push(fibVal[i - 1] + fibVal[i - 2]);
-//   }
-//   return fibVal[n];
-// };
-//
-// const postCount = 12;
-//
-// for (let i = 1; i <= postCount; i++) {
-//   const len = fib(i) * 10;
-//   const x = len;
-//   const y = 0;
-//
-//   const circleNumber = i;
-//   const baseAngle = Math.PI / 2;
-//   const angle = baseAngle / circleNumber;
-//
-//   const pos = new Vector3(x, y, 0);
-//   const origin = new Vector3(0, 0, 0);
-//   if (i <= 3 && i > 2) {
-//     console.log(pos);
-//   } else if (i > 3) {
-//     for (let count = 1; count <= circleNumber - 3; count++) {
-//       const rotated = pos.clone().applyAxisAngle(origin, Math.PI / 4);
-//       const cX = x - len * Math.cos(angle * count);
-//       const cY = y + len * Math.sin(angle * count);
-//       console.log(rotated);
-//     }
-//   }
-// }
-
 export default function Graph() {
   return (
-    <div className="bg-[#151520] w-[500px] h-[500px] m-auto">
+    <div className="bg-[#151520] w-full h-full m-auto">
       <Canvas camera={{ zoom: 80 }} orthographic>
         <Nodes />
         {/*<Node*/}
