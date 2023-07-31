@@ -25,6 +25,12 @@ const directSamplingInCircle = (
   ];
 };
 
+const generateRandomCoordinate = (width: number, height: number) => {
+  const randomWidth = Math.random() * width;
+  const randomHeight = Math.random() * height;
+  return [randomWidth, randomHeight];
+};
+
 // convert world coordinate to normalized device coordinate
 const wcToDnc = (camera: Camera, size: Size, position: Vector3) =>
   normalize(position, size).unproject(camera).multiply(new Vector3(1, 1, 0));
@@ -33,4 +39,11 @@ const wcToDnc = (camera: Camera, size: Size, position: Vector3) =>
 const dncToWc = (camera: Camera, size: Size, dnc: Vector3) =>
   denormalize(dnc.clone().project(camera), size).multiply(new Vector3(1, 1, 0));
 
-export { normalize, denormalize, directSamplingInCircle, wcToDnc, dncToWc };
+export {
+  normalize,
+  denormalize,
+  directSamplingInCircle,
+  wcToDnc,
+  dncToWc,
+  generateRandomCoordinate,
+};

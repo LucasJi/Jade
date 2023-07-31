@@ -8,7 +8,7 @@ import { Line2 } from 'three-stdlib';
 import useStarryStore from '@store';
 import httpClient from '@utils/axios';
 import { AxiosResponse } from 'axios';
-import { directSamplingInCircle, wcToDnc } from '@utils/graphUtil';
+import { generateRandomCoordinate, wcToDnc } from '@utils/graphUtil';
 
 const Nodes = () => {
   const lineGroupRef = useRef<Group>(null);
@@ -16,16 +16,13 @@ const Nodes = () => {
   const { postMap, initPostMap } = useStarryStore();
 
   useEffect(() => {
+    const radius = Math.min(size.width, size.height) / 2;
     httpClient.post('api/getPostMap').then((res: AxiosResponse<PostMap>) => {
       const { data } = res;
 
       Object.keys(data).forEach(key => {
         const value = data[key];
-        const [x, y] = directSamplingInCircle(
-          Math.min(size.height, size.width),
-          size.width / 2,
-          size.height / 2,
-        );
+        const [x, y] = generateRandomCoordinate(size.width, size.height);
         value.position = new Vector3(x, y, 0);
       });
 
