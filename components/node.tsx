@@ -19,11 +19,10 @@ const Node = ({
 }: NodeProps) => {
   const { updateNodePos } = useStarryStore();
   const { size, camera } = useThree();
-  const [x, y, z] = position;
-  const [pos, setPos] = useState(() => new Vector3(x, y, z));
+  const [dnc, setDnc] = useState(position);
   // DNC(device normalized coordinate) -> project -> de-normalized => world coordinate(screen pixel coordinate)
-  const deviceCoordinate = useRef(
-    denormalize(pos.clone().project(camera), size),
+  const worldCoordinate = useRef(
+    denormalize(dnc.clone().project(camera), size),
   );
   // Drag n drop, hover
   const [hovered, setHovered] = useState(false);
@@ -34,33 +33,36 @@ const Node = ({
   const bind = useDrag(({ down, movement: [mx, my] }) => {
     document.body.style.cursor = down ? 'grabbing' : 'grab';
 
-    const movedDeviceCoordinate = deviceCoordinate.current
+    const movedWorldCoordinate = worldCoordinate.current
       .clone()
       .add(new Vector3(mx, my, 0));
 
-    const normalizedMovedDeviceCoordinate = normalize(
-      movedDeviceCoordinate,
+    const normalizedMovedWorldCoordinate = normalize(
+      movedWorldCoordinate,
       size,
     );
 
-    const nextPos = normalizedMovedDeviceCoordinate
+    const nextDnc = normalizedMovedWorldCoordinate
       .unproject(camera)
       .multiply(new Vector3(1, 1, 0))
       .clone();
-    setPos(nextPos);
-    updateNodePos(name, nextPos);
+
+    setDnc(nextDnc);
+
+    updateNodePos(name, nextDnc);
 
     // When stopping dragging, update the initial device coordinate for next-time dragging operation.
     if (!down) {
-      deviceCoordinate.current = movedDeviceCoordinate;
+      worldCoordinate.current = movedWorldCoordinate;
     }
   }, {});
+
   return (
     <Circle
       {...bind()}
       color={color}
       opacity={0.2}
-      position={pos}
+      position={dnc}
       radius={outerCircleRadius}
     >
       <Circle

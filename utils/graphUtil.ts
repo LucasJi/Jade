@@ -11,4 +11,18 @@ const denormalize = (vec: Vector3, size: Size): Vector3 =>
     vec.z,
   );
 
-export { normalize, denormalize };
+const directSamplingInCircle = (
+  radius: number,
+  xCenter: number,
+  yCenter: number,
+) => {
+  const u = Math.random();
+  const theta = Math.random() * 2 * Math.PI;
+  const r = Math.sqrt(u);
+  return [
+    xCenter + r * Math.cos(theta) * radius,
+    yCenter + r * Math.sin(theta) * radius,
+  ];
+};
+
+export { normalize, denormalize, directSamplingInCircle };

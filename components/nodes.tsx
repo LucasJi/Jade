@@ -1,13 +1,36 @@
-import { Fragment, useMemo, useRef } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { Group, Vector3 } from 'three';
-import { Line, NodeMap } from '@types';
-import { useFrame } from '@react-three/fiber';
+import { Line, PostMap } from '@types';
+import { useFrame, useThree } from '@react-three/fiber';
 import { QuadraticBezierLine } from '@react-three/drei';
 import { Circle, Node } from './index';
 import { Line2 } from 'three-stdlib';
+import useStarryStore from '@store';
+import httpClient from '@utils/axios';
+import { AxiosResponse } from 'axios';
+import { directSamplingInCircle } from '@utils/graphUtil';
 
-const Nodes = ({ nodeMap }: { nodeMap: NodeMap }) => {
+const Nodes = () => {
   const lineGroupRef = useRef<Group>(null);
+  const { size } = useThree();
+  const { nodeMap, postMap, initPostMap } = useStarryStore();
+
+  useEffect(() => {
+    httpClient.post('api/getPostMap').then((res: AxiosResponse<PostMap>) => {
+      const { data } = res;
+
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        const randomCoordinate = directSamplingInCircle(
+          Math.min(size.height, size.width),
+          0,
+          0,
+        );
+      });
+
+      initPostMap(data);
+    });
+  }, []);
 
   const lines = useMemo(() => {
     const lines: Line[] = [];
@@ -28,8 +51,6 @@ const Nodes = ({ nodeMap }: { nodeMap: NodeMap }) => {
 
     return lines;
   }, [nodeMap]);
-
-  console.log('graph renders - lines:', lines);
 
   useFrame((_, delta) => {
     if (lineGroupRef.current) {
