@@ -7,12 +7,9 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   //Find the absolute path of the json directory
-  const jsonDirectory = path.join(process.cwd(), 'docs');
+  const jsonDirectory = path.join(process.cwd(), 'public');
   //Read the json data file data.json
-  const fileContents = await fs.readFile(
-    jsonDirectory + '/miserables.json',
-    'utf8',
-  );
+  const fileContents = await fs.readFile(jsonDirectory + '/nodes.json', 'utf8');
 
   const data = JSON.parse(fileContents);
 

@@ -1,7 +1,3 @@
-import { Mesh, Vector3 } from 'three';
-import { MeshBasicMaterialProps } from '@react-three/fiber';
-import { ReactNode } from 'react';
-
 export type Slug = string[];
 
 export type Post = {
@@ -12,28 +8,4 @@ export type Post = {
   forwardWikilinks: string[];
   backlinks: string[];
   href: string;
-};
-
-export type PostMap = {
-  [wikilink: string]: Post & { position: Vector3 };
-};
-
-export type CircleProps = {
-  children?: ReactNode;
-  color?: MeshBasicMaterialProps['color'];
-  opacity?: MeshBasicMaterialProps['opacity'];
-  radius?: number;
-  segments?: number;
-} & Partial<Pick<Mesh, 'onPointerOut', 'onPointerOver'>>;
-
-export type NodeProps = {
-  name: string;
-  color?: MeshBasicMaterialProps['color'];
-  connectedTo: Vector3[];
-  position: Vector3;
-};
-
-export type Line = {
-  start: Vector3;
-  end: Vector3;
 };
