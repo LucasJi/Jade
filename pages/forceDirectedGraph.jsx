@@ -14,7 +14,7 @@ import { drag } from 'd3-drag';
 
 const fetcher = url => fetch(url).then(res => res.json());
 export default function ForceDirectedGraph() {
-  const { data, error, isLoading } = useSWR('/api/testdata', fetcher);
+  const { data, error, isLoading } = useSWR('/api/postGraph', fetcher);
   const svgRef = useRef(null);
 
   const { width, height, color } = useMemo(
@@ -36,10 +36,12 @@ export default function ForceDirectedGraph() {
     const nodes = data.nodes.map(d => ({ ...d }));
     const links = data.links.map(d => ({ ...d }));
 
+    console.log('data', data);
+
     const simulation = forceSimulation(nodes)
       .force(
         'link',
-        forceLink(links).id(d => d.id),
+        forceLink(links).id(d => d.wikilink),
       )
       .force('charge', forceManyBody())
       .force('center', forceCenter(width / 2, height / 2));
@@ -60,7 +62,7 @@ export default function ForceDirectedGraph() {
       .selectAll()
       .data(links)
       .join('line')
-      .attr('stroke-width', d => Math.sqrt(d.value));
+      .attr('stroke-width', d => Math.sqrt(1));
 
     const node = svg
       .append('g')
@@ -70,7 +72,7 @@ export default function ForceDirectedGraph() {
       .data(nodes)
       .join('circle')
       .attr('r', 5)
-      .attr('fill', d => color(d.group));
+      .attr('fill', d => color(d.slugIdx));
 
     simulation.on('tick', () => {
       link

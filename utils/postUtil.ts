@@ -1,10 +1,11 @@
 import fs from 'fs';
 import { join } from 'path';
-import { Post, PostMap, Slug } from 'types';
+import { Post, PostGraph, PostGraphLink, Slug } from 'types';
 import { redis } from './redisUtil';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import { visit } from 'unist-util-visit';
+import * as console from 'console';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
@@ -115,22 +116,44 @@ const getPostBySlug = (slug: string[]) => {
 export const getCachedPosts = async (): Promise<Post[]> => {
   const posts: Array<Post> = [];
   const slugs = await getCachedSlugs();
+  const relativeFolderSet = new Set<string>();
+  for (const slug of slugs) {
+    relativeFolderSet.add(getRelativeParentFolderFromSlug(slug));
+  }
+  const relativeFolders = [...relativeFolderSet.values()];
+  console.log(relativeFolders);
   for (const slug of slugs) {
     const post = await getCachedPostBySlug(slug);
-    if (post !== null) {
-      posts.push(post);
-    }
+    post.slugIdx = relativeFolders.findIndex(
+      rf => rf === getRelativeParentFolderFromSlug(slug),
+    );
+    posts.push(post);
   }
   return posts;
 };
 
-export const getCachedPostMap = async (): Promise<PostMap> => {
+export const getCachedPostGraph = async (): Promise<PostGraph> => {
   const posts = await getCachedPosts();
-  const postMap: PostMap = {};
-  posts.forEach(post => {
-    postMap[post.wikilink] = post;
-  });
-  return postMap;
+  const postGraphLinks: PostGraphLink[] = [];
+
+  for (const post of posts) {
+    const { forwardWikilinks, backlinks, wikilink } = post;
+    for (const fl of forwardWikilinks) {
+      postGraphLinks.push({
+        source: wikilink,
+        target: fl,
+      });
+    }
+
+    for (const bl of backlinks) {
+      postGraphLinks.push({
+        source: bl,
+        target: wikilink,
+      });
+    }
+  }
+
+  return { nodes: posts, links: postGraphLinks };
 };
 
 export const initPosts = async (): Promise<Post[]> => {
@@ -196,3 +219,6 @@ const updateCachedPost = async (post: Post) => {
 
 const getSlugFromWikilink = (wikilink: string): Slug =>
   wikilink.split(SEPARATOR);
+
+const getRelativeParentFolderFromSlug = (slug: Slug): string =>
+  slug.slice(0, slug.length - 1).join(SEPARATOR);
