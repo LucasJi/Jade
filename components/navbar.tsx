@@ -22,7 +22,7 @@ export default function Navbar({ className }: { className?: string }) {
       <Link href="/posts">Posts</Link>
       <GitHubLogoIcon />
 
-      <Link href="/graph">Graph</Link>
+      <Link href="/forceDirectedGraph">force-directed graph</Link>
     </div>
   );
 }

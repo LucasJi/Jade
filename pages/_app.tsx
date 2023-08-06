@@ -8,7 +8,6 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     httpClient.post('api/init').then(res => {
       const { data } = res;
-      console.log('init posts', data);
     });
   }, []);
 
