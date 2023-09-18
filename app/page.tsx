@@ -1,4 +1,5 @@
-import { Avatar, Slogan } from '@components';
+import Avatar from '@components/avatar';
+import Slogan from '@components/slogan';
 import React from 'react';
 
 export default function Home() {

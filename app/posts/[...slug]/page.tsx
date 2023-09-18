@@ -1,4 +1,4 @@
-import { BambooSlip } from '@components';
+import BambooSlip from '@components/bambooSlip';
 import { getCachedPostBySlug, getCachedSlugs } from '@utils/postUtil';
 import { Slug } from '@types';
 
