@@ -13,8 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Navbar className="h-[10%]" />
-      <body>{children}</body>
+      <body>
+        <Navbar className="h-[10%]" />
+        {children}
+      </body>
     </html>
   );
 }
