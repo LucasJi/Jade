@@ -1,102 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>FibonacciSequence</title>
-</head>
-<body>
-<canvas id="myCanvas" width="1000" height="1000" style="background-color:#ddd;"></canvas>
+  <head>
+    <meta charset="UTF-8" />
+    <title>FibonacciSequence</title>
+  </head>
+  <body>
+    <canvas
+      id="myCanvas"
+      width="1000"
+      height="1000"
+      style="background-color: #ddd"
+    ></canvas>
 
-<input type="text" onchange="draw_many(parseInt(this.value))"/>
+    <input type="text" onchange="draw_many(parseInt(this.value))" />
 
-<script type="text/javascript">
+    <script type="text/javascript">
+      var canvas = document.getElementById('myCanvas');
+      var ctx = canvas.getContext('2d');
 
-  var canvas = document.getElementById('myCanvas');
-  var ctx = canvas.getContext('2d');
+      //优化的斐波那契数列计算，把数列结果用数组保存
+      //用传统递归太慢了太费内存了
+      var fib_val = [0, 1];
 
-  //优化的斐波那契数列计算，把数列结果用数组保存
-  //用传统递归太慢了太费内存了
-  var fib_val = [0, 1]
+      function fib(n) {
+        var len = fib_val.length;
+        for (var i = len; i <= n; i++) {
+          fib_val.push(fib_val[i - 1] + fib_val[i - 2]);
+        }
+        return fib_val[n];
+      }
 
-  function fib(n) {
-    var len = fib_val.length;
-    for (var i = len; i <= n; i++) {
-      fib_val.push(fib_val[i - 1] + fib_val[i - 2])
-    }
-    return fib_val[n]
-  }
-
-  //画斐波那契螺旋线（黄金螺旋线）
-  //n表示计算数列到多少
-  function draw(n) {
-    for (var i = 1; i < n; i++) {
-      var len = fib(i) * 10;
-      const x = len;
-      const y = 0;
-      //画矩形的，可以看到产生的原理
-      // ctx.strokeRect(0, 0, len, len)
-      //画扇形
-      ctx.beginPath();
-      ctx.arc(x, y, len, Math.PI / 2, 2 * Math.PI / 2);
-      ctx.stroke();
-
-      const circleNumber = i;
-      const baseAngle = Math.PI / 2;
-      const angle = baseAngle / circleNumber;
-      if (i <= 3 && i > 2) {
-        ctx.beginPath();
-        const cX = x;
-        const cY = y;
-
-        console.log(cX, cY);
-
-        ctx.arc(cX, cY, 5, 0, 2 * Math.PI);
-        ctx.stroke();
-      } else if (i > 3) {
-        for (let count = 1; count <= circleNumber - 3; count++) {
+      //画斐波那契螺旋线（黄金螺旋线）
+      //n表示计算数列到多少
+      function draw(n) {
+        for (var i = 1; i < n; i++) {
+          var len = fib(i) * 10;
+          const x = len;
+          const y = 0;
+          //画矩形的，可以看到产生的原理
+          // ctx.strokeRect(0, 0, len, len)
+          //画扇形
           ctx.beginPath();
-          const cX = x - len * Math.cos(angle * count);
-          const cY = y + len * Math.sin(angle * count);
-
-          console.log(cX, cY);
-
-          ctx.arc(cX, cY, 5, 0, 2 * Math.PI);
+          ctx.arc(x, y, len, Math.PI / 2, (2 * Math.PI) / 2);
           ctx.stroke();
+
+          const circleNumber = i;
+          const baseAngle = Math.PI / 2;
+          const angle = baseAngle / circleNumber;
+          if (i <= 3 && i > 2) {
+            ctx.beginPath();
+            const cX = x;
+            const cY = y;
+
+            console.log(cX, cY);
+
+            ctx.arc(cX, cY, 5, 0, 2 * Math.PI);
+            ctx.stroke();
+          } else if (i > 3) {
+            for (let count = 1; count <= circleNumber - 3; count++) {
+              ctx.beginPath();
+              const cX = x - len * Math.cos(angle * count);
+              const cY = y + len * Math.sin(angle * count);
+
+              console.log(cX, cY);
+
+              ctx.arc(cX, cY, 5, 0, 2 * Math.PI);
+              ctx.stroke();
+            }
+          }
+
+          //把原点移到原来原点的对角线上，然后旋转270度
+          //这样画起来简单
+          ctx.translate(len, len);
+          ctx.rotate((3 * Math.PI) / 2);
         }
       }
 
-      //把原点移到原来原点的对角线上，然后旋转270度
-      //这样画起来简单
-      ctx.translate(len, len)
-      ctx.rotate(3 * Math.PI / 2);
-    }
-  }
+      //画好多条螺旋线，漂亮
+      function draw_many(n) {
+        var total = n;
+        //清除画布
+        ctx.clearRect(0, 0, 800, 800);
+        for (var i = 0; i < total; i++) {
+          //保存状态，这样好恢复原点之类的状态
+          ctx.save();
+          //中心移到画布中间
+          ctx.translate(400, 400);
+          //画一条旋转一点
+          ctx.rotate(((360 / total) * i * Math.PI) / 180);
+          draw(10);
+          //恢复状态
+          ctx.restore();
+        }
+      }
 
-  //画好多条螺旋线，漂亮
-  function draw_many(n) {
-    var total = n
-    //清除画布
-    ctx.clearRect(0, 0, 800, 800);
-    for (var i = 0; i < total; i++) {
-      //保存状态，这样好恢复原点之类的状态
-      ctx.save();
+      //画180条线，很漂亮
+      // draw_many(1)
+
       //中心移到画布中间
       ctx.translate(400, 400);
-      //画一条旋转一点
-      ctx.rotate(360 / total * i * Math.PI / 180);
-      draw(10);
-      //恢复状态
-      ctx.restore();
-    }
-  }
-
-  //画180条线，很漂亮
-  // draw_many(1)
-
-  //中心移到画布中间
-  ctx.translate(400, 400);
-  draw(11);
-
-</script>
-</body>
+      draw(11);
+    </script>
+  </body>
 </html>

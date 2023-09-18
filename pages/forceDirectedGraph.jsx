@@ -1,4 +1,3 @@
-//useSWR allows the use of SWR inside function components
 import useSWR from 'swr';
 import { useEffect, useMemo, useRef } from 'react';
 import { scaleOrdinal } from 'd3-scale';
