@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode, useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';

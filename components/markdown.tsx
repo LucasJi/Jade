@@ -1,3 +1,4 @@
+'use client';
 import { useEffect } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 

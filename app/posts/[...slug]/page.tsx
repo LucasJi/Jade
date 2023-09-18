@@ -1,6 +1,6 @@
 import { BambooSlip } from '@components';
 import { getCachedPostBySlug, getCachedSlugs } from '@utils/postUtil';
-import { Post, Slug } from 'types';
+import { Post, Slug } from '@types';
 
 type PathParamsType = {
   params: {
@@ -9,11 +9,8 @@ type PathParamsType = {
   };
 };
 
-type PropsType = {
-  post: Post;
-};
-
-export default function PostPage({ post }: PropsType) {
+export default function Post({ params }: { params: { post: Post } }) {
+  const { post } = params;
   return <BambooSlip post={post} />;
 }
 
@@ -32,7 +29,7 @@ export async function getStaticProps({ params }: PathParamsType) {
 export async function getStaticPaths() {
   const slugs = await getCachedSlugs();
 
-  const staticPaths = {
+  return {
     paths: slugs.map(slug => {
       return {
         params: {
@@ -42,6 +39,4 @@ export async function getStaticPaths() {
     }),
     fallback: false,
   };
-
-  return staticPaths;
 }

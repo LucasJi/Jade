@@ -1,6 +1,8 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import httpClient from '@utils/axios';
-import { Post } from 'types';
+import { Post } from '@types';
 import { AxiosResponse } from 'axios';
 import Link from 'next/link';
 
