@@ -1,6 +1,7 @@
 import syntax from './syntax';
 import fromMarkdown from './fromMarkdown';
-import toMarkdown from './toMarkdown';
+
+// import toMarkdown from './toMarkdown';
 
 function wikilinkPlugin(opts = { markdownFolder: 'page' }) {
   const data = this.data();
@@ -29,6 +30,6 @@ export default wikilinkPlugin;
 export {
   wikilinkPlugin,
   fromMarkdown as fromMarkdownWikilink,
-  toMarkdown,
+  // toMarkdown,
   syntax,
 };

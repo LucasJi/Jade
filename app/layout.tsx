@@ -1,5 +1,7 @@
+import './globals.css';
 import React from 'react';
-import Navbar from '@components/navbar';
+import BlogNavbar from '@components/BlogNavbar';
+import { Providers } from './providers';
 
 export const metadata = {
   title: 'Starry Blog',
@@ -12,10 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html className="light" lang="en">
       <body>
-        <Navbar className="h-[10%]" />
-        {children}
+        <Providers>
+          <BlogNavbar className="h-[10%]" />
+          {children}
+        </Providers>
       </body>
     </html>
   );
