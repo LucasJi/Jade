@@ -2,6 +2,7 @@ import './globals.css';
 import React from 'react';
 import BlogNavbar from '@components/BlogNavbar';
 import { Providers } from './providers';
+import Footer from '@components/Footer';
 
 export const metadata = {
   title: 'Starry Blog',
@@ -17,8 +18,9 @@ export default function RootLayout({
     <html className="light" lang="en">
       <body>
         <Providers>
-          <BlogNavbar className="h-[10%]" />
-          {children}
+          <BlogNavbar />
+          <main>{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>
