@@ -1,8 +1,8 @@
 'use client';
 import { Divider } from '@nextui-org/react';
-import { FiGithub } from 'react-icons/fi';
 import Image from 'next/image';
 import Link from 'next/link';
+import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
   return (
@@ -17,7 +17,7 @@ const Footer = () => {
             src="/logo-text.png"
             width={200}
           />
-          <span>©2023 Created by Lucas Ji</span>
+          <span className="font-extralight">©2023 Created by Lucas Ji</span>
         </div>
         <div>
           <Link
@@ -25,7 +25,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <FiGithub size={22} />
+            <RxGithubLogo size={22} />
           </Link>
         </div>
       </div>
