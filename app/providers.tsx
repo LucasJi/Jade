@@ -5,7 +5,7 @@ import React from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NextUIProvider className="min-h-screen relative max-w-[1024px] mx-auto">
+    <NextUIProvider className="min-h-full max-w-[1024px] mx-auto flex flex-col">
       {children}
     </NextUIProvider>
   );

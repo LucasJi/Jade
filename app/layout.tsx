@@ -15,11 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html className="light" lang="en">
-      <body>
+    <html className="light h-full" lang="en">
+      <body className="h-full">
         <Providers>
           <BlogNavbar />
-          <main>{children}</main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </Providers>
       </body>
