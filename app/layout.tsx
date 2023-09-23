@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html className="light h-full" lang="en">
-      <body className="h-full">
+      <body className="h-full" suppressHydrationWarning={true}>
         <Providers>
           <BlogNavbar />
           <main className="flex-1">{children}</main>
