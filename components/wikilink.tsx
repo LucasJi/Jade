@@ -7,8 +7,6 @@ import * as Popover from '@radix-ui/react-popover';
 import { AxiosResponse } from 'axios';
 import { Post } from 'types';
 import wikilinkPlugin from '@utils/remark-wikilink';
-import rehypeFormat from 'rehype-format';
-import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
 
 export default function Wikilink({
@@ -68,10 +66,7 @@ export default function Wikilink({
           side="right"
           sideOffset={50}
         >
-          <ReactMarkdown
-            rehypePlugins={[rehypeFormat, rehypeStringify]}
-            remarkPlugins={[remarkGfm, wikilinkPlugin]}
-          >
+          <ReactMarkdown remarkPlugins={[remarkGfm, wikilinkPlugin]}>
             {post?.content || ''}
           </ReactMarkdown>
         </Popover.Content>

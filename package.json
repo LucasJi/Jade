@@ -35,7 +35,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
     "react-markdown": "^8.0.7",
-    "remark-gfm": "^4.0.0",
+    "remark-gfm": "^3.0.1",
     "remark-parse": "^11.0.0",
     "swr": "^2.2.2",
     "typescript": "5.2.2",

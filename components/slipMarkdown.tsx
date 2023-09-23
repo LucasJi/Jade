@@ -52,7 +52,6 @@ export function SlipMarkdown({
             <pre className="overflow-x-auto" {...props} />
           ),
         }}
-        // rehypePlugins={[rehypeFormat, rehypeStringify]}
         remarkPlugins={[remarkGfm, wikilinkPlugin]}
       >
         {content}
