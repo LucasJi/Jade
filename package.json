@@ -35,9 +35,6 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
     "react-markdown": "^8.0.7",
-    "rehype-document": "^7.0.1",
-    "rehype-format": "^5.0.0",
-    "rehype-stringify": "^10.0.0",
     "remark-gfm": "^4.0.0",
     "remark-parse": "^11.0.0",
     "swr": "^2.2.2",
@@ -50,6 +47,7 @@
     "zustand": "^4.4.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
     "@types/mdast": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",

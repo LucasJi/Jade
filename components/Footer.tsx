@@ -12,9 +12,10 @@ const Footer = () => {
         <div>
           <Image
             alt="logo-text"
-            height={120}
+            height={0}
             loading="eager"
             src="/logo-text.png"
+            style={{ width: '60%', height: 'auto' }}
             width={200}
           />
           <span className="font-extralight">©2023 Created by Lucas Ji</span>

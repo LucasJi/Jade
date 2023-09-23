@@ -1,37 +1,36 @@
+'use client';
+
+import { ReactNode } from 'react';
+import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import wikilinkPlugin from '@utils/remark-wikilink';
-import ReactMarkdown from 'react-markdown';
-import { ReactNode } from 'react';
-import Wikilink from './wikilink';
-import { Post } from '@types';
+import Wikilink from '@components/wikilink';
 
-export function SlipMarkdown({
-  onClickViewPost,
-  content,
+const wikilinkRender = ({
+  className,
+  href,
+  children,
+  ...props
 }: {
-  onClickViewPost: (post: Post) => void;
-  content: string;
-}) {
-  const wikilinkRender = ({
-    className,
-    href,
-    children,
-    ...props
-  }: {
-    className: string | undefined;
-    href: string | undefined;
-    children: ReactNode;
-  }) => {
-    const isWikiLink = className?.includes('wikilink');
-    return isWikiLink && href ? (
-      <Wikilink onClick={onClickViewPost} wikilink={href}>
-        {children}
-      </Wikilink>
-    ) : (
-      <a href={href} {...props} />
-    );
-  };
+  className: string | undefined;
+  href: string | undefined;
+  children: ReactNode;
+}) => {
+  return className?.includes('wikilink') && href ? (
+    <Wikilink
+      onClick={() => {
+        console.log('on click wikilink');
+      }}
+      wikilink={href}
+    >
+      {children}
+    </Wikilink>
+  ) : (
+    <a href={href} {...props} />
+  );
+};
 
+const Markdown = ({ markdown = '' }: { markdown?: string }) => {
   return (
     <article className="prose prose-slate">
       <ReactMarkdown
@@ -52,11 +51,12 @@ export function SlipMarkdown({
             <pre className="overflow-x-auto" {...props} />
           ),
         }}
-        // rehypePlugins={[rehypeFormat, rehypeStringify]}
         remarkPlugins={[remarkGfm, wikilinkPlugin]}
       >
-        {content}
+        {markdown}
       </ReactMarkdown>
     </article>
   );
-}
+};
+
+export default Markdown;
