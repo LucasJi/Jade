@@ -5,7 +5,6 @@ import { redis } from './redisUtil';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import { visit } from 'unist-util-visit';
-import * as console from 'console';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
@@ -217,8 +216,13 @@ const updateCachedPost = async (post: Post) => {
   await redis.set(post.wikilink, JSON.stringify(post));
 };
 
-const getSlugFromWikilink = (wikilink: string): Slug =>
-  wikilink.split(SEPARATOR);
+export const convertWikilinkToSlug = (wikilink: string): Slug => {
+  let postRelativePath = wikilink;
+  if (wikilink.startsWith(SEPARATOR)) {
+    postRelativePath = wikilink.replace(SEPARATOR, '');
+  }
+  return postRelativePath.split(SEPARATOR);
+};
 
 const getRelativeParentFolderFromSlug = (slug: Slug): string =>
   slug.slice(0, slug.length - 1).join(SEPARATOR);

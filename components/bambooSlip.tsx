@@ -2,9 +2,9 @@
 import classNames from 'classnames';
 import { useState } from 'react';
 import { Post } from 'types';
-import Wikilink from './wikilink';
+import Wikilink from './Wikilink';
 import VerticalLrTitle from './verticalLrTitle';
-import { SlipMarkdown } from './slipMarkdown';
+import Markdown from '@components/Markdown';
 
 export default function BambooSlip({ post }: { post: Post }) {
   const [posts, setPosts] = useState<Post[]>([post]);
@@ -125,10 +125,7 @@ export default function BambooSlip({ post }: { post: Post }) {
                 )}
                 key={`content-${wikilink}`}
               >
-                <SlipMarkdown
-                  content={content}
-                  onClickViewPost={viewPost(wikilink)}
-                />
+                <Markdown markdown={content} />
                 <div>
                   <div className="bg-green-200 font-bold">Backlinks</div>
                   {backlinks.length > 0 ? (

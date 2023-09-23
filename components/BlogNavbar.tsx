@@ -11,7 +11,7 @@ import Image from 'next/image';
 
 export default function BlogNavbar() {
   return (
-    <Navbar shouldHideOnScroll>
+    <Navbar>
       <NavbarBrand>
         <Avatar
           icon={
