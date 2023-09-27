@@ -37,8 +37,6 @@ export default function ForceDirectedGraph() {
     const nodes = data.nodes.map(d => ({ ...d }));
     const links = data.links.map(d => ({ ...d }));
 
-    console.log('data', data);
-
     const simulation = forceSimulation(nodes)
       .force(
         'link',

@@ -16,8 +16,6 @@ export default function Home() {
     fallbackData: [],
   });
 
-  console.log(data);
-
   return (
     <div className="gap-2 grid grid-cols-12 grid-rows-2 py-8">
       <Suspense fallback={<Loading />}>

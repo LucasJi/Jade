@@ -3,12 +3,13 @@ import { join } from 'path';
 import { Post, PostGraph, PostGraphLink, Slug } from 'types';
 import { redis } from './redisUtil';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import { visit } from 'unist-util-visit';
+import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
 const SLUGS_KEY = 'slugs';
+const POSTS_KEY = 'posts';
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
 export const getCachedSlugs = async (): Promise<Slug[]> => {
@@ -23,10 +24,6 @@ export const getCachedSlugs = async (): Promise<Slug[]> => {
   }
 
   return slugs;
-};
-
-const clearCachedSlugs = () => {
-  redis.del(SLUGS_KEY);
 };
 
 const getPostSlugs = () => {
@@ -113,6 +110,12 @@ const getPostBySlug = (slug: string[]) => {
 };
 
 export const getCachedPosts = async (): Promise<Post[]> => {
+  const postsJson = await redis.get(POSTS_KEY);
+
+  if (postsJson) {
+    return JSON.parse(postsJson);
+  }
+
   const posts: Array<Post> = [];
   const slugs = await getCachedSlugs();
   const relativeFolderSet = new Set<string>();
@@ -120,7 +123,7 @@ export const getCachedPosts = async (): Promise<Post[]> => {
     relativeFolderSet.add(getRelativeParentFolderFromSlug(slug));
   }
   const relativeFolders = [...relativeFolderSet.values()];
-  console.log(relativeFolders);
+
   for (const slug of slugs) {
     const post = await getCachedPostBySlug(slug);
     post.slugIdx = relativeFolders.findIndex(
@@ -128,14 +131,17 @@ export const getCachedPosts = async (): Promise<Post[]> => {
     );
     posts.push(post);
   }
+
+  resolveWikilinks(posts);
+
+  await redis.set(POSTS_KEY, JSON.stringify(posts));
+
   return posts;
 };
 
 export const getCachedPostGraph = async (): Promise<PostGraph> => {
   const posts = await getCachedPosts();
   const postGraphLinks: PostGraphLink[] = [];
-
-  console.log('posts', posts);
 
   for (const post of posts) {
     const { forwardLinks, backlinks, wikilink } = post;
@@ -155,30 +161,6 @@ export const getCachedPostGraph = async (): Promise<PostGraph> => {
   }
 
   return { nodes: posts, links: postGraphLinks };
-};
-
-export const initPosts = async (): Promise<Post[]> => {
-  clearCachedSlugs();
-
-  const posts = getPosts();
-  resolveWikilinks(posts);
-
-  for (const post of posts) {
-    await updateCachedPost(post);
-  }
-  return posts;
-};
-
-const getPosts = () => {
-  const posts: Array<Post> = [];
-  const slugs = getPostSlugs();
-  for (const slug of slugs) {
-    const post = getPostBySlug(slug);
-    if (post !== null) {
-      posts.push(post);
-    }
-  }
-  return posts;
 };
 
 const resolveWikilinks = (posts: Post[]) => {
@@ -212,10 +194,6 @@ const resolveWikilinks = (posts: Post[]) => {
       }
     }
   }
-};
-
-const updateCachedPost = async (post: Post) => {
-  await redis.set(post.wikilink, JSON.stringify(post));
 };
 
 export const convertWikilinkToSlug = (wikilink: string): Slug => {

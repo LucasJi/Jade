@@ -9,7 +9,7 @@ export const metadata = {
   description: 'Display blogs written in Obsidian.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
