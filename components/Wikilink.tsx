@@ -1,13 +1,13 @@
 'use client';
 
-import React, { ReactNode, useEffect, useState } from 'react';
-import httpClient from '@utils/axios';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { AxiosResponse } from 'axios';
-import { Post, Slug } from 'types';
-import wikilinkPlugin from '@utils/remark-wikilink';
-import remarkGfm from 'remark-gfm';
 import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import httpClient from '@utils/axios';
+import wikilinkPlugin from '@utils/remark-wikilink';
+import { AxiosResponse } from 'axios';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Post, Slug } from 'types';
 
 const SEPARATOR = '/';
 
@@ -58,8 +58,8 @@ export default function Wikilink({
       placement="right-end"
       shouldCloseOnBlur
       style={{
-        overflowX: 'auto',
-        maxHeight: '300px',
+        overflowY: 'auto',
+        maxWidth: '600px',
       }}
     >
       <PopoverTrigger
@@ -69,7 +69,7 @@ export default function Wikilink({
       >
         <button onClick={e => handleClick(e)}>{children}</button>
       </PopoverTrigger>
-      <PopoverContent className="overflow-y-auto">
+      <PopoverContent>
         <ReactMarkdown remarkPlugins={[remarkGfm, wikilinkPlugin]}>
           {post?.content || ''}
         </ReactMarkdown>

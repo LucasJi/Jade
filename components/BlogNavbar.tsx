@@ -8,8 +8,38 @@ import {
   NavbarItem,
 } from '@nextui-org/react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+
+const navbarItems = [
+  {
+    name: 'Home',
+    href: '/',
+  },
+  {
+    name: 'Posts',
+    href: '/posts',
+  },
+  {
+    name: 'Tags',
+    href: '#',
+  },
+  {
+    name: 'Follow',
+    href: '#',
+  },
+];
 
 export default function BlogNavbar() {
+  const pathname = usePathname();
+
+  const getUnderlineProp = (href: string) => {
+    if (href === '/') {
+      return pathname === '/' ? 'always' : 'hover';
+    }
+
+    return pathname.includes(href) ? 'always' : 'hover';
+  };
+
   return (
     <Navbar>
       <NavbarBrand>
@@ -26,26 +56,17 @@ export default function BlogNavbar() {
         />
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="end">
-        <NavbarItem>
-          <Link color="foreground" href="/">
-            Home
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/posts">
-            Posts
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Tags
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-            Follow
-          </Link>
-        </NavbarItem>
+        {navbarItems.map(item => (
+          <NavbarItem key={item.name}>
+            <Link
+              color="foreground"
+              href={item.href}
+              underline={getUnderlineProp(item.href)}
+            >
+              {item.name}
+            </Link>
+          </NavbarItem>
+        ))}
       </NavbarContent>
     </Navbar>
   );

@@ -9,6 +9,7 @@ import Loading from './loading';
 import { RxClock, RxShare1 } from 'react-icons/rx';
 import { AiOutlineComment } from 'react-icons/ai';
 import Link from 'next/link';
+import Markdown from '@components/Markdown';
 
 export default function Home() {
   const { data } = useSWR<Post[]>('api/posts', fetcher, {
@@ -26,7 +27,9 @@ export default function Home() {
             <CardHeader className="text-lg font-bold">
               <Link href={href}>{title}</Link>
             </CardHeader>
-            <CardBody className="font-light">{content}</CardBody>
+            <CardBody className="font-light">
+              <Markdown markdown={content} />
+            </CardBody>
             <CardFooter className="text-small">
               <RxClock />
               <AiOutlineComment />
