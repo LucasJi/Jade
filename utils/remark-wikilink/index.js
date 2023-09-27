@@ -1,5 +1,5 @@
-import syntax from './syntax';
 import fromMarkdown from './fromMarkdown';
+import syntax from './syntax';
 
 // import toMarkdown from './toMarkdown';
 
@@ -16,8 +16,6 @@ function wikilinkPlugin(opts = { markdownFolder: 'page' }) {
 
   opts = {
     ...opts,
-    wikilinkClassName: 'wikilink',
-    hrefTemplate: permalink => `${permalink}`,
   };
 
   add('micromarkExtensions', syntax(opts));

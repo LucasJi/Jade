@@ -2,9 +2,8 @@ function fromMarkdown(opts = {}) {
   const permalinks = opts.permalinks || [];
   const defaultPageResolver = name => [name.replace(/ /g, '_').toLowerCase()];
   const pageResolver = opts.pageResolver || defaultPageResolver;
-  const newClassName = opts.newClassName || 'new';
   const wikilinkClassName = opts.wikilinkClassName || 'wikilink';
-  const defaultHrefTemplate = permalink => `posts/${permalink}`;
+  const defaultHrefTemplate = permalink => `${permalink}`;
   const hrefTemplate = opts.hrefTemplate || defaultHrefTemplate;
 
   function enterWikilink(token) {
