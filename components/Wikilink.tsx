@@ -50,7 +50,7 @@ export default function Wikilink({
       </PopoverTrigger>
       <PopoverContent>
         <Markdown
-          className="overflow-y-auto h-[400px] w-[600px]"
+          className="h-[400px] w-[600px] webkit-overflow-y-auto"
           markdown={post?.content || ''}
         />
       </PopoverContent>
