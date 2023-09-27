@@ -22,14 +22,16 @@ const Markdown = ({
       return className?.includes('wikilink') && href ? (
         <Wikilink wikilink={href}>{children}</Wikilink>
       ) : (
-        <a href={href} {...props} />
+        <a href={href} {...props} rel="noopener noreferrer" target="_blank" />
       );
     },
     h1: props => {
       if (titleLink) {
         return (
           <h1>
-            <Link href={titleLink}>{props.children}</Link>
+            <Link className="underline-l-r" href={titleLink}>
+              {props.children}
+            </Link>
           </h1>
         );
       }
