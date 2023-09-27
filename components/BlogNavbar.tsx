@@ -24,8 +24,8 @@ const navbarItems = [
     href: '#',
   },
   {
-    name: 'Follow',
-    href: '#',
+    name: 'Graph',
+    href: '/graph',
   },
 ];
 

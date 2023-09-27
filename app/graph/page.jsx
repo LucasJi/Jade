@@ -1,3 +1,5 @@
+'use client';
+
 import useSWR from 'swr';
 import { useEffect, useMemo, useRef } from 'react';
 import { scaleOrdinal } from 'd3-scale';
@@ -10,10 +12,10 @@ import {
 } from 'd3-force';
 import { select } from 'd3-selection';
 import { drag } from 'd3-drag';
+import fetcher from '../api/fetcher';
 
-const fetcher = url => fetch(url).then(res => res.json());
 export default function ForceDirectedGraph() {
-  const { data, error, isLoading } = useSWR('/api/postGraph', fetcher);
+  const { data, error, isLoading } = useSWR('/api/post/graph', fetcher);
   const svgRef = useRef(null);
 
   const { width, height, color } = useMemo(
@@ -113,6 +115,7 @@ export default function ForceDirectedGraph() {
   if (error) {
     return <div>failed to load</div>;
   }
+
   if (isLoading) {
     return <div>loading...</div>;
   }

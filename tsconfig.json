@@ -29,6 +29,9 @@
       "@api/*": [
         "app/api/*"
       ],
+      "@api": [
+        "app/api"
+      ],
       "@utils": [
         "utils"
       ],

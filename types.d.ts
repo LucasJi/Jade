@@ -6,7 +6,7 @@ export type Post = {
   slugIdx?: number;
   content: string;
   title: string;
-  forwardWikilinks: string[];
+  forwardLinks: string[];
   backlinks: string[];
   href: string;
 };

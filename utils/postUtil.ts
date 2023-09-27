@@ -104,7 +104,7 @@ const getPostBySlug = (slug: string[]) => {
     slug,
     content,
     title,
-    forwardWikilinks: [],
+    forwardLinks: [],
     backlinks: [],
     href: `posts/${wikilink}`,
   };
@@ -135,9 +135,11 @@ export const getCachedPostGraph = async (): Promise<PostGraph> => {
   const posts = await getCachedPosts();
   const postGraphLinks: PostGraphLink[] = [];
 
+  console.log('posts', posts);
+
   for (const post of posts) {
-    const { forwardWikilinks, backlinks, wikilink } = post;
-    for (const fl of forwardWikilinks) {
+    const { forwardLinks, backlinks, wikilink } = post;
+    for (const fl of forwardLinks) {
       postGraphLinks.push({
         source: wikilink,
         target: fl,
@@ -191,16 +193,16 @@ const resolveWikilinks = (posts: Post[]) => {
         mdastExtensions: [fromMarkdownWikilink()],
       });
 
-      const forwardWikilinks: Set<string> = new Set();
+      const forwardLinks: Set<string> = new Set();
 
       visit(tree, 'wikilink', node => {
         const { value } = node;
-        forwardWikilinks.add(value);
+        forwardLinks.add(value);
       });
 
-      post.forwardWikilinks = Array.from(forwardWikilinks);
+      post.forwardLinks = Array.from(forwardLinks);
 
-      for (const fl of forwardWikilinks) {
+      for (const fl of forwardLinks) {
         const fp = findPostByWikilink(fl);
         if (fp) {
           const bls = new Set(fp.backlinks);
