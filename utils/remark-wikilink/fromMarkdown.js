@@ -37,45 +37,39 @@ function fromMarkdown(opts = {}) {
     current.value = target;
   }
 
-  function exitWikilink() {
-    // const node = this.stack.pop();
-    // const open = this.tokenStack.pop();
-    // console.log('node', node);
-    // console.log('open', open);
-    // const wikilink = { ...this.stack[this.stack.length - 1] };
-    // console.log(this.stack.pop());
-    // console.log(this.tokenStack.pop());
-    // const pagePermalinks = pageResolver(wikilink.value);
-    // let permalink = pagePermalinks.find(p => permalinks.indexOf(p) !== -1);
-    // const exists = permalink !== undefined;
+  function exitWikilink(node) {
+    const wikilink = this.exit(node);
+    const pagePermalinks = pageResolver(wikilink.value);
+    let permalink = pagePermalinks.find(p => permalinks.indexOf(p) !== -1);
+    const exists = permalink !== undefined;
+    if (!exists) {
+      permalink = pagePermalinks[0];
+    }
+    let displayName = wikilink.value;
+    if (wikilink.data.alias) {
+      displayName = wikilink.data.alias;
+    }
+
+    const classNames = wikilinkClassName;
     // if (!exists) {
-    //   permalink = pagePermalinks[0];
+    //   classNames += ' ' + newClassName;
     // }
-    // let displayName = wikilink.value;
-    // if (wikilink.data.alias) {
-    //   displayName = wikilink.data.alias;
-    // }
-    //
-    // const classNames = wikilinkClassName;
-    // // if (!exists) {
-    // //   classNames += ' ' + newClassName;
-    // // }
-    //
-    // wikilink.data.alias = displayName;
-    // wikilink.data.permalink = permalink;
-    // wikilink.data.exists = exists;
-    //
-    // wikilink.data.hName = 'a';
-    // wikilink.data.hProperties = {
-    //   className: classNames,
-    //   href: hrefTemplate(permalink),
-    // };
-    // wikilink.data.hChildren = [
-    //   {
-    //     type: 'text',
-    //     value: displayName,
-    //   },
-    // ];
+
+    wikilink.data.alias = displayName;
+    wikilink.data.permalink = permalink;
+    wikilink.data.exists = exists;
+
+    wikilink.data.hName = 'a';
+    wikilink.data.hProperties = {
+      className: classNames,
+      href: hrefTemplate(permalink),
+    };
+    wikilink.data.hChildren = [
+      {
+        type: 'text',
+        value: displayName,
+      },
+    ];
   }
 
   return {

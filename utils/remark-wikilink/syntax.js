@@ -38,14 +38,14 @@ function syntax(opts = {}) {
       }
 
       effects.enter('wikilink');
-      // effects.enter('wikilinkMarker');
+      effects.enter('wikilinkMarker');
 
       return consumeStart(code);
     }
 
     function consumeStart(code) {
       if (startMarkerCursor === startMarker.length) {
-        // effects.exit('wikilinkMarker');
+        effects.exit('wikilinkMarker');
         return consumeData(code);
       }
 
@@ -64,7 +64,7 @@ function syntax(opts = {}) {
         return nok(code);
       }
 
-      // effects.enter('wikilinkData');
+      effects.enter('wikilinkData');
       effects.enter('wikilinkTarget');
       return consumeTarget(code);
     }
@@ -75,7 +75,7 @@ function syntax(opts = {}) {
           return nok(code);
         }
         effects.exit('wikilinkTarget');
-        // effects.enter('wikilinkAliasMarker');
+        effects.enter('wikilinkAliasMarker');
         return consumeAliasMarker(code);
       }
 
@@ -84,8 +84,8 @@ function syntax(opts = {}) {
           return nok(code);
         }
         effects.exit('wikilinkTarget');
-        // effects.exit('wikilinkData');
-        // effects.enter('wikilinkMarker');
+        effects.exit('wikilinkData');
+        effects.enter('wikilinkMarker');
         return consumeEnd(code);
       }
 
@@ -104,7 +104,7 @@ function syntax(opts = {}) {
 
     function consumeAliasMarker(code) {
       if (aliasCursor === aliasMarker.length) {
-        // effects.exit('wikilinkAliasMarker');
+        effects.exit('wikilinkAliasMarker');
         effects.enter('wikilinkAlias');
         return consumeAlias(code);
       }
@@ -125,8 +125,8 @@ function syntax(opts = {}) {
           return nok(code);
         }
         effects.exit('wikilinkAlias');
-        // effects.exit('wikilinkData');
-        // effects.enter('wikilinkMarker');
+        effects.exit('wikilinkData');
+        effects.enter('wikilinkMarker');
         return consumeEnd(code);
       }
 
@@ -145,7 +145,7 @@ function syntax(opts = {}) {
 
     function consumeEnd(code) {
       if (endMarkerCursor === endMarker.length) {
-        // effects.exit('wikilinkMarker');
+        effects.exit('wikilinkMarker');
         effects.exit('wikilink');
         return ok(code);
       }
