@@ -11,8 +11,8 @@ import {
   forceSimulation,
 } from 'd3-force';
 import { select } from 'd3-selection';
-import { drag } from 'd3-drag';
 import fetcher from '../api/fetcher';
+import LgSpinnerInCenter from '../../components/LgSpinnerInCenter';
 
 export default function ForceDirectedGraph() {
   const { data, error, isLoading } = useSWR('/api/post/graph', fetcher);
@@ -70,7 +70,7 @@ export default function ForceDirectedGraph() {
       .selectAll()
       .data(nodes)
       .join('circle')
-      .attr('r', 5)
+      .attr('r', 8)
       .attr('fill', d => color(d.slugIdx));
 
     simulation.on('tick', () => {
@@ -83,29 +83,7 @@ export default function ForceDirectedGraph() {
       node.attr('cx', d => d.x).attr('cy', d => d.y);
     });
 
-    node.append('title').text(d => d.id);
-
-    node.call(
-      drag()
-        .on('start', event => {
-          if (!event.active) {
-            simulation.alphaTarget(0.3).restart();
-          }
-          event.subject.fx = event.subject.x;
-          event.subject.fy = event.subject.y;
-        })
-        .on('drag', event => {
-          event.subject.fx = event.x;
-          event.subject.fy = event.y;
-        })
-        .on('end', event => {
-          if (!event.active) {
-            simulation.alphaTarget(0);
-          }
-          event.subject.fx = null;
-          event.subject.fy = null;
-        }),
-    );
+    node.append('title').text(d => d.title);
 
     return () => simulation.stop();
   }, [data, svgRef.current]);
@@ -115,7 +93,7 @@ export default function ForceDirectedGraph() {
   }
 
   if (isLoading) {
-    return <div>loading...</div>;
+    return <LgSpinnerInCenter />;
   }
 
   return <svg ref={svgRef} />;
