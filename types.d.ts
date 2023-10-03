@@ -1,3 +1,5 @@
+import { SimulationLinkDatum, SimulationNodeDatum } from 'd3-force';
+
 export type Slug = string[];
 
 export type Post = {
@@ -11,12 +13,11 @@ export type Post = {
   href: string;
 };
 
-export type PostGraphLink = {
-  source: string;
-  target: string;
-};
+export interface PostGraphNode extends SimulationNodeDatum, Post {}
+
+export interface PostGraphLink extends SimulationLinkDatum<PostGraphNode> {}
 
 export type PostGraph = {
-  nodes: Post[];
+  nodes: PostGraphNode[];
   links: PostGraphLink[];
 };
