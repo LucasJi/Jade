@@ -2,16 +2,12 @@
 
 import useSWR from 'swr';
 import fetcher from '../api/fetcher';
-import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
 import ForceDirectedGraph from '@components/ForceDirectedGraph';
 import { PostGraph } from '@types';
+import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
 
-export default function ForceDirectedGraph1() {
-  const { data, error } = useSWR<PostGraph>('/api/post/graph', fetcher);
-
-  if (error) {
-    return <div>failed to load</div>;
-  }
+export default function Graph() {
+  const { data } = useSWR<PostGraph>('/api/post/graph', fetcher);
 
   if (!data) {
     return <LgSpinnerInCenter />;
