@@ -32,8 +32,8 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
 
     const simulation = forceSimulation<PostGraphNode>(postGraph.nodes)
       .force('link', forceLinkWithNodes)
-      .force('charge', forceManyBody())
-      .force('center', forceCenter(width / 2, height / 2));
+      .force('center', forceCenter(width / 2, height / 2))
+      .force('charge', forceManyBody());
 
     simulation.on('tick', () => {
       setSimulationNodes([...simulation.nodes()]);
@@ -74,7 +74,9 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
             fill={color(node.slugIdx!.toString())}
             key={node.wikilink}
             r={8}
-          />
+          >
+            <title>{node.title}</title>
+          </circle>
         ))}
       </g>
     </svg>
