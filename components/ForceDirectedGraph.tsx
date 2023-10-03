@@ -66,7 +66,7 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
           );
         })}
       </g>
-      <g>
+      <g stroke="#fff" strokeWidth={1.5}>
         {simulationNodes.map(node => (
           <circle
             cx={node.x}
