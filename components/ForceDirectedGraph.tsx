@@ -5,9 +5,11 @@ import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import {
   forceCenter,
+  forceCollide,
   forceLink,
-  forceManyBody,
   forceSimulation,
+  forceX,
+  forceY,
 } from 'd3-force';
 import { PostGraph, PostGraphLink, PostGraphNode } from '@types';
 
@@ -32,8 +34,10 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
 
     const simulation = forceSimulation<PostGraphNode>(postGraph.nodes)
       .force('link', forceLinkWithNodes)
-      .force('center', forceCenter(width / 2, height / 2))
-      .force('charge', forceManyBody());
+      .force('x', forceX(width / 2))
+      .force('y', forceY(height / 2))
+      .force('collide', forceCollide(postGraph.nodes.length + 1))
+      .force('center', forceCenter(width / 2, height / 2));
 
     simulation.on('tick', () => {
       setSimulationNodes([...simulation.nodes()]);
