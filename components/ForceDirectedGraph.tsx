@@ -1,17 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
+import { PostGraph, PostGraphLink, PostGraphNode } from '@types';
 import {
   forceCenter,
   forceCollide,
   forceLink,
   forceSimulation,
-  forceX,
-  forceY,
 } from 'd3-force';
-import { PostGraph, PostGraphLink, PostGraphNode } from '@types';
+import { scaleOrdinal } from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale-chromatic';
+import { useEffect, useMemo, useState } from 'react';
 
 const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
   const { width, height, color, r } = useMemo(
@@ -35,9 +33,12 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
 
     const simulation = forceSimulation<PostGraphNode>(postGraph.nodes)
       .force('link', forceLinkWithNodes)
-      .force('x', forceX(width / 2))
-      .force('y', forceY(height / 2))
-      .force('collide', forceCollide(postGraph.nodes.length + 1))
+      // .force('x', forceX(width / 2))
+      // .force('y', forceY(height / 2))
+      .force(
+        'collide',
+        forceCollide(Math.min(width, height) / (postGraph.nodes.length + 1)),
+      )
       .force('center', forceCenter(width / 2, height / 2));
 
     simulation.on('tick', () => {
@@ -102,12 +103,12 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
           >
             <circle fill={color(node.slugIdx!.toString())} r={r} />
             <text
-              dx="0"
-              dy="0"
+              dx={-1}
+              dy={r * 2}
               style={{
                 fill: 'black',
-                fontSize: '0.6rem',
-                stroke: 0,
+                fontSize: '8px',
+                strokeWidth: 0,
               }}
             >
               {node.title}
