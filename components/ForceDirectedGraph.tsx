@@ -68,7 +68,7 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
             refY="6"
             viewBox="0 0 12 12"
           >
-            <path d="M2,2 L10,6 L2,10 L6,6 L2,2"></path>
+            <path d="M2,2 L10,6 L2,10 L6,6 L2,2" fill="black"></path>
           </marker>
         </defs>
         {simulationLinks.map(({ source, target, index }) => {
@@ -88,33 +88,38 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
         })}
       </g>
       <g stroke="#fff" strokeWidth={1.5}>
-        {simulationNodes.map(node => (
-          // <Tooltip content={node.title} key={node.wikilink}>
-          //   <circle
-          //     cx={node.x}
-          //     cy={node.y}
-          //     fill={color(node.slugIdx!.toString())}
-          //     r={8}
-          //   />
-          // </Tooltip>
-          <g
-            key={node.wikilink}
-            transform={` translate(${node.x}, ${node.y}) `}
-          >
-            <circle fill={color(node.slugIdx!.toString())} r={r} />
-            <text
-              dy={r * 2}
+        {simulationNodes.map(node => {
+          const fillColor = color(node.slugIdx!.toString());
+          return (
+            // <Tooltip content={node.title} key={node.wikilink}>
+            //   <circle
+            //     cx={node.x}
+            //     cy={node.y}
+            //     fill={color(node.slugIdx!.toString())}
+            //     r={8}
+            //   />
+            // </Tooltip>
+            <g
+              key={node.wikilink}
               style={{
-                fill: 'black',
-                fontSize: '8px',
-                strokeWidth: 0,
+                fill: fillColor,
               }}
-              textAnchor="middle"
+              transform={` translate(${node.x}, ${node.y}) `}
             >
-              {node.title}
-            </text>
-          </g>
-        ))}
+              <circle r={r} />
+              <text
+                dy={r * 2}
+                style={{
+                  fontSize: '8px',
+                  strokeWidth: 0,
+                }}
+                textAnchor="middle"
+              >
+                {node.title}
+              </text>
+            </g>
+          );
+        })}
       </g>
     </svg>
   );

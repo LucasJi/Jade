@@ -52,13 +52,7 @@ module.exports = {
     'prefer-const': 'error',
     // Imports
     'import/prefer-default-export': 'off',
-    'sort-imports': [
-      'error',
-      {
-        ignoreCase: true,
-        ignoreDeclarationSort: true,
-      },
-    ],
+    'sort-imports': 'off',
     'no-prototype-builtins': 'off',
     // React
     'react/jsx-uses-react': 'off',
@@ -72,12 +66,7 @@ module.exports = {
         checkAliases: true,
       },
     ],
-    'react/jsx-sort-props': [
-      'error',
-      {
-        ignoreCase: true,
-      },
-    ],
+    'react/jsx-sort-props': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 0,
     // Prettier
