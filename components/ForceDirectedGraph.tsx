@@ -103,13 +103,13 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
           >
             <circle fill={color(node.slugIdx!.toString())} r={r} />
             <text
-              dx={-1}
               dy={r * 2}
               style={{
                 fill: 'black',
                 fontSize: '8px',
                 strokeWidth: 0,
               }}
+              textAnchor="middle"
             >
               {node.title}
             </text>
