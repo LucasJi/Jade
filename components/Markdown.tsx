@@ -44,7 +44,7 @@ const Markdown = ({
       const { children, className } = props;
       const match = /language-(\w+)/.exec(className || '');
       return match ? (
-        <SyntaxHighlighter style={atomOneDark} language={match[1]}>
+        <SyntaxHighlighter style={atomOneDark} language={match[1]} PreTag="div">
           {String(children).replace(/\n$/, '')}
         </SyntaxHighlighter>
       ) : (
