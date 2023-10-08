@@ -1,37 +1,18 @@
 'use client';
 
 import fetcher from '@api/fetcher';
-import Markdown from '@components/Markdown';
-import { Card, CardBody, CardFooter } from '@nextui-org/card';
-import { Post } from '@types';
-import React, { Suspense } from 'react';
-import { AiOutlineComment } from 'react-icons/ai';
-import { RxClock, RxShare1 } from 'react-icons/rx';
+import ForceDirectedGraph from '@components/ForceDirectedGraph';
+import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
+import { PostGraph } from '@types';
+import React from 'react';
 import useSWR from 'swr';
-import Loading from './loading';
 
 export default function Home() {
-  const { data } = useSWR<Post[]>('api/posts', fetcher, {
-    suspense: true,
-    fallbackData: [],
-  });
+  const { data } = useSWR<PostGraph>('/api/post/graph', fetcher);
 
-  return (
-    <div className="gap-2 grid grid-cols-12 grid-rows-2 py-8">
-      <Suspense fallback={<Loading />}>
-        {data?.map(({ wikilink, href, content }) => (
-          <Card className="col-span-12 sm:col-span-4" key={wikilink}>
-            <CardBody className="font-light">
-              <Markdown markdown={content} titleLink={href} />
-            </CardBody>
-            <CardFooter className="text-small">
-              <RxClock />
-              <AiOutlineComment />
-              <RxShare1 />
-            </CardFooter>
-          </Card>
-        ))}
-      </Suspense>
-    </div>
-  );
+  if (!data) {
+    return <LgSpinnerInCenter />;
+  }
+
+  return <ForceDirectedGraph postGraph={data} />;
 }

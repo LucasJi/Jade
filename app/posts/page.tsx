@@ -1,33 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import httpClient from '@utils/axios';
+import fetcher from '@api/fetcher';
+import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
+import Markdown from '@components/Markdown';
+import { Card, CardBody, CardFooter } from '@nextui-org/card';
 import { Post } from '@types';
-import { AxiosResponse } from 'axios';
-import Link from 'next/link';
+import React from 'react';
+import { AiOutlineComment } from 'react-icons/ai';
+import { RxClock, RxShare1 } from 'react-icons/rx';
+import useSWR from 'swr';
 
 function Posts() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { data, isLoading } = useSWR<Post[]>('api/posts', fetcher);
 
-  useEffect(() => {
-    httpClient.get('api/posts').then((res: AxiosResponse<Post[]>) => {
-      const posts = res.data;
-      if (posts !== null) {
-        setPosts([...posts]);
-      }
-    });
-  }, []);
+  if (isLoading) {
+    return <LgSpinnerInCenter />;
+  }
 
   return (
-    <div className="pt-4 pl-4">
-      <h1>Posts</h1>
-      <div className="flex flex-col">
-        {posts.map(({ wikilink, title, href }) => (
-          <Link href={href} key={wikilink}>
-            {title}
-          </Link>
-        ))}
-      </div>
+    <div className="gap-2 grid grid-cols-12 grid-rows-2 py-8">
+      {data?.map(({ wikilink, href, content }) => (
+        <Card className="col-span-12 sm:col-span-4" key={wikilink}>
+          <CardBody className="font-light">
+            <Markdown markdown={content} titleLink={href} />
+          </CardBody>
+          <CardFooter className="text-small">
+            <RxClock />
+            <AiOutlineComment />
+            <RxShare1 />
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 }
