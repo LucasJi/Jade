@@ -20,7 +20,10 @@ function Posts() {
   return (
     <div className="gap-2 grid grid-cols-12 grid-rows-2 py-8">
       {data?.map(({ wikilink, href, content }) => (
-        <Card className="col-span-12 sm:col-span-4" key={wikilink}>
+        <Card
+          className="col-span-12 sm:col-span-4 h-96 transition hover:scale-105"
+          key={wikilink}
+        >
           <CardBody className="font-light">
             <Markdown markdown={content} titleLink={href} />
           </CardBody>
