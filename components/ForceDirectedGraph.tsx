@@ -32,6 +32,13 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
     return hoveredNode?.wikilink === node.wikilink;
   };
 
+  const isHoveredNodeLink = (source: PostGraphNode, target: PostGraphNode) => {
+    return (
+      source.wikilink === hoveredNode?.wikilink ||
+      target.wikilink === hoveredNode?.wikilink
+    );
+  };
+
   useEffect(() => {
     const forceLinkWithNodes = forceLink<PostGraphNode, PostGraphLink>(
       postGraph.links,
@@ -62,7 +69,7 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
       viewBox={`0 0 ${width} ${height}`}
       width={width}
     >
-      <g stroke="black">
+      <g>
         <defs>
           <marker
             id="arrow"
@@ -74,7 +81,7 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
             refY="6"
             viewBox="0 0 12 12"
           >
-            <path d="M2,2 L10,6 L2,10 L6,6 L2,2" fill="black"></path>
+            <path d="M2,2 L10,6 L2,10 L6,6 L2,2" fill="grey"></path>
           </marker>
         </defs>
         {simulationLinks.map(({ source, target, index }) => {
@@ -84,7 +91,10 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
             <line
               key={index}
               markerEnd="url(#arrow)"
-              strokeWidth={1}
+              strokeWidth={0.8}
+              stroke={
+                isHoveredNodeLink(sourceNode, targetNode) ? '#30abf1' : 'grey'
+              }
               x1={sourceNode.x}
               x2={targetNode.x}
               y1={sourceNode.y}
