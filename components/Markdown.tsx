@@ -5,8 +5,9 @@ import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
 import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+// highlight.js doesn't support React.JSX syntax
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 import { Element, Text } from 'hast';
 
@@ -59,7 +60,7 @@ const Markdown = ({
       })[0];
 
       return language ? (
-        <SyntaxHighlighter style={atomOneDark} language={language}>
+        <SyntaxHighlighter style={dracula} language={language}>
           {(code.children[0] as Text).value.replace(/\n$/, '')}
         </SyntaxHighlighter>
       ) : (
