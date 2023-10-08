@@ -8,6 +8,7 @@ import ReactMarkdown, { Components } from 'react-markdown';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import remarkGfm from 'remark-gfm';
+import { Element, Text } from 'hast';
 
 const Markdown = ({
   markdown,
@@ -40,15 +41,29 @@ const Markdown = ({
 
       return <h1 {...props} />;
     },
-    code: props => {
-      const { children, className } = props;
-      const match = /language-(\w+)/.exec(className || '');
-      return match ? (
-        <SyntaxHighlighter style={atomOneDark} language={match[1]} PreTag="div">
-          {String(children).replace(/\n$/, '')}
+    pre: props => {
+      const { children, className, node } = props;
+
+      const code = node.children.find(
+        child => (child as Element).tagName === 'code',
+      ) as Element | undefined;
+
+      if (!code) {
+        return <pre className={className}>{children}</pre>;
+      }
+
+      const codeClassName = code.properties?.className as string[];
+      const language = codeClassName.flatMap(cls => {
+        const match = /language-(\w+)/.exec(cls);
+        return match ? [match[1]] : [];
+      })[0];
+
+      return language ? (
+        <SyntaxHighlighter style={atomOneDark} language={language}>
+          {(code.children[0] as Text).value.replace(/\n$/, '')}
         </SyntaxHighlighter>
       ) : (
-        <code className={className}>{children}</code>
+        <pre className={className}>{children}</pre>
       );
     },
   };
