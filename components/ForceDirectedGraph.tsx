@@ -1,6 +1,7 @@
 'use client';
 
 import { PostGraph, PostGraphLink, PostGraphNode } from '@types';
+import classNames from 'classnames';
 import {
   forceCenter,
   forceCollide,
@@ -25,6 +26,11 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
   );
   const [simulationNodes, setSimulationNodes] = useState<PostGraphNode[]>([]);
   const [simulationLinks, setSimulationLinks] = useState<PostGraphLink[]>([]);
+  const [hoveredNode, setHoveredNode] = useState<PostGraphNode>();
+
+  const isNodeHovered = (node: PostGraphNode) => {
+    return hoveredNode?.wikilink === node.wikilink;
+  };
 
   useEffect(() => {
     const forceLinkWithNodes = forceLink<PostGraphNode, PostGraphLink>(
@@ -91,29 +97,35 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
         {simulationNodes.map(node => {
           const fillColor = color(node.slugIdx!.toString());
           return (
-            // <Tooltip content={node.title} key={node.wikilink}>
-            //   <circle
-            //     cx={node.x}
-            //     cy={node.y}
-            //     fill={color(node.slugIdx!.toString())}
-            //     r={8}
-            //   />
-            // </Tooltip>
             <g
               key={node.wikilink}
-              style={{
-                fill: fillColor,
-              }}
               transform={` translate(${node.x}, ${node.y}) `}
+              onMouseOver={() => setHoveredNode({ ...node })}
+              onMouseOut={() => setHoveredNode(undefined)}
             >
-              <circle r={r} />
-              <text
-                dy={r * 2}
+              <circle
+                r={r}
                 style={{
-                  fontSize: '8px',
+                  fill: fillColor,
+                  transform: isNodeHovered(node) ? 'scale(1.1)' : 'none',
+                  transitionProperty: 'transform',
+                  transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                  transitionDuration: '150ms',
+                }}
+              />
+              <text
+                dy={r * 2 + 2}
+                style={{
+                  fontSize: '10px',
                   strokeWidth: 0,
                 }}
                 textAnchor="middle"
+                className={classNames(
+                  {
+                    'translate-y-1': isNodeHovered(node),
+                  },
+                  'transition ease-in-out',
+                )}
               >
                 {node.title}
               </text>
