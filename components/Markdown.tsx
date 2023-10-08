@@ -5,6 +5,8 @@ import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
 import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import remarkGfm from 'remark-gfm';
 
 const Markdown = ({
@@ -37,6 +39,17 @@ const Markdown = ({
       }
 
       return <h1 {...props} />;
+    },
+    code: props => {
+      const { children, className } = props;
+      const match = /language-(\w+)/.exec(className || '');
+      return match ? (
+        <SyntaxHighlighter style={atomOneDark} language={match[1]}>
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className}>{children}</code>
+      );
     },
   };
 
