@@ -1,10 +1,10 @@
+import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
+import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
 import { Post, PostGraph, PostGraphLink, Slug } from 'types';
-import { redis } from './redisUtil';
-import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
-import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
+import { redis } from './redisUtil';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
@@ -87,7 +87,7 @@ export const getCachedPostBySlug = async (slug: Slug): Promise<Post> => {
   return post;
 };
 
-const getPostBySlug = (slug: string[]) => {
+export const getPostBySlug = (slug: string[]) => {
   if (slug === undefined || slug.length === 0) {
     return null;
   }
