@@ -10,7 +10,7 @@ import ReactMarkdown, { Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-import { Link } from '@nextui-org/react';
+import { Code, Link } from '@nextui-org/react';
 
 const components = (titleLink?: string): Components => ({
   a: props => {
@@ -60,12 +60,15 @@ const components = (titleLink?: string): Components => ({
     })[0];
 
     return language ? (
-      <SyntaxHighlighter style={oneDark} language={language}>
+      <SyntaxHighlighter style={oneDark} language={language} showLineNumbers>
         {(code.children[0] as Text).value.replace(/\n$/, '')}
       </SyntaxHighlighter>
     ) : (
-      <pre className={className}>{children}</pre>
+      <pre className={classNames(className)}>{children}</pre>
     );
+  },
+  code: props => {
+    return <Code className="not-prose">{props.children}</Code>;
   },
 });
 
