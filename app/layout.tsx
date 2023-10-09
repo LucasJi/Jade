@@ -1,8 +1,8 @@
-import './globals.css';
-import React from 'react';
 import BlogNavbar from '@components/BlogNavbar';
-import { Providers } from './providers';
 import Footer from '@components/Footer';
+import React from 'react';
+import './globals.css';
+import { Providers } from './providers';
 
 export const metadata = {
   title: 'Starry Blog',
@@ -19,7 +19,7 @@ export default async function RootLayout({
       <body className="h-full" suppressHydrationWarning={true}>
         <Providers>
           <BlogNavbar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 self-center">{children}</main>
           <Footer />
         </Providers>
       </body>
