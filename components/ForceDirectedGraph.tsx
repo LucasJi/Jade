@@ -75,7 +75,7 @@ const ForceDirectedGraph = ({
 
   return (
     <svg
-      className={classNames('max-w-full h-auto', className)}
+      className={classNames('max-w-full', className)}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       width={width}

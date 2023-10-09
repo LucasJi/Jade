@@ -31,10 +31,10 @@ export default async function Post({ params }: { params: { slug: Slug } }) {
       )}
       key={`content-${wikilink}`}
     >
-      <div className="grow-[1] w-[400px]">DIRECTORY</div>
-      <Markdown markdown={content} className="max-w-[1024px] grow-[2]" />
+      <div className="w-[calc((100%_-_1024px)_/_2)]">DIRECTORY</div>
+      <Markdown markdown={content} className="max-w-[1024px]" />
       <ForceDirectedGraph
-        className="grow-[1]"
+        className="fixed right-0"
         postGraph={postGraph}
         height={400}
         width={400}

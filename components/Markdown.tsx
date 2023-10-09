@@ -4,12 +4,13 @@ import Wikilink from '@components/Wikilink';
 import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
-import Link from 'next/link';
+// import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
+import { Link } from '@nextui-org/react';
 
 const components = (titleLink?: string): Components => ({
   a: props => {
@@ -17,14 +18,22 @@ const components = (titleLink?: string): Components => ({
     return className?.includes('wikilink') && href ? (
       <Wikilink wikilink={href}>{children}</Wikilink>
     ) : (
-      <a href={href} {...props} rel="noopener noreferrer" target="_blank" />
+      <Link
+        isExternal
+        href={href}
+        showAnchorIcon
+        color="foreground"
+        className="underline-l-r"
+      >
+        {children}
+      </Link>
     );
   },
   h1: props => {
     if (titleLink) {
       return (
         <h1>
-          <Link className="underline-l-r" href={titleLink}>
+          <Link className="underline-l-r" href={titleLink} color="foreground">
             {props.children}
           </Link>
         </h1>

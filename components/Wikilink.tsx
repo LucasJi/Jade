@@ -1,10 +1,14 @@
 'use client';
 
 import Markdown from '@components/Markdown';
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import {
+  Link,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@nextui-org/react';
 import httpClient from '@utils/axios';
 import { AxiosResponse } from 'axios';
-import Link from 'next/link';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Post, Slug } from 'types';
 
@@ -46,7 +50,9 @@ export default function Wikilink({
           setOpen(true);
         }}
       >
-        <Link href={`/posts/${wikilink}`}>{children}</Link>
+        <Link href={`/posts/${wikilink}`} color="foreground">
+          {children}
+        </Link>
       </PopoverTrigger>
       <PopoverContent>
         <Markdown
