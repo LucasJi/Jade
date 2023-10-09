@@ -27,12 +27,11 @@ export default async function Post({ params }: { params: { slug: Slug } }) {
         'overflow-y-auto',
         'h-full',
         'w-full',
-        'p-4',
+        'max-w-[1024px]',
       )}
       key={`content-${wikilink}`}
     >
-      <div className="w-[calc((100%_-_1024px)_/_2)]">DIRECTORY</div>
-      <Markdown markdown={content} className="max-w-[1024px]" />
+      <Markdown markdown={content} className="w-full max-w-[1024px]" />
       <ForceDirectedGraph
         className="fixed right-0"
         postGraph={postGraph}
