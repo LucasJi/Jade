@@ -141,26 +141,45 @@ export const getCachedPosts = async (): Promise<Post[]> => {
 
 export const getCachedPostGraph = async (): Promise<PostGraph> => {
   const posts = await getCachedPosts();
+  return generatePostGraphFromPosts(posts);
+};
+
+export const generatePostGraphFromPosts = (posts: Post[]) => {
   const postGraphLinks: PostGraphLink[] = [];
+  const wikilinks = posts.map(p => p.wikilink);
 
   for (const post of posts) {
     const { forwardLinks, backlinks, wikilink } = post;
     for (const fl of forwardLinks) {
-      postGraphLinks.push({
-        source: wikilink,
-        target: fl,
-      });
+      if (wikilinks.includes(fl)) {
+        postGraphLinks.push({
+          source: wikilink,
+          target: fl,
+        });
+      }
     }
 
     for (const bl of backlinks) {
-      postGraphLinks.push({
-        source: bl,
-        target: wikilink,
-      });
+      if (wikilinks.includes(bl)) {
+        postGraphLinks.push({
+          source: bl,
+          target: wikilink,
+        });
+      }
     }
   }
 
   return { nodes: posts, links: postGraphLinks };
+};
+
+export const getAdjacencyPosts = async (post: Post) => {
+  const posts = await getCachedPosts();
+  return posts.filter(
+    e =>
+      e.wikilink === post.wikilink ||
+      e.backlinks.includes(post.wikilink) ||
+      e.forwardLinks.includes(post.wikilink),
+  );
 };
 
 const resolveWikilinks = (posts: Post[]) => {

@@ -1,8 +1,13 @@
-import { Slug } from '@types';
-import { getCachedSlugs, getPostBySlug } from '@utils/postUtil';
-import classNames from 'classnames';
+import ForceDirectedGraph from '@components/ForceDirectedGraph';
 import Markdown from '@components/Markdown';
-import Wikilink from '@components/Wikilink';
+import { Slug } from '@types';
+import {
+  generatePostGraphFromPosts,
+  getAdjacencyPosts,
+  getCachedSlugs,
+  getPostBySlug,
+} from '@utils/postUtil';
+import classNames from 'classnames';
 
 export default async function Post({ params }: { params: { slug: Slug } }) {
   const post = getPostBySlug(params.slug);
@@ -11,34 +16,30 @@ export default async function Post({ params }: { params: { slug: Slug } }) {
     return <div>POST NOT FOUND</div>;
   }
 
-  const { wikilink, content, backlinks } = post;
+  const adjPosts = await getAdjacencyPosts(post);
+  const postGraph = generatePostGraphFromPosts(adjPosts);
+  const { wikilink, content } = post;
 
   return (
     <div
       className={classNames(
-        'break-words',
         'flex',
-        'flex-col',
-        'px-4',
         'overflow-y-auto',
         'h-full',
-        'pt-4',
+        'w-full',
+        'p-4',
       )}
       key={`content-${wikilink}`}
     >
-      <Markdown markdown={content} />
-      <div>
-        <div className="bg-green-200 font-bold">Backlinks</div>
-        {backlinks.length > 0 ? (
-          backlinks.map(bl => (
-            <Wikilink key={bl} wikilink={bl}>
-              {bl}
-            </Wikilink>
-          ))
-        ) : (
-          <div className="bg-yellow-600">No Backlinks</div>
-        )}
-      </div>
+      <div className="grow-[1] w-[400px]">DIRECTORY</div>
+      <Markdown markdown={content} className="max-w-[1024px] grow-[2]" />
+      <ForceDirectedGraph
+        className="grow-[1]"
+        postGraph={postGraph}
+        height={400}
+        width={400}
+        scale={0.6}
+      />
     </div>
   );
 }

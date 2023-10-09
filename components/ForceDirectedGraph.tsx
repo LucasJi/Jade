@@ -12,12 +12,21 @@ import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { useEffect, useMemo, useState } from 'react';
 
-const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
-  const { width, height, color, r } = useMemo(
+const ForceDirectedGraph = ({
+  postGraph,
+  scale = 1,
+  height = 600,
+  width = 900,
+  className,
+}: {
+  postGraph: PostGraph;
+  scale?: number;
+  height?: number;
+  width?: number;
+  className?: string;
+}) => {
+  const { color, r } = useMemo(
     () => ({
-      // Specify the dimensions of the chart.
-      width: 900,
-      height: 600,
       // Specify the color scale.
       color: scaleOrdinal(schemeCategory10),
       r: 8,
@@ -50,7 +59,9 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
       // .force('y', forceY(height / 2))
       .force(
         'collide',
-        forceCollide(Math.min(width, height) / (postGraph.nodes.length + 1)),
+        forceCollide(
+          (scale * Math.min(width, height)) / (postGraph.nodes.length + 1),
+        ),
       )
       .force('center', forceCenter(width / 2, height / 2));
 
@@ -64,7 +75,7 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
 
   return (
     <svg
-      className="max-w-full h-auto"
+      className={classNames('max-w-full h-auto', className)}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       width={width}
@@ -77,7 +88,7 @@ const ForceDirectedGraph = ({ postGraph }: { postGraph: PostGraph }) => {
             markerUnits="strokeWidth"
             markerWidth="10"
             orient="auto"
-            refX="20"
+            refX="22"
             refY="6"
             viewBox="0 0 12 12"
           >
