@@ -3,13 +3,13 @@
 import Wikilink from '@components/Wikilink';
 import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
+import { Element, Text } from 'hast';
 import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-import { Element, Text } from 'hast';
 
 const Markdown = ({
   markdown,
@@ -60,7 +60,7 @@ const Markdown = ({
       })[0];
 
       return language ? (
-        <SyntaxHighlighter style={dracula} language={language}>
+        <SyntaxHighlighter style={oneDark} language={language}>
           {(code.children[0] as Text).value.replace(/\n$/, '')}
         </SyntaxHighlighter>
       ) : (
