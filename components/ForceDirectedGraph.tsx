@@ -16,7 +16,7 @@ const ForceDirectedGraph = ({
   postGraph,
   scale = 1,
   height = 600,
-  width = 900,
+  width = 600,
   className,
 }: {
   postGraph: PostGraph;

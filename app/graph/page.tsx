@@ -13,5 +13,5 @@ export default function Graph() {
     return <LgSpinnerInCenter />;
   }
 
-  return <ForceDirectedGraph postGraph={data} />;
+  return <ForceDirectedGraph postGraph={data} className="mx-auto" />;
 }
