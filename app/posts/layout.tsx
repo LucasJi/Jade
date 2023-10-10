@@ -1,10 +1,7 @@
 'use client';
-import { ReactNode } from 'react';
-import {
-  useSelectedLayoutSegment,
-  useSelectedLayoutSegments,
-} from 'next/navigation';
-import { Tree } from 'react-arborist';
+import { useSelectedLayoutSegment } from 'next/navigation';
+import { CSSProperties, ReactNode } from 'react';
+import { NodeApi, Tree, TreeApi } from 'react-arborist';
 
 const data = [
   { id: '1', name: 'Unread' },
@@ -29,15 +26,47 @@ const data = [
   },
 ];
 
+function node({
+  node,
+  style,
+  dragHandle,
+  tree,
+}: {
+  node: NodeApi;
+  style: CSSProperties;
+  tree: TreeApi;
+}) {
+  return (
+    <div style={style} ref={dragHandle}>
+      {node.isLeaf ? '🍁' : '🗀'}
+      {node.data.name}
+    </div>
+  );
+}
+
 export default function Layout({ children }: { children: ReactNode }) {
-  const segments = useSelectedLayoutSegments();
   const segment = useSelectedLayoutSegment();
-  console.log('segments', segments);
   console.log('segment', segment);
   return (
     <div className="w-full flex p-4">
       <div className="w-[calc((100%_-_1024px)_/_2)]">
-        <Tree className="ml-20" initialData={data} />
+        <Tree
+          initialData={data}
+          openByDefault={false}
+          disableDrop
+          disableEdit
+          disableMultiSelection
+          width={600}
+          height={1000}
+          indent={24}
+          rowHeight={36}
+          overscanCount={1}
+          paddingTop={30}
+          paddingBottom={10}
+          padding={25}
+        >
+          {node}
+        </Tree>
       </div>
       {children}
     </div>
