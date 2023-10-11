@@ -44,5 +44,5 @@ export default async function Post({ params }: { params: { slug: Slug } }) {
 }
 
 export async function generateStaticParams() {
-  return await getCachedSlugs();
+  return await getCachedSlugs(false);
 }

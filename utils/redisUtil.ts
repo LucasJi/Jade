@@ -44,4 +44,4 @@ const createRedisInstance = (config = getRedisConfiguration()): Redis => {
 
 const redis = createRedisInstance();
 
-export { redis, createRedisInstance };
+export { redis };

@@ -21,3 +21,10 @@ export type PostGraph = {
   nodes: PostGraphNode[];
   links: PostGraphLink[];
 };
+
+export type PostTreeNode = {
+  name: string;
+  children?: PostTreeNode[];
+};
+
+export type PostTree = PostTreeNode[];

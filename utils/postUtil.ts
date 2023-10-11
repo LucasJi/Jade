@@ -2,7 +2,14 @@ import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
-import { Post, PostGraph, PostGraphLink, Slug } from 'types';
+import {
+  Post,
+  PostGraph,
+  PostGraphLink,
+  PostTree,
+  PostTreeNode,
+  Slug,
+} from 'types';
 import { visit } from 'unist-util-visit';
 import { redis } from './redisUtil';
 
@@ -12,12 +19,16 @@ const SLUGS_KEY = 'slugs';
 const POSTS_KEY = 'posts';
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
-export const getCachedSlugs = async (): Promise<Slug[]> => {
+export const getCachedSlugs = async (enableCache = true): Promise<Slug[]> => {
+  if (!enableCache) {
+    return getSlugs();
+  }
+
   const slugsJson = await redis.get(SLUGS_KEY);
 
   let slugs: Array<Slug>;
   if (slugsJson === null) {
-    slugs = getPostSlugs();
+    slugs = getSlugs();
     await redis.set(SLUGS_KEY, JSON.stringify(slugs));
   } else {
     slugs = JSON.parse(slugsJson);
@@ -26,36 +37,66 @@ export const getCachedSlugs = async (): Promise<Slug[]> => {
   return slugs;
 };
 
-const getPostSlugs = () => {
-  const fileFullPaths = walkFilesRecursively(POST_DIR);
-  return fileFullPaths.map(fullPath => getSlugFromFullPath(fullPath));
+const getSlugs = () => {
+  const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
+  return absolutePaths.map(absolutePath =>
+    getSlugFromAbsolutePath(absolutePath),
+  );
 };
 
-const getSlugFromFullPath = (fullPath: string) => {
-  const relativePath = fullPath.replace(POST_DIR, '');
+const getSlugFromAbsolutePath = (absolutePath: string) => {
+  const relativePath = absolutePath.replace(POST_DIR, '');
   const slug = relativePath.split(SEPARATOR);
   // someFolder/post.md -> ['someFolder', 'post.md'] -> ['someFolder', 'post']
   slug[slug.length - 1] = slug[slug.length - 1].replace(/\.md$/, '');
   return slug;
 };
 
-const walkFilesRecursively = (dir: string, fileNameArray: string[] = []) => {
-  const files = fs.readdirSync(dir);
-  let innerFileNameArray = fileNameArray || [];
-
-  files.forEach(file => {
-    const path = join(dir, file);
-    if (fs.statSync(path).isDirectory()) {
-      innerFileNameArray = walkFilesRecursively(path, innerFileNameArray);
-    } else {
-      innerFileNameArray.push(path);
-    }
-  });
-
-  return innerFileNameArray;
+export const getPostTree = () => {
+  return _getPostTree(POST_DIR);
 };
 
-const getFullPathFromSlug = (slug: string[]) => {
+const _getPostTree = (dir: string, postTree: PostTree = []) => {
+  const files = fs.readdirSync(dir);
+
+  for (const file of files) {
+    const path = join(dir, file);
+    if (fs.statSync(path).isDirectory()) {
+      const node: PostTreeNode = {
+        name: file,
+        children: [],
+      };
+      node.children = _getPostTree(path, node.children);
+      postTree.push(node);
+    } else if (file.endsWith('.md')) {
+      postTree.push({
+        name: file,
+      });
+    }
+  }
+
+  return postTree;
+};
+
+const getMarkdownAbsolutePaths = (
+  dir: string,
+  absolutePaths: string[] = [],
+) => {
+  const files = fs.readdirSync(dir);
+
+  for (const file of files) {
+    const path = join(dir, file);
+    if (fs.statSync(path).isDirectory()) {
+      getMarkdownAbsolutePaths(path, absolutePaths);
+    } else if (file.endsWith('.md')) {
+      absolutePaths.push(path);
+    }
+  }
+
+  return absolutePaths;
+};
+
+const getFullPathFromSlug = (slug: Slug) => {
   const slugClone = [...slug];
   slugClone[slugClone.length - 1] = slugClone[slugClone.length - 1] + '.md';
   return join(POST_DIR, ...slugClone);
@@ -110,14 +151,14 @@ export const getPostBySlug = (slug: string[]) => {
 };
 
 export const getCachedPosts = async (): Promise<Post[]> => {
-  const postsJson = await redis.get(POSTS_KEY);
-
-  if (postsJson) {
-    return JSON.parse(postsJson);
-  }
+  // const postsJson = await redis.get(POSTS_KEY);
+  //
+  // if (postsJson) {
+  //   return JSON.parse(postsJson);
+  // }
 
   const posts: Array<Post> = [];
-  const slugs = await getCachedSlugs();
+  const slugs = await getCachedSlugs(false);
   const relativeFolderSet = new Set<string>();
   for (const slug of slugs) {
     relativeFolderSet.add(getRelativeParentFolderFromSlug(slug));

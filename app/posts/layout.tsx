@@ -4,29 +4,9 @@ import { ElementType, ReactNode } from 'react';
 import { Tree } from 'react-arborist';
 import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
 import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
-
-const data = [
-  { id: '1', name: 'Unread' },
-  { id: '2', name: 'Threads' },
-  {
-    id: '3',
-    name: 'Chat Rooms',
-    children: [
-      { id: 'c1', name: 'General' },
-      { id: 'c2', name: 'Random' },
-      { id: 'c3', name: 'Open Source Projects' },
-    ],
-  },
-  {
-    id: '4',
-    name: 'Direct Messages',
-    children: [
-      { id: 'd1', name: 'Alice' },
-      { id: 'd2', name: 'Bob' },
-      { id: 'd3', name: 'Charlie' },
-    ],
-  },
-];
+import useSWR from 'swr';
+import fetcher from '@api/fetcher';
+import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
 
 const Node: ElementType<NodeRendererProps<any>> | undefined = ({
   node,
@@ -55,11 +35,16 @@ const Node: ElementType<NodeRendererProps<any>> | undefined = ({
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
-  console.log('segment', segment);
+  const { data, isLoading } = useSWR('/api/posts/tree', fetcher);
+  if (isLoading) {
+    return <LgSpinnerInCenter />;
+  }
+
   return (
     <div className="w-full flex p-4">
       <div className="w-[calc((100%_-_1024px)_/_2)] pl-[2rem]">
         <Tree
+          idAccessor="name"
           className="w-full h-full"
           initialData={data}
           disableDrag
