@@ -1,7 +1,8 @@
 'use client';
 import { useSelectedLayoutSegment } from 'next/navigation';
-import { CSSProperties, ReactNode } from 'react';
-import { NodeApi, Tree, TreeApi } from 'react-arborist';
+import { ElementType, ReactNode } from 'react';
+import { Tree } from 'react-arborist';
+import { NodeRendererProps } from 'react-arborist/src/types/renderers';
 
 const data = [
   { id: '1', name: 'Unread' },
@@ -30,14 +31,17 @@ function node({
   node,
   style,
   dragHandle,
-  tree,
-}: {
-  node: NodeApi;
-  style: CSSProperties;
-  tree: TreeApi;
-}) {
+}: NodeRendererProps<any>): ElementType {
   return (
-    <div style={style} ref={dragHandle}>
+    <div
+      style={style}
+      ref={dragHandle}
+      onClick={() => {
+        if (!node.isLeaf) {
+          node.isOpen ? node.close() : node.open();
+        }
+      }}
+    >
       {node.isLeaf ? '🍁' : '🗀'}
       {node.data.name}
     </div>
@@ -53,9 +57,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         <Tree
           initialData={data}
           openByDefault={false}
-          disableDrop
-          disableEdit
-          disableMultiSelection
           width={600}
           height={1000}
           indent={24}
