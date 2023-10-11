@@ -1,8 +1,8 @@
 'use client';
 import { Divider } from '@nextui-org/react';
-import githubIcon from '@public/icons8-github.svg';
 import Image from 'next/image';
 import Link from 'next/link';
+import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
   return (
@@ -26,7 +26,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <Image src={githubIcon} height={32} width={32} alt="GithubIcon" />
+            <RxGithubLogo size={22} />
           </Link>
         </div>
       </div>
