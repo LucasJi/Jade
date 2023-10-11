@@ -35,7 +35,7 @@ const Node: ElementType<NodeRendererProps<any>> | undefined = ({
   return (
     <div
       style={style}
-      className="flex"
+      className="flex items-center"
       onClick={() => {
         if (!node.isLeaf) {
           node.isOpen ? node.close() : node.open();
