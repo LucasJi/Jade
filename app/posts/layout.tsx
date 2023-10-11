@@ -2,7 +2,8 @@
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { ElementType, ReactNode } from 'react';
 import { Tree } from 'react-arborist';
-import { NodeRendererProps } from 'react-arborist/src/types/renderers';
+import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
+import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
 
 const data = [
   { id: '1', name: 'Unread' },
@@ -27,46 +28,53 @@ const data = [
   },
 ];
 
-function node({
+const Node: ElementType<NodeRendererProps<any>> | undefined = ({
   node,
   style,
-  dragHandle,
-}: NodeRendererProps<any>): ElementType {
+}) => {
   return (
     <div
       style={style}
-      ref={dragHandle}
+      className="flex"
       onClick={() => {
         if (!node.isLeaf) {
           node.isOpen ? node.close() : node.open();
         }
       }}
     >
-      {node.isLeaf ? '🍁' : '🗀'}
-      {node.data.name}
+      {!node.isLeaf &&
+        (node.isClosed ? (
+          <RxChevronRight size={24} className="inline" />
+        ) : (
+          <RxChevronDown size={24} className="inline" />
+        ))}
+      <span>{node.data.name}</span>
     </div>
   );
-}
+};
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
   console.log('segment', segment);
   return (
     <div className="w-full flex p-4">
-      <div className="w-[calc((100%_-_1024px)_/_2)]">
+      <div className="w-[calc((100%_-_1024px)_/_2)] pl-[2rem]">
         <Tree
+          className="w-full h-full"
           initialData={data}
+          disableDrag
+          disableDrop
+          disableEdit
+          disableMultiSelection
           openByDefault={false}
-          width={600}
-          height={1000}
-          indent={24}
+          indent={36}
           rowHeight={36}
           overscanCount={1}
           paddingTop={30}
           paddingBottom={10}
           padding={25}
         >
-          {node}
+          {Node}
         </Tree>
       </div>
       {children}
