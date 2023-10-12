@@ -2,17 +2,18 @@
 import fetcher from '@api/fetcher';
 import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
 import { PostTreeNode } from '@types';
-import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import { ElementType, ReactNode } from 'react';
 import { Tree } from 'react-arborist';
 import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
 import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
 import useSWR from 'swr';
+import { Link } from '@nextui-org/react';
+import NextLink from 'next/link';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
   const { data, isLoading } = useSWR('/api/posts/tree', fetcher);
-  const { push } = useRouter();
 
   if (isLoading) {
     return <LgSpinnerInCenter />;
@@ -26,26 +27,32 @@ export default function Layout({ children }: { children: ReactNode }) {
       data: { name, id },
     } = node;
     return (
-      <div
-        style={style}
-        className="flex items-center cursor-pointer overflow-hidden"
-        onClick={() => {
-          if (!node.isLeaf) {
-            node.isOpen ? node.close() : node.open();
-          } else {
-            push('/posts/' + id);
-          }
-        }}
-      >
-        {!node.isLeaf &&
-          (node.isClosed ? (
-            <RxChevronRight size={20} className="inline" />
-          ) : (
-            <RxChevronDown size={20} className="inline" />
-          ))}
-        <span className="truncate w-40">
-          {node.isLeaf ? name.replace('.md', '') : name}
-        </span>
+      <div style={style} className="flex items-center overflow-hidden">
+        {node.isLeaf ? (
+          <Link
+            href={`/posts/${id}`}
+            size="sm"
+            color="foreground"
+            as={NextLink}
+            underline={id === segment ? 'always' : 'hover'}
+          >
+            <span className="truncate w-40">{name.replace('.md', '')}</span>
+          </Link>
+        ) : (
+          <div
+            className="text-small flex cursor-pointer"
+            onClick={() => {
+              node.isOpen ? node.close() : node.open();
+            }}
+          >
+            {node.isClosed ? (
+              <RxChevronRight size={20} className="inline" />
+            ) : (
+              <RxChevronDown size={20} className="inline" />
+            )}
+            <span className="truncate w-40">{name}</span>
+          </div>
+        )}
       </div>
     );
   };
