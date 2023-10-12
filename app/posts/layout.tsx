@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="w-full flex p-4 h-full">
-      <div className="w-[calc((100%_-_1024px)_/_2)] pl-[2rem] h-full">
+      <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full">
         <Tree
           initialData={data}
           disableDrag
@@ -61,9 +61,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           indent={24}
           rowHeight={36}
           overscanCount={1}
-          padding={25}
           selection={segment || undefined}
-          width="auto"
+          width={250}
+          height={1000}
         >
           {Node}
         </Tree>
