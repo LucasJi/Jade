@@ -7,6 +7,8 @@ import {
   forceCollide,
   forceLink,
   forceSimulation,
+  forceX,
+  forceY,
 } from 'd3-force';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
@@ -55,8 +57,8 @@ const ForceDirectedGraph = ({
 
     const simulation = forceSimulation<PostGraphNode>(postGraph.nodes)
       .force('link', forceLinkWithNodes)
-      // .force('x', forceX(width / 2))
-      // .force('y', forceY(height / 2))
+      .force('x', forceX(width / 2))
+      .force('y', forceY(height / 2))
       .force(
         'collide',
         forceCollide(

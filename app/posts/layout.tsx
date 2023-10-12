@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     return (
       <div
         style={style}
-        className="flex items-center cursor-pointer"
+        className="flex items-center cursor-pointer overflow-hidden"
         onClick={() => {
           if (!node.isLeaf) {
             node.isOpen ? node.close() : node.open();
@@ -43,7 +43,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           ) : (
             <RxChevronDown size={20} className="inline" />
           ))}
-        <span>{node.isLeaf ? name.replace('.md', '') : name}</span>
+        <span className="truncate w-40">
+          {node.isLeaf ? name.replace('.md', '') : name}
+        </span>
       </div>
     );
   };
@@ -52,6 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className="w-full flex p-4 h-full">
       <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full">
         <Tree
+          rowClassName="flex"
           initialData={data}
           disableDrag
           disableDrop
@@ -60,7 +63,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           openByDefault={false}
           indent={24}
           rowHeight={36}
-          overscanCount={1}
           selection={segment || undefined}
           width={250}
           height={1000}
