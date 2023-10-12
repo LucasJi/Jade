@@ -11,6 +11,7 @@ import httpClient from '@utils/axios';
 import { AxiosResponse } from 'axios';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Post, Slug } from 'types';
+import NextLink from 'next/link';
 
 const SEPARATOR = '/';
 
@@ -50,7 +51,7 @@ export default function Wikilink({
           setOpen(true);
         }}
       >
-        <Link href={`/posts/${wikilink}`} color="foreground">
+        <Link href={`/posts/${wikilink}`} color="foreground" as={NextLink}>
           {children}
         </Link>
       </PopoverTrigger>
