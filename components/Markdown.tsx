@@ -1,6 +1,7 @@
 'use client';
 
 import Wikilink from '@components/Wikilink';
+import { Code, Link } from '@nextui-org/react';
 import wikilinkPlugin from '@utils/remark-wikilink';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
@@ -10,7 +11,6 @@ import ReactMarkdown, { Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-import { Code, Link } from '@nextui-org/react';
 
 const components = (titleLink?: string): Components => ({
   a: props => {
@@ -40,7 +40,7 @@ const components = (titleLink?: string): Components => ({
       );
     }
 
-    return <h1 {...props} />;
+    return <h1>{props.children}</h1>;
   },
   pre: props => {
     const { children, className, node } = props;

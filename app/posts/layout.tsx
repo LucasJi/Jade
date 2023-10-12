@@ -1,63 +1,69 @@
 'use client';
-import { useSelectedLayoutSegment } from 'next/navigation';
+import fetcher from '@api/fetcher';
+import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
+import { PostTreeNode } from '@types';
+import { useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { ElementType, ReactNode } from 'react';
 import { Tree } from 'react-arborist';
 import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
 import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
 import useSWR from 'swr';
-import fetcher from '@api/fetcher';
-import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
-
-const Node: ElementType<NodeRendererProps<any>> | undefined = ({
-  node,
-  style,
-}) => {
-  return (
-    <div
-      style={style}
-      className="flex items-center"
-      onClick={() => {
-        if (!node.isLeaf) {
-          node.isOpen ? node.close() : node.open();
-        }
-      }}
-    >
-      {!node.isLeaf &&
-        (node.isClosed ? (
-          <RxChevronRight size={24} className="inline" />
-        ) : (
-          <RxChevronDown size={24} className="inline" />
-        ))}
-      <span>{node.data.name}</span>
-    </div>
-  );
-};
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
   const { data, isLoading } = useSWR('/api/posts/tree', fetcher);
+  const { push } = useRouter();
+
   if (isLoading) {
     return <LgSpinnerInCenter />;
   }
 
+  const Node: ElementType<NodeRendererProps<PostTreeNode>> | undefined = ({
+    node,
+    style,
+  }) => {
+    const {
+      data: { name, id },
+    } = node;
+    return (
+      <div
+        style={style}
+        className="flex items-center cursor-pointer"
+        onClick={() => {
+          if (!node.isLeaf) {
+            node.isOpen ? node.close() : node.open();
+          } else {
+            push('/posts/' + id);
+          }
+        }}
+      >
+        {!node.isLeaf &&
+          (node.isClosed ? (
+            <RxChevronRight size={20} className="inline" />
+          ) : (
+            <RxChevronDown size={20} className="inline" />
+          ))}
+        <span>{node.isLeaf ? name.replace('.md', '') : name}</span>
+      </div>
+    );
+  };
+
   return (
-    <div className="w-full flex p-4">
-      <div className="w-[calc((100%_-_1024px)_/_2)] pl-[2rem]">
+    <div className="w-full flex p-4 h-full">
+      <div className="w-[calc((100%_-_1024px)_/_2)] pl-[2rem] h-full">
         <Tree
-          idAccessor="name"
-          className="w-full h-full"
           initialData={data}
           disableDrag
           disableDrop
           disableEdit
           disableMultiSelection
           openByDefault={false}
-          indent={36}
+          indent={24}
           rowHeight={36}
           overscanCount={1}
-          paddingTop={30}
-          paddingBottom={10}
           padding={25}
+          selection={segment || undefined}
+          width="auto"
         >
           {Node}
         </Tree>

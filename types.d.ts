@@ -23,6 +23,7 @@ export type PostGraph = {
 };
 
 export type PostTreeNode = {
+  id: string;
   name: string;
   children?: PostTreeNode[];
 };

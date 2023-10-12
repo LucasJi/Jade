@@ -63,6 +63,7 @@ const _getPostTree = (dir: string, postTree: PostTree = []) => {
     const path = join(dir, file);
     if (fs.statSync(path).isDirectory()) {
       const node: PostTreeNode = {
+        id: join(...getSlugFromAbsolutePath(path)),
         name: file,
         children: [],
       };
@@ -70,6 +71,7 @@ const _getPostTree = (dir: string, postTree: PostTree = []) => {
       postTree.push(node);
     } else if (file.endsWith('.md')) {
       postTree.push({
+        id: join(...getSlugFromAbsolutePath(path)),
         name: file,
       });
     }
