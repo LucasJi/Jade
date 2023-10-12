@@ -1,4 +1,4 @@
-# A demo of `react-markdown`
+# spring
 
 `react-markdown` is a markdown component for React.
 
@@ -25,17 +25,17 @@ This section is replaced by an actual table of contents.
 Here is an example of a plugin to highlight code:
 [`rehype-highlight`](https://github.com/rehypejs/rehype-highlight).
 
-```jsx
+```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 
 ReactDOM.render(
-  <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-    {'# Your markdown here'}
-  </ReactMarkdown>,
-  document.querySelector('#content')
+    <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+      {'# Your markdown here'}
+    </ReactMarkdown>,
+    document.querySelector('#content')
 );
 ```
 
@@ -70,30 +70,32 @@ use [`rehype-raw`](https://github.com/rehypejs/rehype-raw).
 You should probably combine it with
 [`rehype-sanitize`](https://github.com/rehypejs/rehype-sanitize).
 
-> 👆 Use the toggle above to add the plugin.
+<blockquote>
+  👆 Use the toggle above to add the plugin.
+</blockquote>
 
 ## Components
 
 You can pass components to change things:
 
-```jsx
+```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import MyFancyRule from './components/my-fancy-rule.js';
 
 ReactDOM.render(
-  <ReactMarkdown
-    components={{
-      // Use h2s instead of h1s
-      h1: 'h2',
-      // Use a component instead of hrs
-      hr: ({ node, ...props }) => <MyFancyRule {...props} />,
-    }}
-  >
-    # Your markdown here
-  </ReactMarkdown>,
-  document.querySelector('#content')
+    <ReactMarkdown
+        components={{
+          // Use h2s instead of h1s
+          h1: 'h2',
+          // Use a component instead of hrs
+          hr: ({node, ...props}) => <MyFancyRule {...props} />,
+        }}
+    >
+      # Your markdown here
+    </ReactMarkdown>,
+    document.querySelector('#content')
 );
 ```
 
@@ -106,6 +108,8 @@ Much more info is available in the
 
 A component by [Espen Hovlandsdal](https://espen.codes/)
 
-## Wikilinks
+end
 
-[[tests/f1/3]]
+## wikilink
+
+[[tech/java/jdk21]]

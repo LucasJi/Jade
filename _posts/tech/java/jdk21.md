@@ -1,4 +1,4 @@
-# 3
+# jdk21
 
 `react-markdown` is a markdown component for React.
 
@@ -25,7 +25,7 @@ This section is replaced by an actual table of contents.
 Here is an example of a plugin to highlight code:
 [`rehype-highlight`](https://github.com/rehypejs/rehype-highlight).
 
-```js
+```jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactMarkdown from 'react-markdown';
@@ -70,15 +70,13 @@ use [`rehype-raw`](https://github.com/rehypejs/rehype-raw).
 You should probably combine it with
 [`rehype-sanitize`](https://github.com/rehypejs/rehype-sanitize).
 
-<blockquote>
-  👆 Use the toggle above to add the plugin.
-</blockquote>
+> 👆 Use the toggle above to add the plugin.
 
 ## Components
 
 You can pass components to change things:
 
-```js
+```jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactMarkdown from 'react-markdown';
@@ -107,7 +105,3 @@ Much more info is available in the
 ---
 
 A component by [Espen Hovlandsdal](https://espen.codes/)
-
-end
-
-[[tests/f2/5]]
