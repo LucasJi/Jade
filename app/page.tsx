@@ -8,7 +8,7 @@ import React from 'react';
 import useSWR from 'swr';
 
 export default function Home() {
-  const { data } = useSWR<PostGraph>('/api/post/graph', fetcher);
+  const { data } = useSWR<PostGraph>('/api/posts/graph', fetcher);
 
   if (!data) {
     return <LgSpinnerInCenter />;

@@ -104,7 +104,7 @@ const getFullPathFromSlug = (slug: Slug) => {
   return join(POST_DIR, ...slugClone);
 };
 
-const getWikilinkFromSlug = (slug: Slug) => {
+const convertSlugToWikilink = (slug: Slug) => {
   return join(...slug);
 };
 
@@ -117,13 +117,28 @@ const getTitle = (content: string) => {
 };
 
 export const getCachedPostBySlug = async (slug: Slug): Promise<Post> => {
-  const wikilink = getWikilinkFromSlug(slug);
+  const wikilink = convertSlugToWikilink(slug);
   let post = null;
   const postJson = await redis.get(wikilink);
   if (postJson !== null) {
     post = JSON.parse(postJson);
   } else {
     post = getPostBySlug(slug);
+    await redis.set(wikilink, JSON.stringify(post));
+  }
+
+  return post;
+};
+
+export const getCachedPostByWikilink = async (
+  wikilink: string,
+): Promise<Post> => {
+  let post = null;
+  const postJson = await redis.get(wikilink);
+  if (postJson !== null) {
+    post = JSON.parse(postJson);
+  } else {
+    post = getPostBySlug(convertWikilinkToSlug(wikilink));
     await redis.set(wikilink, JSON.stringify(post));
   }
 

@@ -1,4 +1,3 @@
-import ForceDirectedGraph from '@components/ForceDirectedGraph';
 import Markdown from '@components/Markdown';
 import { Slug } from '@types';
 import {
@@ -32,13 +31,6 @@ export default async function Post({ params }: { params: { slug: Slug } }) {
       key={`content-${wikilink}`}
     >
       <Markdown markdown={content} className="w-full max-w-[1024px]" />
-      <ForceDirectedGraph
-        className="fixed right-0"
-        postGraph={postGraph}
-        height={400}
-        width={400}
-        scale={0.6}
-      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 import fetcher from '@api/fetcher';
+import ForceDirectedGraph from '@components/ForceDirectedGraph';
 import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
 import { Link } from '@nextui-org/react';
 import { PostTreeNode } from '@types';
@@ -13,9 +14,20 @@ import useSWR from 'swr';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
-  const { data, isLoading } = useSWR('/api/posts/tree', fetcher);
+  const { data: tree, isLoading: isLoadingTree } = useSWR(
+    '/api/posts/tree',
+    fetcher,
+  );
 
-  if (isLoading) {
+  const { data: postGraph } = useSWR(
+    '/api/post/graph?' +
+      new URLSearchParams({
+        wikilink: segment || '',
+      }),
+    fetcher,
+  );
+
+  if (isLoadingTree) {
     return <LgSpinnerInCenter />;
   }
 
@@ -63,7 +75,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full">
           <Tree
             rowClassName="flex"
-            initialData={data}
+            initialData={tree}
             disableDrag
             disableDrop
             disableEdit
@@ -80,6 +92,15 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
       )}
       {children}
+      {postGraph && (
+        <ForceDirectedGraph
+          className="fixed right-0"
+          postGraph={postGraph}
+          height={400}
+          width={400}
+          scale={0.6}
+        />
+      )}
     </div>
   );
 }
