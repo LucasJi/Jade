@@ -12,6 +12,7 @@ import {
 } from 'd3-force';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 const ForceDirectedGraph = ({
@@ -38,6 +39,7 @@ const ForceDirectedGraph = ({
   const [simulationNodes, setSimulationNodes] = useState<PostGraphNode[]>([]);
   const [simulationLinks, setSimulationLinks] = useState<PostGraphLink[]>([]);
   const [hoveredNode, setHoveredNode] = useState<PostGraphNode>();
+  const router = useRouter();
 
   const isNodeHovered = (node: PostGraphNode) => {
     return hoveredNode?.wikilink === node.wikilink;
@@ -125,6 +127,9 @@ const ForceDirectedGraph = ({
               transform={` translate(${node.x}, ${node.y}) `}
               onMouseOver={() => setHoveredNode({ ...node })}
               onMouseOut={() => setHoveredNode(undefined)}
+              onClick={() => {
+                router.push(`/posts/${node.wikilink}`);
+              }}
             >
               <circle
                 r={r}
