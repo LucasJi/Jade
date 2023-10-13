@@ -12,6 +12,8 @@ import {
 } from 'd3-force';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { select } from 'd3-selection';
+import { zoom } from 'd3-zoom';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -53,6 +55,7 @@ const ForceDirectedGraph = ({
   };
 
   useEffect(() => {
+    console.log('useEffect');
     const forceLinkWithNodes = forceLink<PostGraphNode, PostGraphLink>(
       postGraph.links,
     ).id(d => d.wikilink);
@@ -74,6 +77,14 @@ const ForceDirectedGraph = ({
       setSimulationLinks([...forceLinkWithNodes.links()]);
     });
 
+    const svg = select<Element, unknown>('svg');
+    const zoomBehavior = zoom().on('zoom', event => {
+      const zoomState = event.transform;
+      select('#linkGroup').attr('transform', zoomState);
+      select('#nodeGroup').attr('transform', zoomState);
+    });
+    svg.call(zoomBehavior);
+
     return () => simulation.stop() as unknown as void;
   }, []);
 
@@ -84,7 +95,7 @@ const ForceDirectedGraph = ({
       viewBox={`0 0 ${width} ${height}`}
       width={width}
     >
-      <g>
+      <g id="linkGroup">
         <defs>
           <marker
             id="arrow"
@@ -118,7 +129,7 @@ const ForceDirectedGraph = ({
           );
         })}
       </g>
-      <g stroke="#fff" strokeWidth={1.5}>
+      <g stroke="#fff" strokeWidth={1.5} id="nodeGroup">
         {simulationNodes.map(node => {
           const fillColor = color(node.slugIdx!.toString());
           return (
