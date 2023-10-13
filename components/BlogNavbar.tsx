@@ -23,10 +23,6 @@ const navbarItems = [
     name: 'Tags',
     href: '#',
   },
-  {
-    name: 'Graph',
-    href: '/graph',
-  },
 ];
 
 export default function BlogNavbar() {
