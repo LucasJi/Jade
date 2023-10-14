@@ -1,7 +1,6 @@
 'use client';
-import { Divider } from '@nextui-org/react';
+import { Divider, Link } from '@nextui-org/react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
@@ -17,15 +16,12 @@ const Footer = () => {
             src="/logo-text.png"
             style={{ width: '60%', height: 'auto' }}
             width={200}
+            priority
           />
           <span className="font-extralight">©2023 Created by Lucas Ji</span>
         </div>
         <div>
-          <Link
-            href="https://github.com/LucasJi"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
+          <Link href="https://github.com/LucasJi" isExternal color="foreground">
             <RxGithubLogo size={22} />
           </Link>
         </div>
