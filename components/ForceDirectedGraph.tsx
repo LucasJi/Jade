@@ -94,7 +94,7 @@ const ForceDirectedGraph = ({
     return () => {
       simulation.stop();
     };
-  }, []);
+  }, [postGraph]);
 
   useEffect(() => {
     const svgEl = svgRef.current;
