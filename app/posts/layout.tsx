@@ -39,7 +39,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       data: { name, id },
     } = node;
     return (
-      <div style={style} className="flex items-center overflow-hidden">
+      <div style={style} className="flex items-center">
         {node.isLeaf ? (
           <Link
             href={`/posts/${id}`}
@@ -48,7 +48,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             as={NextLink}
             underline={id === segment ? 'always' : 'hover'}
           >
-            <span className="truncate w-40">{name.replace('.md', '')}</span>
+            <span className="w-40">{name.replace('.md', '')}</span>
           </Link>
         ) : (
           <div
@@ -62,7 +62,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             ) : (
               <RxChevronDown size={20} className="inline" />
             )}
-            <span className="truncate w-40">{name}</span>
+            <span className="w-40">{name}</span>
           </div>
         )}
       </div>
@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             rowHeight={36}
             selection={segment || undefined}
             width={250}
-            height={100}
+            height={500}
           >
             {Node}
           </Tree>
