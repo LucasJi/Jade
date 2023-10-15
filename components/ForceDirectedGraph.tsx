@@ -55,7 +55,6 @@ const ForceDirectedGraph = ({
   };
 
   useEffect(() => {
-    console.log('useEffect');
     const forceLinkWithNodes = forceLink<PostGraphNode, PostGraphLink>(
       postGraph.links,
     ).id(d => d.wikilink);
@@ -77,7 +76,7 @@ const ForceDirectedGraph = ({
       setSimulationLinks([...forceLinkWithNodes.links()]);
     });
 
-    const svg = select<Element, unknown>('svg');
+    const svg = select<Element, unknown>('#postGraph');
     const zoomBehavior = zoom().on('zoom', event => {
       const zoomState = event.transform;
       select('#linkGroup').attr('transform', zoomState);
@@ -90,6 +89,7 @@ const ForceDirectedGraph = ({
 
   return (
     <svg
+      id="postGraph"
       className={classNames('max-w-full', className)}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
