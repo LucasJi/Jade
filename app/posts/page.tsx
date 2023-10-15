@@ -14,6 +14,7 @@ function Posts() {
     return <LgSpinnerInCenter />;
   }
 
+  // TODO: Refactor Posts page
   return <ForceDirectedGraph postGraph={data} className="mx-auto" />;
 }
 

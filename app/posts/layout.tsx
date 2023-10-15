@@ -7,10 +7,10 @@ import { PostTreeNode } from '@types';
 import NextLink from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { ElementType, ReactNode } from 'react';
-import { Tree } from 'react-arborist';
 import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
 import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
 import useSWR from 'swr';
+import { Tree } from 'react-arborist';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
@@ -72,7 +72,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="w-full flex p-4 h-full">
       {segment && (
-        <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full">
+        <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full overscroll-contain">
           <Tree
             rowClassName="flex"
             initialData={tree}
@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             rowHeight={36}
             selection={segment || undefined}
             width={250}
-            height={1000}
+            height={100}
           >
             {Node}
           </Tree>

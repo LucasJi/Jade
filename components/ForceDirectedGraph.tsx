@@ -15,7 +15,7 @@ import { schemeCategory10 } from 'd3-scale-chromatic';
 import { select } from 'd3-selection';
 import { zoom } from 'd3-zoom';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const ForceDirectedGraph = ({
   postGraph,
@@ -42,6 +42,7 @@ const ForceDirectedGraph = ({
   const [simulationLinks, setSimulationLinks] = useState<PostGraphLink[]>([]);
   const [hoveredNode, setHoveredNode] = useState<PostGraphNode>();
   const router = useRouter();
+  const svgRef = useRef<SVGSVGElement>(null);
 
   const isNodeHovered = (node: PostGraphNode) => {
     return hoveredNode?.wikilink === node.wikilink;
@@ -77,15 +78,40 @@ const ForceDirectedGraph = ({
     });
 
     const svg = select<Element, unknown>('#postGraph');
-    const zoomBehavior = zoom().on('zoom', event => {
-      const zoomState = event.transform;
-      select('#linkGroup').attr('transform', zoomState);
-      select('#nodeGroup').attr('transform', zoomState);
-    });
+    const zoomBehavior = zoom()
+      .scaleExtent([0.5, 3])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on('zoom', event => {
+        const zoomState = event.transform;
+        select('#linkGroup').attr('transform', zoomState);
+        select('#nodeGroup').attr('transform', zoomState);
+      });
     svg.call(zoomBehavior);
 
-    return () => simulation.stop() as unknown as void;
+    return () => {
+      simulation.stop();
+    };
   }, []);
+
+  useEffect(() => {
+    const svgEl = svgRef.current;
+    const onWheelHandler = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+
+    if (svgEl) {
+      svgEl.addEventListener('wheel', onWheelHandler, { passive: false });
+    }
+
+    return () => {
+      if (svgEl) {
+        svgEl.removeEventListener('wheel', onWheelHandler);
+      }
+    };
+  }, [svgRef.current]);
 
   return (
     <svg
@@ -94,6 +120,7 @@ const ForceDirectedGraph = ({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       width={width}
+      ref={svgRef}
     >
       <g id="linkGroup">
         <defs>
