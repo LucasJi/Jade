@@ -82,7 +82,7 @@ const Markdown = ({
   titleLink?: string;
 }) => {
   return (
-    <article className={classNames('prose', 'prose-slate', className)}>
+    <article className={classNames('prose', 'prose-neutral', className)}>
       <ReactMarkdown
         components={components(titleLink)}
         remarkPlugins={[remarkGfm, wikilinkPlugin]}

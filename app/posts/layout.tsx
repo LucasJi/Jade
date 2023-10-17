@@ -7,10 +7,10 @@ import { PostTreeNode } from '@types';
 import NextLink from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { ElementType, ReactNode } from 'react';
+import { Tree } from 'react-arborist';
 import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
 import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
 import useSWR from 'swr';
-import { Tree } from 'react-arborist';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment();
