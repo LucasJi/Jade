@@ -10,6 +10,7 @@ import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 
 const components = (titleLink?: string): Components => ({
@@ -85,7 +86,7 @@ const Markdown = ({
     <article className={classNames('prose', 'prose-neutral', className)}>
       <ReactMarkdown
         components={components(titleLink)}
-        remarkPlugins={[remarkGfm, wikilinkPlugin]}
+        remarkPlugins={[remarkGfm, wikilinkPlugin, remarkFrontmatter]}
       >
         {markdown}
       </ReactMarkdown>
