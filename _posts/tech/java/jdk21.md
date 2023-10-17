@@ -1,5 +1,15 @@
 # jdk21
 
+---
+created: <% tp.file.creation_date() %>
+
+tags:
+
+- database
+- mvcc
+
+---
+
 `react-markdown` is a markdown component for React.
 
 👉 Changes are re-rendered as you type.
