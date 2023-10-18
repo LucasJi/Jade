@@ -116,7 +116,7 @@ const Markdown = ({
           remarkGfm,
           wikilinkPlugin,
           remarkFrontmatter,
-          [remarkToc, { tight: true }],
+          [remarkToc, { tight: false }],
         ]}
       >
         {markdown}
