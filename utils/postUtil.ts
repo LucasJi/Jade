@@ -187,7 +187,11 @@ export const getCachedPosts = async (): Promise<Post[]> => {
   const relativeFolders = [...relativeFolderSet.values()];
 
   for (const slug of slugs) {
-    const post = await getCachedPostBySlug(slug);
+    const post = getPostBySlug(slug);
+    if (!post) {
+      continue;
+    }
+
     post.slugIdx = relativeFolders.findIndex(
       rf => rf === getRelativeParentFolderFromSlug(slug),
     );

@@ -19,9 +19,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(null);
   }
 
-  console.log(post);
-
   const adjPosts = await getAdjacencyPosts(post);
+
   const postGraph = generatePostGraphFromPosts(adjPosts);
 
   return NextResponse.json(postGraph);
