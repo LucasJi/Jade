@@ -2,7 +2,7 @@
 import fetcher from '@api/fetcher';
 import ForceDirectedGraph from '@components/ForceDirectedGraph';
 import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
-import { Link } from '@nextui-org/react';
+import { Link, Tooltip } from '@nextui-org/react';
 import { PostTreeNode } from '@types';
 import NextLink from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
@@ -38,9 +38,10 @@ export default function Layout({ children }: { children: ReactNode }) {
     const {
       data: { name, id },
     } = node;
-    return (
-      <div style={style} className="flex items-center">
-        {node.isLeaf ? (
+
+    if (node.isLeaf) {
+      return (
+        <div style={style} className="flex items-center overflow-x-hidden">
           <Link
             href={`/posts/${id}`}
             size="sm"
@@ -48,23 +49,55 @@ export default function Layout({ children }: { children: ReactNode }) {
             as={NextLink}
             underline={id === segment ? 'always' : 'hover'}
           >
-            <span className="w-40">{name.replace('.md', '')}</span>
+            <Tooltip content={name} delay={1500}>
+              <span className="w-40 truncate">{name.replace('.md', '')}</span>
+            </Tooltip>
           </Link>
-        ) : (
-          <div
-            className="text-small flex cursor-pointer"
-            onClick={() => {
-              node.isOpen ? node.close() : node.open();
-            }}
-          >
-            {node.isClosed ? (
-              <RxChevronRight size={20} className="inline" />
-            ) : (
-              <RxChevronDown size={20} className="inline" />
-            )}
-            <span className="w-40">{name}</span>
-          </div>
-        )}
+        </div>
+      );
+    }
+
+    const { children } = node;
+    let fileCount = 0;
+    let folderCount = 0;
+
+    if (children) {
+      for (const child of children) {
+        if (child.isLeaf) {
+          fileCount++;
+        } else {
+          folderCount++;
+        }
+      }
+    }
+
+    const tooltipContent = (
+      <div className="text-center">
+        <span>{name}</span>
+        <br />
+        <span>{`${fileCount} file${
+          fileCount > 0 ? 's' : ''
+        } ${folderCount} folder${folderCount > 0 ? 's' : ''}`}</span>
+      </div>
+    );
+
+    return (
+      <div style={style} className="flex items-center overflow-x-hidden">
+        <div
+          className="text-small flex cursor-pointer"
+          onClick={() => {
+            node.isOpen ? node.close() : node.open();
+          }}
+        >
+          {node.isClosed ? (
+            <RxChevronRight size={20} className="inline" />
+          ) : (
+            <RxChevronDown size={20} className="inline" />
+          )}
+          <Tooltip content={tooltipContent} delay={1500}>
+            <span className="w-40 truncate">{name}</span>
+          </Tooltip>
+        </div>
       </div>
     );
   };
