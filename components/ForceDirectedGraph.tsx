@@ -114,92 +114,95 @@ const ForceDirectedGraph = ({
   }, [svgRef.current]);
 
   return (
-    <svg
-      id="postGraph"
-      className={classNames('max-w-full', className)}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      width={width}
-      ref={svgRef}
-    >
-      <g id="linkGroup">
-        <defs>
-          <marker
-            id="arrow"
-            markerHeight="10"
-            markerUnits="strokeWidth"
-            markerWidth="10"
-            orient="auto"
-            refX="22"
-            refY="6"
-            viewBox="0 0 12 12"
-          >
-            <path d="M2,2 L10,6 L2,10 L6,6 L2,2" fill="grey"></path>
-          </marker>
-        </defs>
-        {simulationLinks.map(({ source, target, index }) => {
-          const sourceNode = source as PostGraphNode;
-          const targetNode = target as PostGraphNode;
-          return (
-            <line
-              key={index}
-              markerEnd="url(#arrow)"
-              strokeWidth={0.8}
-              stroke={
-                isHoveredNodeLink(sourceNode, targetNode) ? '#30abf1' : 'grey'
-              }
-              x1={sourceNode.x}
-              x2={targetNode.x}
-              y1={sourceNode.y}
-              y2={targetNode.y}
-            />
-          );
-        })}
-      </g>
-      <g stroke="#fff" strokeWidth={1.5} id="nodeGroup">
-        {simulationNodes.map(node => {
-          const fillColor = color(node.slugIdx!.toString());
-          return (
-            <g
-              key={node.wikilink}
-              transform={` translate(${node.x}, ${node.y}) `}
-              onMouseOver={() => setHoveredNode({ ...node })}
-              onMouseOut={() => setHoveredNode(undefined)}
-              onClick={() => {
-                router.push(`/posts/${node.wikilink}`);
-              }}
+    <div className={classNames('max-w-full', className)}>
+      <div>INTERACTIVE GRAPH</div>
+      <svg
+        id="postGraph"
+        className="border-1 rounded"
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        width={width}
+        ref={svgRef}
+      >
+        <g id="linkGroup">
+          <defs>
+            <marker
+              id="arrow"
+              markerHeight="10"
+              markerUnits="strokeWidth"
+              markerWidth="10"
+              orient="auto"
+              refX="22"
+              refY="6"
+              viewBox="0 0 12 12"
             >
-              <circle
-                r={r}
-                style={{
-                  fill: fillColor,
-                  transform: isNodeHovered(node) ? 'scale(1.1)' : 'none',
-                  transitionProperty: 'transform',
-                  transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-                  transitionDuration: '150ms',
-                }}
+              <path d="M2,2 L10,6 L2,10 L6,6 L2,2" fill="grey"></path>
+            </marker>
+          </defs>
+          {simulationLinks.map(({ source, target, index }) => {
+            const sourceNode = source as PostGraphNode;
+            const targetNode = target as PostGraphNode;
+            return (
+              <line
+                key={index}
+                markerEnd="url(#arrow)"
+                strokeWidth={0.8}
+                stroke={
+                  isHoveredNodeLink(sourceNode, targetNode) ? '#30abf1' : 'grey'
+                }
+                x1={sourceNode.x}
+                x2={targetNode.x}
+                y1={sourceNode.y}
+                y2={targetNode.y}
               />
-              <text
-                dy={r * 2 + 2}
-                style={{
-                  fontSize: '10px',
-                  strokeWidth: 0,
+            );
+          })}
+        </g>
+        <g stroke="#fff" strokeWidth={1.5} id="nodeGroup">
+          {simulationNodes.map(node => {
+            const fillColor = color(node.slugIdx!.toString());
+            return (
+              <g
+                key={node.wikilink}
+                transform={` translate(${node.x}, ${node.y}) `}
+                onMouseOver={() => setHoveredNode({ ...node })}
+                onMouseOut={() => setHoveredNode(undefined)}
+                onClick={() => {
+                  router.push(`/posts/${node.wikilink}`);
                 }}
-                textAnchor="middle"
-                className={classNames(
-                  {
-                    'translate-y-1': isNodeHovered(node),
-                  },
-                  'transition ease-in-out',
-                )}
               >
-                {node.title}
-              </text>
-            </g>
-          );
-        })}
-      </g>
-    </svg>
+                <circle
+                  r={r}
+                  style={{
+                    fill: fillColor,
+                    transform: isNodeHovered(node) ? 'scale(1.1)' : 'none',
+                    transitionProperty: 'transform',
+                    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                    transitionDuration: '150ms',
+                  }}
+                />
+                <text
+                  dy={r * 2 + 2}
+                  style={{
+                    fontSize: '10px',
+                    strokeWidth: 0,
+                  }}
+                  textAnchor="middle"
+                  className={classNames(
+                    {
+                      'translate-y-1': isNodeHovered(node),
+                    },
+                    'transition ease-in-out',
+                  )}
+                >
+                  {node.title}
+                </text>
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    </div>
   );
 };
 

@@ -126,7 +126,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       {children}
       {postGraph && (
         <ForceDirectedGraph
-          className="fixed right-0"
+          className="fixed right-12 "
           postGraph={postGraph}
           height={400}
           width={400}
