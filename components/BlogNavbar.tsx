@@ -37,7 +37,7 @@ export default function BlogNavbar() {
   };
 
   return (
-    <Navbar>
+    <Navbar shouldHideOnScroll>
       <NavbarBrand>
         <Avatar
           icon={

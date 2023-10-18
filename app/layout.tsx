@@ -15,7 +15,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html className="light h-full" lang="en">
+    <html className="light h-full scroll-smooth" lang="en">
       <body className="h-full" suppressHydrationWarning={true}>
         <Providers>
           <BlogNavbar />
