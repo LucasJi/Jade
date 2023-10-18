@@ -1,12 +1,11 @@
 'use client';
 import fetcher from '@api/fetcher';
 import ForceDirectedGraph from '@components/ForceDirectedGraph';
-import LgSpinnerInCenter from '@components/LgSpinnerInCenter';
-import { Link, Tooltip } from '@nextui-org/react';
+import { Link, Spinner, Tooltip } from '@nextui-org/react';
 import { PostTreeNode } from '@types';
 import NextLink from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
-import { ElementType, ReactNode } from 'react';
+import React, { ElementType, ReactNode } from 'react';
 import { Tree } from 'react-arborist';
 import { NodeRendererProps } from 'react-arborist/dist/types/renderers';
 import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
@@ -27,10 +26,6 @@ export default function Layout({ children }: { children: ReactNode }) {
     fetcher,
   );
 
-  if (isLoadingTree) {
-    return <LgSpinnerInCenter />;
-  }
-
   const Node: ElementType<NodeRendererProps<PostTreeNode>> | undefined = ({
     node,
     style,
@@ -49,7 +44,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             as={NextLink}
             underline={id === segment ? 'always' : 'hover'}
           >
-            <Tooltip content={name} delay={1500}>
+            <Tooltip content={name} delay={1500} placement="top">
               <span className="w-40 truncate">{name.replace('.md', '')}</span>
             </Tooltip>
           </Link>
@@ -94,7 +89,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           ) : (
             <RxChevronDown size={20} className="inline" />
           )}
-          <Tooltip content={tooltipContent} delay={1500}>
+          <Tooltip content={tooltipContent} delay={1500} placement="top">
             <span className="w-40 truncate">{name}</span>
           </Tooltip>
         </div>
@@ -104,26 +99,30 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="w-full flex p-4 h-full">
-      {segment && (
-        <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full overscroll-contain">
-          <Tree
-            rowClassName="flex"
-            initialData={tree}
-            disableDrag
-            disableDrop
-            disableEdit
-            disableMultiSelection
-            openByDefault={false}
-            indent={24}
-            rowHeight={36}
-            selection={segment || undefined}
-            width={250}
-            height={500}
-          >
-            {Node}
-          </Tree>
-        </div>
-      )}
+      <div className="w-[calc((100%_-_1024px)_/_2)] pl-32 h-full overscroll-contain">
+        {isLoadingTree ? (
+          <Spinner color="primary" size="lg" />
+        ) : (
+          segment && (
+            <Tree
+              rowClassName="flex"
+              initialData={tree}
+              disableDrag
+              disableDrop
+              disableEdit
+              disableMultiSelection
+              openByDefault={false}
+              indent={24}
+              rowHeight={36}
+              selection={segment || undefined}
+              width={250}
+              height={500}
+            >
+              {Node}
+            </Tree>
+          )
+        )}
+      </div>
       {children}
       {postGraph && (
         <ForceDirectedGraph
