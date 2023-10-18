@@ -12,7 +12,7 @@ import { RxChevronDown, RxChevronRight } from 'react-icons/rx';
 import useSWR from 'swr';
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const segment = useSelectedLayoutSegment();
+  const segment = useSelectedLayoutSegment() || '';
   const { data: tree, isLoading: isLoadingTree } = useSWR(
     '/api/posts/tree',
     fetcher,
@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { data: postGraph } = useSWR(
     '/api/post/graph?' +
       new URLSearchParams({
-        wikilink: segment || '',
+        wikilink: segment,
       }),
     fetcher,
   );
@@ -127,6 +127,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       {postGraph && (
         <ForceDirectedGraph
           className="fixed right-12 "
+          basePostWikilinks={[segment]}
           postGraph={postGraph}
           height={400}
           width={400}

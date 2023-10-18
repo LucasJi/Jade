@@ -17,18 +17,22 @@ import { zoom } from 'd3-zoom';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+const HOVERED_COLOR = '#30abf1';
+
 const ForceDirectedGraph = ({
   postGraph,
   scale = 1,
   height = 600,
   width = 600,
   className,
+  basePostWikilinks = [],
 }: {
   postGraph: PostGraph;
   scale?: number;
   height?: number;
   width?: number;
   className?: string;
+  basePostWikilinks?: string[];
 }) => {
   const { color, r } = useMemo(
     () => ({
@@ -132,7 +136,7 @@ const ForceDirectedGraph = ({
               markerUnits="strokeWidth"
               markerWidth="10"
               orient="auto"
-              refX="22"
+              refX="22.2"
               refY="6"
               viewBox="0 0 12 12"
             >
@@ -148,7 +152,9 @@ const ForceDirectedGraph = ({
                 markerEnd="url(#arrow)"
                 strokeWidth={0.8}
                 stroke={
-                  isHoveredNodeLink(sourceNode, targetNode) ? '#30abf1' : 'grey'
+                  isHoveredNodeLink(sourceNode, targetNode)
+                    ? HOVERED_COLOR
+                    : 'grey'
                 }
                 x1={sourceNode.x}
                 x2={targetNode.x}
@@ -161,6 +167,7 @@ const ForceDirectedGraph = ({
         <g stroke="#fff" strokeWidth={1.5} id="nodeGroup">
           {simulationNodes.map(node => {
             const fillColor = color(node.slugIdx!.toString());
+            const nodeHovered = isNodeHovered(node);
             return (
               <g
                 key={node.wikilink}
@@ -174,8 +181,8 @@ const ForceDirectedGraph = ({
                 <circle
                   r={r}
                   style={{
-                    fill: 'grey',
-                    transform: isNodeHovered(node) ? 'scale(1.1)' : 'none',
+                    fill: nodeHovered ? HOVERED_COLOR : 'grey',
+                    transform: nodeHovered ? 'scale(1.1)' : 'none',
                     transitionProperty: 'transform',
                     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
                     transitionDuration: '150ms',
@@ -190,9 +197,12 @@ const ForceDirectedGraph = ({
                   textAnchor="middle"
                   className={classNames(
                     {
-                      'translate-y-1': isNodeHovered(node),
+                      'translate-y-1': nodeHovered,
                     },
                     'transition ease-in-out',
+                    {
+                      underline: basePostWikilinks.includes(node.wikilink),
+                    },
                   )}
                 >
                   {node.title}
