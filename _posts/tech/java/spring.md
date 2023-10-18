@@ -32,10 +32,10 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 
 ReactDOM.render(
-    <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-      {'# Your markdown here'}
-    </ReactMarkdown>,
-    document.querySelector('#content')
+  <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+    {'# Your markdown here'}
+  </ReactMarkdown>,
+  document.querySelector('#content')
 );
 ```
 
@@ -85,17 +85,17 @@ import ReactMarkdown from 'react-markdown';
 import MyFancyRule from './components/my-fancy-rule.js';
 
 ReactDOM.render(
-    <ReactMarkdown
-        components={{
-          // Use h2s instead of h1s
-          h1: 'h2',
-          // Use a component instead of hrs
-          hr: ({node, ...props}) => <MyFancyRule {...props} />,
-        }}
-    >
-      # Your markdown here
-    </ReactMarkdown>,
-    document.querySelector('#content')
+  <ReactMarkdown
+    components={{
+      // Use h2s instead of h1s
+      h1: 'h2',
+      // Use a component instead of hrs
+      hr: ({ node, ...props }) => <MyFancyRule {...props} />,
+    }}
+  >
+    # Your markdown here
+  </ReactMarkdown>,
+  document.querySelector('#content')
 );
 ```
 
@@ -107,8 +107,6 @@ Much more info is available in the
 ---
 
 A component by [Espen Hovlandsdal](https://espen.codes/)
-
-end
 
 ## wikilink
 

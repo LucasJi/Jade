@@ -174,7 +174,7 @@ const ForceDirectedGraph = ({
                 <circle
                   r={r}
                   style={{
-                    fill: fillColor,
+                    fill: 'grey',
                     transform: isNodeHovered(node) ? 'scale(1.1)' : 'none',
                     transitionProperty: 'transform',
                     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',

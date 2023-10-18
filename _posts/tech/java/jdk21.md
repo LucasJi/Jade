@@ -115,3 +115,7 @@ Much more info is available in the
 ---
 
 A component by [Espen Hovlandsdal](https://espen.codes/)
+
+## Wikilink
+
+[[tech/java/springboot]]

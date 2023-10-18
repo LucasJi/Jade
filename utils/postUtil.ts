@@ -145,6 +145,10 @@ export const getCachedPostByWikilink = async (
   return post;
 };
 
+export const getPostByWikilink = (wikilink: string) => {
+  return getPostBySlug(convertWikilinkToSlug(wikilink));
+};
+
 export const getPostBySlug = (slug: string[]) => {
   if (slug === undefined || slug.length === 0) {
     return null;

@@ -1,7 +1,7 @@
 import {
   generatePostGraphFromPosts,
   getAdjacencyPosts,
-  getCachedPostByWikilink,
+  getPostByWikilink,
 } from '@utils/postUtil';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -13,7 +13,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(null);
   }
 
-  const post = await getCachedPostByWikilink(wikilink);
+  const post = getPostByWikilink(wikilink);
+
+  if (!post) {
+    return NextResponse.json(null);
+  }
+
+  console.log(post);
+
   const adjPosts = await getAdjacencyPosts(post);
   const postGraph = generatePostGraphFromPosts(adjPosts);
 
