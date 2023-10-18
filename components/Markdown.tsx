@@ -7,22 +7,32 @@ import classNames from 'classnames';
 import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
+import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
+import remarkToc from 'remark-toc';
+
+const getHeadingId = (props: HeadingProps) => {
+  return (props.children[0] as string).toLowerCase().split(' ').join('-');
+};
 
 const components = (titleLink?: string): Components => ({
   a: props => {
     const { className, href, children } = props;
-    return className?.includes('wikilink') && href ? (
-      <Wikilink wikilink={href}>{children}</Wikilink>
-    ) : (
+    if (className?.includes('wikilink')) {
+      return <Wikilink wikilink={href}>{children}</Wikilink>;
+    }
+
+    const isFragment = href?.startsWith('#');
+
+    return (
       <Link
-        isExternal
+        isExternal={!isFragment}
         href={href}
-        showAnchorIcon
+        showAnchorIcon={!isFragment}
         color="foreground"
         className="underline-l-r"
       >
@@ -42,6 +52,21 @@ const components = (titleLink?: string): Components => ({
     }
 
     return <h1>{props.children}</h1>;
+  },
+  h2: props => {
+    return <h2 id={getHeadingId(props)}>{props.children}</h2>;
+  },
+  h3: props => {
+    return <h3 id={getHeadingId(props)}>{props.children}</h3>;
+  },
+  h4: props => {
+    return <h4 id={getHeadingId(props)}>{props.children}</h4>;
+  },
+  h5: props => {
+    return <h5 id={getHeadingId(props)}>{props.children}</h5>;
+  },
+  h6: props => {
+    return <h6 id={getHeadingId(props)}>{props.children}</h6>;
   },
   pre: props => {
     const { children, className, node } = props;
@@ -86,7 +111,12 @@ const Markdown = ({
     <article className={classNames('prose', 'prose-neutral', className)}>
       <ReactMarkdown
         components={components(titleLink)}
-        remarkPlugins={[remarkGfm, wikilinkPlugin, remarkFrontmatter]}
+        remarkPlugins={[
+          remarkGfm,
+          wikilinkPlugin,
+          remarkFrontmatter,
+          [remarkToc, { tight: true }],
+        ]}
       >
         {markdown}
       </ReactMarkdown>
