@@ -16,6 +16,7 @@ import remarkGfm from 'remark-gfm';
 import remarkToc from 'remark-toc';
 
 const getHeadingId = (props: HeadingProps) => {
+  // Support remark-toc syntax: use '-' to connect words
   return (props.children[0] as string).toLowerCase().split(' ').join('-');
 };
 
