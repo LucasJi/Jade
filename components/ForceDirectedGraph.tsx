@@ -74,6 +74,7 @@ const ForceDirectedGraph = ({
           (scale * Math.min(width, height)) / (postGraph.nodes.length + 1),
         ),
       )
+      // Force nodes to be displayed in the center of the graph.
       .force('center', forceCenter(width / 2, height / 2));
 
     simulation.on('tick', () => {
