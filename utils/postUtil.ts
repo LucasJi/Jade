@@ -11,33 +11,13 @@ import {
   Slug,
 } from 'types';
 import { visit } from 'unist-util-visit';
-import { redis } from './redisUtil';
 
 const SEPARATOR = '/';
 const TITLE_REG = /^#\s+.+/;
-const SLUGS_KEY = 'slugs';
-const POSTS_KEY = 'posts';
+
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
-export const getCachedSlugs = async (enableCache = true): Promise<Slug[]> => {
-  if (!enableCache) {
-    return getSlugs();
-  }
-
-  const slugsJson = await redis.get(SLUGS_KEY);
-
-  let slugs: Array<Slug>;
-  if (slugsJson === null) {
-    slugs = getSlugs();
-    await redis.set(SLUGS_KEY, JSON.stringify(slugs));
-  } else {
-    slugs = JSON.parse(slugsJson);
-  }
-
-  return slugs;
-};
-
-const getSlugs = () => {
+export const getSlugs = () => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
     getSlugFromAbsolutePath(absolutePath),
@@ -116,35 +96,6 @@ const getTitle = (content: string) => {
   return title;
 };
 
-export const getCachedPostBySlug = async (slug: Slug): Promise<Post> => {
-  const wikilink = convertSlugToWikilink(slug);
-  let post = null;
-  const postJson = await redis.get(wikilink);
-  if (postJson !== null) {
-    post = JSON.parse(postJson);
-  } else {
-    post = getPostBySlug(slug);
-    await redis.set(wikilink, JSON.stringify(post));
-  }
-
-  return post;
-};
-
-export const getCachedPostByWikilink = async (
-  wikilink: string,
-): Promise<Post> => {
-  let post = null;
-  const postJson = await redis.get(wikilink);
-  if (postJson !== null) {
-    post = JSON.parse(postJson);
-  } else {
-    post = getPostBySlug(convertWikilinkToSlug(wikilink));
-    await redis.set(wikilink, JSON.stringify(post));
-  }
-
-  return post;
-};
-
 export const getPostByWikilink = (wikilink: string) => {
   return getPostBySlug(convertWikilinkToSlug(wikilink));
 };
@@ -171,15 +122,9 @@ export const getPostBySlug = (slug: string[]) => {
   return post;
 };
 
-export const getCachedPosts = async (): Promise<Post[]> => {
-  // const postsJson = await redis.get(POSTS_KEY);
-  //
-  // if (postsJson) {
-  //   return JSON.parse(postsJson);
-  // }
-
+export const getPosts = async (): Promise<Post[]> => {
   const posts: Array<Post> = [];
-  const slugs = await getCachedSlugs(false);
+  const slugs = getSlugs();
   const relativeFolderSet = new Set<string>();
   for (const slug of slugs) {
     relativeFolderSet.add(getRelativeParentFolderFromSlug(slug));
@@ -200,13 +145,11 @@ export const getCachedPosts = async (): Promise<Post[]> => {
 
   resolveWikilinks(posts);
 
-  await redis.set(POSTS_KEY, JSON.stringify(posts));
-
   return posts;
 };
 
 export const getCachedPostGraph = async (): Promise<PostGraph> => {
-  const posts = await getCachedPosts();
+  const posts = await getPosts();
   return generatePostGraphFromPosts(posts);
 };
 
@@ -239,7 +182,7 @@ export const generatePostGraphFromPosts = (posts: Post[]) => {
 };
 
 export const getAdjacencyPosts = async (post: Post) => {
-  const posts = await getCachedPosts();
+  const posts = await getPosts();
   return posts.filter(
     e =>
       e.wikilink === post.wikilink ||

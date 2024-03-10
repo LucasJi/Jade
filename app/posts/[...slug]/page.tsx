@@ -1,6 +1,6 @@
 import Markdown from '@components/Markdown';
 import { Slug } from '@types';
-import { getCachedSlugs, getPostBySlug } from '@utils/postUtil';
+import { getPostBySlug, getSlugs } from '@utils/postUtil';
 
 export default async function Post({ params }: { params: { slug: Slug } }) {
   const post = getPostBySlug(params.slug);
@@ -15,5 +15,5 @@ export default async function Post({ params }: { params: { slug: Slug } }) {
 }
 
 export async function generateStaticParams() {
-  return await getCachedSlugs(false);
+  return getSlugs();
 }

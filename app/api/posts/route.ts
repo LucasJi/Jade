@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getCachedPosts } from '@utils/postUtil';
+import { getPosts } from '@utils/postUtil';
 
 export async function GET() {
-  const posts = await getCachedPosts();
+  const posts = await getPosts();
 
   return NextResponse.json(posts);
 }
