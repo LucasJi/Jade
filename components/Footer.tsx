@@ -1,22 +1,13 @@
 import { Divider, Link } from '@nextui-org/react';
-import Image from 'next/image';
 import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
   return (
-    <footer className="max-w-[60%] mx-auto flex flex-col items-center">
+    <footer className="w-3/5 mx-auto flex flex-col items-center h-[100px]">
       <Divider className="my-4" />
-      <div className="flex h-16 w-full justify-between">
-        <div>
-          <Image
-            alt="logo-text"
-            height={0}
-            loading="eager"
-            src="/logo-text.png"
-            style={{ width: '60%', height: 'auto' }}
-            width={200}
-            priority
-          />
+      <div className="w-full flex h-16 justify-between">
+        <div className="flex flex-col">
+          <span>Galaxy Post</span>
           <span className="font-extralight">©2023 Created by Lucas Ji</span>
         </div>
         <div>
