@@ -1,11 +1,10 @@
-'use client';
 import { Divider, Link } from '@nextui-org/react';
 import Image from 'next/image';
 import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
   return (
-    <footer className="max-w-[1024px] mx-auto flex flex-col justify-center w-full items-center">
+    <footer className="max-w-[60%] mx-auto flex flex-col items-center">
       <Divider className="my-4" />
       <div className="flex h-16 w-full justify-between">
         <div>

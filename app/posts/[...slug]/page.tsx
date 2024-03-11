@@ -20,7 +20,7 @@ export default async function Post({
 
   const { content } = post;
 
-  return <Markdown markdown={content} className="w-full max-w-[1024px]" />;
+  return <Markdown markdown={content} className="max-w-none w-full" />;
 }
 
 export async function generateStaticParams() {

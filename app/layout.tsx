@@ -1,8 +1,6 @@
-import BlogNavbar from '@components/BlogNavbar';
 import Footer from '@components/Footer';
 import { ReactNode } from 'react';
 import './globals.css';
-import { Providers } from './providers';
 
 export const metadata = {
   title: 'Starry Blog',
@@ -17,11 +15,8 @@ export default async function RootLayout({
   return (
     <html className="light h-full scroll-smooth" lang="en">
       <body className="h-full" suppressHydrationWarning={true}>
-        <Providers>
-          <BlogNavbar />
-          <main className="w-full flex-1 self-center">{children}</main>
-          <Footer />
-        </Providers>
+        <div className="w-full h-full">{children}</div>
+        <Footer />
       </body>
     </html>
   );

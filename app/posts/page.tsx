@@ -10,5 +10,9 @@ export default async function Posts() {
   const postGraph: PostGraph = await postGraphResp.json();
 
   // TODO: Refactor Posts page
-  return <ForceDirectedGraph postGraph={postGraph} className="mx-auto" />;
+  return (
+    <div>
+      <ForceDirectedGraph postGraph={postGraph} width={300} height={300} />
+    </div>
+  );
 }
