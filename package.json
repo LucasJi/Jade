@@ -36,7 +36,6 @@
     "remark-toc": "^9.0.0",
     "swr": "^2.2.2",
     "typescript": "5.2.2",
-    "typewriter-effect": "^2.20.1",
     "unist-util-visit": "^5.0.0",
     "vfile-reporter": "^8.1.0"
   },

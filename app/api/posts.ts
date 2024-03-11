@@ -5,7 +5,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const posts = await getPosts();
+  const posts = getPosts();
 
   res.status(200).json(posts);
 }

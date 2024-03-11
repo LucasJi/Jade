@@ -13,6 +13,7 @@ import {
 import { visit } from 'unist-util-visit';
 
 const SEPARATOR = '/';
+// find markdown mark "#"
 const TITLE_REG = /^#\s+.+/;
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
@@ -122,7 +123,7 @@ export const getPostBySlug = (slug: string[]) => {
   return post;
 };
 
-export const getPosts = async (): Promise<Post[]> => {
+export const getPosts = (): Post[] => {
   const posts: Array<Post> = [];
   const slugs = getSlugs();
   const relativeFolderSet = new Set<string>();
@@ -148,8 +149,8 @@ export const getPosts = async (): Promise<Post[]> => {
   return posts;
 };
 
-export const getCachedPostGraph = async (): Promise<PostGraph> => {
-  const posts = await getPosts();
+export const getPostGraph = (): PostGraph => {
+  const posts = getPosts();
   return generatePostGraphFromPosts(posts);
 };
 
@@ -181,8 +182,8 @@ export const generatePostGraphFromPosts = (posts: Post[]) => {
   return { nodes: posts, links: postGraphLinks };
 };
 
-export const getAdjacencyPosts = async (post: Post) => {
-  const posts = await getPosts();
+export const getAdjacencyPosts = (post: Post) => {
+  const posts = getPosts();
   return posts.filter(
     e =>
       e.wikilink === post.wikilink ||

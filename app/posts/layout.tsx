@@ -129,8 +129,8 @@ export default function Layout({ children }: { children: ReactNode }) {
           className="fixed right-12 "
           basePostWikilinks={[segment]}
           postGraph={postGraph}
-          height={400}
-          width={400}
+          height={300}
+          width={300}
           scale={0.6}
         />
       )}

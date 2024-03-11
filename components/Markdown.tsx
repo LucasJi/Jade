@@ -1,5 +1,3 @@
-'use client';
-
 import Wikilink from '@components/Wikilink';
 import { Code, Link } from '@nextui-org/react';
 import wikilinkPlugin from '@utils/remark-wikilink';

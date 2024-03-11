@@ -1,9 +1,18 @@
 import Markdown from '@components/Markdown';
 import { Slug } from '@types';
-import { getPostBySlug, getSlugs } from '@utils/postUtil';
+import { getSlugs } from '@utils/postUtil';
 
-export default async function Post({ params }: { params: { slug: Slug } }) {
-  const post = getPostBySlug(params.slug);
+export default async function Post({
+  params: { slug },
+}: {
+  params: { slug: Slug };
+}) {
+  const postResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
+    method: 'POST',
+    body: JSON.stringify({ slug }),
+  });
+
+  const post = await postResp.json();
 
   if (!post) {
     return <div>POST NOT FOUND</div>;

@@ -120,7 +120,7 @@ const ForceDirectedGraph = ({
 
   return (
     <div className={classNames('max-w-full', className)}>
-      <div>INTERACTIVE GRAPH</div>
+      <div className="font-bold">Graph View</div>
       <svg
         id="postGraph"
         className="border-1 rounded"
@@ -130,27 +130,12 @@ const ForceDirectedGraph = ({
         ref={svgRef}
       >
         <g id="linkGroup">
-          <defs>
-            <marker
-              id="arrow"
-              markerHeight="10"
-              markerUnits="strokeWidth"
-              markerWidth="10"
-              orient="auto"
-              refX="22.2"
-              refY="6"
-              viewBox="0 0 12 12"
-            >
-              <path d="M2,2 L10,6 L2,10 L6,6 L2,2" fill="grey"></path>
-            </marker>
-          </defs>
           {simulationLinks.map(({ source, target, index }) => {
             const sourceNode = source as PostGraphNode;
             const targetNode = target as PostGraphNode;
             return (
               <line
                 key={index}
-                markerEnd="url(#arrow)"
                 strokeWidth={0.8}
                 stroke={
                   isHoveredNodeLink(sourceNode, targetNode)

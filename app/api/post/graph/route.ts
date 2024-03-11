@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(null);
   }
 
-  const adjPosts = await getAdjacencyPosts(post);
+  const adjPosts = getAdjacencyPosts(post);
 
   const postGraph = generatePostGraphFromPosts(adjPosts);
 
