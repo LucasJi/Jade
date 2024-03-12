@@ -1,5 +1,5 @@
 import { PostGraph } from '@types';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const treeResp = await fetch(

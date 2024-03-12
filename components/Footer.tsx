@@ -7,7 +7,7 @@ const Footer = () => {
       <Divider className="my-4" />
       <div className="w-full flex h-16 justify-between">
         <div className="flex flex-col">
-          <span>Galaxy Post</span>
+          <span>Galaxy Blog</span>
           <span className="font-extralight">©2023 Created by Lucas Ji</span>
         </div>
         <div>

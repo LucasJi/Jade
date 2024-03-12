@@ -1,23 +1,9 @@
-# Welcome to my blog
+# Galaxy Blog
 
-In this `README`, I'd like to record all my thoughts and efforts on building my personal blog.
+This project is created for publishing my blogs written in [Obsidian](https://obsidian.md/) to a blog website. Since Obsidian has a lot of useful features, the galaxy has no doubt supports these wonderful features.
 
-## How to run this project
+## Features
 
-`pnpm dev`
-
-## Version: v0.1.0
-
-### Targets
-
-- [x] Resolve markdown files to html files
-- [ ] **Home** page
-- [ ] Resolve all/specific markdowns in Obsidian vault
-- [ ] ~~**Tags** page~~
-- [ ] ~~**About** page~~
-
-> [More details](docs/v0_1_0.md)
-
-## Thanks for
-
-- [react-markdown](https://github.com/remarkjs/react-markdown)
+-[x] Links
+-[] Graph
+-[] Canvas
