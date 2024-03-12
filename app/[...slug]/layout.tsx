@@ -33,18 +33,8 @@ export default async function Layout({
       <div className="w-1/5 bg-green-300">File Explorer(WIP)</div>
       <div className="w-3/5 p-4 flex-1 overflow-y-auto">{children}</div>
       <div className="w-1/5">
-        <ForceDirectedGraph postGraph={postGraph} basePostWikilinks={[]} />
+        <ForceDirectedGraph postGraph={postGraph} />
       </div>
-      {/* {postGraph && (*/}
-      {/*  <ForceDirectedGraph*/}
-      {/*    className="fixed right-12 "*/}
-      {/*    basePostWikilinks={[]}*/}
-      {/*    postGraph={postGraph}*/}
-      {/*    height={300}*/}
-      {/*    width={300}*/}
-      {/*    scale={0.6}*/}
-      {/*  />*/}
-      {/*)} */}
     </div>
   );
 }
