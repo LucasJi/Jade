@@ -1,6 +1,6 @@
 # Galaxy Blog
 
-This project is created for publishing my blogs written in [Obsidian](https://obsidian.md/) to a blog website. Since Obsidian has a lot of useful features, the galaxy has no doubt supports these wonderful features.
+This project is designed to enable the publication of my blogs, authored in [Obsidian](https://obsidian.md/), to a dedicated blog website. Given Obsidian's array of powerful features, it's clear that the platform fully supports these remarkable functionalities.
 
 ## Features
 
