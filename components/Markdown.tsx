@@ -33,7 +33,6 @@ const components = (titleLink?: string): Components => ({
         href={href}
         showAnchorIcon={!isFragment}
         color="foreground"
-        className="underline-l-r"
       >
         {children}
       </Link>
@@ -43,7 +42,7 @@ const components = (titleLink?: string): Components => ({
     if (titleLink) {
       return (
         <h1>
-          <Link className="underline-l-r" href={titleLink} color="foreground">
+          <Link href={titleLink} color="foreground">
             {props.children}
           </Link>
         </h1>
@@ -107,7 +106,14 @@ const Markdown = ({
   titleLink?: string;
 }) => {
   return (
-    <article className={classNames('prose', 'prose-neutral', className)}>
+    <article
+      className={classNames(
+        'prose',
+        'prose-neutral',
+        'prose-a:my-0',
+        className,
+      )}
+    >
       <ReactMarkdown
         components={components(titleLink)}
         remarkPlugins={[

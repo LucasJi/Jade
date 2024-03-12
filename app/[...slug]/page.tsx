@@ -1,8 +1,7 @@
 import Markdown from '@components/Markdown';
 import { Slug } from '@types';
-import { getSlugs } from '@utils/postUtil';
 
-export default async function Post({
+export default async function Page({
   params: { slug },
 }: {
   params: { slug: Slug };
@@ -21,8 +20,4 @@ export default async function Post({
   const { content } = post;
 
   return <Markdown markdown={content} className="max-w-none w-full" />;
-}
-
-export async function generateStaticParams() {
-  return getSlugs();
 }

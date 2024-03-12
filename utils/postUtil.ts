@@ -85,7 +85,7 @@ const getFullPathFromSlug = (slug: Slug) => {
   return join(POST_DIR, ...slugClone);
 };
 
-const convertSlugToWikilink = (slug: Slug) => {
+export const convertSlugToWikilink = (slug: Slug) => {
   return join(...slug);
 };
 
@@ -107,20 +107,23 @@ export const getPostBySlug = (slug: string[]) => {
   }
 
   const fullPath = getFullPathFromSlug(slug);
-  const content = fs.readFileSync(fullPath, 'utf8');
-  const title = getTitle(content);
-  const wikilink = join(...slug);
-  const post: Post = {
-    wikilink,
-    slug,
-    content,
-    title,
-    forwardLinks: [],
-    backlinks: [],
-    href: `posts/${wikilink}`,
-  };
-
-  return post;
+  try {
+    const content = fs.readFileSync(fullPath, 'utf8');
+    const title = getTitle(content);
+    const wikilink = join(...slug);
+    const post: Post = {
+      wikilink,
+      slug,
+      content,
+      title,
+      forwardLinks: [],
+      backlinks: [],
+      href: `posts/${wikilink}`,
+    };
+    return post;
+  } catch (e) {
+    return null;
+  }
 };
 
 export const getPosts = (): Post[] => {

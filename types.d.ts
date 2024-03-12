@@ -1,8 +1,8 @@
-import { SimulationLinkDatum, SimulationNodeDatum } from 'd3-force';
+import * as d3 from 'd3';
 
 export type Slug = string[];
 
-export type Post = {
+export interface Post {
   wikilink: string;
   slug: Slug;
   slugIdx?: number;
@@ -11,11 +11,11 @@ export type Post = {
   forwardLinks: string[];
   backlinks: string[];
   href: string;
-};
+}
 
-export interface PostGraphNode extends SimulationNodeDatum, Post {}
+export type PostGraphNode = d3.SimulationNodeDatum & Post;
 
-export interface PostGraphLink extends SimulationLinkDatum<PostGraphNode> {}
+export type PostGraphLink = d3.SimulationLinkDatum<PostGraphNode>;
 
 export type PostGraph = {
   nodes: PostGraphNode[];
