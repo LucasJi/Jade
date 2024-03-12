@@ -4,6 +4,6 @@ This project is created for publishing my blogs written in [Obsidian](https://ob
 
 ## Features
 
--[x] Links
--[] Graph
--[] Canvas
+- [x] Links
+- [] Graph
+- [] Canvas
