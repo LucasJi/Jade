@@ -1,256 +1,226 @@
 'use client';
 
 import { PostGraph, PostGraphLink, PostGraphNode } from '@types';
-import styles from '@utils/forceGraph.module.css';
-import { runForceGraph } from '@utils/forceGraphGenerator';
 import classNames from 'classnames';
-
-import { scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
+import * as d3 from 'd3';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
-const HOVERED_COLOR = '#30abf1';
-const DEFAULT_COLOR = 'grey';
+const DEFAULT_HOVERED_COLOR = '#30abf1';
+const COLOR = 'grey';
+const HIGHLIGHT_COLOR = 'green';
 const DEFAULT_REPULSIVE_FORCE = -100;
+const LINE_WIDTH = 0.5;
+const HIGHLIGHT_LINE_WIDTH = 1;
+const DURATION = 100;
+const RADIUS = 8;
 
 const ForceDirectedGraph = ({
   postGraph,
-  scale = 1,
-  height = 300,
-  width = 300,
+  size = 300,
   className,
-  basePostWikilinks = [],
 }: {
   postGraph: PostGraph;
-  scale?: number;
-  height?: number;
-  width?: number;
+  size?: number;
   className?: string;
-  basePostWikilinks?: string[];
 }) => {
-  const { color, r } = useMemo(
-    () => ({
-      // Specify the color scale.
-      color: scaleOrdinal(schemeCategory10),
-      r: 8,
-    }),
-    [],
-  );
-  const [simulationNodes, setSimulationNodes] = useState<PostGraphNode[]>([]);
-  const [simulationLinks, setSimulationLinks] = useState<PostGraphLink[]>([]);
-  const [hoveredNode, setHoveredNode] = useState<PostGraphNode | null>(null);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const onMountRef = useRef<boolean>(true);
 
-  const isNodeHovered = (node: PostGraphNode) => {
-    return hoveredNode?.wikilink === node.wikilink;
-  };
-
-  const isHoveredNodeLink = (source: PostGraphNode, target: PostGraphNode) => {
-    return (
-      source.wikilink === hoveredNode?.wikilink ||
-      target.wikilink === hoveredNode?.wikilink
-    );
-  };
-
   useEffect(() => {
+    const { links, nodes } = postGraph;
+
+    const drag = (simulation: d3.Simulation<PostGraphNode, PostGraphLink>) => {
+      const dragstarted = (event: any, d: any) => {
+        if (!event.active) {
+          simulation.alphaTarget(1).restart();
+        }
+        d.fx = d.x;
+        d.fy = d.y;
+      };
+
+      const dragged = (event: any, d: any) => {
+        d.fx = event.x;
+        d.fy = event.y;
+      };
+
+      const dragended = (event: any, d: any) => {
+        if (!event.active) {
+          simulation.alphaTarget(0);
+        }
+        d.fx = null;
+        d.fy = null;
+      };
+
+      return d3
+        .drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended);
+    };
+
+    // use `onMountRef` to make useEffect only renders once in develop mode
     if (containerRef.current && onMountRef.current) {
-      runForceGraph(containerRef.current, postGraph.links, postGraph.nodes);
+      const simulation = d3
+        .forceSimulation(nodes)
+        .force('charge', d3.forceManyBody().strength(-50))
+        .force(
+          'link',
+          d3.forceLink<PostGraphNode, PostGraphLink>(links).id(d => d.wikilink),
+        )
+        .force('center', d3.forceCenter(size / 2, size / 2));
+
+      // create svg element and make it scalable
+      const svg = d3
+        .select(containerRef.current)
+        .append('svg')
+        .attr('viewBox', [0, 0, size, size])
+        .call(
+          d3
+            .zoom<SVGSVGElement, any>()
+            .extent([
+              [0, 0],
+              [size, size],
+            ])
+            .scaleExtent([0.25, 4])
+            .on('zoom', ({ transform }) => {
+              // make svg move silkily
+              link.attr('transform', transform);
+              node.attr('transform', transform);
+              title.attr('transform', transform);
+            }),
+        );
+
+      // create links
+      const link = svg
+        .append('g')
+        .selectAll('line')
+        .data(links)
+        .join('line')
+        .attr('class', 'link')
+        .attr('stroke', COLOR)
+        .attr('stroke-width', LINE_WIDTH);
+
+      // create nodes
+      const node = svg
+        .append('g')
+        .attr('stroke', '#fff')
+        .selectAll('circle')
+        .data(nodes)
+        .join('circle')
+        .attr('class', 'node')
+        .attr('r', RADIUS)
+        .attr('fill', COLOR)
+        .style('cursor', 'pointer')
+        .on('click', (_, d) => {
+          console.log('click', d);
+        })
+        .on('mouseover', function (_, d) {
+          const { wikilink } = d;
+          const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
+          const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
+
+          const connectedNodes = [...d.backlinks, ...d.forwardLinks];
+          const connectedLinks = link.filter(d => {
+            const source = d.source as PostGraphNode;
+            const target = d.target as PostGraphNode;
+            return wikilink === source.wikilink || wikilink === target.wikilink;
+          });
+
+          // fade out not connected links and nodes
+          link
+            .filter(d => {
+              const source = d.source as PostGraphNode;
+              const target = d.target as PostGraphNode;
+              return !(
+                wikilink === source.wikilink || wikilink === target.wikilink
+              );
+            })
+            .transition()
+            .duration(DURATION)
+            .style('opacity', 0.2)
+            .attr('stroke', COLOR)
+            .attr('stroke-width', LINE_WIDTH);
+          node
+            .filter(d => !connectedNodes.includes(d.wikilink))
+            .filter(d => d.wikilink !== wikilink)
+            .transition()
+            .duration(DURATION)
+            .style('opacity', 0.2);
+
+          // highlight connected links
+          connectedLinks
+            .transition()
+            .duration(DURATION)
+            .attr('stroke', HIGHLIGHT_COLOR)
+            .attr('stroke-width', HIGHLIGHT_LINE_WIDTH);
+        })
+        .on('mouseleave', function (_, d) {
+          const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
+          const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
+
+          // recover all links and nodes
+          link
+            .transition()
+            .duration(DURATION)
+            .style('opacity', 1)
+            .attr('stroke', COLOR)
+            .attr('stroke-width', LINE_WIDTH);
+          node.transition().duration(DURATION).style('opacity', 1);
+        })
+        // @ts-ignore
+        .call(drag(simulation));
+
+      // create titles
+      const title = svg
+        .append('g')
+        .selectAll('text')
+        .data(nodes)
+        .enter()
+        .append('text')
+        .attr('dx', 0)
+        .attr('dy', RADIUS * 1.5)
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'central')
+        .style('font-size', '10px')
+        .style('stroke-width', 0)
+        .text(d => d.title);
+
+      simulation.on('tick', () => {
+        //update link positions
+        link
+          .attr('x1', (d: any) => d.source.x)
+          .attr('y1', (d: any) => d.source.y)
+          .attr('x2', (d: any) => d.target.x)
+          .attr('y2', (d: any) => d.target.y);
+
+        // update node positions
+        node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+
+        // update title positions
+        title
+          .attr('x', (d: any) => {
+            return d.x;
+          })
+          .attr('y', (d: any) => {
+            return d.y;
+          });
+      });
     }
 
     onMountRef.current = false;
-  }, [onMountRef.current]);
-
-  // useEffect(() => {
-  //   if (!nodeGroupRef.current) {
-  //     return () => {};
-  //   }
-
-  //   const forceLinkWithNodes = forceLink<PostGraphNode, PostGraphLink>(
-  //     postGraph.links,
-  //   )
-  //     .id(d => d.wikilink)
-  //     .distance(50);
-
-  //   const simulation = forceSimulation<PostGraphNode>(postGraph.nodes)
-  //     .force('link', forceLinkWithNodes)
-  //     .force('charge', forceManyBody().strength(DEFAULT_REPULSIVE_FORCE))
-  //     // Force nodes to be displayed in the center of the graph.
-  //     .force('center', forceCenter(width / 2, height / 2));
-
-  //   const nodes = select(nodeGroupRef.current)
-  //     .selectAll('g')
-  //     .data(postGraph.nodes)
-  //     .enter()
-  //     .append('g');
-
-  //   const node = nodes
-  //     .append('circle')
-  //     .attr('r', r)
-  //     .attr('fill', DEFAULT_COLOR);
-
-  //   // Make graph scalable.
-  //   const svg = select<Element, any>('#postGraph');
-  //   const zoomBehavior = zoom()
-  //     .scaleExtent([0.5, 3])
-  //     .translateExtent([
-  //       [0, 0],
-  //       [width, height],
-  //     ])
-  //     .on('zoom', event => {
-  //       const zoomState = event.transform;
-  //       select('#linkGroup').attr('transform', zoomState);
-  //       select('#nodeGroup').attr('transform', zoomState);
-  //     });
-  //   svg.call(zoomBehavior);
-
-  //   // Make graph draggable.
-  //   // const nodes = select<Element, any>('#nodeGroup').selectAll('g');
-  //   const dragBehavior = drag()
-  //     .on('start', function (this, event) {
-  //       if (!event.active) {
-  //         simulation.alphaTarget(0.3).restart();
-  //       }
-  //       event.subject.fx = event.subject.x;
-  //       event.subject.fy = event.subject.y;
-  //     })
-  //     .on('drag', function (this, event) {
-  //       event.subject.fx = event.subject.x;
-  //       event.subject.fy = event.subject.y;
-  //     })
-  //     .on('end', event => {
-  //       if (!event.active) {
-  //         simulation.alphaTarget(0);
-  //       }
-  //       event.subject.fx = null;
-  //       event.subject.fy = null;
-  //     });
-  //   // @ts-ignore
-  //   // nodes.call(dragBehavior);
-
-  //   simulation.on('tick', () => {
-  //     // link
-  //     //   .attr('x1', (d: any) => d.source.x)
-  //     //   .attr('y1', (d: any) => d.source.y)
-  //     //   .attr('x2', (d: any) => d.target.x)
-  //     //   .attr('y2', (d: any) => d.target.y);
-  //     node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
-  //   });
-
-  //   return () => {
-  //     simulation.stop();
-  //   };
-  // }, [nodeGroupRef.current]);
-
-  // useEffect(() => {
-  //   const svgEl = svgRef.current;
-  //   const onWheelHandler = (e: WheelEvent) => {
-  //     e.preventDefault();
-  //   };
-
-  //   if (svgEl) {
-  //     svgEl.addEventListener('wheel', onWheelHandler, { passive: false });
-  //   }
-
-  //   return () => {
-  //     if (svgEl) {
-  //       svgEl.removeEventListener('wheel', onWheelHandler);
-  //     }
-  //   };
-  // }, [svgRef.current]);
+  }, []);
 
   return (
     <div
       ref={containerRef}
-      className={classNames('max-w-full', className, styles.container)}
-    >
-      {/* <div className="font-bold">Graph View</div>
-      <svg
-        id="postGraph"
-        className="border-1 rounded"
-        height={height}
-        width={width}
-        viewBox={`0 0 ${width} ${height}`}
-        ref={svgRef}
-      > */}
-      {/* <g id="linkGroup">
-          {simulationLinks.map(({ source, target, index }) => {
-            const sourceNode = source as PostGraphNode;
-            const targetNode = target as PostGraphNode;
-            return (
-              <line
-                key={index}
-                strokeWidth={0.5}
-                stroke={
-                  isHoveredNodeLink(sourceNode, targetNode)
-                    ? HOVERED_COLOR
-                    : 'grey'
-                }
-                x1={sourceNode.x}
-                x2={targetNode.x}
-                y1={sourceNode.y}
-                y2={targetNode.y}
-              />
-            );
-          })}
-        </g> */}
-      {/* <g ref={nodeGroupRef} /> */}
-      {/* <g id="nodeGroup" stroke="#fff" strokeWidth={0.5}> */}
-      {/* {simulationNodes.map(node => {
-          const nodeHovered = isNodeHovered(node);
-          return (
-            <g
-              key={node.wikilink}
-              transform={`translate(${node.x}, ${node.y})`}
-              onMouseOver={() => setHoveredNode({ ...node })}
-              onMouseOut={() => setHoveredNode(null)}
-              onClick={() => {
-                router.push(`/${node.wikilink}`);
-              }}
-            >
-              <circle
-                r={r}
-                style={{
-                  fill: nodeHovered ? HOVERED_COLOR : 'grey',
-                  transform: nodeHovered ? 'scale(1.2)' : 'none',
-                  transitionProperty: 'transform',
-                  transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-                  transitionDuration: '150ms',
-                }}
-              />
-              <text
-                dy={r * 2 + 2}
-                style={{
-                  fontSize: '10px',
-                  strokeWidth: 0,
-                }}
-                textAnchor="middle"
-                className={classNames(
-                  {
-                    'translate-y-1': nodeHovered,
-                  },
-                  'transition-all ease-in-out',
-                  {
-                    underline: basePostWikilinks.includes(node.wikilink),
-                  },
-                  {
-                    'opacity-0': !nodeHovered,
-                    'opacity-100': nodeHovered,
-                    visible: nodeHovered,
-                    invisible: !nodeHovered,
-                  },
-                )}
-              >
-                {node.title}
-              </text>
-            </g>
-          );
-        })} */}
-      {/* </g> */}
-      {/* </svg> */}
-    </div>
+      className={classNames(className, 'border-1')}
+      style={{
+        width: size,
+        height: size,
+      }}
+    />
   );
 };
 
