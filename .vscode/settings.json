@@ -1,3 +1,11 @@
 {
-  "cSpell.words": ["dragended", "dragstarted", "wikilink", "Wikilinks"]
+  "cSpell.words": [
+    "dragended",
+    "dragstarted",
+    "frontmatter",
+    "mdast",
+    "vfile",
+    "wikilink",
+    "Wikilinks"
+  ]
 }
