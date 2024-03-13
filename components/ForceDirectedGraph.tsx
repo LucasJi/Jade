@@ -64,10 +64,14 @@ const ForceDirectedGraph = ({
     if (containerRef.current && onMountRef.current) {
       const simulation = d3
         .forceSimulation(nodes)
-        .force('charge', d3.forceManyBody().strength(-50))
+        .force('charge', d3.forceManyBody().strength(-10))
         .force(
           'link',
-          d3.forceLink<PostGraphNode, PostGraphLink>(links).id(d => d.wikilink),
+          d3
+            .forceLink<PostGraphNode, PostGraphLink>(links)
+            .id(d => d.wikilink)
+            .strength(1)
+            .distance(50),
         )
         .force('center', d3.forceCenter(size / 2, size / 2));
 
