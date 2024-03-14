@@ -6,26 +6,34 @@ import * as d3 from 'd3';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
-const DEFAULT_HOVERED_COLOR = '#30abf1';
-// color of node and link
-// tailwindcss zinc-400
-const COLOR = '#a1a1aa';
+// color(gray-400 from tailwindcss) of node and link
+const COLOR = '#9ca3af';
+
 // tailwindcss zinc-600
 const HIGHLIGHT_COLOR = '#52525b';
-const DEFAULT_REPULSIVE_FORCE = -100;
+
+const REPULSIVE_FORCE = -5;
+
+const LINK_DISTANCE = 50;
+
 const LINE_WIDTH = 0.5;
+
 const HIGHLIGHT_LINE_WIDTH = 1;
+
 const DURATION = 100;
+
 const RADIUS = 8;
 
 const ForceDirectedGraph = ({
   postGraph,
   size = 300,
   className,
+  currentWikilink = '',
 }: {
   postGraph: PostGraph;
   size?: number;
   className?: string;
+  currentWikilink?: string;
 }) => {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +45,7 @@ const ForceDirectedGraph = ({
     const drag = (simulation: d3.Simulation<PostGraphNode, PostGraphLink>) => {
       const dragstarted = (event: any, d: any) => {
         if (!event.active) {
-          simulation.alphaTarget(1).restart();
+          simulation.alphaTarget(0.3).restart();
         }
         d.fx = d.x;
         d.fy = d.y;
@@ -67,14 +75,14 @@ const ForceDirectedGraph = ({
     if (containerRef.current && onMountRef.current) {
       const simulation = d3
         .forceSimulation(nodes)
-        .force('charge', d3.forceManyBody().strength(-10))
+        .force('charge', d3.forceManyBody().strength(REPULSIVE_FORCE))
         .force(
           'link',
           d3
             .forceLink<PostGraphNode, PostGraphLink>(links)
             .id(d => d.wikilink)
-            .strength(1)
-            .distance(50),
+            .strength(0.1)
+            .distance(LINK_DISTANCE),
         )
         .force('center', d3.forceCenter(size / 2, size / 2));
 
@@ -121,7 +129,7 @@ const ForceDirectedGraph = ({
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
-          console.log('click', d);
+          router.push('/' + d.wikilink);
         })
         .on('mouseover', function (_, d) {
           const { wikilink } = d;
@@ -181,6 +189,7 @@ const ForceDirectedGraph = ({
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
           node
+            .filter(d => !(d.wikilink === currentWikilink))
             .transition()
             .duration(DURATION)
             .style('opacity', 1)
@@ -197,12 +206,23 @@ const ForceDirectedGraph = ({
         .enter()
         .append('text')
         .attr('dx', 0)
-        .attr('dy', RADIUS * 1.5)
+        .attr('dy', RADIUS * 1.8)
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'central')
         .style('font-size', '10px')
         .style('stroke-width', 0)
+        .style('visibility', 'hidden')
         .text(d => d.title);
+
+      if (currentWikilink) {
+        title
+          .filter(d => d.wikilink === currentWikilink)
+          .style('visibility', 'visible');
+
+        node
+          .filter(d => d.wikilink === currentWikilink)
+          .attr('fill', HIGHLIGHT_COLOR);
+      }
 
       simulation.on('tick', () => {
         //update link positions
@@ -230,7 +250,7 @@ const ForceDirectedGraph = ({
   }, []);
 
   return (
-    <div>
+    <div className="w-fit h-fit">
       <span className="font-bold">Graph View</span>
       <div
         ref={containerRef}

@@ -10,6 +10,8 @@ export default async function Layout({
   params: { slug: Slug };
   children: ReactNode;
 }) {
+  const wikilink = convertSlugToWikilink(slug);
+
   const treeResp = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`,
     {
@@ -20,7 +22,7 @@ export default async function Layout({
 
   const postGraphResp = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/graph?${new URLSearchParams({
-      wikilink: convertSlugToWikilink(slug),
+      wikilink,
     })}`,
     {
       method: 'GET',
@@ -33,7 +35,7 @@ export default async function Layout({
       <div className="w-1/5 bg-green-300">File Explorer(WIP)</div>
       <div className="w-3/5 p-4 flex-1 overflow-y-auto">{children}</div>
       <div className="w-1/5">
-        <ForceDirectedGraph postGraph={postGraph} />
+        <ForceDirectedGraph postGraph={postGraph} currentWikilink={wikilink} />
       </div>
     </div>
   );
