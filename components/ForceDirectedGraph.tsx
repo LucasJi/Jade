@@ -7,8 +7,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 const DEFAULT_HOVERED_COLOR = '#30abf1';
-const COLOR = 'grey';
-const HIGHLIGHT_COLOR = 'green';
+// color of node and link
+// tailwindcss zinc-400
+const COLOR = '#a1a1aa';
+// tailwindcss zinc-600
+const HIGHLIGHT_COLOR = '#52525b';
 const DEFAULT_REPULSIVE_FORCE = -100;
 const LINE_WIDTH = 0.5;
 const HIGHLIGHT_LINE_WIDTH = 1;
@@ -125,7 +128,7 @@ const ForceDirectedGraph = ({
           const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
           const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
 
-          const connectedNodes = [...d.backlinks, ...d.forwardLinks];
+          const connectedNodeWikilinks = [...d.backlinks, ...d.forwardLinks];
           const connectedLinks = link.filter(d => {
             const source = d.source as PostGraphNode;
             const target = d.target as PostGraphNode;
@@ -147,7 +150,7 @@ const ForceDirectedGraph = ({
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
           node
-            .filter(d => !connectedNodes.includes(d.wikilink))
+            .filter(d => !connectedNodeWikilinks.includes(d.wikilink))
             .filter(d => d.wikilink !== wikilink)
             .transition()
             .duration(DURATION)
@@ -159,6 +162,12 @@ const ForceDirectedGraph = ({
             .duration(DURATION)
             .attr('stroke', HIGHLIGHT_COLOR)
             .attr('stroke-width', HIGHLIGHT_LINE_WIDTH);
+
+          // highlight self
+          d3.select(this)
+            .transition()
+            .duration(DURATION)
+            .attr('fill', HIGHLIGHT_COLOR);
         })
         .on('mouseleave', function (_, d) {
           const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
@@ -171,7 +180,11 @@ const ForceDirectedGraph = ({
             .style('opacity', 1)
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
-          node.transition().duration(DURATION).style('opacity', 1);
+          node
+            .transition()
+            .duration(DURATION)
+            .style('opacity', 1)
+            .attr('fill', COLOR);
         })
         // @ts-ignore
         .call(drag(simulation));
@@ -217,14 +230,17 @@ const ForceDirectedGraph = ({
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className={classNames(className, 'border-1')}
-      style={{
-        width: size,
-        height: size,
-      }}
-    />
+    <div>
+      <span className="font-bold">Graph View</span>
+      <div
+        ref={containerRef}
+        className={classNames(className, 'border-1', 'rounded-md', 'mt-2')}
+        style={{
+          width: size,
+          height: size,
+        }}
+      />
+    </div>
   );
 };
 
