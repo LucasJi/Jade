@@ -118,9 +118,9 @@ const Markdown = ({
         components={components(titleLink)}
         remarkPlugins={[
           remarkGfm,
-          wikilinkPlugin,
           remarkFrontmatter,
-          [remarkToc, { tight: false }],
+          [remarkToc, { tight: true }],
+          wikilinkPlugin,
         ]}
       >
         {markdown}

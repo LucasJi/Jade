@@ -32,9 +32,9 @@ export default async function Layout({
 
   return (
     <div className="flex w-full h-full relative">
-      <div className="w-1/5 bg-green-300">File Explorer(WIP)</div>
+      <div className="w-1/5 border">File Explorer(WIP)</div>
       <div className="w-3/5 p-4 flex-1 overflow-y-auto">{children}</div>
-      <div className="w-1/5">
+      <div className="w-1/5 p-4">
         <ForceDirectedGraph postGraph={postGraph} currentWikilink={wikilink} />
       </div>
     </div>
