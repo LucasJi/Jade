@@ -9,27 +9,3 @@
 .webkit-overflow-y-auto::-webkit-scrollbar {
   display: none;
 }
-
-.underline-l-r {
-  position: relative;
-  text-decoration: none;
-}
-
-.underline-l-r::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  border-radius: 5px;
-  height: 0.05em;
-  bottom: 0;
-  left: 0;
-  background: currentcolor;
-  transform-origin: bottom right;
-  transition: transform 0.25s ease-out;
-}
-
-.underline-l-r:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}

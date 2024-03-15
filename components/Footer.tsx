@@ -8,7 +8,16 @@ const Footer = () => {
       <div className="w-full flex h-16 justify-between">
         <div className="flex flex-col">
           <span>Galaxy Blog</span>
-          <span className="font-extralight">©2023 Created by Lucas Ji</span>
+          <span className="font-extralight text-sm">
+            ©2023 Created by Lucas Ji
+          </span>
+          <a
+            className="font-extralight text-sm hover:underline "
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+          >
+            苏ICP备2023055488号
+          </a>
         </div>
         <div>
           <Link href="https://github.com/LucasJi" isExternal color="foreground">

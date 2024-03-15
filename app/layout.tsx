@@ -15,7 +15,10 @@ export default async function RootLayout({
 }) {
   return (
     <html className="light h-full w-full scroll-smooth m-0" lang="en">
-      <body className="h-full w-full flex m-0" suppressHydrationWarning={true}>
+      <body
+        className="h-full w-full flex m-0 bg-[#E6DECE]"
+        suppressHydrationWarning={true}
+      >
         <Providers>
           <main className="w-full h-full flex-1 max-h-[calc(100%_-_100px)] overflow-y-auto">
             {children}
