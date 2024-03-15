@@ -1,5 +1,3 @@
-'use client';
-
 import Markdown from '@components/Markdown';
 import {
   Link,
@@ -7,50 +5,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@nextui-org/react';
-import httpClient from '@utils/axios';
-import { AxiosResponse } from 'axios';
-import React, { ReactNode, useEffect, useState } from 'react';
-import { Post, Slug } from 'types';
+import { convertWikilinkToSlug } from '@utils/postUtil';
 import NextLink from 'next/link';
+import { ReactNode } from 'react';
 
-const SEPARATOR = '/';
-
-// TODO: should get post both from slug or wikilink
-const convertWikilinkToSlug = (wikilink: string): Slug => {
-  let postRelativePath = wikilink;
-  if (wikilink.startsWith(SEPARATOR)) {
-    postRelativePath = wikilink.replace(SEPARATOR, '');
-  }
-  return postRelativePath.split(SEPARATOR);
-};
-
-export default function Wikilink({
+export default async function Wikilink({
   wikilink = '',
   children,
 }: {
   wikilink: string | undefined;
   children: ReactNode;
 }) {
-  const [post, setPost] = useState<Post | null>(null);
-  const [open, setOpen] = useState<boolean>(false);
+  const postResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
+    method: 'POST',
+    body: JSON.stringify({ slug: convertWikilinkToSlug(wikilink) }),
+  });
 
-  useEffect(() => {
-    httpClient
-      .post('api/post', { slug: convertWikilinkToSlug(wikilink) })
-      .then((res: AxiosResponse<Post>) => {
-        if (res.data) {
-          setPost(res.data);
-        }
-      });
-  }, [wikilink]);
+  const post = await postResp.json();
 
   return (
-    <Popover isOpen={open} onOpenChange={setOpen} placement="right-end">
-      <PopoverTrigger
-        onMouseEnter={() => {
-          setOpen(true);
-        }}
-      >
+    <Popover placement="right-end">
+      <PopoverTrigger>
         <Link href={`/posts/${wikilink}`} color="foreground" as={NextLink}>
           {children}
         </Link>
@@ -59,6 +34,7 @@ export default function Wikilink({
         <Markdown
           className="h-[400px] w-[600px] webkit-overflow-y-auto"
           markdown={post?.content || ''}
+          enableWikilink={false}
         />
       </PopoverContent>
     </Popover>

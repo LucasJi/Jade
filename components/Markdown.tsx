@@ -1,6 +1,6 @@
 import Wikilink from '@components/Wikilink';
 import { Code, Link } from '@nextui-org/react';
-import wikilinkPlugin from '@utils/remark-wikilink';
+import { remarkWikilink } from '@utils/remark-wikilink';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
 // import Link from 'next/link';
@@ -12,11 +12,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
-import remarkToc from 'remark-toc';
 
 const slugs = new Slugger();
 
-// TODO: Delete after implementing the toc component
 const getHeadingId = (props: HeadingProps) => {
   const hContent = props.children[0] as string;
   return slugs.slug(hContent);
@@ -104,11 +102,17 @@ const Markdown = ({
   markdown,
   className,
   titleLink,
+  enableWikilink = true,
 }: {
   markdown: string;
   className?: string;
   titleLink?: string;
+  enableWikilink?: boolean;
 }) => {
+  const remarkPlugins = [remarkGfm, remarkFrontmatter];
+  if (enableWikilink) {
+    remarkPlugins.push(remarkWikilink as any);
+  }
   return (
     <article
       className={classNames(
@@ -120,12 +124,7 @@ const Markdown = ({
     >
       <ReactMarkdown
         components={components(titleLink)}
-        remarkPlugins={[
-          remarkGfm,
-          remarkFrontmatter,
-          [remarkToc, { tight: true }],
-          wikilinkPlugin,
-        ]}
+        remarkPlugins={remarkPlugins}
       >
         {markdown}
       </ReactMarkdown>
