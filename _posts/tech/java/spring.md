@@ -61,7 +61,7 @@ These features **do not work by default**.
 - [ ] task list
 - [x] checked item
 
-https://example.com
+<https://example.com>
 
 ## HTML in markdown
 

@@ -5,6 +5,7 @@
     "extralight",
     "frontmatter",
     "mdast",
+    "rehype",
     "vfile",
     "wikilink",
     "Wikilinks"

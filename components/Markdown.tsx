@@ -7,15 +7,19 @@ import { Element, Text } from 'hast';
 import ReactMarkdown, { Components } from 'react-markdown';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 // highlight.js doesn't support React.JSX syntax
+import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkToc from 'remark-toc';
 
+const slugs = new Slugger();
+
+// TODO: Delete after implementing the toc component
 const getHeadingId = (props: HeadingProps) => {
-  // Support remark-toc syntax: use '-' to connect words
-  return (props.children[0] as string).toLowerCase().split(' ').join('-');
+  const hContent = props.children[0] as string;
+  return slugs.slug(hContent);
 };
 
 const components = (titleLink?: string): Components => ({
