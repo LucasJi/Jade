@@ -1,3 +1,5 @@
+'use client';
+
 import Markdown from '@components/Markdown';
 import {
   Link,
@@ -5,36 +7,42 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@nextui-org/react';
-import { convertWikilinkToSlug } from '@utils/postUtil';
+import { Post } from '@types';
 import NextLink from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
-export default async function Wikilink({
+export default function Wikilink({
   wikilink = '',
   children,
 }: {
   wikilink: string | undefined;
   children: ReactNode;
 }) {
-  const postResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
-    method: 'POST',
-    body: JSON.stringify({ slug: convertWikilinkToSlug(wikilink) }),
-  });
+  const [post, setPost] = useState<Post | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
-  const post = await postResp.json();
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
+      method: 'POST',
+      body: JSON.stringify({ wikilink }),
+    }).then(resp => resp.json().then(value => setPost(value)));
+  }, [wikilink]);
 
   return (
-    <Popover placement="right-end">
-      <PopoverTrigger>
+    <Popover isOpen={open} onOpenChange={setOpen} placement="right-end">
+      <PopoverTrigger
+        onMouseEnter={() => {
+          setOpen(true);
+        }}
+      >
         <Link href={`/posts/${wikilink}`} color="foreground" as={NextLink}>
           {children}
         </Link>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent className="p-4">
         <Markdown
-          className="h-[400px] w-[600px] webkit-overflow-y-auto"
+          className="h-[400px] w-[600px] webkit-overflow-y-auto prose-sm"
           markdown={post?.content || ''}
-          enableWikilink={false}
         />
       </PopoverContent>
     </Popover>

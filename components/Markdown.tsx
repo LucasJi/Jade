@@ -20,7 +20,7 @@ const getHeadingId = (props: HeadingProps) => {
   return slugs.slug(hContent);
 };
 
-const components = (titleLink?: string): Components => ({
+const components = (): Components => ({
   a: props => {
     const { className, href, children } = props;
     if (className?.includes('wikilink')) {
@@ -39,19 +39,6 @@ const components = (titleLink?: string): Components => ({
         {children}
       </Link>
     );
-  },
-  h1: props => {
-    if (titleLink) {
-      return (
-        <h1>
-          <Link href={titleLink} color="foreground">
-            {props.children}
-          </Link>
-        </h1>
-      );
-    }
-
-    return <h1>{props.children}</h1>;
   },
   h2: props => {
     return <h2 id={getHeadingId(props)}>{props.children}</h2>;
@@ -96,36 +83,37 @@ const components = (titleLink?: string): Components => ({
   code: props => {
     return <Code className="not-prose">{props.children}</Code>;
   },
+  li: props => <li className="not-prose">{props.children}</li>,
 });
 
 const Markdown = ({
   markdown,
   className,
-  titleLink,
-  enableWikilink = true,
 }: {
   markdown: string;
   className?: string;
-  titleLink?: string;
-  enableWikilink?: boolean;
 }) => {
-  const remarkPlugins = [remarkGfm, remarkFrontmatter];
-  if (enableWikilink) {
-    remarkPlugins.push(remarkWikilink as any);
-  }
+  const remarkPlugins = [remarkGfm, remarkFrontmatter, remarkWikilink as any];
   return (
     <article
       className={classNames(
         'prose',
         'prose-neutral',
+        'prose-h1:mb-4',
+        'prose-h2:my-4',
+        'prose-h3:my-4',
+        'prose-h4:my-4',
+        'prose-h5:my-4',
+        'prose-h6:my-4',
         'prose-a:my-0',
+        'prose-p:my-2',
+        'prose-ul:my-2',
+        'prose-hr:my-4',
+        'prose-table:my-2',
         className,
       )}
     >
-      <ReactMarkdown
-        components={components(titleLink)}
-        remarkPlugins={remarkPlugins}
-      >
+      <ReactMarkdown components={components()} remarkPlugins={remarkPlugins}>
         {markdown}
       </ReactMarkdown>
     </article>

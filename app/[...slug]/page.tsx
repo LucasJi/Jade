@@ -13,10 +13,6 @@ export default async function Page({
 
   const post = await postResp.json();
 
-  if (!post) {
-    return <div>POST NOT FOUND</div>;
-  }
-
   const { content } = post;
 
   return <Markdown markdown={content} className="max-w-none w-full" />;
