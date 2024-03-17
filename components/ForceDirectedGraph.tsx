@@ -24,6 +24,8 @@ const DURATION = 100;
 
 const RADIUS = 8;
 
+const OPACITY_SCALE = 1;
+
 const ForceDirectedGraph = ({
   postGraph,
   size = 300,
@@ -103,7 +105,13 @@ const ForceDirectedGraph = ({
               // make svg move silkily
               link.attr('transform', transform);
               node.attr('transform', transform);
-              title.attr('transform', transform);
+              const scale = transform.k * OPACITY_SCALE;
+              const scaledOpacity = Math.max((scale - 1) / 1.5, 0);
+              title
+                .attr('transform', transform)
+                .filter(d => d.wikilink !== currentWikilink)
+                .style('opacity', scaledOpacity)
+                .style('visibility', scaledOpacity > 0 ? 'visible' : 'hidden');
             }),
         );
 
@@ -120,7 +128,7 @@ const ForceDirectedGraph = ({
       // create nodes
       const node = svg
         .append('g')
-        .attr('stroke', '#fff')
+        .attr('stroke-width', 0)
         .selectAll('circle')
         .data(nodes)
         .join('circle')
@@ -211,12 +219,14 @@ const ForceDirectedGraph = ({
         .attr('dominant-baseline', 'central')
         .style('font-size', '10px')
         .style('stroke-width', 0)
+        .style('opacity', 0)
         .style('visibility', 'hidden')
         .text(d => d.title);
 
       if (currentWikilink) {
         title
           .filter(d => d.wikilink === currentWikilink)
+          .style('opacity', 1)
           .style('visibility', 'visible');
 
         node

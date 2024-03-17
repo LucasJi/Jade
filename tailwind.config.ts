@@ -9,7 +9,7 @@ const config: Config = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {},
-  plugins: [nextui(), require('@tailwindcss/typography')],
+  plugins: [nextui(), require('@tailwindcss/typography'), require('daisyui')],
 };
 
 export default config;
