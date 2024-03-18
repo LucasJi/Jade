@@ -26,7 +26,8 @@ const BASE_RADIUS = 2;
 
 const OPACITY_SCALE = 1;
 
-const calcNodeRadius = (node: PostGraphNode) => BASE_RADIUS + Math.sqrt(node.backlinks.length);
+const calcNodeRadius = (node: PostGraphNode) =>
+  BASE_RADIUS + Math.sqrt(node.backlinks.length);
 
 const ForceDirectedGraph = ({
   postGraph,
@@ -223,7 +224,13 @@ const ForceDirectedGraph = ({
         .style('stroke-width', 0)
         .style('opacity', 0)
         .style('visibility', 'hidden')
-        .text(d => d.title);
+        .style('cursor', 'pointer')
+        .text(d => d.title)
+        .on('click', (_, d) => {
+          router.push('/' + d.wikilink);
+        })
+        // @ts-ignore
+        .call(drag(simulation));
 
       if (currentWikilink) {
         title

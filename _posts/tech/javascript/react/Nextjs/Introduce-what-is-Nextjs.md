@@ -1,6 +1,3 @@
-Certainly! Here's an introduction to Next.js in Markdown format:
-
-```markdown
 # Introduction to Next.js
 
 Next.js is a popular open-source React framework that enables developers to build web applications
@@ -58,7 +55,6 @@ performance, and developer-friendly features.
 Next.js is an excellent choice for building modern web applications, offering a balance between
 performance, developer experience, and scalability. Its versatility makes it suitable for various
 project sizes, from small applications to large-scale enterprise solutions.
-```
 
 Feel free to use this Markdown content as a basis for introducing Next.js in your documentation or
 project.
