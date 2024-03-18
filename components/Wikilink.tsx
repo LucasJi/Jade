@@ -35,7 +35,7 @@ export default function Wikilink({
           setOpen(true);
         }}
       >
-        <Link href={`/posts/${wikilink}`} color="foreground" as={NextLink}>
+        <Link href={`/${wikilink}`} color="foreground" as={NextLink}>
           {children}
         </Link>
       </PopoverTrigger>
