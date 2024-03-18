@@ -1,5 +1,5 @@
-import type { Config } from 'tailwindcss';
 import { nextui } from '@nextui-org/react';
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: ['class'],
@@ -9,7 +9,7 @@ const config: Config = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {},
-  plugins: [nextui(), require('@tailwindcss/typography'), require('daisyui')],
+  plugins: [nextui(), require('@tailwindcss/typography')],
 };
 
 export default config;

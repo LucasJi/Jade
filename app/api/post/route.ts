@@ -1,8 +1,10 @@
-import { getPostBySlug, convertWikilinkToSlug } from '@utils/postUtil';
+import { convertWikilinkToSlug, getPostBySlug } from '@utils/postUtil';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  let { slug, wikilink } = await req.json();
+  const data = await req.json();
+  let { slug } = data;
+  const { wikilink } = data;
 
   if (wikilink) {
     slug = convertWikilinkToSlug(wikilink);

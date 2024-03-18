@@ -29,3 +29,13 @@ export type PostTreeNode = {
 };
 
 export type PostTree = PostTreeNode[];
+
+export interface TreeNode {
+  id: number;
+  name: string;
+  children?: TreeNode[];
+}
+
+export interface TreeProps {
+  data: TreeNode[];
+}
