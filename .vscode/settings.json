@@ -10,5 +10,6 @@
     "vfile",
     "wikilink",
     "Wikilinks"
-  ]
+  ],
+  "svg.preview.background": "editor"
 }
