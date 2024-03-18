@@ -22,9 +22,11 @@ const HIGHLIGHT_LINE_WIDTH = 1;
 
 const DURATION = 100;
 
-const RADIUS = 8;
+const BASE_RADIUS = 2;
 
 const OPACITY_SCALE = 1;
+
+const calcNodeRadius = (node: PostGraphNode) => BASE_RADIUS + Math.sqrt(node.backlinks.length);
 
 const ForceDirectedGraph = ({
   postGraph,
@@ -133,7 +135,7 @@ const ForceDirectedGraph = ({
         .data(nodes)
         .join('circle')
         .attr('class', 'node')
-        .attr('r', RADIUS)
+        .attr('r', r => calcNodeRadius(r))
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
@@ -214,7 +216,7 @@ const ForceDirectedGraph = ({
         .enter()
         .append('text')
         .attr('dx', 0)
-        .attr('dy', RADIUS * 1.8)
+        .attr('dy', r => calcNodeRadius(r) * 1.8)
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'central')
         .style('font-size', '10px')
