@@ -22,7 +22,7 @@ const HIGHLIGHT_LINE_WIDTH = 1;
 
 const DURATION = 100;
 
-const BASE_RADIUS = 2;
+const BASE_RADIUS = 4;
 
 const OPACITY_SCALE = 1;
 
@@ -43,6 +43,7 @@ const ForceDirectedGraph = ({
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const onMountRef = useRef<boolean>(true);
+  const scaledOpacityRef = useRef<number>(0);
 
   useEffect(() => {
     const { links, nodes } = postGraph;
@@ -110,6 +111,7 @@ const ForceDirectedGraph = ({
               node.attr('transform', transform);
               const scale = transform.k * OPACITY_SCALE;
               const scaledOpacity = Math.max((scale - 1) / 1.5, 0);
+              scaledOpacityRef.current = scaledOpacity;
               title
                 .attr('transform', transform)
                 .filter(d => d.wikilink !== currentWikilink)
@@ -131,7 +133,6 @@ const ForceDirectedGraph = ({
       // create nodes
       const node = svg
         .append('g')
-        .attr('stroke-width', 0)
         .selectAll('circle')
         .data(nodes)
         .join('circle')
@@ -146,6 +147,7 @@ const ForceDirectedGraph = ({
           const { wikilink } = d;
           const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
           const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
+          const title = d3.selectAll<HTMLElement, PostGraphNode>('.title');
 
           const connectedNodeWikilinks = [...d.backlinks, ...d.forwardLinks];
           const connectedLinks = link.filter(d => {
@@ -187,10 +189,20 @@ const ForceDirectedGraph = ({
             .transition()
             .duration(DURATION)
             .attr('fill', HIGHLIGHT_COLOR);
+
+          // show title
+          title
+            .filter(d => d.wikilink === wikilink)
+            .transition()
+            .duration(DURATION)
+            .style('visibility', 'visible')
+            .style('opacity', 1);
         })
         .on('mouseleave', function (_, d) {
+          const { wikilink } = d;
           const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
           const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
+          const title = d3.selectAll<HTMLElement, PostGraphNode>('.title');
 
           // recover all links and nodes
           link
@@ -205,6 +217,17 @@ const ForceDirectedGraph = ({
             .duration(DURATION)
             .style('opacity', 1)
             .attr('fill', COLOR);
+
+          // hide title
+          title
+            .filter(d => d.wikilink === wikilink)
+            .transition()
+            .duration(DURATION)
+            .style(
+              'visibility',
+              scaledOpacityRef.current > 0 ? 'visible' : 'hidden',
+            )
+            .style('opacity', scaledOpacityRef.current);
         })
         // @ts-ignore
         .call(drag(simulation));
@@ -216,6 +239,7 @@ const ForceDirectedGraph = ({
         .data(nodes)
         .enter()
         .append('text')
+        .attr('class', 'title')
         .attr('dx', 0)
         .attr('dy', r => calcNodeRadius(r) * 1.8)
         .attr('text-anchor', 'middle')
@@ -233,11 +257,6 @@ const ForceDirectedGraph = ({
         .call(drag(simulation));
 
       if (currentWikilink) {
-        title
-          .filter(d => d.wikilink === currentWikilink)
-          .style('opacity', 1)
-          .style('visibility', 'visible');
-
         node
           .filter(d => d.wikilink === currentWikilink)
           .attr('fill', HIGHLIGHT_COLOR);
@@ -255,13 +274,7 @@ const ForceDirectedGraph = ({
         node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
 
         // update title positions
-        title
-          .attr('x', (d: any) => {
-            return d.x;
-          })
-          .attr('y', (d: any) => {
-            return d.y;
-          });
+        title.attr('x', (d: any) => d.x).attr('y', (d: any) => d.y);
       });
     }
 
