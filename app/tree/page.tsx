@@ -25,6 +25,46 @@ const App: React.FC = () => {
         {
           id: 5,
           name: 'Node 1.2',
+          children: [
+            {
+              id: 7,
+              name: 'Node 1.2.1',
+            },
+            {
+              id: 8,
+              name: 'Node 1.2.2',
+              children: [
+                {
+                  id: 9,
+                  name: 'Node 1.2.2.1',
+                },
+                {
+                  id: 10,
+                  name: 'Node 1.2.2.2',
+                  children: [
+                    {
+                      id: 11,
+                      name: 'Node 1.2.2.2.1',
+                    },
+                    {
+                      id: 12,
+                      name: 'Node 1.2.2.2.2',
+                      children: [
+                        {
+                          id: 13,
+                          name: 'Node 1.2.2.2.2.1',
+                        },
+                        {
+                          id: 14,
+                          name: 'Node 1.2.2.2.2.2',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       ],
     },
