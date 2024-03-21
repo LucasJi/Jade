@@ -1,28 +1,32 @@
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
+import Slugger from 'github-slugger';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
 import { Post, PostGraph, PostGraphLink, Slug, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
 
+const slugs = new Slugger();
+
 const SEPARATOR = '/';
 // find markdown mark "#"
 const TITLE_REG = /^#\s+.+/;
+const MD_SUFFIX_REG = /\.md$/;
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
-export const getSlugs = () => {
+export const getSlugs = (): string[][] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
     getSlugFromAbsolutePath(absolutePath),
   );
 };
 
-const getSlugFromAbsolutePath = (absolutePath: string) => {
-  const relativePath = absolutePath.replace(POST_DIR, '');
+// someFolder/post.md -> someFolder/post -> ['someFolder', 'post']
+const getSlugFromAbsolutePath = (absolutePath: string): string[] => {
+  let relativePath = absolutePath.replace(POST_DIR, '');
+  relativePath = relativePath.replace(MD_SUFFIX_REG, '');
   const slug = relativePath.split(SEPARATOR);
-  // someFolder/post.md -> ['someFolder', 'post.md'] -> ['someFolder', 'post']
-  slug[slug.length - 1] = slug[slug.length - 1].replace(/\.md$/, '');
   return slug;
 };
 
@@ -46,7 +50,7 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
     } else if (file.endsWith('.md')) {
       postTree.push({
         id: join(...getSlugFromAbsolutePath(path)),
-        name: file,
+        name: file.replace(/\.md$/, ''),
       });
     }
   }

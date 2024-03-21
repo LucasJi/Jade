@@ -60,7 +60,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       </div>
     </li>
   ) : (
-    <li className="mt-2 max-w-[200px] truncate border-1 border-blue-950">
+    <li className="mt-2 w-fit max-w-[200px] truncate border-1 border-blue-950">
       <span className="text-sm font-normal">{node.name}</span>
     </li>
   );
