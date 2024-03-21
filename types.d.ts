@@ -22,16 +22,8 @@ export type PostGraph = {
   links: PostGraphLink[];
 };
 
-export type PostTreeNode = {
-  id: string;
-  name: string;
-  children?: PostTreeNode[];
-};
-
-export type PostTree = PostTreeNode[];
-
 export interface TreeNode {
-  id: number;
+  id: string;
   name: string;
   children?: TreeNode[];
 }

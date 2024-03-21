@@ -2,14 +2,7 @@ import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
-import {
-  Post,
-  PostGraph,
-  PostGraphLink,
-  PostTree,
-  PostTreeNode,
-  Slug,
-} from 'types';
+import { Post, PostGraph, PostGraphLink, Slug, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
 
 const SEPARATOR = '/';
@@ -37,13 +30,13 @@ export const getPostTree = () => {
   return _getPostTree(POST_DIR);
 };
 
-const _getPostTree = (dir: string, postTree: PostTree = []) => {
+const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
     const path = join(dir, file);
     if (fs.statSync(path).isDirectory()) {
-      const node: PostTreeNode = {
+      const node: TreeNode = {
         id: join(...getSlugFromAbsolutePath(path)),
         name: file,
         children: [],
