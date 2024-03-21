@@ -33,37 +33,37 @@ const TreeNodeComponent: React.FC<{ node: TreeNode }> = ({ node }) => {
     setIsExpanded(!isExpanded);
   };
 
-  return (
-    <li className="py-1">
-      {node.children ? (
-        <>
-          <div
-            onClick={toggleExpand}
-            className="flex items-center border-1 border-green-700"
-          >
-            {isExpanded ? <UnfoldIcon /> : <RightIcon />}
-            <span>{node.name}</span>
-          </div>
-          {isExpanded && (
-            <div className="border-1 border-orange-700">
-              <ul style={{ marginLeft: 20 }}>
-                {node.children.map(child => (
-                  <TreeNodeComponent key={child.id} node={child} />
-                ))}
-              </ul>
-            </div>
-          )}
-        </>
-      ) : (
-        <span className="border-1 border-blue-950">{node.name}</span>
+  return node.children ? (
+    <li className="mt-1 transition-all">
+      <button
+        onClick={toggleExpand}
+        className="flex items-center border-1 border-green-700"
+      >
+        {isExpanded ? <UnfoldIcon /> : <RightIcon />}
+        <span className="font-semibold max-w-[200px] text-base inline-block truncate">
+          {node.name}
+        </span>
+      </button>
+      {isExpanded && (
+        <div className="border-1 border-orange-700">
+          <ul className="ml-4">
+            {node.children.map(child => (
+              <TreeNodeComponent key={child.id} node={child} />
+            ))}
+          </ul>
+        </div>
       )}
+    </li>
+  ) : (
+    <li className="mt-2 max-w-[200px] truncate border-1 border-blue-950">
+      <span className="text-sm font-normal">{node.name}</span>
     </li>
   );
 };
 
 const Tree: React.FC<TreeProps> = ({ data }) => {
   return (
-    <ScrollShadow className="w-[400px] h-[300px] border-1 p-2 webkit-overflow-y-auto border-red-800 ">
+    <ScrollShadow className="w-[400px] h-[300px] border-1 px-2 border-red-800 ">
       <ul>
         {data.map(node => (
           <TreeNodeComponent key={node.id} node={node} />

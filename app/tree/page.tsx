@@ -52,7 +52,7 @@ const App: React.FC = () => {
                       children: [
                         {
                           id: 13,
-                          name: 'Node 1.2.2.2.2.1',
+                          name: 'Node 1.2.2.2.2.1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
                         },
                         {
                           id: 14,
