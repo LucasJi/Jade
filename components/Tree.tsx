@@ -36,28 +36,27 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 
   return node.children ? (
     <li className="mt-1">
-      <button
-        onClick={toggleExpand}
-        className="flex items-center border-1 border-green-700"
-      >
+      <button onClick={toggleExpand} className="flex items-center">
         <FoldIcon isExpanded={isExpanded} />
-        <span className="font-semibold max-w-[200px] text-base inline-block truncate">
+        <span className="min-h-0 font-semibold max-w-[200px] text-base inline-block truncate">
           {node.name}
         </span>
       </button>
       <div
         className={classNames(
-          'border-1 border-orange-700',
-          isExpanded ? 'h-[100px]' : 'h-0',
-          'transition-height',
+          isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+          'transition-all',
+          'grid',
+          'overflow-hidden',
         )}
       >
         <ul
           className={classNames(
+            'min-h-0',
             'ml-4',
-            'transition-opacity',
-            isExpanded ? 'opacity-100' : 'opacity-0',
-            isExpanded ? 'visible' : 'invisible',
+            'transition-all',
+            { 'opacity-100 visible': isExpanded },
+            { 'opacity-0 invisible': !isExpanded },
           )}
         >
           {node.children.map(child => (
@@ -67,15 +66,15 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       </div>
     </li>
   ) : (
-    <li className="mt-1 w-fit max-w-[200px] truncate border-1 border-blue-950">
-      <span className="text-sm font-normal">{node.name}</span>
+    <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
+      <span className="min-h-0 text-sm font-normal">{node.name}</span>
     </li>
   );
 };
 
 const Tree: React.FC<TreeProps> = ({ data }) => {
   return (
-    <ScrollShadow className="w-[400px] h-[300px] border-1 px-2 border-red-800 ">
+    <ScrollShadow className="w-[400px] h-[300px] px-2">
       <ul>
         {data.map(node => (
           <TreeNodeComponent key={node.id} node={node} />
