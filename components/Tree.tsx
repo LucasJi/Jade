@@ -8,7 +8,7 @@ const DEFAULT_ICON_SIZE = 16;
 
 const Icon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
   <svg
-    className={classNames('duration-75 ease-in-out', {
+    className={classNames('duration-250 ease-linear', {
       'rotate-90': isExpanded,
     })}
     xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,14 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
           'transition-all',
         )}
       >
-        <ul className="ml-4">
+        <ul
+          className={classNames(
+            'ml-4',
+            'transition-all',
+            isExpanded ? 'opacity-100' : 'opacity-0',
+            isExpanded ? 'visible' : 'invisible',
+          )}
+        >
           {node.children.map(child => (
             <TreeNodeComponent key={child.id} node={child} />
           ))}
