@@ -1,11 +1,7 @@
 import * as d3 from 'd3';
 
-export type Slug = string[];
-
 export interface Post {
   wikilink: string;
-  slug: Slug;
-  slugIdx?: number;
   content: string;
   title: string;
   forwardLinks: string[];

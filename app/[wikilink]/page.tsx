@@ -1,14 +1,13 @@
 import Markdown from '@components/Markdown';
-import { Slug } from '@types';
 
 export default async function Page({
-  params: { slug },
+  params: { wikilink },
 }: {
-  params: { slug: Slug };
+  params: { wikilink: string };
 }) {
   const postResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
     method: 'POST',
-    body: JSON.stringify({ slug }),
+    body: JSON.stringify({ wikilink }),
   });
 
   const post = await postResp.json();

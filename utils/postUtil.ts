@@ -1,12 +1,9 @@
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
-import Slugger from 'github-slugger';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
-import { Post, PostGraph, PostGraphLink, Slug, TreeNode } from 'types';
+import { Post, PostGraph, PostGraphLink, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
-
-const slugs = new Slugger();
 
 const SEPARATOR = '/';
 // find markdown mark "#"
@@ -15,19 +12,24 @@ const MD_SUFFIX_REG = /\.md$/;
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
-export const getSlugs = (): string[][] => {
+export function encode(value: string) {
+  return Buffer.from(value, 'utf-8').toString('base64');
+}
+
+export function decode(value: string) {
+  return Buffer.from(value, 'base64').toString('utf-8');
+}
+
+export const getWikilinks = (): string[] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
-    getSlugFromAbsolutePath(absolutePath),
+    getWikilinkFromAbsolutePath(absolutePath),
   );
 };
 
-// someFolder/post.md -> someFolder/post -> ['someFolder', 'post']
-const getSlugFromAbsolutePath = (absolutePath: string): string[] => {
-  let relativePath = absolutePath.replace(POST_DIR, '');
-  relativePath = relativePath.replace(MD_SUFFIX_REG, '');
-  const slug = relativePath.split(SEPARATOR);
-  return slug;
+const getWikilinkFromAbsolutePath = (absolutePath: string): string => {
+  const relativePath = absolutePath.replace(POST_DIR, '');
+  return encode(relativePath);
 };
 
 export const getPostTree = () => {
@@ -41,7 +43,7 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
     const path = join(dir, file);
     if (fs.statSync(path).isDirectory()) {
       const node: TreeNode = {
-        id: join(...getSlugFromAbsolutePath(path)),
+        id: getWikilinkFromAbsolutePath(path),
         name: file,
         children: [],
       };
@@ -49,7 +51,7 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
       postTree.push(node);
     } else if (file.endsWith('.md')) {
       postTree.push({
-        id: join(...getSlugFromAbsolutePath(path)),
+        id: getWikilinkFromAbsolutePath(path),
         name: file.replace(/\.md$/, ''),
       });
     }
@@ -76,16 +78,6 @@ const getMarkdownAbsolutePaths = (
   return absolutePaths;
 };
 
-const getFullPathFromSlug = (slug: Slug) => {
-  const slugClone = [...slug];
-  slugClone[slugClone.length - 1] = slugClone[slugClone.length - 1] + '.md';
-  return join(POST_DIR, ...slugClone);
-};
-
-export const convertSlugToWikilink = (slug: Slug) => {
-  return join(...slug);
-};
-
 const getTitle = (content: string) => {
   const tokens = content.split('\n');
   let title = tokens.find(token => TITLE_REG.test(token)) || '';
@@ -95,27 +87,18 @@ const getTitle = (content: string) => {
 };
 
 export const getPostByWikilink = (wikilink: string) => {
-  return getPostBySlug(convertWikilinkToSlug(wikilink));
-};
-
-export const getPostBySlug = (slug: string[]) => {
-  if (slug === undefined || slug.length === 0) {
-    return null;
-  }
-
-  const fullPath = getFullPathFromSlug(slug);
+  const relativePath = decode(wikilink);
+  const fullPath = POST_DIR + SEPARATOR + relativePath;
   try {
     const content = fs.readFileSync(fullPath, 'utf8');
     const title = getTitle(content);
-    const wikilink = join(...slug);
     const post: Post = {
       wikilink,
-      slug,
       content,
       title,
       forwardLinks: [],
       backlinks: [],
-      href: `posts/${wikilink}`,
+      href: `${relativePath}`,
     };
     return post;
   } catch (e) {
@@ -125,22 +108,19 @@ export const getPostBySlug = (slug: string[]) => {
 
 export const getPosts = (): Post[] => {
   const posts: Array<Post> = [];
-  const slugs = getSlugs();
+  const wikilinks = getWikilinks();
+  console.log(wikilinks);
   const relativeFolderSet = new Set<string>();
-  for (const slug of slugs) {
-    relativeFolderSet.add(getRelativeParentFolderFromSlug(slug));
+  for (const Wikilink of wikilinks) {
+    relativeFolderSet.add(getRelativeParentFolderFromWikilink(Wikilink));
   }
-  const relativeFolders = [...relativeFolderSet.values()];
 
-  for (const slug of slugs) {
-    const post = getPostBySlug(slug);
+  for (const Wikilink of wikilinks) {
+    const post = getPostByWikilink(Wikilink);
     if (!post) {
       continue;
     }
 
-    post.slugIdx = relativeFolders.findIndex(
-      rf => rf === getRelativeParentFolderFromSlug(slug),
-    );
     posts.push(post);
   }
 
@@ -225,13 +205,8 @@ const resolveWikilinks = (posts: Post[]) => {
   }
 };
 
-export const convertWikilinkToSlug = (wikilink: string): Slug => {
-  let postRelativePath = wikilink;
-  if (wikilink.startsWith(SEPARATOR)) {
-    postRelativePath = wikilink.replace(SEPARATOR, '');
-  }
-  return postRelativePath.split(SEPARATOR);
-};
-
-const getRelativeParentFolderFromSlug = (slug: Slug): string =>
-  slug.slice(0, slug.length - 1).join(SEPARATOR);
+const getRelativeParentFolderFromWikilink = (wikilink: string): string =>
+  decode(wikilink)
+    .split(SEPARATOR)
+    .slice(0, decode(wikilink).split(SEPARATOR).length - 1)
+    .join(SEPARATOR);

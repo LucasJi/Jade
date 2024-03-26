@@ -1,17 +1,15 @@
 import ForceDirectedGraph from '@components/ForceDirectedGraph';
-import { PostGraph, Slug } from '@types';
-import { convertSlugToWikilink, getSlugs } from '@utils/postUtil';
+import { PostGraph } from '@types';
+import { getWikilinks } from '@utils/postUtil';
 import { ReactNode } from 'react';
 
 export default async function Layout({
-  params: { slug },
+  params: { wikilink },
   children,
 }: {
-  params: { slug: Slug };
+  params: { wikilink: string };
   children: ReactNode;
 }) {
-  const wikilink = convertSlugToWikilink(slug);
-
   const treeResp = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`,
     {
@@ -42,5 +40,5 @@ export default async function Layout({
 }
 
 export async function generateStaticParams() {
-  return getSlugs();
+  return getWikilinks();
 }
