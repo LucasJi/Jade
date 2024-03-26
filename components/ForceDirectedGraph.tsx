@@ -241,7 +241,7 @@ const ForceDirectedGraph = ({
         .append('text')
         .attr('class', 'title')
         .attr('dx', 0)
-        .attr('dy', r => calcNodeRadius(r) * 1.8)
+        .attr('dy', r => calcNodeRadius(r) * -1.8)
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'central')
         .style('font-size', '10px')
