@@ -86,7 +86,7 @@ const ForceDirectedGraph = ({
           'link',
           d3
             .forceLink<PostGraphNode, PostGraphLink>(links)
-            .id(d => d.wikilink)
+            .id(d => atob(d.wikilink))
             .strength(0.1)
             .distance(LINK_DISTANCE),
         )
@@ -141,8 +141,7 @@ const ForceDirectedGraph = ({
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
-          console.log(d);
-          router.push('/' + atob(d.wikilink));
+          router.push('/' + d.wikilink);
         })
         .on('mouseover', function (_, d) {
           const { wikilink } = d;
@@ -172,7 +171,7 @@ const ForceDirectedGraph = ({
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
           node
-            .filter(d => !connectedNodeWikilinks.includes(d.wikilink))
+            .filter(d => !connectedNodeWikilinks.includes(d.relativePath))
             .filter(d => d.wikilink !== wikilink)
             .transition()
             .duration(DURATION)
@@ -213,7 +212,11 @@ const ForceDirectedGraph = ({
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
           node
-            .filter(d => !(d.wikilink === wikilink))
+            .filter(d =>
+              currentWikilink
+                ? !(d.wikilink === currentWikilink)
+                : !(d.wikilink === wikilink),
+            )
             .transition()
             .duration(DURATION)
             .style('opacity', 1)
@@ -252,7 +255,7 @@ const ForceDirectedGraph = ({
         .style('cursor', 'pointer')
         .text(d => d.title)
         .on('click', (_, d) => {
-          router.push('/' + atob(d.wikilink));
+          router.push('/' + d.wikilink);
         })
         // @ts-ignore
         .call(drag(simulation));

@@ -2,11 +2,11 @@ import * as d3 from 'd3';
 
 export interface Post {
   wikilink: string;
+  relativePath: string;
   content: string;
   title: string;
   forwardLinks: string[];
   backlinks: string[];
-  href: string;
 }
 
 export type PostGraphNode = d3.SimulationNodeDatum & Post;

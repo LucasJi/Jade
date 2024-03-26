@@ -7,7 +7,7 @@ export default async function Page({
 }) {
   const postResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
     method: 'POST',
-    body: JSON.stringify({ wikilink }),
+    body: JSON.stringify({ wikilink: decodeURIComponent(wikilink) }),
   });
 
   const post = await postResp.json();

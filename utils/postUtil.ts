@@ -12,14 +12,6 @@ const MD_SUFFIX_REG = /\.md$/;
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
-export function encode(value: string) {
-  return Buffer.from(value, 'utf-8').toString('base64');
-}
-
-export function decode(value: string) {
-  return Buffer.from(value, 'base64').toString('utf-8');
-}
-
 export const getWikilinks = (): string[] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
@@ -28,8 +20,10 @@ export const getWikilinks = (): string[] => {
 };
 
 const getWikilinkFromAbsolutePath = (absolutePath: string): string => {
-  const relativePath = absolutePath.replace(POST_DIR, '');
-  return encode(relativePath);
+  const relativePath = absolutePath
+    .replace(POST_DIR, '')
+    .replace(MD_SUFFIX_REG, '');
+  return btoa(relativePath);
 };
 
 export const getPostTree = () => {
@@ -87,18 +81,18 @@ const getTitle = (content: string) => {
 };
 
 export const getPostByWikilink = (wikilink: string) => {
-  const relativePath = decode(wikilink);
-  const fullPath = POST_DIR + SEPARATOR + relativePath;
+  const relativePath = atob(wikilink);
+  const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
     const content = fs.readFileSync(fullPath, 'utf8');
     const title = getTitle(content);
     const post: Post = {
       wikilink,
+      relativePath,
       content,
       title,
       forwardLinks: [],
       backlinks: [],
-      href: `${relativePath}`,
     };
     return post;
   } catch (e) {
@@ -109,14 +103,9 @@ export const getPostByWikilink = (wikilink: string) => {
 export const getPosts = (): Post[] => {
   const posts: Array<Post> = [];
   const wikilinks = getWikilinks();
-  console.log(wikilinks);
-  const relativeFolderSet = new Set<string>();
-  for (const Wikilink of wikilinks) {
-    relativeFolderSet.add(getRelativeParentFolderFromWikilink(Wikilink));
-  }
 
-  for (const Wikilink of wikilinks) {
-    const post = getPostByWikilink(Wikilink);
+  for (const wikilink of wikilinks) {
+    const post = getPostByWikilink(wikilink);
     if (!post) {
       continue;
     }
@@ -136,24 +125,24 @@ export const getPostGraph = (): PostGraph => {
 
 export const generatePostGraphFromPosts = (posts: Post[]) => {
   const postGraphLinks: PostGraphLink[] = [];
-  const wikilinks = posts.map(p => p.wikilink);
+  const wikilinks = posts.map(p => p.relativePath);
 
   for (const post of posts) {
-    const { forwardLinks, backlinks, wikilink } = post;
+    const { forwardLinks, backlinks, relativePath } = post;
     for (const fl of forwardLinks) {
-      if (wikilinks.includes(fl)) {
+      if (wikilinks.findIndex(l => l.includes(fl)) !== -1) {
         postGraphLinks.push({
-          source: wikilink,
+          source: relativePath,
           target: fl,
         });
       }
     }
 
     for (const bl of backlinks) {
-      if (wikilinks.includes(bl)) {
+      if (wikilinks.findIndex(l => l.includes(bl)) !== -1) {
         postGraphLinks.push({
           source: bl,
-          target: wikilink,
+          target: relativePath,
         });
       }
     }
@@ -167,14 +156,14 @@ export const getAdjacencyPosts = (post: Post) => {
   return posts.filter(
     e =>
       e.wikilink === post.wikilink ||
-      e.backlinks.includes(post.wikilink) ||
-      e.forwardLinks.includes(post.wikilink),
+      e.backlinks.includes(post.relativePath) ||
+      e.forwardLinks.includes(post.relativePath),
   );
 };
 
 const resolveWikilinks = (posts: Post[]) => {
   const findPostByWikilink = (wikilink: string): Post | undefined => {
-    return posts.find(p => p.wikilink === wikilink);
+    return posts.find(p => p.relativePath.includes(wikilink));
   };
 
   for (const post of posts) {
@@ -197,16 +186,10 @@ const resolveWikilinks = (posts: Post[]) => {
         const fp = findPostByWikilink(fl);
         if (fp) {
           const bls = new Set(fp.backlinks);
-          bls.add(post.wikilink);
+          bls.add(post.relativePath);
           fp.backlinks = Array.from(bls);
         }
       }
     }
   }
 };
-
-const getRelativeParentFolderFromWikilink = (wikilink: string): string =>
-  decode(wikilink)
-    .split(SEPARATOR)
-    .slice(0, decode(wikilink).split(SEPARATOR).length - 1)
-    .join(SEPARATOR);

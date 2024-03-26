@@ -10,20 +10,15 @@ export default async function Layout({
   params: { wikilink: string };
   children: ReactNode;
 }) {
-  const treeResp = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`,
-    {
-      method: 'GET',
-    },
-  );
-  const tree = await treeResp.json();
+  const decodedWikilink = decodeURIComponent(wikilink);
 
   const postGraphResp = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/graph?${new URLSearchParams({
-      wikilink,
+      wikilink: decodedWikilink,
     })}`,
     {
       method: 'GET',
+      cache: 'no-cache',
     },
   );
   const postGraph: PostGraph = await postGraphResp.json();
@@ -33,7 +28,10 @@ export default async function Layout({
       <div className="w-1/5 border">File Explorer(WIP)</div>
       <div className="w-3/5 p-4 flex-1 overflow-y-auto">{children}</div>
       <div className="w-1/5 p-4">
-        <ForceDirectedGraph postGraph={postGraph} currentWikilink={wikilink} />
+        <ForceDirectedGraph
+          postGraph={postGraph}
+          currentWikilink={decodedWikilink}
+        />
       </div>
     </div>
   );
