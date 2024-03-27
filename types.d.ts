@@ -1,11 +1,15 @@
 import * as d3 from 'd3';
 
 export interface Post {
+  // btoa(wikilink)
+  id: string;
+  // atob(id)
   wikilink: string;
-  relativePath: string;
   content: string;
   title: string;
+  // ids
   forwardLinks: string[];
+  // ids
   backlinks: string[];
 }
 

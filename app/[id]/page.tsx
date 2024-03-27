@@ -1,14 +1,18 @@
 import Markdown from '@components/Markdown';
 
 export default async function Page({
-  params: { wikilink },
+  params: { id },
 }: {
-  params: { wikilink: string };
+  params: { id: string };
 }) {
-  const postResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
-    method: 'POST',
-    body: JSON.stringify({ wikilink: decodeURIComponent(wikilink) }),
-  });
+  const decodedId = decodeURIComponent(id);
+
+  const postResp = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}`,
+    {
+      method: 'GET',
+    },
+  );
 
   const post = await postResp.json();
 

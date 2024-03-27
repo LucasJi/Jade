@@ -12,14 +12,12 @@ const MD_SUFFIX_REG = /\.md$/;
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
-export const getWikilinks = (): string[] => {
+export const getIds = (): string[] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
-  return absolutePaths.map(absolutePath =>
-    getWikilinkFromAbsolutePath(absolutePath),
-  );
+  return absolutePaths.map(absolutePath => getIdFromAbsolutePath(absolutePath));
 };
 
-const getWikilinkFromAbsolutePath = (absolutePath: string): string => {
+const getIdFromAbsolutePath = (absolutePath: string): string => {
   const relativePath = absolutePath
     .replace(POST_DIR, '')
     .replace(MD_SUFFIX_REG, '');
@@ -37,7 +35,7 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
     const path = join(dir, file);
     if (fs.statSync(path).isDirectory()) {
       const node: TreeNode = {
-        id: getWikilinkFromAbsolutePath(path),
+        id: getIdFromAbsolutePath(path),
         name: file,
         children: [],
       };
@@ -45,7 +43,7 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
       postTree.push(node);
     } else if (file.endsWith('.md')) {
       postTree.push({
-        id: getWikilinkFromAbsolutePath(path),
+        id: getIdFromAbsolutePath(path),
         name: file.replace(/\.md$/, ''),
       });
     }
@@ -80,15 +78,15 @@ const getTitle = (content: string) => {
   return title;
 };
 
-export const getPostByWikilink = (wikilink: string) => {
-  const relativePath = atob(wikilink);
+export const getPostById = (id: string) => {
+  const relativePath = atob(id);
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
     const content = fs.readFileSync(fullPath, 'utf8');
     const title = getTitle(content);
     const post: Post = {
-      wikilink,
-      relativePath,
+      id,
+      wikilink: relativePath,
       content,
       title,
       forwardLinks: [],
@@ -102,10 +100,10 @@ export const getPostByWikilink = (wikilink: string) => {
 
 export const getPosts = (): Post[] => {
   const posts: Array<Post> = [];
-  const wikilinks = getWikilinks();
+  const ids = getIds();
 
-  for (const wikilink of wikilinks) {
-    const post = getPostByWikilink(wikilink);
+  for (const id of ids) {
+    const post = getPostById(id);
     if (!post) {
       continue;
     }
@@ -125,24 +123,24 @@ export const getPostGraph = (): PostGraph => {
 
 export const generatePostGraphFromPosts = (posts: Post[]) => {
   const postGraphLinks: PostGraphLink[] = [];
-  const wikilinks = posts.map(p => p.relativePath);
+  const ids = posts.map(p => p.id);
 
   for (const post of posts) {
-    const { forwardLinks, backlinks, relativePath } = post;
+    const { forwardLinks, backlinks, id } = post;
     for (const fl of forwardLinks) {
-      if (wikilinks.findIndex(l => l.includes(fl)) !== -1) {
+      if (ids.includes(id)) {
         postGraphLinks.push({
-          source: relativePath,
+          source: id,
           target: fl,
         });
       }
     }
 
     for (const bl of backlinks) {
-      if (wikilinks.findIndex(l => l.includes(bl)) !== -1) {
+      if (ids.includes(id)) {
         postGraphLinks.push({
           source: bl,
-          target: relativePath,
+          target: id,
         });
       }
     }
@@ -156,14 +154,14 @@ export const getAdjacencyPosts = (post: Post) => {
   return posts.filter(
     e =>
       e.wikilink === post.wikilink ||
-      e.backlinks.includes(post.relativePath) ||
-      e.forwardLinks.includes(post.relativePath),
+      e.backlinks.includes(post.wikilink) ||
+      e.forwardLinks.includes(post.wikilink),
   );
 };
 
 const resolveWikilinks = (posts: Post[]) => {
-  const findPostByWikilink = (wikilink: string): Post | undefined => {
-    return posts.find(p => p.relativePath.includes(wikilink));
+  const findPostById = (id: string): Post | undefined => {
+    return posts.find(p => p.id === id);
   };
 
   for (const post of posts) {
@@ -177,16 +175,19 @@ const resolveWikilinks = (posts: Post[]) => {
 
       visit(tree, 'wikilink', node => {
         const { value } = node;
-        forwardLinks.add(value);
+        const post = posts.find(post => post.wikilink.includes(value));
+        if (post) {
+          forwardLinks.add(post.id);
+        }
       });
 
       post.forwardLinks = Array.from(forwardLinks);
 
       for (const fl of forwardLinks) {
-        const fp = findPostByWikilink(fl);
+        const fp = findPostById(fl);
         if (fp) {
           const bls = new Set(fp.backlinks);
-          bls.add(post.relativePath);
+          bls.add(post.id);
           fp.backlinks = Array.from(bls);
         }
       }

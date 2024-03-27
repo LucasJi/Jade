@@ -11,6 +11,8 @@ export default async function Home() {
   );
   const postGraph: PostGraph = await postGraphResp.json();
 
+  console.log(postGraph);
+
   return (
     <div className="flex w-full justify-center">
       <ForceDirectedGraph postGraph={postGraph} />

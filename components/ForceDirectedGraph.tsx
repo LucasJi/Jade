@@ -33,12 +33,12 @@ const ForceDirectedGraph = ({
   postGraph,
   size = 300,
   className,
-  currentWikilink = '',
+  currentId = '',
 }: {
   postGraph: PostGraph;
   size?: number;
   className?: string;
-  currentWikilink?: string;
+  currentId?: string;
 }) => {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,7 +86,7 @@ const ForceDirectedGraph = ({
           'link',
           d3
             .forceLink<PostGraphNode, PostGraphLink>(links)
-            .id(d => atob(d.wikilink))
+            .id(d => d.id)
             .strength(0.1)
             .distance(LINK_DISTANCE),
         )
@@ -114,7 +114,7 @@ const ForceDirectedGraph = ({
               scaledOpacityRef.current = scaledOpacity;
               title
                 .attr('transform', transform)
-                .filter(d => d.wikilink !== currentWikilink)
+                .filter(d => d.id !== currentId)
                 .style('opacity', scaledOpacity)
                 .style('visibility', scaledOpacity > 0 ? 'visible' : 'hidden');
             }),
@@ -141,19 +141,19 @@ const ForceDirectedGraph = ({
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
-          router.push('/' + d.wikilink);
+          router.push('/' + d.id);
         })
         .on('mouseover', function (_, d) {
-          const { wikilink } = d;
+          const { id } = d;
           const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
           const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
           const title = d3.selectAll<HTMLElement, PostGraphNode>('.title');
 
-          const connectedNodeWikilinks = [...d.backlinks, ...d.forwardLinks];
+          const connectedNodeIds = [...d.backlinks, ...d.forwardLinks];
           const connectedLinks = link.filter(d => {
             const source = d.source as PostGraphNode;
             const target = d.target as PostGraphNode;
-            return wikilink === source.wikilink || wikilink === target.wikilink;
+            return id === source.id || id === target.id;
           });
 
           // fade out not connected links and nodes
@@ -161,9 +161,7 @@ const ForceDirectedGraph = ({
             .filter(d => {
               const source = d.source as PostGraphNode;
               const target = d.target as PostGraphNode;
-              return !(
-                wikilink === source.wikilink || wikilink === target.wikilink
-              );
+              return !(id === source.id || id === target.id);
             })
             .transition()
             .duration(DURATION)
@@ -171,8 +169,8 @@ const ForceDirectedGraph = ({
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
           node
-            .filter(d => !connectedNodeWikilinks.includes(d.relativePath))
-            .filter(d => d.wikilink !== wikilink)
+            .filter(d => !connectedNodeIds.includes(d.id))
+            .filter(d => d.id !== id)
             .transition()
             .duration(DURATION)
             .style('opacity', 0.2);
@@ -192,14 +190,14 @@ const ForceDirectedGraph = ({
 
           // show title
           title
-            .filter(d => d.wikilink === wikilink)
+            .filter(d => d.id === id)
             .transition()
             .duration(DURATION)
             .style('visibility', 'visible')
             .style('opacity', 1);
         })
         .on('mouseleave', function (_, d) {
-          const { wikilink } = d;
+          const { id } = d;
           const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
           const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
           const title = d3.selectAll<HTMLElement, PostGraphNode>('.title');
@@ -211,12 +209,12 @@ const ForceDirectedGraph = ({
             .style('opacity', 1)
             .attr('stroke', COLOR)
             .attr('stroke-width', LINE_WIDTH);
-          node
-            .filter(d =>
-              currentWikilink
-                ? !(d.wikilink === currentWikilink)
-                : !(d.wikilink === wikilink),
-            )
+
+          let toBeRecoveredNode = node;
+          if (currentId) {
+            toBeRecoveredNode = node.filter(d => d.id !== currentId);
+          }
+          toBeRecoveredNode
             .transition()
             .duration(DURATION)
             .style('opacity', 1)
@@ -224,7 +222,7 @@ const ForceDirectedGraph = ({
 
           // hide title
           title
-            .filter(d => d.wikilink === wikilink)
+            .filter(d => d.id === id)
             .transition()
             .duration(DURATION)
             .style(
@@ -255,15 +253,13 @@ const ForceDirectedGraph = ({
         .style('cursor', 'pointer')
         .text(d => d.title)
         .on('click', (_, d) => {
-          router.push('/' + d.wikilink);
+          router.push('/' + d.id);
         })
         // @ts-ignore
         .call(drag(simulation));
 
-      if (currentWikilink) {
-        node
-          .filter(d => d.wikilink === currentWikilink)
-          .attr('fill', HIGHLIGHT_COLOR);
+      if (currentId) {
+        node.filter(d => d.id === currentId).attr('fill', HIGHLIGHT_COLOR);
       }
 
       simulation.on('tick', () => {
