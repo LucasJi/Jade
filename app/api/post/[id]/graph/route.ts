@@ -6,7 +6,7 @@ import {
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  request: NextRequest,
+  req: NextRequest,
   { params: { id } }: { params: { id: string } },
 ) {
   const post = getPostById(id);

@@ -114,7 +114,6 @@ const ForceDirectedGraph = ({
               scaledOpacityRef.current = scaledOpacity;
               title
                 .attr('transform', transform)
-                .filter(d => d.id !== currentId)
                 .style('opacity', scaledOpacity)
                 .style('visibility', scaledOpacity > 0 ? 'visible' : 'hidden');
             }),
@@ -141,7 +140,7 @@ const ForceDirectedGraph = ({
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
-          router.push('/' + d.id);
+          router.push('/post/' + d.id);
         })
         .on('mouseover', function (_, d) {
           const { id } = d;
@@ -253,7 +252,7 @@ const ForceDirectedGraph = ({
         .style('cursor', 'pointer')
         .text(d => d.title)
         .on('click', (_, d) => {
-          router.push('/' + d.id);
+          router.push('/post/' + d.id);
         })
         // @ts-ignore
         .call(drag(simulation));

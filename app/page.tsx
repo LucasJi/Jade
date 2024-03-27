@@ -6,7 +6,6 @@ export default async function Home() {
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/graph`,
     {
       method: 'GET',
-      cache: 'no-cache',
     },
   );
   const postGraph: PostGraph = await postGraphResp.json();

@@ -22,7 +22,7 @@ export default function Wikilink({
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post`, {
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post/wikilink`, {
       method: 'POST',
       body: JSON.stringify({ wikilink }),
     }).then(resp => resp.json().then(value => setPost(value)));

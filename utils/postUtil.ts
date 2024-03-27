@@ -12,15 +12,26 @@ const MD_SUFFIX_REG = /\.md$/;
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
+export const getWikilinks = (): string[] => {
+  console.log('getWikilinks');
+
+  const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
+  return absolutePaths.map(absolutePath =>
+    getRelativePathFromAbsolutePath(absolutePath),
+  );
+};
+
 export const getIds = (): string[] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath => getIdFromAbsolutePath(absolutePath));
 };
 
+const getRelativePathFromAbsolutePath = (absolutePath: string): string => {
+  return absolutePath.replace(POST_DIR, '').replace(MD_SUFFIX_REG, '');
+};
+
 const getIdFromAbsolutePath = (absolutePath: string): string => {
-  const relativePath = absolutePath
-    .replace(POST_DIR, '')
-    .replace(MD_SUFFIX_REG, '');
+  const relativePath = getRelativePathFromAbsolutePath(absolutePath);
   return btoa(relativePath);
 };
 
@@ -79,6 +90,7 @@ const getTitle = (content: string) => {
 };
 
 export const getPostById = (id: string) => {
+  console.log('getPostById');
   const relativePath = atob(id);
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
@@ -153,9 +165,9 @@ export const getAdjacencyPosts = (post: Post) => {
   const posts = getPosts();
   return posts.filter(
     e =>
-      e.wikilink === post.wikilink ||
-      e.backlinks.includes(post.wikilink) ||
-      e.forwardLinks.includes(post.wikilink),
+      e.id === post.id ||
+      e.backlinks.includes(post.id) ||
+      e.forwardLinks.includes(post.id),
   );
 };
 
