@@ -13,7 +13,7 @@ const MD_SUFFIX_REG = /\.md$/;
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
 export const getWikilinks = (): string[] => {
-  console.log('getWikilinks');
+  console.log('getWikilinks called');
 
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
@@ -36,6 +36,7 @@ const getIdFromAbsolutePath = (absolutePath: string): string => {
 };
 
 export const getPostTree = () => {
+  console.log('getPostTree called');
   return _getPostTree(POST_DIR);
 };
 
@@ -90,7 +91,7 @@ const getTitle = (content: string) => {
 };
 
 export const getPostById = (id: string) => {
-  console.log('getPostById');
+  console.log('getPostById called', id);
   const relativePath = atob(id);
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
@@ -111,6 +112,7 @@ export const getPostById = (id: string) => {
 };
 
 export const getPosts = (): Post[] => {
+  console.log('getPosts called');
   const posts: Array<Post> = [];
   const ids = getIds();
 
@@ -129,11 +131,13 @@ export const getPosts = (): Post[] => {
 };
 
 export const getPostGraph = (): PostGraph => {
+  console.log('getPostGraph called');
   const posts = getPosts();
   return generatePostGraphFromPosts(posts);
 };
 
 export const generatePostGraphFromPosts = (posts: Post[]) => {
+  console.log('generatePostGraphFromPosts called');
   const postGraphLinks: Set<string> = new Set();
   const ids = posts.map(p => p.id);
 
@@ -169,6 +173,7 @@ export const generatePostGraphFromPosts = (posts: Post[]) => {
 };
 
 export const getAdjacencyPosts = (post: Post) => {
+  console.log('getAdjacencyPosts called');
   const posts = getPosts();
   return posts.filter(
     p =>

@@ -13,29 +13,19 @@ export default async function Layout({
 }) {
   const decodedId = decodeURIComponent(id);
 
-  const postGraphResp = await fetch(
+  const postGraph: PostGraph = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}/graph`,
     {
       method: 'GET',
-      cache: 'no-cache',
     },
-  );
-  const postGraph: PostGraph = await postGraphResp.json();
+  ).then(resp => resp.json());
 
-  console.log(
-    postGraph.nodes.length,
-    postGraph.links.length,
-    postGraph.links,
-    decodedId,
-  );
-
-  const postTreeResp = await fetch(
+  const postTree = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`,
     {
       method: 'GET',
     },
-  );
-  const postTree = await postTreeResp.json();
+  ).then(resp => resp.json());
 
   return (
     <div className="flex w-full h-full relative">

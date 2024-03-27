@@ -1,10 +1,9 @@
 import { getPostById, getWikilinks } from '@utils/postUtil';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
-  const { wikilink } = await req.json();
+export async function GET(req: NextRequest) {
+  const wikilink: string = req.nextUrl.searchParams.get('wikilink') || '';
   const wikilinks: string[] = getWikilinks();
-
   const completeWikilink = wikilinks.find(
     l => l === wikilink || l.includes(wikilink),
   );

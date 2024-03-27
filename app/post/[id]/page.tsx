@@ -7,14 +7,12 @@ export default async function Page({
 }) {
   const decodedId = decodeURIComponent(id);
 
-  const postResp = await fetch(
+  const post = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}`,
     {
       method: 'GET',
     },
-  );
-
-  const post = await postResp.json();
+  ).then(resp => resp.json());
 
   const { content } = post;
 

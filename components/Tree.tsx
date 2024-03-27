@@ -68,12 +68,6 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     </li>
   ) : (
     <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
-      {/* <span
-        className="min-h-0 text-sm font-normal"
-        onClick={() => console.log(node)}
-      >
-        {node.name}
-      </span> */}
       <Link href={`/post/${node.id}`} className="min-h-0 text-sm font-normal">
         {node.name}
       </Link>

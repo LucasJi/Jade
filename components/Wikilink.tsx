@@ -22,11 +22,19 @@ export default function Wikilink({
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post/wikilink`, {
-      method: 'POST',
-      body: JSON.stringify({ wikilink }),
-    }).then(resp => resp.json().then(value => setPost(value)));
-  }, [wikilink]);
+    if (open) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/post?${new URLSearchParams({
+          wikilink,
+        })}`,
+        {
+          method: 'GET',
+        },
+      )
+        .then(resp => resp.json())
+        .then(value => setPost(value));
+    }
+  }, [open]);
 
   return (
     <Popover isOpen={open} onOpenChange={setOpen} placement="right-end">
