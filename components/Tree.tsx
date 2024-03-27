@@ -74,13 +74,16 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 
 const Tree: React.FC<TreeProps> = ({ data }) => {
   return (
-    <ScrollShadow className="w-[400px] h-[300px] px-2">
-      <ul>
-        {data.map(node => (
-          <TreeNodeComponent key={node.id} node={node} />
-        ))}
-      </ul>
-    </ScrollShadow>
+    <div className="px-2">
+      <span>目录</span>
+      <ScrollShadow className="w-full h-full">
+        <ul>
+          {data.map(node => (
+            <TreeNodeComponent key={node.id} node={node} />
+          ))}
+        </ul>
+      </ScrollShadow>
+    </div>
   );
 };
 
