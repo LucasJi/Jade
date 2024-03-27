@@ -2,7 +2,7 @@ import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
-import { Post, PostGraph, PostGraphLink, TreeNode } from 'types';
+import { Post, PostGraph, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
 
 const SEPARATOR = '/';
@@ -134,40 +134,47 @@ export const getPostGraph = (): PostGraph => {
 };
 
 export const generatePostGraphFromPosts = (posts: Post[]) => {
-  const postGraphLinks: PostGraphLink[] = [];
+  const postGraphLinks: Set<string> = new Set();
   const ids = posts.map(p => p.id);
 
   for (const post of posts) {
     const { forwardLinks, backlinks, id } = post;
     for (const fl of forwardLinks) {
-      if (ids.includes(id)) {
-        postGraphLinks.push({
-          source: id,
-          target: fl,
-        });
+      if (ids.includes(fl)) {
+        postGraphLinks.add(
+          JSON.stringify({
+            source: id,
+            target: fl,
+          }),
+        );
       }
     }
 
     for (const bl of backlinks) {
-      if (ids.includes(id)) {
-        postGraphLinks.push({
-          source: bl,
-          target: id,
-        });
+      if (ids.includes(bl)) {
+        postGraphLinks.add(
+          JSON.stringify({
+            source: bl,
+            target: id,
+          }),
+        );
       }
     }
   }
 
-  return { nodes: posts, links: postGraphLinks };
+  return {
+    nodes: posts,
+    links: Array.from(postGraphLinks).map(str => JSON.parse(str)),
+  };
 };
 
 export const getAdjacencyPosts = (post: Post) => {
   const posts = getPosts();
   return posts.filter(
-    e =>
-      e.id === post.id ||
-      e.backlinks.includes(post.id) ||
-      e.forwardLinks.includes(post.id),
+    p =>
+      p.id === post.id ||
+      p.backlinks.includes(post.id) ||
+      p.forwardLinks.includes(post.id),
   );
 };
 

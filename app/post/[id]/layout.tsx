@@ -17,9 +17,17 @@ export default async function Layout({
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}/graph`,
     {
       method: 'GET',
+      cache: 'no-cache',
     },
   );
   const postGraph: PostGraph = await postGraphResp.json();
+
+  console.log(
+    postGraph.nodes.length,
+    postGraph.links.length,
+    postGraph.links,
+    decodedId,
+  );
 
   const postTreeResp = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`,

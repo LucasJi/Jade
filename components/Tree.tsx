@@ -2,6 +2,7 @@
 import { ScrollShadow } from '@nextui-org/react';
 import { TreeNode, TreeProps } from '@types';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { FC, useState } from 'react';
 
 const DEFAULT_ICON_SIZE = 16;
@@ -67,7 +68,15 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     </li>
   ) : (
     <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
-      <span className="min-h-0 text-sm font-normal">{node.name}</span>
+      {/* <span
+        className="min-h-0 text-sm font-normal"
+        onClick={() => console.log(node)}
+      >
+        {node.name}
+      </span> */}
+      <Link href={`/post/${node.id}`} className="min-h-0 text-sm font-normal">
+        {node.name}
+      </Link>
     </li>
   );
 };

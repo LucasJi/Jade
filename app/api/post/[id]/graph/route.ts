@@ -17,6 +17,8 @@ export async function GET(
 
   const adjPosts = getAdjacencyPosts(post);
 
+  console.log(adjPosts);
+
   const postGraph = generatePostGraphFromPosts(adjPosts);
 
   return NextResponse.json(postGraph);
