@@ -30,7 +30,7 @@ export default async function Layout({
   return (
     <div className="flex w-full h-full relative">
       <div className="w-1/5 p-4">
-        <Tree data={postTree} />
+        <Tree data={postTree} currentNodeId={decodedId} />
       </div>
       <div className="w-3/5 p-4 flex-1 overflow-y-auto">{children}</div>
       <div className="w-1/5 p-4">

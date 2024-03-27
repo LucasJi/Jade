@@ -3,7 +3,13 @@ import { ScrollShadow } from '@nextui-org/react';
 import { TreeNode, TreeProps } from '@types';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { FC, useState } from 'react';
+import {
+  createContext,
+  FC,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from 'react';
 
 const DEFAULT_ICON_SIZE = 16;
 
@@ -29,11 +35,18 @@ const FoldIcon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
 );
 
 const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
+  const expandedNodeNames = useContext(TreeContext);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+
+  useLayoutEffect(() => {
+    if (!isExpanded) {
+      setIsExpanded(expandedNodeNames.includes(node.name));
+    }
+  }, [expandedNodeNames]);
 
   return node.children ? (
     <li className="mt-1">
@@ -75,15 +88,42 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   );
 };
 
-const Tree: React.FC<TreeProps> = ({ data }) => {
+const TreeContext = createContext<string[]>([]);
+
+const Tree: React.FC<TreeProps> = ({ data, currentNodeId }) => {
+  const expandedNodeNames: string[] = [];
+
+  const contains = (nodes: TreeNode[] | undefined): boolean => {
+    if (!nodes) {
+      return false;
+    }
+
+    for (const node of nodes) {
+      if (node.id === currentNodeId) {
+        return true;
+      }
+
+      if (contains(node.children)) {
+        expandedNodeNames.push(node.name);
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  contains(data);
+
   return (
     <div className="px-2">
       <span>目录</span>
       <ScrollShadow className="w-full h-full">
         <ul>
-          {data.map(node => (
-            <TreeNodeComponent key={node.id} node={node} />
-          ))}
+          <TreeContext.Provider value={expandedNodeNames}>
+            {data.map(node => (
+              <TreeNodeComponent key={node.id} node={node} />
+            ))}
+          </TreeContext.Provider>
         </ul>
       </ScrollShadow>
     </div>
