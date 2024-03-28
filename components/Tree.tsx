@@ -99,7 +99,6 @@ const Tree: React.FC<TreeProps> = ({ data }) => {
 
   const contains = (nodes: TreeNode[] | undefined): boolean => {
     if (!nodes) {
-      console.log('no nodes');
       return false;
     }
 
@@ -118,8 +117,6 @@ const Tree: React.FC<TreeProps> = ({ data }) => {
   };
 
   contains(data);
-
-  console.log(postId, decodedPostId, expandedNodeNames);
 
   return (
     <div className="px-2">
