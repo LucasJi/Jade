@@ -13,9 +13,8 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 
-const slugs = new Slugger();
-
 const getHeadingId = (props: HeadingProps) => {
+  const slugs = new Slugger();
   const hContent = props.children[0] as string;
   return slugs.slug(hContent);
 };
