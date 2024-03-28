@@ -3,6 +3,7 @@ import { ScrollShadow } from '@nextui-org/react';
 import { TreeNode, TreeProps } from '@types';
 import classNames from 'classnames';
 import Link from 'next/link';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import {
   createContext,
   FC,
@@ -90,16 +91,20 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 
 const TreeContext = createContext<string[]>([]);
 
-const Tree: React.FC<TreeProps> = ({ data, currentNodeId }) => {
+const Tree: React.FC<TreeProps> = ({ data }) => {
+  const postId = useSelectedLayoutSegment();
+  const decodedPostId = decodeURIComponent(postId || '');
+
   const expandedNodeNames: string[] = [];
 
   const contains = (nodes: TreeNode[] | undefined): boolean => {
     if (!nodes) {
+      console.log('no nodes');
       return false;
     }
 
     for (const node of nodes) {
-      if (node.id === currentNodeId) {
+      if (node.id === decodedPostId) {
         return true;
       }
 
@@ -113,6 +118,8 @@ const Tree: React.FC<TreeProps> = ({ data, currentNodeId }) => {
   };
 
   contains(data);
+
+  console.log(postId, decodedPostId, expandedNodeNames);
 
   return (
     <div className="px-2">

@@ -30,5 +30,4 @@ export interface TreeNode {
 
 export interface TreeProps {
   data: TreeNode[];
-  currentNodeId?: string;
 }
