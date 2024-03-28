@@ -5,6 +5,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Spinner,
 } from '@nextui-org/react';
 import NextLink from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
@@ -20,8 +21,10 @@ export default function Wikilink({
 }) {
   const [post, setPost] = useState<Post | null>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    setLoading(true);
     if (open) {
       fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/post?${new URLSearchParams({
@@ -32,7 +35,8 @@ export default function Wikilink({
         },
       )
         .then(resp => resp.json())
-        .then(value => setPost(value));
+        .then(value => setPost(value))
+        .then(() => setLoading(false));
     }
   }, [open]);
 
@@ -52,12 +56,16 @@ export default function Wikilink({
           {children}
         </Link>
       </PopoverTrigger>
-      <PopoverContent className="p-4">
-        <Markdown
-          className="h-[400px] w-[600px] webkit-overflow-y-auto prose-sm"
-          markdown={post?.content || ''}
-          renderWikilink={false}
-        />
+      <PopoverContent className="p-4 h-[400px] w-[600px]">
+        {loading ? (
+          <Spinner color="secondary" />
+        ) : (
+          <Markdown
+            className="webkit-overflow-y-auto prose-sm"
+            markdown={post?.content || ''}
+            renderWikilink={false}
+          />
+        )}
       </PopoverContent>
     </Popover>
   );
