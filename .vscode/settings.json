@@ -6,6 +6,7 @@
     "extralight",
     "frontmatter",
     "mdast",
+    "micromark",
     "rehype",
     "vfile",
     "wikilink",
