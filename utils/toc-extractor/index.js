@@ -11,6 +11,8 @@ function tocExtractor() {
     if (listItem.children.length > 1) {
       tree.children = [result.map.children[0].children[1]];
     }
+
+    console.log(JSON.stringify(tree.children));
   };
 }
 
