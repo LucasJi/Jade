@@ -1,4 +1,3 @@
-import Wikilink from '@components/Wikilink';
 import { Code, Link } from '@nextui-org/react';
 import { remarkWikilink } from '@utils/remark-wikilink';
 import classNames from 'classnames';
@@ -12,6 +11,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
+import Wikilink from './Wikilink';
 
 const getHeadingId = (props: HeadingProps) => {
   const slugs = new Slugger();
@@ -19,11 +19,15 @@ const getHeadingId = (props: HeadingProps) => {
   return slugs.slug(hContent);
 };
 
-const components = (): Components => ({
+const components = (renderWikilink: boolean): Components => ({
   a: props => {
     const { className, href, children } = props;
     if (className?.includes('wikilink')) {
-      return <Wikilink wikilink={href}>{children}</Wikilink>;
+      return renderWikilink ? (
+        <Wikilink wikilink={href}>{children}</Wikilink>
+      ) : (
+        <span>{children}</span>
+      );
     }
 
     const isFragment = href?.startsWith('#');
@@ -88,9 +92,11 @@ const components = (): Components => ({
 const Markdown = ({
   markdown,
   className,
+  renderWikilink = true,
 }: {
   markdown: string;
   className?: string;
+  renderWikilink?: boolean;
 }) => {
   const remarkPlugins = [remarkGfm, remarkFrontmatter, remarkWikilink as any];
   return (
@@ -112,7 +118,10 @@ const Markdown = ({
         className,
       )}
     >
-      <ReactMarkdown components={components()} remarkPlugins={remarkPlugins}>
+      <ReactMarkdown
+        components={components(renderWikilink)}
+        remarkPlugins={remarkPlugins}
+      >
         {markdown}
       </ReactMarkdown>
     </article>

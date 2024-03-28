@@ -1,15 +1,15 @@
 'use client';
 
-import Markdown from '@components/Markdown';
 import {
   Link,
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@nextui-org/react';
-import { Post } from '@types';
 import NextLink from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
+import Markdown from './Markdown';
+import { Post } from '@types';
 
 export default function Wikilink({
   wikilink = '',
@@ -43,7 +43,12 @@ export default function Wikilink({
           setOpen(true);
         }}
       >
-        <Link href={`/${wikilink}`} color="foreground" as={NextLink}>
+        <Link
+          href={`/post/${post?.id}`}
+          color="foreground"
+          as={NextLink}
+          prefetch={false}
+        >
           {children}
         </Link>
       </PopoverTrigger>
@@ -51,6 +56,7 @@ export default function Wikilink({
         <Markdown
           className="h-[400px] w-[600px] webkit-overflow-y-auto prose-sm"
           markdown={post?.content || ''}
+          renderWikilink={false}
         />
       </PopoverContent>
     </Popover>

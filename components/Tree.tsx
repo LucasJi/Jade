@@ -8,6 +8,7 @@ import {
   createContext,
   FC,
   useContext,
+  useEffect,
   useLayoutEffect,
   useState,
 } from 'react';
@@ -82,7 +83,12 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     </li>
   ) : (
     <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
-      <Link href={`/post/${node.id}`} className="min-h-0 text-sm font-normal">
+      <Link
+        href={`/post/${node.id}`}
+        className="min-h-0 text-sm font-normal"
+        // Reduce unnecessary requests
+        prefetch={false}
+      >
         {node.name}
       </Link>
     </li>
@@ -94,29 +100,33 @@ const TreeContext = createContext<string[]>([]);
 const Tree: React.FC<TreeProps> = ({ data, className }) => {
   const postId = useSelectedLayoutSegment();
   const decodedPostId = decodeURIComponent(postId || '');
+  const [expandedNodeNames, setExpandedNodeNames] = useState<string[]>([]);
 
-  const expandedNodeNames: string[] = [];
+  useEffect(() => {
+    const enns: string[] = [];
+    const contains = (nodes: TreeNode[] | undefined): boolean => {
+      if (!nodes) {
+        return false;
+      }
 
-  const contains = (nodes: TreeNode[] | undefined): boolean => {
-    if (!nodes) {
+      for (const node of nodes) {
+        if (node.id === decodedPostId) {
+          return true;
+        }
+
+        if (contains(node.children)) {
+          enns.push(node.name);
+          return true;
+        }
+      }
+
       return false;
-    }
+    };
 
-    for (const node of nodes) {
-      if (node.id === decodedPostId) {
-        return true;
-      }
+    contains(data);
 
-      if (contains(node.children)) {
-        expandedNodeNames.push(node.name);
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  contains(data);
+    setExpandedNodeNames([...enns]);
+  }, [decodedPostId]);
 
   return (
     <div className={classNames('px-2', className)}>
