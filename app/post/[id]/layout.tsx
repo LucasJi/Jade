@@ -22,8 +22,8 @@ export default async function Layout({
 
   return (
     <div className="flex w-full h-full">
-      <div className="w-3/4 p-4 flex-1 overflow-y-auto">{children}</div>
-      <div className="w-1/4 p-4">
+      <div className="w-2/3 p-4 flex-1 overflow-y-auto">{children}</div>
+      <div className="w-1/3 p-4">
         <ForceDirectedGraph postGraph={postGraph} currentId={decodedId} />
       </div>
     </div>

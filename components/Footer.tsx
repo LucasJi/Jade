@@ -3,13 +3,13 @@ import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
   return (
-    <footer className="w-3/5 mx-auto flex flex-col items-center h-[100px]">
+    <footer className="w-1/2 mx-auto flex flex-col items-center h-[100px] mb-8">
       <Divider className="my-4" />
       <div className="w-full flex h-16 justify-between">
         <div className="flex flex-col">
           <span>Galaxy Blog</span>
           <span className="font-extralight text-sm">
-            ©2023 Created by Lucas Ji
+            ©2024 Created by Lucas Ji
           </span>
           <a
             className="font-extralight text-sm hover:underline "

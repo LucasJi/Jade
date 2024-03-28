@@ -91,7 +91,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 
 const TreeContext = createContext<string[]>([]);
 
-const Tree: React.FC<TreeProps> = ({ data }) => {
+const Tree: React.FC<TreeProps> = ({ data, className }) => {
   const postId = useSelectedLayoutSegment();
   const decodedPostId = decodeURIComponent(postId || '');
 
@@ -119,7 +119,7 @@ const Tree: React.FC<TreeProps> = ({ data }) => {
   contains(data);
 
   return (
-    <div className="px-2">
+    <div className={classNames('px-2', className)}>
       <span>目录</span>
       <ScrollShadow className="w-full h-full">
         <ul>
