@@ -1,6 +1,8 @@
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
+import { List, Node, Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
+import { toc } from 'mdast-util-toc';
 import { join } from 'path';
 import { Post, PostGraph, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
@@ -217,4 +219,30 @@ const resolveWikilinks = (posts: Post[]) => {
       }
     }
   }
+};
+
+export const getPostToc = (post: string) => {
+  const tree = fromMarkdown(post) as Root;
+  const result = toc(tree);
+  const map = result.map;
+  const emptyResult: Node[] = [];
+
+  if (!map) {
+    return emptyResult;
+  }
+
+  if (map.children.length < 1) {
+    return emptyResult;
+  }
+
+  const headings = map.children[0].children;
+
+  // headings only contain title heading(#)
+  if (headings.length <= 1) {
+    return emptyResult;
+  }
+
+  const tocHeadings = headings[1] as List;
+
+  return tocHeadings.children;
 };

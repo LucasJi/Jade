@@ -13,9 +13,11 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import Wikilink from './Wikilink';
 
+const slugs = new Slugger();
+
 const getHeadingId = (props: HeadingProps) => {
-  const slugs = new Slugger();
   const hContent = props.children[0] as string;
+  slugs.reset();
   return slugs.slug(hContent);
 };
 

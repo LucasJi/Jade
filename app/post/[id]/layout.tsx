@@ -20,21 +20,12 @@ export default async function Layout({
     },
   ).then(resp => resp.json());
 
-  const post = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}`,
-    {
-      method: 'GET',
-    },
-  ).then(resp => resp.json());
-
-  const { content } = post;
-
   return (
     <div className="flex w-full h-full">
       <div className="w-2/3 p-4 flex-1 overflow-y-auto">{children}</div>
       <div className="w-1/3 p-4 flex flex-col overflow-y-auto">
         <ForceDirectedGraph postGraph={postGraph} currentId={decodedId} />
-        <Toc post={content} className="mt-4" />
+        <Toc id={id} className="mt-4" />
       </div>
     </div>
   );
