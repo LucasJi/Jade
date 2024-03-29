@@ -56,7 +56,9 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
         children: [],
       };
       node.children = _getPostTree(path, node.children);
-      postTree.push(node);
+      if (node.children.length > 0) {
+        postTree.push(node);
+      }
     } else if (file.endsWith('.md')) {
       postTree.push({
         id: getIdFromAbsolutePath(path),
