@@ -7,10 +7,10 @@ import {
   PopoverTrigger,
   Spinner,
 } from '@nextui-org/react';
+import { Post } from '@types';
 import NextLink from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
 import Markdown from './Markdown';
-import { Post } from '@types';
 
 export default function Wikilink({
   wikilink = '',
