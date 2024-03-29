@@ -1,6 +1,6 @@
 import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
 import fs from 'fs';
-import { List, Node, Root } from 'mdast';
+import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
 import { join } from 'path';
@@ -9,10 +9,12 @@ import { visit } from 'unist-util-visit';
 
 const SEPARATOR = '/';
 // find markdown mark "#"
-const TITLE_REG = /^#\s+.+/;
+const MD_TITLE_REG = /^#\s+.+/;
 const MD_SUFFIX_REG = /\.md$/;
+const MD_HEADING_REG = /^(#{1,6})\s+.+/;
 
-export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
+// export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
+export const POST_DIR = '/home/lucas/quartz/docs';
 
 export const getWikilinks = (): string[] => {
   console.log('getWikilinks called');
@@ -86,10 +88,18 @@ const getMarkdownAbsolutePaths = (
 
 const getTitle = (content: string) => {
   const tokens = content.split('\n');
-  let title = tokens.find(token => TITLE_REG.test(token)) || '';
+  let title = tokens.find(token => MD_TITLE_REG.test(token)) || '';
   // '# Title Demo' => 'Title Demo'
   title = title.replace('#', '').trim();
   return title;
+};
+
+export const removeTitle = (post: string) => {
+  const tokens = post.split('\n');
+  const restTokens = tokens
+    .filter(token => !MD_TITLE_REG.test(token))
+    .filter(token => MD_HEADING_REG.test(token));
+  return restTokens.join('\n');
 };
 
 export const getPostById = (id: string) => {
@@ -222,27 +232,13 @@ const resolveWikilinks = (posts: Post[]) => {
 };
 
 export const getPostToc = (post: string) => {
-  const tree = fromMarkdown(post) as Root;
+  const tree = fromMarkdown(removeTitle(post)) as Root;
   const result = toc(tree);
   const map = result.map;
-  const emptyResult: Node[] = [];
 
   if (!map) {
-    return emptyResult;
+    return [];
   }
 
-  if (map.children.length < 1) {
-    return emptyResult;
-  }
-
-  const headings = map.children[0].children;
-
-  // headings only contain title heading(#)
-  if (headings.length <= 1) {
-    return emptyResult;
-  }
-
-  const tocHeadings = headings[1] as List;
-
-  return tocHeadings.children;
+  return map.children;
 };

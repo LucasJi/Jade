@@ -50,8 +50,11 @@ export default async function Toc({
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${id}/toc`,
     {
       method: 'GET',
+      cache: 'no-cache',
     },
   ).then(resp => resp.json());
+
+  console.log(headings);
 
   return (
     <div className={classNames(className)}>

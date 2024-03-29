@@ -104,6 +104,7 @@ const Markdown = ({
   return (
     <article
       className={classNames(
+        'scroll-smooth',
         'prose',
         'prose-neutral',
         'prose-h1:mb-4',
