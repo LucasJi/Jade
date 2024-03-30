@@ -1,13 +1,8 @@
-# jdk21
-
 ---
-created: <% tp.file.creation_date() %>
-
+title: jdk21
 tags:
-
-- database
-- mvcc
-
+  - mvcc
+  - java
 ---
 
 `react-markdown` is a markdown component for React.
@@ -45,7 +40,7 @@ ReactDOM.render(
   <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
     {'# Your markdown here'}
   </ReactMarkdown>,
-  document.querySelector('#content')
+  document.querySelector('#content'),
 );
 ```
 
@@ -62,7 +57,7 @@ These features **do not work by default**.
 👆 Use the toggle above to add the plugin.
 
 |  Feature   |       Support        |
-|:----------:|:--------------------:|
+| :--------: | :------------------: |
 | CommonMark |         100%         |
 |    GFM     | 100% w/ `remark-gfm` |
 
@@ -71,7 +66,7 @@ These features **do not work by default**.
 - [ ] task list
 - [x] checked item
 
-https://example.com
+<https://example.com>
 
 ## HTML in markdown
 
@@ -103,7 +98,7 @@ ReactDOM.render(
   >
     # Your markdown here
   </ReactMarkdown>,
-  document.querySelector('#content')
+  document.querySelector('#content'),
 );
 ```
 

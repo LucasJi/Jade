@@ -17,6 +17,7 @@ export default async function Layout({
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}/graph`,
     {
       method: 'GET',
+      cache: 'no-store',
     },
   ).then(resp => resp.json());
 

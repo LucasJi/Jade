@@ -11,6 +11,7 @@ export default async function Page({
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}`,
     {
       method: 'GET',
+      cache: 'no-store',
     },
   ).then(resp => resp.json());
 

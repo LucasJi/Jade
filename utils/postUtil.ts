@@ -13,8 +13,8 @@ const MD_TITLE_REG = /^#\s+.+/;
 const MD_SUFFIX_REG = /\.md$/;
 const MD_HEADING_REG = /^(#{1,6})\s+.+/;
 
-// export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
-export const POST_DIR = '/home/lucas/quartz/docs';
+export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
+// export const POST_DIR = '/Users/lucas/Projects/docs';
 
 export const getWikilinks = (): string[] => {
   console.log('getWikilinks called');

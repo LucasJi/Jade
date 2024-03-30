@@ -6,6 +6,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`,
     {
       method: 'GET',
+      cache: 'no-store',
     },
   ).then(resp => resp.json());
 

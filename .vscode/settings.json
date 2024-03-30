@@ -8,7 +8,9 @@
     "frontmatter",
     "mdast",
     "micromark",
+    "mvcc",
     "rehype",
+    "remarkjs",
     "vfile",
     "wikilink",
     "Wikilinks"
