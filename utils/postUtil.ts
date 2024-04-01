@@ -1,17 +1,23 @@
-import { fromMarkdownWikilink, syntax } from '@utils/remark-wikilink';
+import { fromMarkdownWikilink, syntax } from '@lib/remark-wikilink';
 import fs from 'fs';
-import { Root } from 'mdast';
+import { Heading, Root, Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
 import { join } from 'path';
 import { Post, PostGraph, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
+import remarkFrontmatter from 'remark-frontmatter';
+import { remark } from 'remark';
+import remarkParseFrontmatter from 'remark-parse-frontmatter';
 
 const SEPARATOR = '/';
 // find markdown mark "#"
 const MD_TITLE_REG = /^#\s+.+/;
 const MD_SUFFIX_REG = /\.md$/;
 const MD_HEADING_REG = /^(#{1,6})\s+.+/;
+const DEFAULT_MD_PROCESSOR = remark()
+  .use(remarkFrontmatter, ['yaml', 'toml'])
+  .use(remarkParseFrontmatter);
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 // export const POST_DIR = '/Users/lucas/Projects/docs';
@@ -88,12 +94,58 @@ const getMarkdownAbsolutePaths = (
   return absolutePaths;
 };
 
-const getTitle = (content: string) => {
-  const tokens = content.split('\n');
-  let title = tokens.find(token => MD_TITLE_REG.test(token)) || '';
-  // '# Title Demo' => 'Title Demo'
-  title = title.replace('#', '').trim();
-  return title;
+/**
+ * The title of a post can be from three parts:
+ * 1. The title field in the frontmatter.
+ * 2. The string after the number sign `#`.
+ * 3. The name of the post file.
+ *
+ * The part 1 has the highest priority, the part 2 has the last and the part 3 has the least.
+ *
+ * @param post markdown
+ * @returns markdown
+ */
+const resolveTitle = (post: string, filename: string): string => {
+  let title: string = '';
+
+  // try to resolve title from frontmatter
+  const postVFile = DEFAULT_MD_PROCESSOR.processSync(post);
+  const frontmatter = postVFile.data.frontmatter as
+    | undefined
+    | { [key: string]: any };
+  if (frontmatter && frontmatter.title) {
+    title = frontmatter.title;
+  }
+
+  // try to resolve title from number sign '#'
+  const root = DEFAULT_MD_PROCESSOR.parse(post);
+  const titleHeadingIdx = root.children.findIndex(
+    node => node.type === 'heading' && node.depth === 1,
+  );
+  if (titleHeadingIdx !== -1) {
+    const titleHeadingNode = root.children[titleHeadingIdx] as Heading;
+    const textNode = titleHeadingNode.children.find(
+      child => child.type === 'text',
+    ) as Text;
+    root.children[titleHeadingIdx] = {
+      ...titleHeadingNode,
+      children: [
+        {
+          ...textNode,
+          value: title || textNode.value,
+        },
+      ],
+    };
+  } else {
+    const textNode: Text = { type: 'text', value: title || filename };
+    const titleHeadingNode: Heading = {
+      type: 'heading',
+      depth: 1,
+      children: [textNode],
+    };
+    root.children.unshift(titleHeadingNode);
+  }
+  return '';
 };
 
 export const removeTitle = (post: string) => {
@@ -110,7 +162,11 @@ export const getPostById = (id: string) => {
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
     const content = fs.readFileSync(fullPath, 'utf8');
-    const title = getTitle(content);
+    const filenameSplits = relativePath.split(SEPARATOR);
+    const title = resolveTitle(
+      content,
+      filenameSplits[filenameSplits.length - 1],
+    );
     const post: Post = {
       id,
       wikilink: relativePath,

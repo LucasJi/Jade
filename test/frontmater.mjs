@@ -10,12 +10,11 @@ const processor = remark()
   .use(remarkFrontmatter, ['yaml', 'toml'])
   .use(remarkParseFrontmatter)
   .use(remarkFrontmatter, ['yaml', 'toml']);
-// .use(myUnifiedPluginHandlingYamlMatter);
-// .use(function () {
-//   return function (tree) {
-//     console.dir(tree);
-//   };
-// })
-const file = processor.processSync(await read('_posts/tech/java/jdk21.md'));
 
-console.log(file);
+const post = await read('_posts/tech/java/jdk21.md');
+
+const file = processor.processSync(post);
+const root = processor.parse(post);
+
+// console.log(file);
+console.log(root.position);

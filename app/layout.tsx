@@ -4,8 +4,8 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata = {
-  title: 'Starry Blog',
-  description: 'Display blogs written in Obsidian.',
+  title: 'Galaxy Blog',
+  description: 'Display posts written in Obsidian.',
 };
 
 export default async function RootLayout({

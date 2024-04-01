@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,36 +16,16 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@components": [
-        "components"
-      ],
-      "@components/*": [
-        "components/*"
-      ],
-      "@api/*": [
-        "app/api/*"
-      ],
-      "@api": [
-        "app/api"
-      ],
-      "@utils": [
-        "utils"
-      ],
-      "@utils/*": [
-        "utils/*"
-      ],
-      "@public/*": [
-        "public/*"
-      ],
-      "@styles/*": [
-        "styles/*"
-      ],
-      "@types": [
-        "types.d.ts"
-      ],
-      "@store": [
-        "store"
-      ]
+      "@components": ["components"],
+      "@components/*": ["components/*"],
+      "@api/*": ["app/api/*"],
+      "@api": ["app/api"],
+      "@utils/*": ["utils/*"],
+      "@lib/*": ["lib/*"],
+      "@public/*": ["public/*"],
+      "@styles/*": ["styles/*"],
+      "@types": ["types.d.ts"],
+      "@store": ["store"]
     },
     "plugins": [
       {
@@ -57,13 +33,6 @@
       }
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

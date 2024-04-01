@@ -1,5 +1,5 @@
 import { Code, Link } from '@nextui-org/react';
-import { remarkWikilink } from '@utils/remark-wikilink';
+import { remarkWikilink } from '@lib/remark-wikilink';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
 // import Link from 'next/link';
