@@ -54,8 +54,6 @@ export default async function Toc({
     },
   ).then(resp => resp.json());
 
-  console.log(headings);
-
   return (
     <div className={classNames(className)}>
       <span className="font-bold">Table of Content</span>

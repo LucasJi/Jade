@@ -4,11 +4,11 @@ import { Heading, Root, Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
 import { join } from 'path';
+import { remark } from 'remark';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkParseFrontmatter from 'remark-parse-frontmatter';
 import { Post, PostGraph, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
-import remarkFrontmatter from 'remark-frontmatter';
-import { remark } from 'remark';
-import remarkParseFrontmatter from 'remark-parse-frontmatter';
 
 const SEPARATOR = '/';
 // find markdown mark "#"
@@ -16,15 +16,13 @@ const MD_TITLE_REG = /^#\s+.+/;
 const MD_SUFFIX_REG = /\.md$/;
 const MD_HEADING_REG = /^(#{1,6})\s+.+/;
 const DEFAULT_MD_PROCESSOR = remark()
-  .use(remarkFrontmatter, ['yaml', 'toml'])
+  .use(remarkFrontmatter, ['yaml'])
   .use(remarkParseFrontmatter);
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
-// export const POST_DIR = '/Users/lucas/Projects/docs';
+// export const POST_DIR = '/home/lucas/docs';
 
 export const getWikilinks = (): string[] => {
-  console.log('getWikilinks called');
-
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
     getRelativePathFromAbsolutePath(absolutePath),
@@ -46,7 +44,6 @@ const getIdFromAbsolutePath = (absolutePath: string): string => {
 };
 
 export const getPostTree = () => {
-  console.log('getPostTree called');
   return _getPostTree(POST_DIR);
 };
 
@@ -105,7 +102,7 @@ const getMarkdownAbsolutePaths = (
  * @param post markdown
  * @returns markdown
  */
-const resolveTitle = (post: string, filename: string): string => {
+export const resolveTitle = (post: string, filename: string): string => {
   let title: string = '';
 
   // try to resolve title from frontmatter
@@ -113,9 +110,7 @@ const resolveTitle = (post: string, filename: string): string => {
   const frontmatter = postVFile.data.frontmatter as
     | undefined
     | { [key: string]: any };
-  if (frontmatter && frontmatter.title) {
-    title = frontmatter.title;
-  }
+  title = frontmatter?.title;
 
   // try to resolve title from number sign '#'
   const root = DEFAULT_MD_PROCESSOR.parse(post);
@@ -145,7 +140,18 @@ const resolveTitle = (post: string, filename: string): string => {
     };
     root.children.unshift(titleHeadingNode);
   }
-  return '';
+
+  // remove frontmatter from tree
+  const frontmatterNodeIdx = root.children.findIndex(
+    child => child.type === 'yaml',
+  );
+  if (frontmatterNodeIdx !== -1) {
+    root.children.splice(frontmatterNodeIdx, 1);
+  }
+
+  const compiler = DEFAULT_MD_PROCESSOR.compiler;
+
+  return compiler ? compiler(root, postVFile) : '';
 };
 
 export const removeTitle = (post: string) => {
@@ -157,21 +163,16 @@ export const removeTitle = (post: string) => {
 };
 
 export const getPostById = (id: string) => {
-  console.log('getPostById called', id);
   const relativePath = atob(id);
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
-    const content = fs.readFileSync(fullPath, 'utf8');
+    let content = fs.readFileSync(fullPath, 'utf8');
     const filenameSplits = relativePath.split(SEPARATOR);
-    const title = resolveTitle(
-      content,
-      filenameSplits[filenameSplits.length - 1],
-    );
+    content = resolveTitle(content, filenameSplits[filenameSplits.length - 1]);
     const post: Post = {
       id,
       wikilink: relativePath,
       content,
-      title,
       forwardLinks: [],
       backlinks: [],
     };
@@ -182,7 +183,6 @@ export const getPostById = (id: string) => {
 };
 
 export const getPosts = (): Post[] => {
-  console.log('getPosts called');
   const posts: Array<Post> = [];
   const ids = getIds();
 
@@ -201,13 +201,11 @@ export const getPosts = (): Post[] => {
 };
 
 export const getPostGraph = (): PostGraph => {
-  console.log('getPostGraph called');
   const posts = getPosts();
   return generatePostGraphFromPosts(posts);
 };
 
 export const generatePostGraphFromPosts = (posts: Post[]) => {
-  console.log('generatePostGraphFromPosts called');
   const postGraphLinks: Set<string> = new Set();
   const ids = posts.map(p => p.id);
 
@@ -243,7 +241,6 @@ export const generatePostGraphFromPosts = (posts: Post[]) => {
 };
 
 export const getAdjacencyPosts = (post: Post) => {
-  console.log('getAdjacencyPosts called');
   const posts = getPosts();
   return posts.filter(
     p =>

@@ -1,5 +1,5 @@
-import { Code, Link } from '@nextui-org/react';
 import { remarkWikilink } from '@lib/remark-wikilink';
+import { Code, Link } from '@nextui-org/react';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
 // import Link from 'next/link';
@@ -9,7 +9,6 @@ import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import Wikilink from './Wikilink';
 
@@ -100,7 +99,7 @@ const Markdown = ({
   className?: string;
   renderWikilink?: boolean;
 }) => {
-  const remarkPlugins = [remarkGfm, remarkFrontmatter, remarkWikilink as any];
+  const remarkPlugins = [remarkGfm, remarkWikilink as any];
   return (
     <article
       className={classNames(

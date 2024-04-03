@@ -1,5 +1,3 @@
-# springboot
-
 ## Table of contents
 
 Will be replaced by toc
