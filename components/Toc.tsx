@@ -55,13 +55,15 @@ export default async function Toc({
   ).then(resp => resp.json());
 
   return (
-    <div className={classNames(className)}>
-      <span className="font-bold">Table of Content</span>
-      <ul>
-        {headings.map((heading, index) => (
-          <TocNode key={`${heading.type}-${index}`} heading={heading} />
-        ))}
-      </ul>
-    </div>
+    headings?.length > 0 && (
+      <div className={classNames(className)}>
+        <span className="font-bold">Table of Content</span>
+        <ul>
+          {headings.map((heading, index) => (
+            <TocNode key={`${heading.type}-${index}`} heading={heading} />
+          ))}
+        </ul>
+      </div>
+    )
   );
 }

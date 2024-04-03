@@ -19,8 +19,8 @@ const DEFAULT_MD_PROCESSOR = remark()
   .use(remarkFrontmatter, ['yaml'])
   .use(remarkParseFrontmatter);
 
-export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
-// export const POST_DIR = '/home/lucas/docs';
+// export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
+export const POST_DIR = '/home/lucas/docs';
 
 export const getWikilinks = (): string[] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
@@ -102,7 +102,10 @@ const getMarkdownAbsolutePaths = (
  * @param post markdown
  * @returns markdown
  */
-export const resolveTitle = (post: string, filename: string): string => {
+export const resolveTitle = (
+  post: string,
+  filename: string,
+): { content: string; title: string } => {
   let title: string = '';
 
   // try to resolve title from frontmatter
@@ -151,7 +154,7 @@ export const resolveTitle = (post: string, filename: string): string => {
 
   const compiler = DEFAULT_MD_PROCESSOR.compiler;
 
-  return compiler ? compiler(root, postVFile) : '';
+  return { content: compiler ? compiler(root, postVFile) : '', title };
 };
 
 export const removeTitle = (post: string) => {
@@ -166,13 +169,18 @@ export const getPostById = (id: string) => {
   const relativePath = atob(id);
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
-    let content = fs.readFileSync(fullPath, 'utf8');
+    const file = fs.readFileSync(fullPath, 'utf8');
     const filenameSplits = relativePath.split(SEPARATOR);
-    content = resolveTitle(content, filenameSplits[filenameSplits.length - 1]);
+    const { content, title } = resolveTitle(
+      file,
+      filenameSplits[filenameSplits.length - 1],
+    );
+    console.log('content----', content, 'file----', file);
     const post: Post = {
       id,
       wikilink: relativePath,
       content,
+      title,
       forwardLinks: [],
       backlinks: [],
     };
