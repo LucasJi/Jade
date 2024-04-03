@@ -1,6 +1,7 @@
-import prettierConfig from './.prettierrc.js';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const prettierConfig = require('./.prettierrc.cjs');
 
-const eslintConfig = {
+module.exports = {
   env: {
     browser: true,
     commonjs: true,
@@ -96,5 +97,3 @@ const eslintConfig = {
     },
   },
 };
-
-export default eslintConfig;

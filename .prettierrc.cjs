@@ -1,4 +1,4 @@
-const prettierConfig = {
+module.exports = {
   arrowParens: 'avoid',
   singleQuote: true,
   trailingComma: 'all',
@@ -6,5 +6,3 @@ const prettierConfig = {
   endOfLine: 'auto',
   organizeImportsSkipDestructiveCodeActions: true,
 };
-
-export default prettierConfig;

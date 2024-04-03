@@ -113,4 +113,4 @@ A component by [Espen Hovlandsdal](https://espen.codes/)
 
 ## Wikilink
 
-[[tech/java/springboot]]
+\[\[tech/java/springboot]]
