@@ -15,7 +15,7 @@ import Wikilink from './Wikilink';
 const slugs = new Slugger();
 
 const getHeadingId = (props: any) => {
-  const hContent = props.children as string;
+  const hContent = props.children[0] as string;
   slugs.reset();
   return slugs.slug(hContent);
 };
