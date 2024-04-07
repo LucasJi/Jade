@@ -15,7 +15,9 @@ export default async function Page({
     },
   ).then(resp => resp.json());
 
-  const { content } = post;
+  const { content, title } = post;
 
-  return <Markdown markdown={content} className="max-w-none w-full" />;
+  return (
+    <Markdown markdown={content} title={title} className="max-w-none w-full" />
+  );
 }

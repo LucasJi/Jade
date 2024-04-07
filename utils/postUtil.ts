@@ -102,59 +102,40 @@ const getMarkdownAbsolutePaths = (
  * @param post markdown
  * @returns markdown
  */
-export const resolveTitle = (
+export const resolvePost = (
   post: string,
   filename: string,
-): { content: string; title: string } => {
+): { title: string; frontmatter: undefined | { [key: string]: any } } => {
   let title: string = '';
 
-  // try to resolve title from frontmatter
+  // try to get title from frontmatter
   const postVFile = DEFAULT_MD_PROCESSOR.processSync(post);
   const frontmatter = postVFile.data.frontmatter as
     | undefined
     | { [key: string]: any };
   title = frontmatter?.title;
 
-  // try to resolve title from number sign '#'
-  const root = DEFAULT_MD_PROCESSOR.parse(post);
-  const titleHeadingIdx = root.children.findIndex(
-    node => node.type === 'heading' && node.depth === 1,
-  );
-  if (titleHeadingIdx !== -1) {
-    const titleHeadingNode = root.children[titleHeadingIdx] as Heading;
-    const textNode = titleHeadingNode.children.find(
-      child => child.type === 'text',
-    ) as Text;
-    root.children[titleHeadingIdx] = {
-      ...titleHeadingNode,
-      children: [
-        {
-          ...textNode,
-          value: title || textNode.value,
-        },
-      ],
-    };
-  } else {
-    const textNode: Text = { type: 'text', value: title || filename };
-    const titleHeadingNode: Heading = {
-      type: 'heading',
-      depth: 1,
-      children: [textNode],
-    };
-    root.children.unshift(titleHeadingNode);
+  // try to get title from heading `#`
+  if (!title) {
+    const root = DEFAULT_MD_PROCESSOR.parse(post);
+    const titleHeadingIdx = root.children.findIndex(
+      node => node.type === 'heading' && node.depth === 1,
+    );
+    if (titleHeadingIdx !== -1) {
+      const titleHeadingNode = root.children[titleHeadingIdx] as Heading;
+      const textNode = titleHeadingNode.children.find(
+        child => child.type === 'text',
+      ) as Text;
+      title = textNode.value;
+    }
   }
 
-  // remove frontmatter from tree
-  const frontmatterNodeIdx = root.children.findIndex(
-    child => child.type === 'yaml',
-  );
-  if (frontmatterNodeIdx !== -1) {
-    root.children.splice(frontmatterNodeIdx, 1);
+  // use file name as title
+  if (!title) {
+    title = filename;
   }
 
-  const compiler = DEFAULT_MD_PROCESSOR.compiler;
-
-  return { content: compiler ? compiler(root, postVFile) : '', title };
+  return { title, frontmatter };
 };
 
 export const removeTitle = (post: string) => {
@@ -169,18 +150,16 @@ export const getPostById = (id: string) => {
   const relativePath = atob(id);
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
-    const file = fs.readFileSync(fullPath, 'utf8');
+    const content = fs.readFileSync(fullPath, 'utf8');
     const filenameSplits = relativePath.split(SEPARATOR);
-    const { content, title } = resolveTitle(
-      file,
-      filenameSplits[filenameSplits.length - 1],
-    );
-    console.log('content----', content, 'file----', file);
+    const filename = filenameSplits[filenameSplits.length - 1];
+    const { title, frontmatter } = resolvePost(content, filename);
     const post: Post = {
       id,
       wikilink: relativePath,
-      content,
+      content: content,
       title,
+      frontmatter,
       forwardLinks: [],
       backlinks: [],
     };

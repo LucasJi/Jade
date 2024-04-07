@@ -1,20 +1,19 @@
+import { remarkGalaxy } from '@lib/remark-galaxy';
 import { remarkWikilink } from '@lib/remark-wikilink';
 import { Code, Link } from '@nextui-org/react';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
-import { HeadingProps } from 'react-markdown/lib/ast-to-react';
 // highlight.js doesn't support React.JSX syntax
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import remarkGfm from 'remark-gfm';
 import Wikilink from './Wikilink';
 
 const slugs = new Slugger();
 
-const getHeadingId = (props: HeadingProps) => {
+const getHeadingId = (props: any) => {
   const hContent = props.children[0] as string;
   slugs.reset();
   return slugs.slug(hContent);
@@ -62,7 +61,7 @@ const components = (renderWikilink: boolean): Components => ({
   pre: props => {
     const { children, className, node } = props;
 
-    const code = node.children.find(
+    const code = node?.children.find(
       child => (child as Element).tagName === 'code',
     ) as Element | undefined;
 
@@ -92,14 +91,19 @@ const components = (renderWikilink: boolean): Components => ({
 
 const Markdown = ({
   markdown,
+  title,
   className,
   renderWikilink = true,
 }: {
   markdown: string;
+  title: string;
   className?: string;
   renderWikilink?: boolean;
 }) => {
-  const remarkPlugins = [remarkGfm, remarkWikilink as any];
+  const remarkPlugins = [
+    remarkWikilink as any,
+    [remarkGalaxy as any, { title }],
+  ];
   return (
     <article
       className={classNames(

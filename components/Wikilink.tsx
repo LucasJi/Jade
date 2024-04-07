@@ -40,6 +40,7 @@ export default function Wikilink({
           <Markdown
             className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
             markdown={post?.content || ''}
+            title={post?.title || ''}
             renderWikilink={false}
           />
         )

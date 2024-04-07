@@ -7,6 +7,7 @@ export interface Post {
   wikilink: string;
   content: string;
   title?: string;
+  frontmatter?: undefined | { [key: string]: any };
   // ids
   forwardLinks: string[];
   // ids
