@@ -1,4 +1,4 @@
-import { remarkGalaxy } from '@lib/remark-galaxy';
+import remarkGalaxy from '@lib/remark-galaxy';
 import { remarkWikilink } from '@lib/remark-wikilink';
 import { Code, Link } from '@nextui-org/react';
 import classNames from 'classnames';
@@ -9,12 +9,13 @@ import ReactMarkdown, { Components } from 'react-markdown';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkFrontmatter from 'remark-frontmatter';
 import Wikilink from './Wikilink';
 
 const slugs = new Slugger();
 
 const getHeadingId = (props: any) => {
-  const hContent = props.children[0] as string;
+  const hContent = props.children as string;
   slugs.reset();
   return slugs.slug(hContent);
 };
@@ -101,6 +102,7 @@ const Markdown = ({
   renderWikilink?: boolean;
 }) => {
   const remarkPlugins = [
+    remarkFrontmatter,
     remarkWikilink as any,
     [remarkGalaxy as any, { title }],
   ];

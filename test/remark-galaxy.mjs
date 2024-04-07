@@ -7,7 +7,7 @@ import remarkStringify from 'remark-stringify';
 import { read } from 'to-vfile';
 import { unified } from 'unified';
 // import { remarkWikilink } from '../lib/remark-wikilink/index.js';
-import { remarkGalaxy } from '../lib/remark-galaxy/index.js';
+import remarkGalaxy from '../lib/remark-galaxy/index.js';
 
 const filepath1 = '_posts/tech/java/jdk21.md';
 const filepath2 = '/Users/lucas/Projects/docs/index.md';

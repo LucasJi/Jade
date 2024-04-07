@@ -19,8 +19,8 @@ const DEFAULT_MD_PROCESSOR = remark()
   .use(remarkFrontmatter, ['yaml'])
   .use(remarkParseFrontmatter);
 
-// export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
-export const POST_DIR = '/home/lucas/docs';
+export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
+// export const POST_DIR = '/home/lucas/docs';
 
 export const getWikilinks = (): string[] => {
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
