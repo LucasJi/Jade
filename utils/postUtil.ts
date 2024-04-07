@@ -6,7 +6,6 @@ import { toc } from 'mdast-util-toc';
 import { join } from 'path';
 import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
-import remarkParseFrontmatter from 'remark-parse-frontmatter';
 import { Post, PostGraph, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
 
@@ -15,9 +14,7 @@ const SEPARATOR = '/';
 const MD_TITLE_REG = /^#\s+.+/;
 const MD_SUFFIX_REG = /\.md$/;
 const MD_HEADING_REG = /^(#{1,6})\s+.+/;
-const DEFAULT_MD_PROCESSOR = remark()
-  .use(remarkFrontmatter, ['yaml'])
-  .use(remarkParseFrontmatter);
+const DEFAULT_MD_PROCESSOR = remark().use(remarkFrontmatter, ['yaml']);
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 // export const POST_DIR = '/home/lucas/docs';

@@ -9,6 +9,7 @@
     "mdast",
     "micromark",
     "mvcc",
+    "portaljs",
     "rehype",
     "remarkjs",
     "vfile",
