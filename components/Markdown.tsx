@@ -11,6 +11,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import Wikilink from './Wikilink';
+import remarkGfm from 'remark-gfm';
 
 const slugs = new Slugger();
 
@@ -102,6 +103,7 @@ const Markdown = ({
   renderWikilink?: boolean;
 }) => {
   const remarkPlugins = [
+    remarkGfm,
     remarkFrontmatter,
     remarkWikilink as any,
     [remarkGalaxy as any, { title }],

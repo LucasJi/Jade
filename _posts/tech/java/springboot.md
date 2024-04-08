@@ -2,6 +2,8 @@
 
 Will be replaced by toc
 
+> Use remark-toc
+
 ## Part 1
 
 t7EIf22gtMf0xGll8HZwshbre28YAXf2GGkMwqZhUCKQ8sUdi8MP9Aj3XcB33eeIgGrUNSva0LDK1OoTe5blbKFExmcFrtsDwAaJ
