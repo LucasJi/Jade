@@ -54,6 +54,7 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
         id: getIdFromAbsolutePath(path),
         name: file,
         children: [],
+        isDir: true,
       };
       node.children = _getPostTree(path, node.children);
       if (node.children.length > 0) {
@@ -63,9 +64,19 @@ const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
       postTree.push({
         id: getIdFromAbsolutePath(path),
         name: file.replace(/\.md$/, ''),
+        isDir: false,
       });
     }
   }
+
+  postTree.sort((a, b) => {
+    if (a.isDir && !b.isDir) {
+      return -1;
+    } else if (!a.isDir && b.isDir) {
+      return 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   return postTree;
 };

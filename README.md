@@ -6,7 +6,7 @@ This project is designed to enable the publication of my blogs, authored in [Obs
 
 ### Post tile
 
-This project now supports two types of post title definitions:
+This project now supports three types of post title definitions:
 
 1. The `title` key in frontmatter
 
@@ -30,7 +30,9 @@ This project now supports two types of post title definitions:
    More contents
    ```
 
-The title defined in the front matter takes precedence over one starting with the number sign `#`.
+3. The filename of post, just like what Obsidian does.
+
+The first type(title defined in the front matter) takes highest precedence over others.
 
 ### Wikilink
 

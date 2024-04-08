@@ -27,6 +27,7 @@ export interface TreeNode {
   id: string;
   name: string;
   children?: TreeNode[];
+  isDir: boolean;
 }
 
 export interface TreeProps {

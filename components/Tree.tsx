@@ -103,7 +103,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
   const [expandedNodeNames, setExpandedNodeNames] = useState<string[]>([]);
 
   useEffect(() => {
-    const enns: string[] = [];
+    const nodeNames: string[] = [];
     const contains = (nodes: TreeNode[] | undefined): boolean => {
       if (!nodes) {
         return false;
@@ -115,7 +115,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
         }
 
         if (contains(node.children)) {
-          enns.push(node.name);
+          nodeNames.push(node.name);
           return true;
         }
       }
@@ -125,7 +125,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
 
     contains(data);
 
-    setExpandedNodeNames([...enns]);
+    setExpandedNodeNames([...nodeNames]);
   }, [decodedPostId]);
 
   return (
