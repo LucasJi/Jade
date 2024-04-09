@@ -12,6 +12,8 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkFrontmatter from 'remark-frontmatter';
 import Wikilink from './Wikilink';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 
 const slugs = new Slugger();
 
@@ -102,12 +104,6 @@ const Markdown = ({
   className?: string;
   renderWikilink?: boolean;
 }) => {
-  const remarkPlugins = [
-    remarkGfm,
-    remarkFrontmatter,
-    remarkWikilink as any,
-    [remarkGalaxy as any, { title }],
-  ];
   return (
     <article
       className={classNames(
@@ -130,7 +126,13 @@ const Markdown = ({
     >
       <ReactMarkdown
         components={components(renderWikilink)}
-        remarkPlugins={remarkPlugins}
+        remarkPlugins={[
+          remarkGfm,
+          remarkFrontmatter,
+          remarkWikilink as any,
+          [remarkGalaxy as any, { title }],
+        ]}
+        rehypePlugins={[rehypeRaw as any, rehypeSanitize]}
       >
         {markdown}
       </ReactMarkdown>
