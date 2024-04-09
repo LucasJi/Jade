@@ -13,7 +13,6 @@ import remarkFrontmatter from 'remark-frontmatter';
 import Wikilink from './Wikilink';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
 
 const slugs = new Slugger();
 
@@ -68,8 +67,6 @@ const components = (renderWikilink: boolean): Components => ({
     const code = node?.children.find(
       child => (child as Element).tagName === 'code',
     ) as Element | undefined;
-
-    console.log('code', code);
 
     if (!code) {
       return <pre className={className}>{children}</pre>;
@@ -134,7 +131,7 @@ const Markdown = ({
           remarkWikilink as any,
           [remarkGalaxy as any, { title }],
         ]}
-        rehypePlugins={[rehypeRaw as any, rehypeSanitize]}
+        rehypePlugins={[rehypeRaw as any]}
       >
         {markdown}
       </ReactMarkdown>
