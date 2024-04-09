@@ -6,9 +6,9 @@ import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
-import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Slugger from 'github-slugger';
 import remarkFrontmatter from 'remark-frontmatter';
 import Wikilink from './Wikilink';
 import remarkGfm from 'remark-gfm';
@@ -69,12 +69,14 @@ const components = (renderWikilink: boolean): Components => ({
       child => (child as Element).tagName === 'code',
     ) as Element | undefined;
 
+    console.log('code', code);
+
     if (!code) {
       return <pre className={className}>{children}</pre>;
     }
 
     const codeClassName = code.properties?.className as string[];
-    const language = codeClassName.flatMap(cls => {
+    const language = codeClassName?.flatMap(cls => {
       const match = /language-(\w+)/.exec(cls);
       return match ? [match[1]] : [];
     })[0];
