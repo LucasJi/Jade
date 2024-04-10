@@ -6,13 +6,13 @@ import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
+import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import Slugger from 'github-slugger';
-import remarkFrontmatter from 'remark-frontmatter';
-import Wikilink from './Wikilink';
-import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+import Wikilink from './Wikilink';
 
 const slugs = new Slugger();
 
