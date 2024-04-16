@@ -27,7 +27,7 @@ const components = (renderWikilink: boolean): Components => ({
     const { className, href, children } = props;
     if (className?.includes('wikilink')) {
       return renderWikilink ? (
-        <Wikilink wikilink={href}>{children}</Wikilink>
+        <Wikilink wikilink={href || ''}>{children}</Wikilink>
       ) : (
         <span>{children}</span>
       );
@@ -97,11 +97,13 @@ const Markdown = ({
   title,
   className,
   renderWikilink = true,
+  wikilink = '',
 }: {
   markdown: string;
   title: string;
   className?: string;
   renderWikilink?: boolean;
+  wikilink?: string;
 }) => {
   return (
     <article
@@ -129,7 +131,7 @@ const Markdown = ({
           remarkGfm,
           remarkFrontmatter,
           remarkWikilink as any,
-          [remarkGalaxy as any, { title }],
+          [remarkGalaxy as any, { title, wikilink }],
         ]}
         rehypePlugins={[rehypeRaw as any]}
       >

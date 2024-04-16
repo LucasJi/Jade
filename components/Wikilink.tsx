@@ -10,7 +10,7 @@ export default function Wikilink({
   wikilink = '',
   children,
 }: {
-  wikilink: string | undefined;
+  wikilink: string;
   children: ReactNode;
 }) {
   const [post, setPost] = useState<Post | null>(null);
@@ -29,7 +29,7 @@ export default function Wikilink({
       .then(resp => resp.json())
       .then(value => setPost(value))
       .then(() => setLoading(false));
-  }, []);
+  }, [wikilink]);
 
   return (
     <Tooltip
@@ -42,11 +42,13 @@ export default function Wikilink({
             markdown={post?.content || ''}
             title={post?.title || ''}
             renderWikilink={false}
+            wikilink={wikilink}
           />
         )
       }
     >
       <Link
+        className="text-[#A88BFA]"
         href={`/post/${post?.id}`}
         color="foreground"
         as={NextLink}

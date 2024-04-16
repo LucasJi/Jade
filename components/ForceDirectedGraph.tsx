@@ -22,7 +22,7 @@ const HIGHLIGHT_LINE_WIDTH = 1;
 
 const DURATION = 100;
 
-const BASE_RADIUS = 4;
+const BASE_RADIUS = 6;
 
 const OPACITY_SCALE = 1;
 
