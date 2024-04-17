@@ -16,7 +16,7 @@ export default async function RootLayout({
   return (
     <html className="light h-full w-full scroll-smooth m-0" lang="en">
       <body
-        className="h-full w-full flex m-0 bg-[#E6DECE] min-h-[800px]"
+        className="h-full w-full flex m-0 min-h-[800px]"
         suppressHydrationWarning={true}
       >
         <Providers>
