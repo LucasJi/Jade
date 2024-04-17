@@ -99,17 +99,6 @@ const getMarkdownAbsolutePaths = (
   return absolutePaths;
 };
 
-/**
- * The title of a post can be from three parts:
- * 1. The title field in the frontmatter.
- * 2. The string after the number sign `#`.
- * 3. The name of the post file.
- *
- * The part 1 has the highest priority, the part 2 has the last and the part 3 has the least.
- *
- * @param post markdown
- * @returns markdown
- */
 export const resolvePost = (
   post: string,
   filename: string,
@@ -260,8 +249,10 @@ const resolveWikilinks = (posts: Post[]) => {
       const forwardLinks: Set<string> = new Set();
 
       visit(tree, 'wikilink', node => {
-        const { value } = node;
-        const post = posts.find(post => post.wikilink.includes(value));
+        const { value }: { value: string } = node;
+        const post = posts.find(post =>
+          post.wikilink.includes(value.split('#')[0]),
+        );
         if (post) {
           forwardLinks.add(post.id);
         }
