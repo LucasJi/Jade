@@ -48,11 +48,33 @@ Galaxy Blog supports displaying all kinds of Obsidian's wikilinks:
 
 ### Graph View
 
+Galaxy Post generates a graph view just like what Obsidian does.
+
+The only difference is the nodes in Galaxy Post's graph view are clickable. You will navigate the specific post page after clicking the post node in the graph view.
+
 ### File explorer
+
+Galaxy Post shows the directory structure of your posts.
 
 ### Table of content
 
+Galaxy Post generates a table of content for each post. It will be displayed at the right-bottom side of the post page.
+
 ### Frontmatter
+
+Galaxy Post only supports `yaml` style frontmatter now. For example:
+
+```yaml
+---
+title: Post Title
+date: 2023-01-01
+tags:
+  - tag1
+  - tag2
+---
+```
+
+For now, only the `title` and `tags` key are supported. The values of them will be resolved and friendly displayed in the post page.
 
 ## Tech Stack
 
