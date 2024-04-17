@@ -1,6 +1,6 @@
 import remarkGalaxy from '@lib/remark-galaxy';
 import { remarkWikilink } from '@lib/remark-wikilink';
-import { Code, Link } from '@nextui-org/react';
+import { Link } from '@nextui-org/react';
 import classNames from 'classnames';
 import { Element, Text } from 'hast';
 // import Link from 'next/link';
@@ -87,7 +87,11 @@ const components = (renderWikilink: boolean): Components => ({
     );
   },
   code: props => {
-    return <Code className="not-prose">{props.children}</Code>;
+    return (
+      <code className="not-prose px-1 whitespace-break-spaces rounded bg-default-200">
+        {props.children}
+      </code>
+    );
   },
   li: props => <li className="not-prose">{props.children}</li>,
 });
