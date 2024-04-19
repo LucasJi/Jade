@@ -33,12 +33,16 @@ const ForceDirectedGraph = ({
   postGraph,
   size = 300,
   className,
-  currentId = '',
+  postId,
+  border = true,
+  full = false,
 }: {
   postGraph: PostGraph;
   size?: number;
   className?: string;
-  currentId?: string;
+  postId?: string;
+  border?: boolean;
+  full?: boolean;
 }) => {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -210,8 +214,8 @@ const ForceDirectedGraph = ({
             .attr('stroke-width', LINE_WIDTH);
 
           let toBeRecoveredNode = node;
-          if (currentId) {
-            toBeRecoveredNode = node.filter(d => d.id !== currentId);
+          if (postId) {
+            toBeRecoveredNode = node.filter(d => d.id !== postId);
           }
           toBeRecoveredNode
             .transition()
@@ -257,8 +261,8 @@ const ForceDirectedGraph = ({
         // @ts-ignore
         .call(drag(simulation));
 
-      if (currentId) {
-        node.filter(d => d.id === currentId).attr('fill', HIGHLIGHT_COLOR);
+      if (postId) {
+        node.filter(d => d.id === postId).attr('fill', HIGHLIGHT_COLOR);
       }
 
       simulation.on('tick', () => {
@@ -278,20 +282,29 @@ const ForceDirectedGraph = ({
     }
 
     onMountRef.current = false;
-  }, []);
+  });
 
   return (
-    <div className="w-fit h-fit">
-      <span className="font-bold">Graph View</span>
-      <div
-        ref={containerRef}
-        className={classNames(className, 'border-1', 'rounded-md', 'mt-2')}
-        style={{
-          width: size,
-          height: size,
-        }}
-      />
-    </div>
+    <div
+      ref={containerRef}
+      className={classNames(
+        className,
+        { 'border-1': border },
+        'rounded-md',
+        'mt-3',
+      )}
+      style={
+        full
+          ? {
+              width: '100%',
+              height: '100%',
+            }
+          : {
+              width: size,
+              height: size,
+            }
+      }
+    />
   );
 };
 

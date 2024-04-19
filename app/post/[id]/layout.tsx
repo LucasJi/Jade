@@ -1,8 +1,10 @@
-import ForceDirectedGraph from '@components/ForceDirectedGraph';
+import GraphView from '@components/GraphView';
 import Toc from '@components/Toc';
 import { PostGraph } from '@types';
 import { getIds } from '@utils/postUtil';
 import { ReactNode } from 'react';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Layout({
   params: { id },
@@ -24,7 +26,7 @@ export default async function Layout({
     <div className="flex w-full h-full">
       <div className="w-2/3 p-4 flex-1 overflow-y-auto">{children}</div>
       <div className="w-1/3 p-4 flex flex-col overflow-y-auto">
-        <ForceDirectedGraph postGraph={postGraph} currentId={decodedId} />
+        <GraphView postGraph={postGraph} postId={decodedId} />
         <Toc id={id} className="mt-4" />
       </div>
     </div>

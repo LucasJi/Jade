@@ -1,4 +1,4 @@
-import ForceDirectedGraph from '@components/ForceDirectedGraph';
+import GraphView from '@components/GraphView';
 import { PostGraph } from '@types';
 
 export default async function Home() {
@@ -6,13 +6,12 @@ export default async function Home() {
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/graph`,
     {
       method: 'GET',
-      cache: 'no-store',
     },
   ).then(resp => resp.json());
 
   return (
     <div className="flex w-full justify-center">
-      <ForceDirectedGraph postGraph={postGraph} />
+      <GraphView postGraph={postGraph} />
     </div>
   );
 }

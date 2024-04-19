@@ -83,3 +83,4 @@ For now, only the `title` and `tags` key are supported. The values of them will 
 - [Tailwind CSS](https://tailwindcss.com/)
 - [remarkjs](https://github.com/remarkjs)
 - [D3](https://d3js.org/)
+- [React Icons](https://react-icons.github.io/react-icons/)
