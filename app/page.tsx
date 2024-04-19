@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
     <div className="flex w-full justify-center">
-      <GraphView postGraph={postGraph} />
+      <GraphView postGraph={postGraph} className="mt-8" />
     </div>
   );
 }
