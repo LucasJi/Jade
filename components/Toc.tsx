@@ -56,7 +56,7 @@ export default async function Toc({
   return (
     headings?.length > 0 && (
       <div className={classNames(className)}>
-        <span className="font-bold">Table of content</span>
+        <span className="font-bold">Table of Content</span>
         <ul>
           {headings.map((heading, index) => (
             <TocNode key={`${heading.type}-${index}`} heading={heading} />

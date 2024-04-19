@@ -56,7 +56,7 @@ The only difference is the nodes in Galaxy Post's graph view are clickable. You 
 
 Galaxy Post shows the directory structure of your posts.
 
-### Table of content
+### Table of Content
 
 Galaxy Post generates a table of content for each post. It will be displayed at the right-bottom side of the post page.
 

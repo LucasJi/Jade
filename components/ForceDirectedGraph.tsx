@@ -282,7 +282,7 @@ const ForceDirectedGraph = ({
 
   return (
     <div className="w-fit h-fit">
-      <span className="font-bold">Graph view</span>
+      <span className="font-bold">Graph View</span>
       <div
         ref={containerRef}
         className={classNames(className, 'border-1', 'rounded-md', 'mt-2')}
