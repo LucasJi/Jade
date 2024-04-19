@@ -144,7 +144,7 @@ const ForceDirectedGraph = ({
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
-          router.push('/post/' + d.id);
+          router.push('/posts/' + d.id);
         })
         .on('mouseover', function (_, d) {
           const { id } = d;
@@ -256,7 +256,7 @@ const ForceDirectedGraph = ({
         .style('cursor', 'pointer')
         .text(d => d.title!)
         .on('click', (_, d) => {
-          router.push('/post/' + d.id);
+          router.push('/posts/' + d.id);
         })
         // @ts-ignore
         .call(drag(simulation));

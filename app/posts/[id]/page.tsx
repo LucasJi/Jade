@@ -10,7 +10,7 @@ export default async function Page({
   const decodedId = decodeURIComponent(id);
 
   const post = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${decodedId}`,
     {
       method: 'GET',
     },

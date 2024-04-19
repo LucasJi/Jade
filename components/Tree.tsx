@@ -84,7 +84,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   ) : (
     <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
       <Link
-        href={`/post/${node.id}`}
+        href={`/posts/${node.id}`}
         className="min-h-0 text-sm font-normal"
         // Reduce unnecessary requests
         prefetch={false}

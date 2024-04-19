@@ -19,7 +19,7 @@ export default function Wikilink({
   useEffect(() => {
     setLoading(true);
     fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/post?${new URLSearchParams({
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts?${new URLSearchParams({
         wikilink,
       })}`,
       {
@@ -49,7 +49,7 @@ export default function Wikilink({
     >
       <Link
         className="text-[#A88BFA]"
-        href={`/post/${post?.id}`}
+        href={`/posts/${post?.id}`}
         color="foreground"
         as={NextLink}
         prefetch={false}

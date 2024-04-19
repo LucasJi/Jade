@@ -16,7 +16,7 @@ export default async function Layout({
   const decodedId = decodeURIComponent(id);
 
   const postGraph: PostGraph = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${decodedId}/graph`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${decodedId}/graph`,
     {
       method: 'GET',
     },

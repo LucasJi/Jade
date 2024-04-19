@@ -47,7 +47,7 @@ export default async function Toc({
   className?: string;
 }) {
   const headings: ListItem[] = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${id}/toc`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/toc`,
     {
       method: 'GET',
     },

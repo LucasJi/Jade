@@ -54,7 +54,9 @@ const GlobalGraphView = ({ className = '' }: { className?: string }) => {
             {postGraph ? (
               <ForceDirectedGraph postGraph={postGraph} border={false} full />
             ) : (
-              <LgSpinnerInCenter />
+              <div className="w-[300px] h-[300px]">
+                <LgSpinnerInCenter />
+              </div>
             )}
           </ModalBody>
         </ModalContent>
