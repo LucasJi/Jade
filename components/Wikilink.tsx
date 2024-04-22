@@ -1,10 +1,8 @@
-'use client';
-
-import { Link, Spinner, Tooltip } from '@nextui-org/react';
-import { Post } from '@types';
+import { Link, Tooltip } from '@nextui-org/react';
 import NextLink from 'next/link';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import Markdown from './Markdown';
+import { getPostById, getWikilinks } from '@utils/postUtil';
 
 export default function Wikilink({
   wikilink = '',
@@ -13,38 +11,30 @@ export default function Wikilink({
   wikilink: string;
   children: ReactNode;
 }) {
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const wikilinks: string[] = getWikilinks();
 
-  useEffect(() => {
-    setLoading(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts?${new URLSearchParams({
-        wikilink,
-      })}`,
-      {
-        method: 'GET',
-      },
-    )
-      .then(resp => resp.json())
-      .then(value => setPost(value))
-      .then(() => setLoading(false));
-  }, [wikilink]);
+  const splits = wikilink.split('#');
+
+  let post = null;
+  const title = splits[0];
+  const completeWikilink = wikilinks.find(
+    l => l === title || l.includes(title),
+  );
+  if (completeWikilink) {
+    const id = btoa(completeWikilink);
+    post = getPostById(id);
+  }
 
   return (
     <Tooltip
       content={
-        loading ? (
-          <Spinner color="secondary" />
-        ) : (
-          <Markdown
-            className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
-            markdown={post?.content || ''}
-            title={post?.title || ''}
-            renderWikilink={false}
-            wikilink={wikilink}
-          />
-        )
+        <Markdown
+          className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
+          markdown={post?.content || ''}
+          title={post?.title || ''}
+          renderWikilink={false}
+          wikilink={wikilink}
+        />
       }
     >
       <Link
