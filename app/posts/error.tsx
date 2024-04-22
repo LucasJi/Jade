@@ -11,10 +11,10 @@ export default function Error({
 }) {
   return (
     <div className="w-full flex flex-col items-center">
-      <h2>404</h2>
+      <h2 className="text-2xl font-bold">404</h2>
       <span>Either this page is private or does not exist.</span>
-      <Link href="/" color="foreground" underline="focus">
-        Back to home page
+      <Link href="/" color="foreground" underline="always">
+        back to home page
       </Link>
     </div>
   );

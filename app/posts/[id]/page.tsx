@@ -1,20 +1,17 @@
 import Markdown from '@components/Markdown';
 
-export const dynamic = 'force-dynamic';
-
+import { getPostById } from '@utils/postUtil';
 export default async function Page({
   params: { id },
 }: {
   params: { id: string };
 }) {
   const decodedId = decodeURIComponent(id);
+  const post = getPostById(decodedId);
 
-  const post = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${decodedId}`,
-    {
-      method: 'GET',
-    },
-  ).then(resp => resp.json());
+  if (!post) {
+    return <div>Post not found</div>;
+  }
 
   const { content, title } = post;
 

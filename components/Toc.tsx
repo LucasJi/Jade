@@ -1,3 +1,4 @@
+import { getPostById, getPostToc } from '@utils/postUtil';
 import classNames from 'classnames';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
 
@@ -46,12 +47,8 @@ export default async function Toc({
   id: string;
   className?: string;
 }) {
-  const headings: ListItem[] = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${id}/toc`,
-    {
-      method: 'GET',
-    },
-  ).then(resp => resp.json());
+  const post = getPostById(id);
+  const headings: ListItem[] = getPostToc(post!.content);
 
   return (
     headings?.length > 0 && (

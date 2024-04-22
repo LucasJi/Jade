@@ -6,7 +6,7 @@ export interface Post {
   // atob(id)
   wikilink: string;
   content: string;
-  title?: string;
+  title: string;
   frontmatter?: undefined | { [key: string]: any };
   // ids
   forwardLinks: string[];

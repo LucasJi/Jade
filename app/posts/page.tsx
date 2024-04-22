@@ -1,13 +1,8 @@
 import GraphView from '@components/GraphView';
-import { PostGraph } from '@types';
+import { getPostGraph } from '@utils/postUtil';
 
 export default async function Page() {
-  const postGraph: PostGraph = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/graph`,
-    {
-      method: 'GET',
-    },
-  ).then(resp => resp.json());
+  const postGraph = getPostGraph();
 
   return (
     <div className="flex w-full justify-center">

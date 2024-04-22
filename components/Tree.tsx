@@ -1,9 +1,10 @@
 'use client';
+
 import { ScrollShadow } from '@nextui-org/react';
 import { TreeNode, TreeProps } from '@types';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { useSelectedLayoutSegment } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import {
   createContext,
   FC,
@@ -98,8 +99,9 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 const TreeContext = createContext<string[]>([]);
 
 const Tree: React.FC<TreeProps> = ({ data, className }) => {
-  const postId = useSelectedLayoutSegment();
-  const decodedPostId = decodeURIComponent(postId || '');
+  const { id } = useParams<{ id: string }>();
+  const decodedPostId = decodeURIComponent(id);
+
   const [expandedNodeNames, setExpandedNodeNames] = useState<string[]>([]);
 
   useEffect(() => {
