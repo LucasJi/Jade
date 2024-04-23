@@ -1,8 +1,8 @@
 import { Link, Tooltip } from '@nextui-org/react';
+import { getPostById, getWikilinks } from '@utils/postUtil';
 import NextLink from 'next/link';
 import { ReactNode } from 'react';
 import Markdown from './Markdown';
-import { getPostById, getWikilinks } from '@utils/postUtil';
 
 export default function Wikilink({
   wikilink = '',
@@ -27,6 +27,7 @@ export default function Wikilink({
 
   return (
     <Tooltip
+      delay={500}
       content={
         <Markdown
           className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"

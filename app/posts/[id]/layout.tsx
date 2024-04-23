@@ -23,7 +23,9 @@ export default async function Layout({
 
   return (
     <div className="flex w-full h-full">
-      <div className="w-2/3 p-4 flex-1 overflow-y-auto">{children}</div>
+      <div className="w-2/3 p-4 flex-1 overflow-y-auto min-h-[600px]">
+        {children}
+      </div>
       <div className="w-1/4 p-4 flex flex-col overflow-y-auto">
         <GraphView postGraph={postGraph} postId={decodedId} />
         <Toc id={decodedId} className="mt-4" />
