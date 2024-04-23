@@ -1,4 +1,5 @@
 ---
+title: Add an alias to a note
 aliases:
   - Doggo
   - Woofer
