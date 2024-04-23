@@ -17,9 +17,9 @@ const MD_HEADING_REG = /^(#{1,6})\s+.+/;
 const DEFAULT_MD_PROCESSOR = remark().use(remarkFrontmatter, ['yaml']);
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
-// export const POST_DIR = '/home/lucas/docs';
 
 export const getWikilinks = (): string[] => {
+  console.log('getWikilinks');
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath =>
     getRelativePathFromAbsolutePath(absolutePath),
