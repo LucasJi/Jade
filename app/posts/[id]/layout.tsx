@@ -28,7 +28,7 @@ export default async function Layout({
       </div>
       <div className="w-1/4 p-4 flex flex-col overflow-y-auto">
         <GraphView postGraph={postGraph} postId={decodedId} />
-        <Toc id={decodedId} className="mt-4" />
+        <Toc post={post!} className="mt-4" />
       </div>
     </div>
   );
