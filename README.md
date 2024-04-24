@@ -67,14 +67,14 @@ Galaxy Post only supports `yaml` style frontmatter now. For example:
 ```yaml
 ---
 title: Post Title
-date: 2023-01-01
+aliases: 2023-01-01
 tags:
   - tag1
   - tag2
 ---
 ```
 
-For now, only the `title` and `tags` key are supported. The values of them will be resolved and friendly displayed in the post page.
+For now, only the `title`, `tags` and `aliases` keys are supported. The values of them will be resolved and friendly displayed in the post page.
 
 ## Tech Stack
 
