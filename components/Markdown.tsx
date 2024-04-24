@@ -78,7 +78,16 @@ const components = (
             <Spacer x={2} />
             {tags.map((tag, idx) => (
               <>
-                <Chip key={tag} size="sm" variant="dot">
+                <Chip
+                  key={tag}
+                  size="sm"
+                  variant="dot"
+                  classNames={{
+                    base: 'border-obsidian-purple',
+                    content: 'text-obsidian-purple',
+                    dot: 'text-obsidian-purple',
+                  }}
+                >
                   {tag}
                 </Chip>
                 {idx < tags.length - 1 && <Spacer x={1} />}
