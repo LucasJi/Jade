@@ -6,7 +6,10 @@ export default async function Page() {
 
   return (
     <div className="flex w-full justify-center">
-      <GraphView postGraph={postGraph} className="mt-8" />
+      <div className="w-2/3">list</div>
+      <div className="w-1/3">
+        <GraphView postGraph={postGraph} />
+      </div>
     </div>
   );
 }
