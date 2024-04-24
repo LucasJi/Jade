@@ -8,13 +8,23 @@ import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
 import { Post, PostGraph, TreeNode } from 'types';
 import { visit } from 'unist-util-visit';
+import { matter } from 'vfile-matter';
+
+// convert frontmatter to metadata, see: https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#example-frontmatter-as-metadata
+function frontYamlMatterHandler() {
+  return function (tree: any, file: any) {
+    matter(file);
+  };
+}
 
 const SEPARATOR = '/';
 // find markdown mark "#"
 const MD_TITLE_REG = /^#\s+.+/;
 const MD_SUFFIX_REG = /\.md$/;
 const MD_HEADING_REG = /^(#{1,6})\s+.+/;
-const DEFAULT_MD_PROCESSOR = remark().use(remarkFrontmatter, ['yaml']);
+const DEFAULT_MD_PROCESSOR = remark()
+  .use(remarkFrontmatter, ['yaml'])
+  .use(frontYamlMatterHandler);
 
 export const POST_DIR = join(process.cwd(), '_posts', SEPARATOR);
 
@@ -107,7 +117,7 @@ export const resolvePost = (
 
   // try to get title from frontmatter
   const postVFile = DEFAULT_MD_PROCESSOR.processSync(post);
-  const frontmatter = postVFile.data.frontmatter as
+  const frontmatter = postVFile.data.matter as
     | undefined
     | { [key: string]: any };
   title = frontmatter?.title;

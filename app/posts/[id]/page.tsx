@@ -23,16 +23,12 @@ export default async function Page({
     return <div>Post not found</div>;
   }
 
-  const { content, title } = post;
+  console.log(post);
 
   return (
     <div className="flex w-full h-full">
       <div className="w-2/3 p-4 flex-1 overflow-y-auto min-h-[600px]">
-        <Markdown
-          markdown={content}
-          title={title}
-          className="max-w-none w-full"
-        />
+        <Markdown post={post} className="max-w-none w-full" />
       </div>
       <div className="w-1/4 p-4 flex flex-col overflow-y-auto">
         <GraphView postGraph={postGraph} postId={decodedId} />

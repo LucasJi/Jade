@@ -31,15 +31,14 @@ export default function Wikilink({
       content={
         <Markdown
           className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
-          markdown={post?.content || ''}
-          title={post?.title || ''}
           renderWikilink={false}
           wikilink={wikilink}
+          post={post!}
         />
       }
     >
       <Link
-        className="text-[#A88BFA]"
+        className="text-obsidian-purple"
         href={`/posts/${post?.id}`}
         color="foreground"
         as={NextLink}

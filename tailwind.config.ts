@@ -8,7 +8,11 @@ const config: Config = {
     './app/**/*.{ts,tsx}',
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
-  theme: {},
+  theme: {
+    colors: {
+      'obsidian-purple': '#A88BFA',
+    },
+  },
   plugins: [nextui(), require('@tailwindcss/typography')],
 };
 

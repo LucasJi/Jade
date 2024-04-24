@@ -6,6 +6,8 @@ import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
+import { Frontmatter, Post } from '@/types';
+import { Chip, Spacer } from '@nextui-org/react';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -22,7 +24,10 @@ const getHeadingId = (props: any) => {
   return slugs.slug(hContent);
 };
 
-const components = (renderWikilink: boolean): Components => ({
+const components = (
+  renderWikilink: boolean,
+  frontmatter?: Frontmatter,
+): Components => ({
   a: props => {
     const { className, href, children } = props;
     if (className?.includes('wikilink')) {
@@ -44,6 +49,44 @@ const components = (renderWikilink: boolean): Components => ({
       >
         {children}
       </Link>
+    );
+  },
+  h1: props => {
+    const aliases: string[] | undefined = frontmatter?.aliases;
+    const tags: string[] | undefined = frontmatter?.tags;
+
+    return (
+      <>
+        <h1>{props.children}</h1>
+        {aliases && (
+          <div className="flex items-center">
+            <span>Aliases:</span>
+            <Spacer x={2} />
+            {aliases.map((alias, idx) => (
+              <>
+                <Chip key={alias} size="sm">
+                  {alias}
+                </Chip>
+                {idx < aliases.length - 1 && <Spacer x={1} />}
+              </>
+            ))}
+          </div>
+        )}
+        {tags && (
+          <div className="flex items-center">
+            <span>Tags:</span>
+            <Spacer x={2} />
+            {tags.map((tag, idx) => (
+              <>
+                <Chip key={tag} size="sm" variant="dot">
+                  {tag}
+                </Chip>
+                {idx < tags.length - 1 && <Spacer x={1} />}
+              </>
+            ))}
+          </div>
+        )}
+      </>
     );
   },
   h2: props => {
@@ -97,18 +140,17 @@ const components = (renderWikilink: boolean): Components => ({
 });
 
 const Markdown = ({
-  markdown,
-  title,
   className,
   renderWikilink = true,
   wikilink = '',
+  post,
 }: {
-  markdown: string;
-  title: string;
   className?: string;
   renderWikilink?: boolean;
   wikilink?: string;
+  post: Post;
 }) => {
+  const { title, content, frontmatter } = post;
   return (
     <article
       className={classNames(
@@ -130,7 +172,7 @@ const Markdown = ({
       )}
     >
       <ReactMarkdown
-        components={components(renderWikilink)}
+        components={components(renderWikilink, frontmatter)}
         remarkPlugins={[
           remarkGfm,
           remarkFrontmatter,
@@ -139,7 +181,7 @@ const Markdown = ({
         ]}
         rehypePlugins={[rehypeRaw as any]}
       >
-        {markdown}
+        {content}
       </ReactMarkdown>
     </article>
   );

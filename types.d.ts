@@ -7,12 +7,14 @@ export interface Post {
   wikilink: string;
   content: string;
   title: string;
-  frontmatter?: undefined | { [key: string]: any };
+  frontmatter?: Frontmatter;
   // ids
   forwardLinks: string[];
   // ids
   backlinks: string[];
 }
+
+export type Frontmatter = undefined | { [key: string]: any };
 
 export type PostGraphNode = d3.SimulationNodeDatum & Post;
 
