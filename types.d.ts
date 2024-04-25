@@ -12,6 +12,7 @@ export interface Post {
   forwardLinks: string[];
   // ids
   backlinks: string[];
+  ctime: Date;
 }
 
 export type Frontmatter = undefined | { [key: string]: any };

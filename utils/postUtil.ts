@@ -158,6 +158,7 @@ export const getPostById = (id: string) => {
   const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
   try {
     const content = fs.readFileSync(fullPath, 'utf8');
+    const stat = fs.statSync(fullPath);
     const filenameSplits = relativePath.split(SEPARATOR);
     const filename = filenameSplits[filenameSplits.length - 1];
     const { title, frontmatter } = resolvePost(content, filename);
@@ -169,6 +170,7 @@ export const getPostById = (id: string) => {
       frontmatter,
       forwardLinks: [],
       backlinks: [],
+      ctime: stat.ctime,
     };
     return post;
   } catch (e) {
