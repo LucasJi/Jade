@@ -1,12 +1,14 @@
+import { getAdjacencyPostsById } from '@/utils/getAdjacencyPostsById';
+import { getPostById } from '@/utils/getPostById';
+import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
+import { getPostIds } from '@/utils/getPostIds';
 import GraphView from '@components/GraphView';
 import Markdown from '@components/Markdown';
 import Toc from '@components/Toc';
-import {
-  generatePostGraphFromPosts,
-  getAdjacencyPosts,
-  getIds,
-  getPostById,
-} from '@utils/postUtil';
+
+// Dynamic segments not included in generateStaticParams will return a 404.
+// Which means invalid post id will return a 404.
+// export const dynamicParams = false;
 
 export default async function Page({
   params: { id },
@@ -15,9 +17,9 @@ export default async function Page({
 }) {
   const decodedId = decodeURIComponent(id);
 
-  const post = getPostById(decodedId);
-  const adjPosts = getAdjacencyPosts(post!);
-  const postGraph = generatePostGraphFromPosts(adjPosts);
+  const post = await getPostById(decodedId);
+  const adjPosts = await getAdjacencyPostsById(post!.id);
+  const postGraph = await getPostGraphFromPosts(adjPosts);
 
   if (!post) {
     return <div>Post not found</div>;
@@ -37,5 +39,5 @@ export default async function Page({
 }
 
 export async function generateStaticParams() {
-  return getIds();
+  return await getPostIds();
 }

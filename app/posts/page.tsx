@@ -1,10 +1,11 @@
+import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
+import { getPosts } from '@/utils/getPosts';
 import GraphView from '@components/GraphView';
 import { Link, Spacer } from '@nextui-org/react';
-import { generatePostGraphFromPosts, getPosts } from '@utils/postUtil';
 
 export default async function Page() {
-  const posts = getPosts();
-  const postGraph = generatePostGraphFromPosts(posts);
+  const posts = await getPosts();
+  const postGraph = await getPostGraphFromPosts(posts);
   posts.sort((a, b) => b.ctime.getTime() - a.ctime.getTime());
 
   return (

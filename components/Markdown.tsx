@@ -85,7 +85,7 @@ const components = (
                   classNames={{
                     base: 'border-obsidian-purple',
                     content: 'text-obsidian-purple',
-                    dot: 'text-obsidian-purple',
+                    dot: 'bg-obsidian-purple',
                   }}
                 >
                   {tag}

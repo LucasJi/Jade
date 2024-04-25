@@ -1,5 +1,5 @@
 import { Post } from '@types';
-import { getPostToc } from '@utils/postUtil';
+import { getPostToc } from '@utils/common';
 import classNames from 'classnames';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
 

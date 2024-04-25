@@ -1,17 +1,18 @@
+import { getPostById } from '@/utils/getPostById';
+import { getWikilinks } from '@/utils/getWikilinks';
 import { Link, Tooltip } from '@nextui-org/react';
-import { getPostById, getWikilinks } from '@utils/postUtil';
 import NextLink from 'next/link';
 import { ReactNode } from 'react';
 import Markdown from './Markdown';
 
-export default function Wikilink({
+export default async function Wikilink({
   wikilink = '',
   children,
 }: {
   wikilink: string;
   children: ReactNode;
 }) {
-  const wikilinks: string[] = getWikilinks();
+  const wikilinks: string[] = await getWikilinks();
 
   const splits = wikilink.split('#');
 
@@ -22,7 +23,7 @@ export default function Wikilink({
   );
   if (completeWikilink) {
     const id = btoa(completeWikilink);
-    post = getPostById(id);
+    post = await getPostById(id);
   }
 
   return (

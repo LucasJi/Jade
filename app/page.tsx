@@ -1,8 +1,10 @@
+import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
+import { getPosts } from '@/utils/getPosts';
 import GraphView from '@components/GraphView';
-import { getPostGraph } from '@utils/postUtil';
 
 export default async function Home() {
-  const postGraph = getPostGraph();
+  const posts = await getPosts();
+  const postGraph = await getPostGraphFromPosts(posts);
 
   return (
     <div className="flex w-full justify-center">
