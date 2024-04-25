@@ -21,6 +21,7 @@ const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/graph`, {
       method: 'GET',
+      cache: 'force-cache',
     })
       .then(resp => resp.json())
       .then(data => setPostGraph(data));

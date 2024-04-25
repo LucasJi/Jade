@@ -1,13 +1,8 @@
 import fs from 'fs';
 import { join } from 'path';
-import { cache } from 'react';
 import 'server-only';
 import { getIdFromAbsolutePath } from './common';
 import { POST_DIR } from './constants';
-
-export const preload = () => {
-  void getPostIds();
-};
 
 const getMarkdownAbsolutePaths = (
   dir: string,
@@ -27,8 +22,8 @@ const getMarkdownAbsolutePaths = (
   return absolutePaths;
 };
 
-export const getPostIds = cache(async (): Promise<string[]> => {
-  console.log('get post ids');
+export const getPostIds = (): string[] => {
+  console.log('util: get post ids');
   const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
   return absolutePaths.map(absolutePath => getIdFromAbsolutePath(absolutePath));
-});
+};

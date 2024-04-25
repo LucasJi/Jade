@@ -1,10 +1,14 @@
 import { getAdjacencyPostsById } from '@/utils/getAdjacencyPostsById';
 import { getPostById } from '@/utils/getPostById';
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
-import { getPostIds } from '@/utils/getPostIds';
+import { getServerPostIds } from '@/utils/server-only/getServerPostIds';
 import GraphView from '@components/GraphView';
 import Markdown from '@components/Markdown';
 import Toc from '@components/Toc';
+
+export async function generateStaticParams() {
+  return getServerPostIds();
+}
 
 // Dynamic segments not included in generateStaticParams will return a 404.
 // Which means invalid post id will return a 404.
@@ -36,8 +40,4 @@ export default async function Page({
       </div>
     </div>
   );
-}
-
-export async function generateStaticParams() {
-  return await getPostIds();
 }

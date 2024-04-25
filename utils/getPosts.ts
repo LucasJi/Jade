@@ -52,7 +52,7 @@ const resolveWikilinks = (posts: Post[]) => {
 export const getPosts = cache(async (): Promise<Post[]> => {
   console.log('get posts');
   const posts: Array<Post> = [];
-  const ids = await getPostIds();
+  const ids = getPostIds();
 
   for (const id of ids) {
     const post = await getPostById(id);
