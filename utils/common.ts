@@ -81,16 +81,16 @@ export const getMarkdownAbsolutePaths = (
   return absolutePaths;
 };
 
-export const removeTitle = (post: string) => {
-  const tokens = post.split('\n');
+export const removeTitle = (content: string) => {
+  const tokens = content.split('\n');
   const restTokens = tokens
     .filter(token => !MD_TITLE_REG.test(token))
     .filter(token => MD_HEADING_REG.test(token));
   return restTokens.join('\n');
 };
 
-export const getPostToc = (post: string) => {
-  const tree = fromMarkdown(removeTitle(post)) as Root;
+export const getPostToc = (content: string) => {
+  const tree = fromMarkdown(removeTitle(content)) as Root;
   const result = toc(tree);
   const map = result.map;
 

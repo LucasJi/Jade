@@ -5,7 +5,7 @@ import { cache } from 'react';
 import 'server-only';
 import { visit } from 'unist-util-visit';
 import { getPostById } from './getPostById';
-import { getPostIds } from './getPostIds';
+import { getServerPostIds } from './server-only/getServerPostIds';
 
 export const preload = () => {
   void getPosts();
@@ -52,7 +52,7 @@ const resolveWikilinks = (posts: Post[]) => {
 export const getPosts = cache(async (): Promise<Post[]> => {
   console.log('get posts');
   const posts: Array<Post> = [];
-  const ids = getPostIds();
+  const ids = await getServerPostIds();
 
   for (const id of ids) {
     const post = await getPostById(id);

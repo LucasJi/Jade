@@ -1,4 +1,3 @@
-import { Post } from '@types';
 import { getPostToc } from '@utils/common';
 import classNames from 'classnames';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
@@ -42,13 +41,13 @@ function TocNode({ heading }: { heading: BlockContent | ListItem }) {
 }
 
 export default async function Toc({
-  post,
+  content,
   className,
 }: {
-  post: Post;
+  content: string;
   className?: string;
 }) {
-  const headings: ListItem[] = getPostToc(post!.content);
+  const headings: ListItem[] = getPostToc(content);
 
   return (
     headings?.length > 0 && (

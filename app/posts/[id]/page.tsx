@@ -10,10 +10,6 @@ export async function generateStaticParams() {
   return getServerPostIds();
 }
 
-// Dynamic segments not included in generateStaticParams will return a 404.
-// Which means invalid post id will return a 404.
-// export const dynamicParams = false;
-
 export default async function Page({
   params: { id },
 }: {
@@ -36,7 +32,7 @@ export default async function Page({
       </div>
       <div className="w-1/3 p-4 flex flex-col overflow-y-auto">
         <GraphView postGraph={postGraph} postId={decodedId} />
-        <Toc post={post!} className="mt-4" />
+        <Toc content={post?.content} className="mt-4" />
       </div>
     </div>
   );

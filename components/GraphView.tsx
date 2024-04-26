@@ -1,7 +1,6 @@
 import { PostGraph } from '@types';
 import classNames from 'classnames';
 import ForceDirectedGraph from './ForceDirectedGraph';
-import GlobalGraphView from './GlobalGraphView';
 
 const GraphView = ({
   postId,
@@ -17,7 +16,7 @@ const GraphView = ({
       <span className="font-bold">Graph View</span>
       <div className="relative">
         <ForceDirectedGraph postGraph={postGraph} postId={postId} />
-        <GlobalGraphView />
+        {/* <GlobalGraphView /> */}
       </div>
     </div>
   );

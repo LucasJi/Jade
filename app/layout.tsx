@@ -14,6 +14,7 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
+  console.log('build root layout');
   return (
     <html className="light h-full w-full scroll-smooth m-0" lang="en">
       <body
