@@ -1,10 +1,3 @@
-// export interface TreeNode {
-//   id: string;
-//   name: string;
-//   children?: TreeNode[];
-//   isDir: boolean;
-// }
-
 const buildTree = treeData => {
   const tree = {
     name: 'root',
@@ -13,35 +6,49 @@ const buildTree = treeData => {
   };
 
   treeData.forEach(item => {
+    const pathParts = item.path.split('/');
+    const dirs = pathParts.slice(0, -1);
+    let currentNode = tree;
+
+    // find or create nodes for directories
+    dirs.forEach(dir => {
+      let dirNode = currentNode.children.find(
+        node => node.name === dir && node.isDir,
+      );
+
+      if (!dirNode) {
+        dirNode = {
+          name: dir,
+          children: [],
+          isDir: true,
+        };
+
+        currentNode.children.push(dirNode);
+      }
+
+      currentNode = dirNode;
+    });
+
     if (item.type === 'tree') {
-      tree.push({
-        name: item.path,
+      const dir = pathParts[pathParts.length - 1];
+      currentNode.children.push({
+        name: dir,
         children: [],
         isDir: true,
       });
     }
 
     if (item.type === 'blob') {
-      const pathParts = item.path.split('/');
-      const dirs = pathParts.slice(0, -1);
-      let currentNode = tree;
-      dirs.forEach(dir => {
-        let dirNode = currentNode.find(node => node.name === dir && node.isDir);
-
-        if (!dirNode) {
-          dirNode = {
-            name: dir,
-            children: [],
-            isDir: true,
-          };
-          currentNode.push(dirNode);
-        }
-
-        currentNode = dirNode;
+      const file = pathParts[pathParts.length - 1];
+      currentNode.children.push({
+        name: file,
+        children: [],
+        isDir: false,
       });
     }
   });
-  return tree;
+
+  return tree.children;
 };
 
 const treeApi = () =>
@@ -60,15 +67,15 @@ const treeApi = () =>
     .then(data => {
       const { tree } = data;
       console.log(tree);
-      // const treeObj = buildTree(tree);
-      // console.log(treeObj);
+      const treeObj = buildTree(tree);
+      console.log(JSON.stringify(treeObj));
     });
 
-treeApi();
+// treeApi();
 
 const contentApi = () =>
   fetch(
-    'https://api.github.com/repos/LucasJi/galaxy-feature-posts/contents/Demo/Demo.md',
+    'https://api.github.com/repos/LucasJi/galaxy-feature-posts/contents/Wikilink/Link to a heading in a note.md',
     {
       headers: {
         Accept: 'application/vnd.github+json',
@@ -79,6 +86,9 @@ const contentApi = () =>
     },
   )
     .then(resp => resp.json())
-    .then(data => console.log(data));
+    .then(data => {
+      console.log(data);
+      console.log(atob(data.content));
+    });
 
-// contentApi();
+contentApi();

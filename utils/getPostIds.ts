@@ -1,29 +1,13 @@
-import fs from 'fs';
-import { join } from 'path';
-import 'server-only';
-import { getIdFromAbsolutePath } from './common';
-import { POST_DIR } from './constants';
+import { createFetch } from './common';
 
-const getMarkdownAbsolutePaths = (
-  dir: string,
-  absolutePaths: string[] = [],
-) => {
-  const files = fs.readdirSync(dir);
+export const getPostIds = (): Promise<string[]> => {
+  return createFetch('/git/trees/main?recursive=1')
+    .then(resp => resp.json())
+    .then(data => {
+      const { tree }: { tree: any[] } = data;
 
-  for (const file of files) {
-    const path = join(dir, file);
-    if (fs.statSync(path).isDirectory()) {
-      getMarkdownAbsolutePaths(path, absolutePaths);
-    } else if (file.endsWith('.md')) {
-      absolutePaths.push(path);
-    }
-  }
-
-  return absolutePaths;
-};
-
-export const getPostIds = (): string[] => {
-  console.log('util: get post ids');
-  const absolutePaths = getMarkdownAbsolutePaths(POST_DIR);
-  return absolutePaths.map(absolutePath => getIdFromAbsolutePath(absolutePath));
+      return tree
+        .filter(value => value.type === 'blob' && value.path.endsWith('.md'))
+        .map(value => btoa(value.path));
+    });
 };

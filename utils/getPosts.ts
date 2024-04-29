@@ -1,15 +1,9 @@
 import { Post } from '@/types';
 import { fromMarkdownWikilink, syntax } from '@lib/remark-wikilink';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import { cache } from 'react';
-import 'server-only';
 import { visit } from 'unist-util-visit';
 import { getPostById } from './getPostById';
-import { getServerPostIds } from './server-only/getServerPostIds';
-
-export const preload = () => {
-  void getPosts();
-};
+import { getPostIds } from './getPostIds';
 
 const resolveWikilinks = (posts: Post[]) => {
   const findPostById = (id: string): Post | undefined => {
@@ -27,9 +21,10 @@ const resolveWikilinks = (posts: Post[]) => {
 
       visit(tree, 'wikilink', node => {
         const { value }: { value: string } = node;
-        const post = posts.find(post =>
-          post.wikilink.includes(value.split('#')[0]),
-        );
+        const post = posts.find(post => {
+          const path = atob(post.id);
+          return path.includes(value.split('#')[0]);
+        });
         if (post) {
           forwardLinks.add(post.id);
         }
@@ -49,10 +44,9 @@ const resolveWikilinks = (posts: Post[]) => {
   }
 };
 
-export const getPosts = cache(async (): Promise<Post[]> => {
-  console.log('get posts');
+export const getPosts = async (): Promise<Post[]> => {
   const posts: Array<Post> = [];
-  const ids = await getServerPostIds();
+  const ids = await getPostIds();
 
   for (const id of ids) {
     const post = await getPostById(id);
@@ -66,4 +60,4 @@ export const getPosts = cache(async (): Promise<Post[]> => {
   resolveWikilinks(posts);
 
   return posts;
-});
+};

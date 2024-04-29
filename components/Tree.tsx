@@ -51,7 +51,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     }
   }, [expandedNodeNames]);
 
-  return node.children ? (
+  return node.isDir ? (
     <li className="mt-1">
       <button onClick={toggleExpand} className="flex items-center">
         <FoldIcon isExpanded={isExpanded} />
@@ -76,8 +76,8 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
             { 'opacity-0 invisible': !isExpanded },
           )}
         >
-          {node.children.map(child => (
-            <TreeNodeComponent key={child.id} node={child} />
+          {node.children.map((child, idx) => (
+            <TreeNodeComponent key={`${idx}-${child.name}`} node={child} />
           ))}
         </ul>
       </div>
@@ -85,7 +85,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   ) : (
     <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
       <Link
-        href={`/posts/${node.id}`}
+        href={`/posts/${node.path}`}
         className="min-h-0 text-sm font-normal"
         // Reduce unnecessary requests
         prefetch={false}
@@ -112,7 +112,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       }
 
       for (const node of nodes) {
-        if (node.id === decodedPostId) {
+        if (node.path === decodedPostId) {
           return true;
         }
 
@@ -136,8 +136,8 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       <ScrollShadow className="w-full h-full">
         <ul>
           <TreeContext.Provider value={expandedNodeNames}>
-            {data.map(node => (
-              <TreeNodeComponent key={node.id} node={node} />
+            {data.map((node, idx) => (
+              <TreeNodeComponent key={`${idx}-${node.name}`} node={node} />
             ))}
           </TreeContext.Provider>
         </ul>

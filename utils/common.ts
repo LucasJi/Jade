@@ -3,7 +3,6 @@ import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
 import { join } from 'path';
-import { TreeNode } from 'types';
 import {
   MD_HEADING_REG,
   MD_SUFFIX_REG,
@@ -11,6 +10,19 @@ import {
   POST_DIR,
 } from './constants';
 
+export const createFetch = (url: string) =>
+  fetch(
+    `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}${url}`,
+    {
+      headers: {
+        Accept: 'application/vnd.github.v3+json',
+        Authorization: 'Bearer ' + process.env.GITHUB_REPO_ACCESS_TOKEN!,
+        'X-GitHub-Api-Version': process.env.GITHUB_API_VERSION!,
+      },
+    },
+  );
+
+// TODO delete
 export const getRelativePathFromAbsolutePath = (
   absolutePath: string,
 ): string => {
@@ -22,47 +34,7 @@ export const getIdFromAbsolutePath = (absolutePath: string): string => {
   return btoa(relativePath);
 };
 
-export const getPostTree = () => {
-  return _getPostTree(POST_DIR);
-};
-
-const _getPostTree = (dir: string, postTree: TreeNode[] = []) => {
-  const files = fs.readdirSync(dir);
-
-  for (const file of files) {
-    const path = join(dir, file);
-    if (fs.statSync(path).isDirectory()) {
-      const node: TreeNode = {
-        id: getIdFromAbsolutePath(path),
-        name: file,
-        children: [],
-        isDir: true,
-      };
-      node.children = _getPostTree(path, node.children);
-      if (node.children.length > 0) {
-        postTree.push(node);
-      }
-    } else if (file.endsWith('.md')) {
-      postTree.push({
-        id: getIdFromAbsolutePath(path),
-        name: file.replace(/\.md$/, ''),
-        isDir: false,
-      });
-    }
-  }
-
-  postTree.sort((a, b) => {
-    if (a.isDir && !b.isDir) {
-      return -1;
-    } else if (!a.isDir && b.isDir) {
-      return 1;
-    }
-    return a.name.localeCompare(b.name);
-  });
-
-  return postTree;
-};
-
+// TODO delete
 export const getMarkdownAbsolutePaths = (
   dir: string,
   absolutePaths: string[] = [],
@@ -99,4 +71,14 @@ export const getPostToc = (content: string) => {
   }
 
   return map.children;
+};
+
+export const base64Encode = (str: string) => {
+  const utf8str = encodeURIComponent(str);
+  return btoa(utf8str);
+};
+
+export const base64Decode = (str: string) => {
+  const utf8str = atob(str);
+  return decodeURIComponent(utf8str);
 };

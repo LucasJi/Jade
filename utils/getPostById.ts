@@ -1,16 +1,10 @@
 import { Post } from '@/types';
-import fs from 'fs';
 import { Heading, Text } from 'mdast';
-import { cache } from 'react';
 import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
-import 'server-only';
 import { matter } from 'vfile-matter';
-import { POST_DIR, SEPARATOR } from './constants';
-
-export const preload = (id: string) => {
-  void getPostById(id);
-};
+import { createFetch } from './common';
+import { SEPARATOR } from './constants';
 
 // convert frontmatter to metadata, see: https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#example-frontmatter-as-metadata
 function frontYamlMatterHandler() {
@@ -59,28 +53,29 @@ export const resolvePost = (
   return { title, frontmatter };
 };
 
-export const getPostById = cache(async (id: string): Promise<Post | null> => {
-  console.log('get post by id:', id);
-  const relativePath = atob(id);
-  const fullPath = POST_DIR + SEPARATOR + relativePath + '.md';
+export const getPostById = async (id: string): Promise<Post | null> => {
+  const path = atob(id);
+  const file: any = await createFetch(`/contents/${path}`).then(resp =>
+    resp.json(),
+  );
   try {
-    const content = fs.readFileSync(fullPath, 'utf8');
-    const stat = fs.statSync(fullPath);
-    const filenameSplits = relativePath.split(SEPARATOR);
+    // resolve emoji base64 decoding problem
+    const content = Buffer.from(file.content, 'base64').toString();
+    const filenameSplits = path.split(SEPARATOR);
     const filename = filenameSplits[filenameSplits.length - 1];
     const { title, frontmatter } = resolvePost(content, filename);
     const post: Post = {
       id,
-      wikilink: relativePath,
       content: content,
       title,
       frontmatter,
       forwardLinks: [],
       backlinks: [],
-      ctime: stat.ctime,
+      ctime: new Date(),
     };
     return post;
   } catch (e) {
+    console.error('get post by id error', id, e);
     return null;
   }
-});
+};

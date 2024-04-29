@@ -1,13 +1,13 @@
 import { getAdjacencyPostsById } from '@/utils/getAdjacencyPostsById';
 import { getPostById } from '@/utils/getPostById';
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
-import { getServerPostIds } from '@/utils/server-only/getServerPostIds';
+import { getPostIds } from '@/utils/getPostIds';
 import GraphView from '@components/GraphView';
 import Markdown from '@components/Markdown';
 import Toc from '@components/Toc';
 
 export async function generateStaticParams() {
-  return getServerPostIds();
+  return getPostIds();
 }
 
 export default async function Page({
@@ -16,7 +16,6 @@ export default async function Page({
   params: { id: string };
 }) {
   const decodedId = decodeURIComponent(id);
-
   const post = await getPostById(decodedId);
   const adjPosts = await getAdjacencyPostsById(post!.id);
   const postGraph = await getPostGraphFromPosts(adjPosts);

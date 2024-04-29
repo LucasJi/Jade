@@ -1,10 +1,8 @@
 import * as d3 from 'd3';
 
 export interface Post {
-  // btoa(wikilink)
+  // btoa(path)
   id: string;
-  // atob(id)
-  wikilink: string;
   content: string;
   title: string;
   frontmatter?: Frontmatter;
@@ -27,9 +25,9 @@ export type PostGraph = {
 };
 
 export interface TreeNode {
-  id: string;
+  path?: string;
   name: string;
-  children?: TreeNode[];
+  children: TreeNode[];
   isDir: boolean;
 }
 
