@@ -6,13 +6,21 @@ const Footer = () => {
     <footer className="w-1/2 mx-auto flex flex-col items-center h-[100px] mb-8">
       <Divider className="my-4" />
       <div className="w-full flex h-16 justify-between">
-        <div className="flex flex-col">
-          <span>Galaxy Blog</span>
-          <span className="font-extralight text-sm">
-            ©2024 Created by Lucas Ji
+        <div className="flex flex-col font-extralight">
+          <span>{"Lucas Ji's Blog"}</span>
+          <span className="text-xs">
+            ©2024 Powered by{' '}
+            <Link
+              href="https://github.com/LucasJi/galaxy"
+              isExternal
+              color="foreground"
+              className="text-xs font-normal"
+            >
+              galaxy
+            </Link>
           </span>
           <a
-            className="font-extralight text-sm hover:underline "
+            className="text-xs hover:underline "
             href="https://beian.miit.gov.cn/"
             target="_blank"
           >
