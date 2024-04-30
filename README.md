@@ -29,9 +29,9 @@ This project is designed to enable the publication of my blogs, authored in [Obs
    GITHUB_OWNER=
    ```
 
-   - GITHUB_REPO_ACCESS_TOKEN: When generating your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), the **Read-Only** permission of **Contents** must be selected.
-   - GITHUB_REPO: The repository where your posts are stored. If you haven't created a post repository yet, you can folk my [feature test post repository](https://github.com/LucasJi/galaxy-feature-posts).
-   - GITHUB_OWNER: The owner of the repository.
+   - `GITHUB_REPO_ACCESS_TOKEN`: When generating your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), the **Read-Only** permission of **Contents** must be selected.
+   - `GITHUB_REPO`: The repository where your posts are stored. If you haven't created a post repository yet, you can folk my [feature test post repository](https://github.com/LucasJi/galaxy-feature-posts).
+   - `GITHUB_OWNER`: The owner of the repository.
 
 4. Start the server
 
