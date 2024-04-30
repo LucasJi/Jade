@@ -57,8 +57,7 @@ const treeApi = () =>
     {
       headers: {
         Accept: 'application/vnd.github+json',
-        Authorization:
-          'Bearer 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',
+        Authorization: 'Bearer ',
         'X-GitHub-Api-Version': '2022-11-28',
       },
     },
@@ -79,8 +78,7 @@ const contentApi = () =>
     {
       headers: {
         Accept: 'application/vnd.github+json',
-        Authorization:
-          'Bearer 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',
+        Authorization: 'Bearer ',
         'X-GitHub-Api-Version': '2022-11-28',
       },
     },
