@@ -17,7 +17,7 @@ export const createFetch = (url: string) =>
       headers: {
         Accept: 'application/vnd.github.v3+json',
         Authorization: 'Bearer ' + process.env.GITHUB_REPO_ACCESS_TOKEN!,
-        'X-GitHub-Api-Version': process.env.GITHUB_API_VERSION!,
+        'X-GitHub-Api-Version': '2022-11-28',
       },
     },
   );

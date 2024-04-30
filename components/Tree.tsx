@@ -132,7 +132,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
 
   return (
     <div className={classNames('px-2', className)}>
-      <span className="font-bold">Directory</span>
+      <span className="font-bold">File Explorer</span>
       <ScrollShadow className="w-full h-full">
         <ul>
           <TreeContext.Provider value={expandedNodeNames}>

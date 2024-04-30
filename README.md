@@ -2,6 +2,45 @@
 
 This project is designed to enable the publication of my blogs, authored in [Obsidian](https://obsidian.md/), to a blog website. The website will strive to support various wonderful features of Obsidian, such as wikilinks, graph view, and more, as much as possible.
 
+## Getting Started
+
+1. Clone this repository
+
+   ```bash
+   git clone git@github.com:LucasJi/galaxy.git
+   ```
+
+2. Install dependencies
+
+   ```bash
+   cd galaxy
+   npm install
+   ```
+
+3. Config environment variables in `.env` file
+
+   ```env
+   NEXT_PUBLIC_BASE_URL=<http://localhost:3000>
+
+   # github api configs
+
+   GITHUB_REPO_ACCESS_TOKEN=
+   GITHUB_REPO=
+   GITHUB_OWNER=
+   ```
+
+   - GITHUB_REPO_ACCESS_TOKEN: When generating your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), the **Read-Only** permission of **Contents** must be selected.
+   - GITHUB_REPO: The repository where your posts are stored. If you haven't created a post repository yet, you can folk my [feature test post repository](https://github.com/LucasJi/galaxy-feature-posts).
+   - GITHUB_OWNER: The owner of the repository.
+
+4. Start the server
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open `http://localhost:3000` in your browser
+
 ## Features
 
 ### Post tile
