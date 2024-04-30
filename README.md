@@ -7,7 +7,7 @@ This project is designed to enable the publication of my blogs, authored in [Obs
 1. Clone this repository
 
    ```bash
-   git clone git@github.com:LucasJi/galaxy.git
+   git clone https://github.com/LucasJi/galaxy.git
    ```
 
 2. Install dependencies
