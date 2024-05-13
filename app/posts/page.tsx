@@ -1,7 +1,7 @@
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { getPosts } from '@/utils/getPosts';
 import GraphView from '@components/GraphView';
-import { Link, Spacer } from '@nextui-org/react';
+import { Link } from '@nextui-org/react';
 
 export default async function Page() {
   const posts = await getPosts();
@@ -10,15 +10,16 @@ export default async function Page() {
 
   return (
     <div className="flex w-full justify-center">
-      <div className="w-2/3">
+      <div className="w-2/3 flex flex-col items-center">
         {posts.map(post => (
           <div key={post.id} className="flex items-center">
-            <div>{post.ctime.toLocaleDateString()}</div>
-            <Spacer x={4} />
+            {/* <div>{post.ctime.toLocaleDateString()}</div>
+            <Spacer x={4} /> */}
             <Link
               href={`/posts/${post.id}`}
               color="foreground"
               underline="hover"
+              className="text-lg"
             >
               {post.title}
             </Link>

@@ -7,20 +7,19 @@ const Footer = () => {
       <Divider className="my-4" />
       <div className="w-full flex h-16 justify-between">
         <div className="flex flex-col font-extralight">
-          <span>{"Lucas Ji's Blog"}</span>
+          <span className="font-bold">{"Lucas Ji's Blog"}</span>
           <span className="text-xs">
             ©2024 Powered by{' '}
-            <Link
+            <a
+              className="underline "
               href="https://github.com/LucasJi/galaxy"
-              isExternal
-              color="foreground"
-              className="text-xs font-normal"
+              target="_blank"
             >
-              galaxy
-            </Link>
+              Galaxy
+            </a>
           </span>
           <a
-            className="text-xs hover:underline "
+            className="text-xs underline "
             href="https://beian.miit.gov.cn/"
             target="_blank"
           >
