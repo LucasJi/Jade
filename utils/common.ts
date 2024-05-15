@@ -10,7 +10,7 @@ import {
   POST_DIR,
 } from './constants';
 
-export const createFetch = (url: string) =>
+export const githubRequest = (url: string) =>
   fetch(
     `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}${url}`,
     {
@@ -20,7 +20,15 @@ export const createFetch = (url: string) =>
         'X-GitHub-Api-Version': '2022-11-28',
       },
     },
-  );
+  ).then(async resp => {
+    if (resp.status !== 200) {
+      const msg = await resp.text();
+      console.error('github api request failed', resp.status, msg);
+      throw new Error('github api request failed: ' + msg);
+    }
+    // console.log(resp.status, resp.text);
+    return resp.json();
+  });
 
 // TODO delete
 export const getRelativePathFromAbsolutePath = (

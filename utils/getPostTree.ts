@@ -1,5 +1,5 @@
 import { TreeNode } from '@/types';
-import { createFetch } from './common';
+import { githubRequest } from './common';
 import { MD_SUFFIX_REG } from './constants';
 
 const buildTree = (treeData: any[]): TreeNode[] => {
@@ -66,10 +66,8 @@ const buildTree = (treeData: any[]): TreeNode[] => {
 };
 
 export const getPostTree = async (): Promise<TreeNode[]> => {
-  return createFetch('/git/trees/main?recursive=1')
-    .then(resp => resp.json())
-    .then(data => {
-      const { tree } = data;
-      return buildTree(tree);
-    });
+  return githubRequest('/git/trees/main?recursive=1').then(data => {
+    const { tree } = data;
+    return buildTree(tree);
+  });
 };

@@ -1,5 +1,6 @@
 import WebVitals from '@/components/WebVitals';
 import Footer from '@components/Footer';
+import classNames from 'classnames';
 import { ReactNode } from 'react';
 import './globals.css';
 import { Providers } from './providers';
@@ -15,7 +16,10 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html className="light h-full w-full scroll-smooth m-0" lang="en">
+    <html
+      className={classNames('light h-full w-full scroll-smooth m-0')}
+      lang="en"
+    >
       <body
         className="h-full w-full flex m-0 min-h-[800px]"
         suppressHydrationWarning={true}
