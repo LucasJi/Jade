@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
   try {
-    return getPostIds();
+    return (await getPostIds()).map(id => encodeURIComponent(id));
   } catch (error) {
     return [];
   }

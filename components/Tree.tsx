@@ -85,7 +85,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   ) : (
     <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
       <Link
-        href={`/posts/${node.path}`}
+        href={`/posts/${encodeURIComponent(node.path || '')}`}
         className="min-h-0 text-sm font-normal"
         // Reduce unnecessary requests
         prefetch={false}
@@ -99,8 +99,8 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 const TreeContext = createContext<string[]>([]);
 
 const Tree: React.FC<TreeProps> = ({ data, className }) => {
-  const { id } = useParams<{ id: string }>();
-  const decodedPostId = decodeURIComponent(id);
+  let { id } = useParams<{ id: string }>();
+  id = decodeURIComponent(id);
 
   const [expandedNodeNames, setExpandedNodeNames] = useState<string[]>([]);
 
@@ -112,7 +112,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       }
 
       for (const node of nodes) {
-        if (node.path === decodedPostId) {
+        if (node.path === id) {
           return true;
         }
 
@@ -128,7 +128,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
     contains(data);
 
     setExpandedNodeNames([...nodeNames]);
-  }, [decodedPostId]);
+  }, [id]);
 
   return (
     <div className={classNames('px-2', className)}>

@@ -1,6 +1,7 @@
 import { TreeNode } from '@/types';
-import { githubRequest } from './common';
+import { base64Encode } from './common';
 import { MD_SUFFIX_REG } from './constants';
+import { getGitTree } from './getGitTree';
 
 const buildTree = (treeData: any[]): TreeNode[] => {
   const tree: TreeNode = {
@@ -54,7 +55,7 @@ const buildTree = (treeData: any[]): TreeNode[] => {
     if (item.type === 'blob') {
       const file: string = pathParts[pathParts.length - 1];
       currentNode.children.push({
-        path: btoa(item.path),
+        path: base64Encode(item.path),
         name: file.replace(MD_SUFFIX_REG, ''),
         children: [],
         isDir: false,
@@ -66,8 +67,7 @@ const buildTree = (treeData: any[]): TreeNode[] => {
 };
 
 export const getPostTree = async (): Promise<TreeNode[]> => {
-  return githubRequest('/git/trees/main?recursive=1').then(data => {
-    const { tree } = data;
+  return getGitTree().then(tree => {
     return buildTree(tree);
   });
 };

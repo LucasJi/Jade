@@ -2,6 +2,7 @@ import { Post } from '@/types';
 import { fromMarkdownWikilink, syntax } from '@lib/remark-wikilink';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
+import { base64Decode } from './common';
 import { getPostById } from './getPostById';
 import { getPostIds } from './getPostIds';
 
@@ -22,7 +23,7 @@ const resolveWikilinks = (posts: Post[]) => {
       visit(tree, 'wikilink', node => {
         const { value }: { value: string } = node;
         const post = posts.find(post => {
-          const path = atob(post.id);
+          const path = base64Decode(post.id);
           return path.includes(value.split('#')[0]);
         });
         if (post) {

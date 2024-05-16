@@ -38,7 +38,7 @@ export const getRelativePathFromAbsolutePath = (
 
 export const getIdFromAbsolutePath = (absolutePath: string): string => {
   const relativePath = getRelativePathFromAbsolutePath(absolutePath);
-  return btoa(relativePath);
+  return base64Encode(relativePath);
 };
 
 // TODO delete
@@ -80,12 +80,10 @@ export const getPostToc = (content: string) => {
   return map.children;
 };
 
-export const base64Encode = (str: string) => {
-  const utf8str = encodeURIComponent(str);
-  return btoa(utf8str);
+export const base64Encode = (text: string) => {
+  return Buffer.from(text).toString('base64');
 };
 
-export const base64Decode = (str: string) => {
-  const utf8str = atob(str);
-  return decodeURIComponent(utf8str);
+export const base64Decode = (text: string) => {
+  return Buffer.from(text, 'base64').toString();
 };

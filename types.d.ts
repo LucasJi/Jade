@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export interface Post {
-  // btoa(path)
+  // base64Encode(path)
   id: string;
   content: string;
   title: string;

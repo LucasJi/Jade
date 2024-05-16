@@ -16,7 +16,7 @@ export default async function Page() {
             {/* <div>{post.ctime.toLocaleDateString()}</div>
             <Spacer x={4} /> */}
             <Link
-              href={`/posts/${post.id}`}
+              href={`/posts/${encodeURIComponent(post.id)}`}
               color="foreground"
               underline="hover"
               className="text-lg"

@@ -30,9 +30,9 @@ const components = (
 ): Components => ({
   a: props => {
     const { className, href, children } = props;
-    if (className?.includes('wikilink')) {
+    if (className?.includes('wikilink') && href) {
       return renderWikilink ? (
-        <Wikilink wikilink={href || ''}>{children}</Wikilink>
+        <Wikilink wikilink={href}>{children}</Wikilink>
       ) : (
         <span>{children}</span>
       );
@@ -140,7 +140,7 @@ const components = (
   },
   code: props => {
     return (
-      <code className="not-prose px-1 whitespace-break-spaces rounded bg-default-200">
+      <code className="not-prose px-1 whitespace-break-spaces rounded">
         {props.children}
       </code>
     );

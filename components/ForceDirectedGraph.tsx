@@ -114,7 +114,7 @@ const ForceDirectedGraph = ({
               link.attr('transform', transform);
               node.attr('transform', transform);
               const scale = transform.k * OPACITY_SCALE;
-              const scaledOpacity = Math.max((scale - 1) / 1.5, 0);
+              const scaledOpacity = Math.max((scale - 1) / 0.8, 0);
               scaledOpacityRef.current = scaledOpacity;
               title
                 .attr('transform', transform)
@@ -144,7 +144,7 @@ const ForceDirectedGraph = ({
         .attr('fill', COLOR)
         .style('cursor', 'pointer')
         .on('click', (_, d) => {
-          router.push('/posts/' + d.id);
+          router.push('/posts/' + encodeURIComponent(d.id));
         })
         .on('mouseover', function (_, d) {
           const { id } = d;
@@ -256,7 +256,7 @@ const ForceDirectedGraph = ({
         .style('cursor', 'pointer')
         .text(d => d.title!)
         .on('click', (_, d) => {
-          router.push('/posts/' + d.id);
+          router.push('/posts/' + encodeURIComponent(d.id));
         })
         // @ts-ignore
         .call(drag(simulation));

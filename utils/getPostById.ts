@@ -3,7 +3,7 @@ import { Heading, Text } from 'mdast';
 import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
 import { matter } from 'vfile-matter';
-import { githubRequest } from './common';
+import { base64Decode, githubRequest } from './common';
 import { SEPARATOR } from './constants';
 
 // convert frontmatter to metadata, see: https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#example-frontmatter-as-metadata
@@ -54,11 +54,11 @@ export const resolvePost = (
 };
 
 export const getPostById = async (id: string): Promise<Post | null> => {
-  const path = atob(id);
+  const path = base64Decode(id);
   const file: any = await githubRequest(`/contents/${path}`);
   try {
     // resolve emoji base64 decoding problem
-    const content = Buffer.from(file.content, 'base64').toString();
+    const content = base64Decode(file.content);
     const filenameSplits = path.split(SEPARATOR);
     const filename = filenameSplits[filenameSplits.length - 1];
     const { title, frontmatter } = resolvePost(content, filename);

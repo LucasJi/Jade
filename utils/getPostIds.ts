@@ -1,11 +1,8 @@
-import { githubRequest } from './common';
+import { base64Encode } from './common';
+import { getGitTree } from './getGitTree';
 
 export const getPostIds = (): Promise<string[]> => {
-  return githubRequest('/git/trees/main?recursive=1').then(data => {
-    const { tree }: { tree: any[] } = data;
-
-    return tree
-      .filter(value => value.type === 'blob' && value.path.endsWith('.md'))
-      .map(value => btoa(value.path));
+  return getGitTree().then(tree => {
+    return tree.map(value => base64Encode(value.path));
   });
 };
