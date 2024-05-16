@@ -7,7 +7,12 @@ import Markdown from '@components/Markdown';
 import Toc from '@components/Toc';
 
 export async function generateStaticParams() {
-  return getPostIds();
+  try {
+    return getPostIds();
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
 }
 
 export default async function Page({

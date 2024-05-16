@@ -26,7 +26,6 @@ export const githubRequest = (url: string) =>
       console.error('github api request failed', resp.status, msg);
       throw new Error('github api request failed: ' + msg);
     }
-    // console.log(resp.status, resp.text);
     return resp.json();
   });
 
