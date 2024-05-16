@@ -1,3 +1,4 @@
+import { Post } from '@/types';
 import { base64Decode } from '@/utils/common';
 import { getPostById } from '@/utils/getPostById';
 import { getPostIds } from '@/utils/getPostIds';
@@ -9,21 +10,29 @@ import Markdown from './Markdown';
 export default async function Wikilink({
   wikilink = '',
   children,
+  currentPost,
 }: {
   wikilink: string;
   children: ReactNode;
+  currentPost: Post;
 }) {
   const postIds: string[] = await getPostIds();
   let post = null;
 
   const splits = wikilink.split('#');
   const title = splits[0];
-  const postId = postIds.find(id => {
-    const path = base64Decode(id);
-    return path === title || path.includes(title);
-  });
-  if (postId) {
-    post = await getPostById(postId);
+
+  if (title === '') {
+    post = currentPost;
+  } else {
+    const postId = postIds.find(id => {
+      const path = base64Decode(id);
+      return path === title || path.includes(title);
+    });
+    post = postId ? await getPostById(postId) : null;
+  }
+
+  if (post) {
     return (
       <Tooltip
         delay={500}

@@ -54,9 +54,9 @@ export const resolvePost = (
 };
 
 export const getPostById = async (id: string): Promise<Post | null> => {
-  const path = base64Decode(id);
-  const file: any = await githubRequest(`/contents/${path}`);
   try {
+    const path = base64Decode(id);
+    const file: any = await githubRequest(`/contents/${path}`);
     // resolve emoji base64 decoding problem
     const content = base64Decode(file.content);
     const filenameSplits = path.split(SEPARATOR);

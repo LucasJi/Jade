@@ -6,7 +6,7 @@ import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
-import { Frontmatter, Post } from '@/types';
+import { Post } from '@/types';
 import { Chip, Spacer } from '@nextui-org/react';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -26,13 +26,15 @@ const getHeadingId = (props: any) => {
 
 const components = (
   renderWikilink: boolean,
-  frontmatter?: Frontmatter,
+  currentPost: Post,
 ): Components => ({
   a: props => {
     const { className, href, children } = props;
     if (className?.includes('wikilink') && href) {
       return renderWikilink ? (
-        <Wikilink wikilink={href}>{children}</Wikilink>
+        <Wikilink wikilink={href} currentPost={currentPost}>
+          {children}
+        </Wikilink>
       ) : (
         <span>{children}</span>
       );
@@ -52,6 +54,7 @@ const components = (
     );
   },
   h1: props => {
+    const frontmatter = currentPost.frontmatter;
     const aliases: string[] | undefined = frontmatter?.aliases;
     const tags: string[] | undefined = frontmatter?.tags;
 
@@ -181,7 +184,7 @@ const Markdown = ({
       )}
     >
       <ReactMarkdown
-        components={components(renderWikilink, frontmatter)}
+        components={components(renderWikilink, post)}
         remarkPlugins={[
           remarkGfm,
           remarkFrontmatter,
