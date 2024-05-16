@@ -4,7 +4,7 @@ import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
 import { matter } from 'vfile-matter';
 import { base64Decode, githubRequest } from './common';
-import { SEPARATOR } from './constants';
+import { MD_SUFFIX_REG, SEPARATOR } from './constants';
 
 // convert frontmatter to metadata, see: https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#example-frontmatter-as-metadata
 function frontYamlMatterHandler() {
@@ -47,7 +47,7 @@ export const resolvePost = (
 
   // use file name as title
   if (!title) {
-    title = filename;
+    title = filename.replace(MD_SUFFIX_REG, '');
   }
 
   return { title, frontmatter };
