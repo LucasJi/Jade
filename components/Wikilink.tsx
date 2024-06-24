@@ -35,7 +35,7 @@ export default async function Wikilink({
   if (post) {
     return (
       <Tooltip
-        delay={500}
+        delay={200}
         content={
           <Markdown
             className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
