@@ -63,11 +63,11 @@ const components = (
         <h1>{props.children}</h1>
         {aliases && (
           <div className="flex items-center">
-            <span>Aliases:</span>
+            <span className="text-sm">Aliases:</span>
             <Spacer x={2} />
             {aliases.map((alias, idx) => (
               <>
-                <Chip key={alias} size="sm">
+                <Chip key={alias} variant="light" color="warning" size="sm">
                   {alias}
                 </Chip>
                 {idx < aliases.length - 1 && <Spacer x={1} />}
@@ -77,18 +77,16 @@ const components = (
         )}
         {tags && (
           <div className="flex items-center">
-            <span>Tags:</span>
+            <span className="text-sm">Tags:</span>
             <Spacer x={2} />
             {tags.map((tag, idx) => (
               <>
                 <Chip
                   key={tag}
                   size="sm"
-                  variant="dot"
+                  variant="light"
                   classNames={{
-                    base: 'border-obsidian-purple',
                     content: 'text-obsidian-purple',
-                    dot: 'bg-obsidian-purple',
                   }}
                 >
                   {tag}
