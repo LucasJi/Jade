@@ -6,7 +6,8 @@ const isGithubConfigured = () => {
   return (
     process.env.GITHUB_REPO_ACCESS_TOKEN &&
     process.env.GITHUB_REPO &&
-    process.env.GITHUB_REPO_OWNER
+    process.env.GITHUB_OWNER &&
+    process.env.GITHUB_BRANCH
   );
 };
 

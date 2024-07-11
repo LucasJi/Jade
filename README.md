@@ -20,13 +20,19 @@ This project is designed to enable the publication of my blogs, authored in [Obs
 3. Config environment variables in `.env` file
 
    ```env
-   NEXT_PUBLIC_BASE_URL=<http://localhost:3000>
+   # Website
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   NEXT_PUBLIC_SITE_TITLE="Lucas Ji's Blog"
+   NEXT_PUBLIC_SITE_DESCRIPTION="A personal blog, publishing posts written by Obsidian."
 
-   # github api configs
-
+   # Github
    GITHUB_REPO_ACCESS_TOKEN=
    GITHUB_REPO=
    GITHUB_OWNER=
+   GITHUB_BRANCH=
+
+   # separate by comma
+   INCLUDE_PATHS=""
    ```
 
    - `GITHUB_REPO_ACCESS_TOKEN`: When generating your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), the **Read-Only** permission of **Contents** must be selected.

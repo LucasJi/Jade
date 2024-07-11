@@ -14,8 +14,9 @@ export const githubRequest = (url: string) =>
   fetch(
     `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}${url}`,
     {
+      cache: 'no-cache',
       headers: {
-        Accept: 'application/vnd.github.v3+json',
+        Accept: 'application/vnd.github.object+json',
         Authorization: 'Bearer ' + process.env.GITHUB_REPO_ACCESS_TOKEN!,
         'X-GitHub-Api-Version': '2022-11-28',
       },

@@ -62,7 +62,7 @@ export const getPostById = async (id: string): Promise<Post | null> => {
     const filenameSplits = path.split(SEPARATOR);
     const filename = filenameSplits[filenameSplits.length - 1];
     const { title, frontmatter } = resolvePost(content, filename);
-    const post: Post = {
+    return {
       id,
       content: content,
       title,
@@ -71,7 +71,6 @@ export const getPostById = async (id: string): Promise<Post | null> => {
       backlinks: [],
       ctime: new Date(),
     };
-    return post;
   } catch (e) {
     console.error('get post by id error', id, e);
     return null;
