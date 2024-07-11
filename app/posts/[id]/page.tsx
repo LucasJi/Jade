@@ -32,10 +32,10 @@ export default async function Page({
 
     return (
       <div className="flex w-full h-full">
-        <div className="w-2/3 px-4 flex-1 overflow-y-auto min-h-[600px]">
-          <Markdown post={post} className="max-w-none w-full" />
+        <div className="w-2/3 px-4 flex-1 min-h-[600px]">
+          <Markdown post={post} className="max-w-none w-full h-full" />
         </div>
-        <div className="w-1/3 px-4 flex flex-col overflow-y-auto">
+        <div className="w-1/3 px-4 flex flex-col min-w-[332px] overflow-y-auto">
           <GraphView postGraph={postGraph} postId={decodedId} />
           <Toc content={post?.content} className="mt-4" />
         </div>

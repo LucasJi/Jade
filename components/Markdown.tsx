@@ -1,6 +1,6 @@
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { Link } from '@nextui-org/react';
+import { Link, ScrollShadow } from '@nextui-org/react';
 import classNames from 'classnames';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
@@ -41,16 +41,18 @@ const components = (
 
     const isFragment = href?.startsWith('#');
 
-    return (
-      <Link
-        isExternal={!isFragment}
-        href={href}
-        showAnchorIcon={!isFragment}
-        color="foreground"
-      >
-        {children}
-      </Link>
-    );
+    return <a>{children}</a>;
+
+    // return (
+    //   <Link
+    //     isExternal={!isFragment}
+    //     href={href}
+    //     showAnchorIcon={!isFragment}
+    //     color="foreground"
+    //   >
+    //     {children}
+    //   </Link>
+    // );
   },
   h1: props => {
     const frontmatter = currentPost.frontmatter;
@@ -65,12 +67,12 @@ const components = (
             <span className="text-sm">Aliases:</span>
             <Spacer x={2} />
             {aliases.map((alias, idx) => (
-              <>
-                <Chip key={alias} variant="light" color="warning" size="sm">
+              <div key={alias}>
+                <Chip variant="light" color="warning" size="sm">
                   {alias}
                 </Chip>
                 {idx < aliases.length - 1 && <Spacer x={1} />}
-              </>
+              </div>
             ))}
           </div>
         )}
@@ -79,9 +81,8 @@ const components = (
             <span className="text-sm">Tags:</span>
             <Spacer x={2} />
             {tags.map((tag, idx) => (
-              <>
+              <div key={tag}>
                 <Chip
-                  key={tag}
                   size="sm"
                   variant="light"
                   classNames={{
@@ -91,7 +92,7 @@ const components = (
                   {tag}
                 </Chip>
                 {idx < tags.length - 1 && <Spacer x={1} />}
-              </>
+              </div>
             ))}
           </div>
         )}
@@ -138,14 +139,14 @@ const components = (
       <pre className={classNames(className)}>{children}</pre>
     );
   },
-  code: props => {
-    return (
-      <code className="not-prose px-1 whitespace-break-spaces rounded">
-        {props.children}
-      </code>
-    );
-  },
-  li: props => <li className="not-prose">{props.children}</li>,
+  // code: props => {
+  //   return (
+  //     <code className="px-1 whitespace-break-spaces rounded">
+  //       {props.children}
+  //     </code>
+  //   );
+  // },
+  li: props => <li>{props.children}</li>,
 });
 
 const Markdown = ({
@@ -161,38 +162,40 @@ const Markdown = ({
 }) => {
   const { title, content, frontmatter } = post;
   return (
-    <article
-      className={classNames(
-        'scroll-smooth',
-        'prose',
-        'prose-neutral',
-        'prose-h1:mb-4',
-        'prose-h2:my-4',
-        'prose-h3:my-4',
-        'prose-h4:my-4',
-        'prose-h5:my-4',
-        'prose-h6:my-4',
-        'prose-a:my-0',
-        'prose-p:my-2',
-        'prose-ul:my-2',
-        'prose-hr:my-4',
-        'prose-table:my-2',
-        className,
-      )}
-    >
-      <ReactMarkdown
-        components={components(renderWikilink, post)}
-        remarkPlugins={[
-          remarkGfm,
-          remarkFrontmatter,
-          remarkWikilink as any,
-          [remarkJade as any, { title, wikilink }],
-        ]}
-        rehypePlugins={[rehypeRaw as any]}
+    <ScrollShadow hideScrollBar className={classNames(className)}>
+      <article
+        className={classNames(
+          'h-full',
+          'w-full',
+          'prose',
+          'prose-neutral',
+          'prose-h1:mb-4',
+          'prose-h2:my-4',
+          'prose-h3:my-4',
+          'prose-h4:my-4',
+          'prose-h5:my-4',
+          'prose-h6:my-4',
+          'prose-a:my-0',
+          'prose-p:my-2',
+          'prose-ul:my-2',
+          'prose-hr:my-4',
+          'prose-table:my-2',
+        )}
       >
-        {content}
-      </ReactMarkdown>
-    </article>
+        <ReactMarkdown
+          components={components(renderWikilink, post)}
+          remarkPlugins={[
+            remarkGfm,
+            remarkFrontmatter,
+            remarkWikilink as any,
+            [remarkJade as any, { title, wikilink }],
+          ]}
+          rehypePlugins={[rehypeRaw as any]}
+        >
+          {content}
+        </ReactMarkdown>
+      </article>
+    </ScrollShadow>
   );
 };
 
