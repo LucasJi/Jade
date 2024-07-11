@@ -2,8 +2,8 @@ import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkStringify from 'remark-stringify';
 import { read } from 'to-vfile';
-import remarkGalaxy from '../lib/remark-galaxy/index.js';
-import { remarkWikilink } from '../lib/remark-wikilink/index.js';
+import remarkGalaxy from '../plugin/remark-galaxy/index.js';
+import { remarkWikilink } from '../plugin/remark-wikilink/index.js';
 
 const filepath = '_posts/Aliases/Add an alias to a note.md';
 

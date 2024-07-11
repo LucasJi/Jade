@@ -1,5 +1,5 @@
 import WebVitals from '@/components/WebVitals';
-import Footer from '@components/Footer';
+import Footer from '@/components/Footer';
 import classNames from 'classnames';
 import { ReactNode } from 'react';
 import './globals.css';

@@ -1,6 +1,6 @@
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { getPosts } from '@/utils/getPosts';
-import GraphView from '@components/GraphView';
+import GraphView from '@/components/GraphView';
 
 export default async function Home() {
   const posts = await getPosts();

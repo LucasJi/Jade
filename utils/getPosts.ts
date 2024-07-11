@@ -1,5 +1,5 @@
 import { Post } from '@/types';
-import { fromMarkdownWikilink, syntax } from '@lib/remark-wikilink';
+import { fromMarkdownWikilink, syntax } from '@/plugin/remark-wikilink';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
 import { base64Decode } from './common';

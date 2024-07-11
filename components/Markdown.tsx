@@ -1,8 +1,7 @@
-import remarkGalaxy from '@lib/remark-galaxy';
-import { remarkWikilink } from '@lib/remark-wikilink';
+import remarkGalaxy from '@/plugin/remark-galaxy';
+import { remarkWikilink } from '@/plugin/remark-wikilink';
 import { Link } from '@nextui-org/react';
 import classNames from 'classnames';
-import { Element, Text } from 'hast';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
@@ -118,8 +117,8 @@ const components = (
     const { children, className, node } = props;
 
     const code = node?.children.find(
-      child => (child as Element).tagName === 'code',
-    ) as Element | undefined;
+      child => (child as any).tagName === 'code',
+    ) as any | undefined;
 
     if (!code) {
       return <pre className={className}>{children}</pre>;
@@ -133,7 +132,7 @@ const components = (
 
     return language ? (
       <SyntaxHighlighter style={oneDark} language={language} showLineNumbers>
-        {(code.children[0] as Text).value.replace(/\n$/, '')}
+        {(code.children[0] as any).value.replace(/\n$/, '')}
       </SyntaxHighlighter>
     ) : (
       <pre className={classNames(className)}>{children}</pre>

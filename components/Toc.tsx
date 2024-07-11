@@ -1,4 +1,4 @@
-import { getPostToc } from '@utils/common';
+import { getPostToc } from '@/utils/common';
 import classNames from 'classnames';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
 

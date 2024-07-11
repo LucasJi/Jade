@@ -1,4 +1,4 @@
-# Galaxy Blog
+# Jade
 
 This project is designed to enable the publication of my blogs, authored in [Obsidian](https://obsidian.md/), to a blog website. The website will strive to support various wonderful features of Obsidian, such as wikilinks, graph view, and more, as much as possible.
 

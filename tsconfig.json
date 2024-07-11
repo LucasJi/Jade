@@ -17,16 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@components": ["components"],
-      "@components/*": ["components/*"],
-      "@api/*": ["app/api/*"],
-      "@api": ["app/api"],
-      "@utils/*": ["utils/*"],
-      "@lib/*": ["lib/*"],
-      "@public/*": ["public/*"],
-      "@styles/*": ["styles/*"],
       "@types": ["types.d.ts"],
-      "@store": ["store"]
     },
     "plugins": [
       {
