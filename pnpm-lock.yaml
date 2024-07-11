@@ -34,6 +34,9 @@ dependencies:
   mdast-util-to-markdown:
     specifier: ^1.5.0
     version: 1.5.0
+  mdast-util-to-string:
+    specifier: ^4.0.0
+    version: 4.0.0
   mdast-util-toc:
     specifier: ^7.0.0
     version: 7.0.0

@@ -3,10 +3,10 @@ import { toString } from 'mdast-util-to-string';
 function separateHeadings(tree, headingText) {
   const length = tree.children.length;
   const headingIdx = tree.children.findIndex(
-    child => child.type == 'heading' && toString(child) == headingText,
+    child => child.type === 'heading' && toString(child) === headingText,
   );
 
-  if (headingIdx == -1) {
+  if (headingIdx === -1) {
     return tree.children;
   }
 
@@ -15,10 +15,10 @@ function separateHeadings(tree, headingText) {
 
   let nextSameDepthHeadingIdx = tree.children.findIndex(
     (child, index) =>
-      index > headingIdx && child.type == 'heading' && child.depth == depth,
+      index > headingIdx && child.type === 'heading' && child.depth === depth,
   );
 
-  if (nextSameDepthHeadingIdx == -1) {
+  if (nextSameDepthHeadingIdx === -1) {
     nextSameDepthHeadingIdx = length;
   }
 
@@ -33,7 +33,7 @@ function separateHeadings(tree, headingText) {
  * @param headings only the headings' content will be displayed
  * @returns
  */
-function remarkGalaxy({ title, wikilink }) {
+function remarkJade({ title, wikilink }) {
   return function (tree) {
     const splits = wikilink ? wikilink.split('#') : [];
     const headings = splits.length > 1 ? splits.slice(1) : null;
@@ -75,4 +75,4 @@ function remarkGalaxy({ title, wikilink }) {
   };
 }
 
-export default remarkGalaxy;
+export default remarkJade;

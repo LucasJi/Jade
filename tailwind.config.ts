@@ -11,6 +11,7 @@ const config: Config = {
   theme: {
     colors: {
       'obsidian-purple': '#A88BFA',
+      'jade-green': '#A4CAB6',
     },
   },
   plugins: [nextui(), require('@tailwindcss/typography')],

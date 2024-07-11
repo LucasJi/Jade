@@ -11,11 +11,11 @@ const Footer = () => {
           <span className="text-xs">
             ©2024 Powered by{' '}
             <a
-              className="underline "
-              href="https://github.com/LucasJi/galaxy"
+              className="underline decoration-jade-green"
+              href="https://github.com/LucasJi/Jade"
               target="_blank"
             >
-              Galaxy
+              <span className="text-jade-green">Jade</span>
             </a>
           </span>
           <a

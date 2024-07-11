@@ -1,5 +1,5 @@
-import remarkGalaxy from '@/plugin/remark-galaxy';
-import { remarkWikilink } from '@/plugin/remark-wikilink';
+import remarkJade from '@/plugins/remark-jade';
+import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Link } from '@nextui-org/react';
 import classNames from 'classnames';
 // import Link from 'next/link';
@@ -186,7 +186,7 @@ const Markdown = ({
           remarkGfm,
           remarkFrontmatter,
           remarkWikilink as any,
-          [remarkGalaxy as any, { title, wikilink }],
+          [remarkJade as any, { title, wikilink }],
         ]}
         rehypePlugins={[rehypeRaw as any]}
       >
