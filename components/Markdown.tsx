@@ -1,11 +1,13 @@
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { Link, ScrollShadow } from '@nextui-org/react';
+import { ScrollShadow } from '@nextui-org/scroll-shadow';
+import { Link } from '@nextui-org/link';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
 import { Post } from '@/types';
-import { Chip, Spacer } from '@nextui-org/react';
+import { Spacer } from '@nextui-org/spacer';
+import { Chip } from '@nextui-org/chip';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -162,7 +164,7 @@ const Markdown = ({
 }) => {
   const { title, content, frontmatter } = post;
   return (
-    <ScrollShadow hideScrollBar className={clsx(className)}>
+    <ScrollShadow hideScrollBar className={clsx(className)} size={10}>
       <article
         className={clsx(
           'prose',

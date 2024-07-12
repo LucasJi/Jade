@@ -1,6 +1,6 @@
 'use client';
 
-import { ScrollShadow } from '@nextui-org/react';
+import { ScrollShadow } from '@nextui-org/scroll-shadow';
 import { TreeNode, TreeProps } from '@types';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';

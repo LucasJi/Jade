@@ -1,13 +1,13 @@
 'use client';
 
+import { Button } from '@nextui-org/button';
 import {
-  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
   useDisclosure,
-} from '@nextui-org/react';
+} from '@nextui-org/modal';
 import { useEffect, useState } from 'react';
 import { PiGraphLight } from 'react-icons/pi';
 import ForceDirectedGraph from './ForceDirectedGraph';

@@ -1,8 +1,6 @@
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { getPosts } from '@/utils/getPosts';
 import GraphView from '@/components/GraphView';
-import clsx from 'clsx';
-import { ScrollShadow } from '@nextui-org/react';
 
 const isGithubConfigured = () => {
   return (
@@ -98,9 +96,6 @@ export default async function Home() {
   return (
     <div className="flex w-full justify-center">
       <GraphView postGraph={postGraph} className="mt-8" />
-      <ScrollShadow hideScrollBar className="w-[300px] h-[400px]">
-        <Content />
-      </ScrollShadow>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { NextUIProvider } from '@nextui-org/react';
+import { NextUIProvider } from '@nextui-org/system';
 import React from 'react';
 import { ThemeProviderProps } from 'next-themes/dist/types';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';

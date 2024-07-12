@@ -1,7 +1,7 @@
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { getPosts } from '@/utils/getPosts';
 import GraphView from '@/components/GraphView';
-import { Link } from '@nextui-org/react';
+import { Link } from '@nextui-org/link';
 
 export default async function Page() {
   const posts = await getPosts();

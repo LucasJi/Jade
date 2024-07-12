@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@nextui-org/react';
+import { Link } from '@nextui-org/link';
 
 export default function NotFound() {
   return (

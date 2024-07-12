@@ -1,4 +1,5 @@
-import { Divider, Link } from '@nextui-org/react';
+import { Link } from '@nextui-org/link';
+import { Divider } from '@nextui-org/divider';
 import { RxGithubLogo } from 'react-icons/rx';
 
 const Footer = () => {
