@@ -10,19 +10,16 @@ export const metadata = {
   description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className={clsx('light h-full w-full scroll-smooth m-0')} lang="en">
-      <body
-        className="h-full w-full flex m-0 min-h-[800px] min-w-[1080px]"
-        suppressHydrationWarning={true}
-      >
+    <html
+      suppressHydrationWarning
+      className={clsx('light h-full w-full scroll-smooth m-0')}
+      lang="en"
+    >
+      <body className="h-full w-full flex m-0 min-h-[800px] min-w-[1080px]">
         <WebVitals />
-        <Providers>
+        <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
           <main className="w-full h-full flex-1 max-h-[calc(100%_-_100px)]">
             {children}
           </main>
