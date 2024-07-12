@@ -1,6 +1,6 @@
 import { PostGraph } from '@types';
-import classNames from 'classnames';
 import ForceDirectedGraph from './ForceDirectedGraph';
+import clsx from 'clsx';
 
 const GraphView = ({
   postId,
@@ -12,7 +12,7 @@ const GraphView = ({
   className?: string;
 }) => {
   return (
-    <div className={classNames('w-fit h-fit', className)}>
+    <div className={clsx('w-fit h-fit', className)}>
       <span className="font-bold">Graph View</span>
       <div className="relative">
         <ForceDirectedGraph postGraph={postGraph} postId={postId} />

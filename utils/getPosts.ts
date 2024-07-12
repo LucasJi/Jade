@@ -51,6 +51,7 @@ export const getPosts = async (): Promise<Post[]> => {
 
   for (const id of ids) {
     const post = await getPostById(id);
+
     if (!post) {
       continue;
     }

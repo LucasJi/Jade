@@ -1,6 +1,6 @@
 import { getPostToc } from '@/utils/common';
-import classNames from 'classnames';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
+import clsx from 'clsx';
 
 function TocNode({ heading }: { heading: BlockContent | ListItem }) {
   let node;
@@ -51,7 +51,7 @@ export default async function Toc({
 
   return (
     headings?.length > 0 && (
-      <div className={classNames(className)}>
+      <div className={clsx(className)}>
         <span className="font-bold">Table of Content</span>
         <ul className="font-thin text-sm">
           {headings.map((heading, index) => (

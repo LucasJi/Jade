@@ -8,27 +8,29 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@nextui-org/react';
-import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { PiGraphLight } from 'react-icons/pi';
 import ForceDirectedGraph from './ForceDirectedGraph';
 import LgSpinnerInCenter from './LgSpinnerInCenter';
+import clsx from 'clsx';
+import { getPosts } from '@/utils/getPosts';
+import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
+import { PostGraph } from '@types';
 
 const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [postGraph, setPostGraph] = useState();
+  const [postGraph, setPostGraph] = useState<PostGraph>();
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/graph`, {
-      method: 'GET',
-      cache: 'force-cache',
-    })
-      .then(resp => resp.json())
+    getPosts()
+      .then(posts => {
+        return getPostGraphFromPosts(posts);
+      })
       .then(data => setPostGraph(data));
   }, []);
 
   return (
-    <div className={classNames('w-fit h-fit', className)}>
+    <div className={clsx('w-fit h-fit', className)}>
       <Button
         onPress={onOpen}
         isIconOnly

@@ -2,7 +2,6 @@
 
 import { ScrollShadow } from '@nextui-org/react';
 import { TreeNode, TreeProps } from '@types';
-import classNames from 'classnames';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
@@ -13,12 +12,13 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
+import clsx from 'clsx';
 
 const DEFAULT_ICON_SIZE = 16;
 
 const FoldIcon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
   <svg
-    className={classNames('transition-transform', {
+    className={clsx('transition-transform', {
       'rotate-90': isExpanded,
     })}
     xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +60,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
         </span>
       </button>
       <div
-        className={classNames(
+        className={clsx(
           isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
           'transition-all',
           'grid',
@@ -68,7 +68,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
         )}
       >
         <ul
-          className={classNames(
+          className={clsx(
             'min-h-0',
             'ml-4',
             'transition-all',
@@ -83,7 +83,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       </div>
     </li>
   ) : (
-    <li className={classNames('mt-1 w-fit max-w-[200px] truncate')}>
+    <li className={clsx('mt-1 w-fit max-w-[200px] truncate')}>
       <Link
         href={`/posts/${encodeURIComponent(node.path || '')}`}
         className="min-h-0 text-sm font-normal"
@@ -131,7 +131,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
   }, [id]);
 
   return (
-    <div className={classNames('px-2', className)}>
+    <div className={clsx('px-2', className)}>
       <ScrollShadow className="w-full h-full mt-2">
         <ul>
           <TreeContext.Provider value={expandedNodeNames}>

@@ -1,7 +1,6 @@
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Link, ScrollShadow } from '@nextui-org/react';
-import classNames from 'classnames';
 // import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
@@ -14,6 +13,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import Wikilink from './Wikilink';
+import clsx from 'clsx';
 
 const slugs = new Slugger();
 
@@ -41,18 +41,17 @@ const components = (
 
     const isFragment = href?.startsWith('#');
 
-    return <a>{children}</a>;
-
-    // return (
-    //   <Link
-    //     isExternal={!isFragment}
-    //     href={href}
-    //     showAnchorIcon={!isFragment}
-    //     color="foreground"
-    //   >
-    //     {children}
-    //   </Link>
-    // );
+    return (
+      <Link
+        isExternal={!isFragment}
+        href={href}
+        showAnchorIcon={!isFragment}
+        color="foreground"
+        className="inline-flex"
+      >
+        {children}
+      </Link>
+    );
   },
   h1: props => {
     const frontmatter = currentPost.frontmatter;
@@ -136,9 +135,10 @@ const components = (
         {(code.children[0] as any).value.replace(/\n$/, '')}
       </SyntaxHighlighter>
     ) : (
-      <pre className={classNames(className)}>{children}</pre>
+      <pre className={clsx(className)}>{children}</pre>
     );
   },
+  // TODO make the style configurable
   // code: props => {
   //   return (
   //     <code className="px-1 whitespace-break-spaces rounded">
@@ -162,11 +162,9 @@ const Markdown = ({
 }) => {
   const { title, content, frontmatter } = post;
   return (
-    <ScrollShadow hideScrollBar className={classNames(className)}>
+    <ScrollShadow hideScrollBar className={clsx(className)}>
       <article
-        className={classNames(
-          'h-full',
-          'w-full',
+        className={clsx(
           'prose',
           'prose-neutral',
           'prose-h1:mb-4',

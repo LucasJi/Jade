@@ -1,9 +1,9 @@
 import WebVitals from '@/components/WebVitals';
 import Footer from '@/components/Footer';
-import classNames from 'classnames';
 import { ReactNode } from 'react';
 import './globals.css';
 import { Providers } from './providers';
+import clsx from 'clsx';
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_SITE_TITLE,
@@ -16,10 +16,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html
-      className={classNames('light h-full w-full scroll-smooth m-0')}
-      lang="en"
-    >
+    <html className={clsx('light h-full w-full scroll-smooth m-0')} lang="en">
       <body
         className="h-full w-full flex m-0 min-h-[800px] min-w-[1080px]"
         suppressHydrationWarning={true}
