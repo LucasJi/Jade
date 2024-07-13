@@ -168,7 +168,7 @@ const Markdown = ({
       <article
         className={clsx(
           'prose',
-          'prose-neutral',
+          'prose-gray',
           'prose-h1:mb-4',
           'prose-h2:my-4',
           'prose-h3:my-4',

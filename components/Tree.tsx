@@ -4,7 +4,7 @@ import { ScrollShadow } from '@nextui-org/scroll-shadow';
 import { TreeNode, TreeProps } from '@types';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import {
+import React, {
   createContext,
   FC,
   useContext,
@@ -13,6 +13,7 @@ import {
   useState,
 } from 'react';
 import clsx from 'clsx';
+import { Input } from '@nextui-org/input';
 
 const DEFAULT_ICON_SIZE = 16;
 
@@ -33,6 +34,36 @@ const FoldIcon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
       strokeLinecap="round"
       strokeLinejoin="round"
       d="m8.25 4.5 7.5 7.5-7.5 7.5"
+    />
+  </svg>
+);
+
+const SearchIcon = (
+  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height="1em"
+    role="presentation"
+    viewBox="0 0 24 24"
+    width="1em"
+    {...props}
+  >
+    <path
+      d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+    <path
+      d="M22 22L20 20"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
     />
   </svg>
 );
@@ -86,7 +117,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     <li className={clsx('mt-1 w-fit max-w-[200px] truncate')}>
       <Link
         href={`/posts/${encodeURIComponent(node.path || '')}`}
-        className="min-h-0 text-sm font-normal"
+        className="min-h-0 text-base font-normal"
         // Reduce unnecessary requests
         prefetch={false}
       >
@@ -132,6 +163,38 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
 
   return (
     <div className={clsx('px-2', className)}>
+      <div className="w-[340px] h-[240px] px-8 rounded-2xl flex justify-center items-center bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg">
+        <Input
+          label="Search"
+          isClearable
+          radius="lg"
+          classNames={{
+            label: 'text-black/50 dark:text-white/90',
+            input: [
+              'bg-transparent',
+              'text-black/90 dark:text-white/90',
+              'placeholder:text-default-700/50 dark:placeholder:text-white/60',
+            ],
+            innerWrapper: 'bg-transparent',
+            inputWrapper: [
+              'shadow-xl',
+              'bg-default-200/50',
+              'dark:bg-default/60',
+              'backdrop-blur-xl',
+              'backdrop-saturate-200',
+              'hover:bg-default-200/70',
+              'dark:hover:bg-default/70',
+              'group-data-[focus=true]:bg-default-200/50',
+              'dark:group-data-[focus=true]:bg-default/60',
+              '!cursor-text',
+            ],
+          }}
+          placeholder="Type to search..."
+          startContent={
+            <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
+          }
+        />
+      </div>
       <ScrollShadow className="w-full h-full mt-2">
         <ul>
           <TreeContext.Provider value={expandedNodeNames}>

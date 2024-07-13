@@ -3,7 +3,6 @@ import Footer from '@/components/Footer';
 import { ReactNode } from 'react';
 import './globals.css';
 import { Providers } from './providers';
-import clsx from 'clsx';
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_SITE_TITLE,
@@ -12,18 +11,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html
-      suppressHydrationWarning
-      className={clsx('light h-full w-full scroll-smooth m-0')}
-      lang="en"
-    >
-      <body className="h-full w-full flex m-0 min-h-[800px] min-w-[1080px]">
+    <html suppressHydrationWarning lang="en">
+      <body className="min-h-screen">
         <WebVitals />
-        <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
-          <main className="w-full h-full flex-1 max-h-[calc(100%_-_100px)]">
-            {children}
-          </main>
-          <Footer />
+        <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
+          <div className="relative flex flex-col h-screen">
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>
