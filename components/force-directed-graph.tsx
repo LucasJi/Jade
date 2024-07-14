@@ -287,7 +287,12 @@ const ForceDirectedGraph = ({
   return (
     <div
       ref={containerRef}
-      className={clsx(className, { 'border-1': border }, 'rounded-md', 'mt-3')}
+      className={clsx(
+        className,
+        border && 'border-[1px]',
+        'rounded-md',
+        'mt-3',
+      )}
       style={
         full
           ? {

@@ -2,11 +2,15 @@ import { Post } from '@/types';
 import { base64Decode } from '@/utils/common';
 import { getPostById } from '@/utils/getPostById';
 import { getPostIds } from '@/utils/getPostIds';
-import { Tooltip } from '@nextui-org/tooltip';
-import { Link } from '@nextui-org/link';
-import NextLink from 'next/link';
+import Link from 'next/link';
 import { ReactNode } from 'react';
-import Markdown from './Markdown';
+import Markdown from './markdown';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
 export default async function Wikilink({
   wikilink = '',
@@ -35,27 +39,29 @@ export default async function Wikilink({
 
   if (post) {
     return (
-      <Tooltip
-        delay={200}
-        content={
-          <Markdown
-            className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
-            renderWikilink={false}
-            wikilink={wikilink}
-            post={post!}
-          />
-        }
-      >
-        <Link
-          className="text-obsidian-purple"
-          href={`/posts/${encodeURIComponent(post!.id)}`}
-          color="foreground"
-          as={NextLink}
-          prefetch={false}
-        >
-          {children}
-        </Link>
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Link
+              className="text-obsidian-purple"
+              href={`/posts/${encodeURIComponent(post!.id)}`}
+              color="foreground"
+              // as={NextLink}
+              prefetch={false}
+            >
+              {children}
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>
+            <Markdown
+              className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
+              renderWikilink={false}
+              wikilink={wikilink}
+              post={post!}
+            />
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   }
 

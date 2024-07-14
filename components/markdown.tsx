@@ -1,21 +1,19 @@
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { ScrollShadow } from '@nextui-org/scroll-shadow';
-import { Link } from '@nextui-org/link';
-// import Link from 'next/link';
+import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
 import { Post } from '@/types';
-import { Spacer } from '@nextui-org/spacer';
-import { Chip } from '@nextui-org/chip';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
-import Wikilink from './Wikilink';
+import Wikilink from './wikilink';
 import clsx from 'clsx';
+import { buttonVariants } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const slugs = new Slugger();
 
@@ -44,13 +42,7 @@ const components = (
     const isFragment = href?.startsWith('#');
 
     return (
-      <Link
-        isExternal={!isFragment}
-        href={href}
-        showAnchorIcon={!isFragment}
-        color="foreground"
-        className="inline-flex"
-      >
+      <Link href={href!} className={buttonVariants({ variant: 'outline' })}>
         {children}
       </Link>
     );
@@ -63,40 +55,40 @@ const components = (
     return (
       <>
         <h1>{props.children}</h1>
-        {aliases && (
-          <div className="flex items-center">
-            <span className="text-sm">Aliases:</span>
-            <Spacer x={2} />
-            {aliases.map((alias, idx) => (
-              <div key={alias}>
-                <Chip variant="light" color="warning" size="sm">
-                  {alias}
-                </Chip>
-                {idx < aliases.length - 1 && <Spacer x={1} />}
-              </div>
-            ))}
-          </div>
-        )}
-        {tags && (
-          <div className="flex items-center">
-            <span className="text-sm">Tags:</span>
-            <Spacer x={2} />
-            {tags.map((tag, idx) => (
-              <div key={tag}>
-                <Chip
-                  size="sm"
-                  variant="light"
-                  classNames={{
-                    content: 'text-obsidian-purple',
-                  }}
-                >
-                  {tag}
-                </Chip>
-                {idx < tags.length - 1 && <Spacer x={1} />}
-              </div>
-            ))}
-          </div>
-        )}
+        {/*{aliases && (*/}
+        {/*  <div className="flex items-center">*/}
+        {/*    <span className="text-sm">Aliases:</span>*/}
+        {/*    <Spacer x={2} />*/}
+        {/*    {aliases.map((alias, idx) => (*/}
+        {/*      <div key={alias}>*/}
+        {/*        <Chip variant="light" color="warning" size="sm">*/}
+        {/*          {alias}*/}
+        {/*        </Chip>*/}
+        {/*        {idx < aliases.length - 1 && <Spacer x={1} />}*/}
+        {/*      </div>*/}
+        {/*    ))}*/}
+        {/*  </div>*/}
+        {/*)}*/}
+        {/*{tags && (*/}
+        {/*  <div className="flex items-center">*/}
+        {/*    <span className="text-sm">Tags:</span>*/}
+        {/*    <Spacer x={2} />*/}
+        {/*    {tags.map((tag, idx) => (*/}
+        {/*      <div key={tag}>*/}
+        {/*        <Chip*/}
+        {/*          size="sm"*/}
+        {/*          variant="light"*/}
+        {/*          classNames={{*/}
+        {/*            content: 'text-obsidian-purple',*/}
+        {/*          }}*/}
+        {/*        >*/}
+        {/*          {tag}*/}
+        {/*        </Chip>*/}
+        {/*        {idx < tags.length - 1 && <Spacer x={1} />}*/}
+        {/*      </div>*/}
+        {/*    ))}*/}
+        {/*  </div>*/}
+        {/*)}*/}
       </>
     );
   },
@@ -164,7 +156,7 @@ const Markdown = ({
 }) => {
   const { title, content, frontmatter } = post;
   return (
-    <ScrollShadow hideScrollBar className={clsx(className)} size={10}>
+    <ScrollArea className={clsx(className)}>
       <article
         className={clsx(
           'prose',
@@ -195,7 +187,7 @@ const Markdown = ({
           {content}
         </ReactMarkdown>
       </article>
-    </ScrollShadow>
+    </ScrollArea>
   );
 };
 

@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@nextui-org/button';
 import {
   Modal,
   ModalBody,
@@ -10,12 +9,13 @@ import {
 } from '@nextui-org/modal';
 import { useEffect, useState } from 'react';
 import { PiGraphLight } from 'react-icons/pi';
-import ForceDirectedGraph from './ForceDirectedGraph';
-import LgSpinnerInCenter from './LgSpinnerInCenter';
+import ForceDirectedGraph from './force-directed-graph';
 import clsx from 'clsx';
 import { getPosts } from '@/utils/getPosts';
 import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { PostGraph } from '@types';
+import { Button } from '@/components/ui/button';
+import Loader from '@/components/ui/loader';
 
 const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -32,10 +32,9 @@ const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   return (
     <div className={clsx('w-fit h-fit', className)}>
       <Button
-        onPress={onOpen}
-        isIconOnly
-        variant="light"
-        radius="sm"
+        onClick={onOpen}
+        // isIconOnly
+        // radius="sm"
         className="absolute right-0 top-0 mr-1 mt-1"
         size="sm"
       >
@@ -58,7 +57,7 @@ const GlobalGraphView = ({ className = '' }: { className?: string }) => {
               <ForceDirectedGraph postGraph={postGraph} border={false} full />
             ) : (
               <div className="w-[300px] h-[300px]">
-                <LgSpinnerInCenter />
+                <Loader />
               </div>
             )}
           </ModalBody>

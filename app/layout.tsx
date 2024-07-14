@@ -1,5 +1,5 @@
-import WebVitals from '@/components/WebVitals';
-import Footer from '@/components/Footer';
+import WebVitals from '@/components/webVitals';
+import Footer from '@/components/footer';
 import { ReactNode } from 'react';
 import './globals.css';
 import { Providers } from './providers';
@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body className="min-h-screen">
+      <body className="min-h-screen bg-background antialiased">
         <WebVitals />
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
           <div className="relative flex flex-col h-screen">

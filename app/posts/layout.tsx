@@ -1,4 +1,4 @@
-import Tree from '@/components/Tree';
+import Tree from '@/components/tree';
 import { getPostTree } from '@/utils/getPostTree';
 import { ReactNode } from 'react';
 
