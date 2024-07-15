@@ -15,7 +15,7 @@ const Github = () => (
 
 const Footer = () => {
   return (
-    <footer className="w-1/2 mx-auto flex flex-col items-center h-[10%]">
+    <footer className="w-1/2 mx-auto flex flex-col items-center h-[95px]">
       <Separator className="my-4" />
       <div className="w-full flex h-16 justify-between">
         <div className="flex flex-col font-extralight">

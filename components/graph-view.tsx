@@ -12,10 +12,10 @@ const GraphView = ({
   className?: string;
 }) => {
   return (
-    <div className={clsx('w-fit h-fit', className)}>
+    <div className={clsx(className)}>
       <span className="font-bold">Graph View</span>
       <div className="relative">
-        <ForceDirectedGraph postGraph={postGraph} postId={postId} />
+        <ForceDirectedGraph postGraph={postGraph} postId={postId} size={600} />
         {/* <GlobalGraphView /> */}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Heading, Root, Text } from 'mdast';
+import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
 import { join, posix, sep } from 'path';
@@ -256,7 +256,14 @@ const resolveWikilinks = (posts: Post[]) => {
   }
 };
 
+const cachedPosts: Post[] = [];
+
 export const getPosts = async (): Promise<Post[]> => {
+  if (cachedPosts.length > 0) {
+    console.log('cached posts:', cachedPosts.length);
+    return Promise.resolve(cachedPosts);
+  }
+
   const posts: Array<Post> = [];
   const ids = await getPostIds();
 
@@ -271,6 +278,10 @@ export const getPosts = async (): Promise<Post[]> => {
   }
 
   resolveWikilinks(posts);
+
+  if (cachedPosts.length === 0) {
+    cachedPosts.push(...posts);
+  }
 
   return posts;
 };
@@ -340,29 +351,29 @@ export const resolvePost = (
   let title: string = '';
 
   // try to get title from frontmatter
-  let frontmatter: { [key: string]: any } | undefined = {};
+  const frontmatter: { [key: string]: any } | undefined = {};
   try {
-    const postVFile = DEFAULT_MD_PROCESSOR.processSync(post);
-    frontmatter = postVFile.data.matter as undefined | { [key: string]: any };
-    title = frontmatter?.title;
+    // const postVFile = DEFAULT_MD_PROCESSOR.processSync(post);
+    // frontmatter = postVFile.data.matter as undefined | { [key: string]: any };
+    // title = frontmatter?.title;
   } catch (e) {
     // do nothing
   }
 
   // try to get title from heading `#`
-  if (!title) {
-    const root = DEFAULT_MD_PROCESSOR.parse(post);
-    const titleHeadingIdx = root.children.findIndex(
-      node => node.type === 'heading' && node.depth === 1,
-    );
-    if (titleHeadingIdx !== -1) {
-      const titleHeadingNode = root.children[titleHeadingIdx] as Heading;
-      const textNode = titleHeadingNode.children.find(
-        child => child.type === 'text',
-      ) as Text;
-      title = textNode.value;
-    }
-  }
+  // if (!title) {
+  //   const root = DEFAULT_MD_PROCESSOR.parse(post);
+  //   const titleHeadingIdx = root.children.findIndex(
+  //     node => node.type === 'heading' && node.depth === 1,
+  //   );
+  //   if (titleHeadingIdx !== -1) {
+  //     const titleHeadingNode = root.children[titleHeadingIdx] as Heading;
+  //     const textNode = titleHeadingNode.children.find(
+  //       child => child.type === 'text',
+  //     ) as Text;
+  //     title = textNode.value;
+  //   }
+  // }
 
   // use file name as title
   if (!title) {
@@ -372,7 +383,13 @@ export const resolvePost = (
   return { title, frontmatter };
 };
 
+const postMap = new Map<string, Post>();
+
 export const getPostById = async (id: string): Promise<Post | null> => {
+  if (postMap.has(id)) {
+    return postMap.get(id)!;
+  }
+
   try {
     const path = base64Decode(id);
     let file;
@@ -386,7 +403,7 @@ export const getPostById = async (id: string): Promise<Post | null> => {
     const filenameSplits = path.split(SEP);
     const filename = filenameSplits[filenameSplits.length - 1];
     const { title, frontmatter } = resolvePost(content, filename);
-    return {
+    const post = {
       id,
       content: content,
       title,
@@ -395,6 +412,10 @@ export const getPostById = async (id: string): Promise<Post | null> => {
       backlinks: [],
       ctime: new Date(),
     };
+
+    postMap.set(id, post);
+
+    return post;
   } catch (e) {
     console.error('get post by id error', id, e);
     return null;

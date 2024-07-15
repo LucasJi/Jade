@@ -8,22 +8,14 @@ import clsx from 'clsx';
 
 // color(gray-400 from tailwindcss) of node and link
 const COLOR = '#9ca3af';
-
 // tailwindcss zinc-600
 const HIGHLIGHT_COLOR = '#52525b';
-
 const REPULSIVE_FORCE = -5;
-
 const LINK_DISTANCE = 50;
-
 const LINE_WIDTH = 0.5;
-
 const HIGHLIGHT_LINE_WIDTH = 1;
-
 const DURATION = 100;
-
 const BASE_RADIUS = 6;
-
 const OPACITY_SCALE = 1;
 
 const calcNodeRadius = (node: PostGraphNode) =>
@@ -108,13 +100,13 @@ const ForceDirectedGraph = ({
               [0, 0],
               [size, size],
             ])
-            .scaleExtent([0.25, 4])
+            .scaleExtent([0.1, 4])
             .on('zoom', ({ transform }) => {
               // make svg move silkily
               link.attr('transform', transform);
               node.attr('transform', transform);
               const scale = transform.k * OPACITY_SCALE;
-              const scaledOpacity = Math.max((scale - 1) / 0.8, 0);
+              const scaledOpacity = Math.max((scale - 1) / 0.4, 0);
               scaledOpacityRef.current = scaledOpacity;
               title
                 .attr('transform', transform)
@@ -279,10 +271,11 @@ const ForceDirectedGraph = ({
         // update title positions
         title.attr('x', (d: any) => d.x).attr('y', (d: any) => d.y);
       });
+      console.log('graph init');
     }
 
     onMountRef.current = false;
-  });
+  }, []);
 
   return (
     <div
