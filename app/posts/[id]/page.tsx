@@ -31,9 +31,9 @@ export default async function Page({
     }
 
     return (
-      <div className="flex w-full h-full">
-        <div className="w-2/3 px-4 flex-1 min-h-[600px]">
-          <Markdown post={post} className="max-w-none w-full h-full" />
+      <div className="flex h-full">
+        <div className="w-2/3 px-4 min-h-[600px]">
+          <Markdown post={post} className="max-h-[820px]" />
         </div>
         <div className="w-1/3 px-4 flex flex-col min-w-[332px] overflow-y-auto">
           <GraphView postGraph={postGraph} postId={decodedId} />

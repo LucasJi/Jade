@@ -1,7 +1,7 @@
-import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { getPosts } from '@/utils/getPosts';
+import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
+import Link from 'next/link';
 import GraphView from '@/components/graph-view';
-import { Link } from '@nextui-org/link';
 
 export default async function Page() {
   const posts = await getPosts();
@@ -13,13 +13,10 @@ export default async function Page() {
       <div className="w-2/3 flex flex-col items-center">
         {posts.map(post => (
           <div key={post.id} className="flex items-center">
-            {/* <div>{post.ctime.toLocaleDateString()}</div>
-            <Spacer x={4} /> */}
             <Link
               href={`/posts/${encodeURIComponent(post.id)}`}
               color="foreground"
-              underline="hover"
-              className="text-lg"
+              className="text-lg hover:underline"
             >
               {post.title}
             </Link>

@@ -154,7 +154,7 @@ const Markdown = ({
 }) => {
   const { title, content, frontmatter } = post;
   return (
-    <ScrollArea className={clsx(className)}>
+    <ScrollArea>
       <article
         className={clsx(
           'prose',
@@ -170,6 +170,7 @@ const Markdown = ({
           'prose-ul:my-2',
           'prose-hr:my-4',
           'prose-table:my-2',
+          className,
         )}
       >
         <ReactMarkdown

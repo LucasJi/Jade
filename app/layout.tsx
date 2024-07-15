@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <WebVitals />
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
           <div className="relative flex flex-col h-screen">
-            <main className="flex-1">{children}</main>
+            <main className="flex flex-1">{children}</main>
             <Footer />
           </div>
         </Providers>
