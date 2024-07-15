@@ -35,3 +35,8 @@ export interface TreeProps {
   data: TreeNode[];
   className?: string;
 }
+
+export interface PathItem {
+  path: string;
+  type: string;
+}

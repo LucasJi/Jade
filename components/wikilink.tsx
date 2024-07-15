@@ -1,7 +1,4 @@
 import { Post } from '@/types';
-import { base64Decode } from '@/utils/common';
-import { getPostById } from '@/utils/getPostById';
-import { getPostIds } from '@/utils/getPostIds';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import Markdown from './markdown';
@@ -11,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+import { base64Decode, getPostById, getPostIds } from '@/utils/post-util';
 
 export default async function Wikilink({
   wikilink = '',

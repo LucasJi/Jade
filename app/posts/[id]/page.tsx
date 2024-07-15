@@ -1,11 +1,13 @@
-import { getAdjacencyPostsById } from '@/utils/getAdjacencyPostsById';
-import { getPostById } from '@/utils/getPostById';
-import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
-import { getPostIds } from '@/utils/getPostIds';
 import GraphView from '@/components/graph-view';
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
 import { notFound } from 'next/navigation';
+import {
+  getAdjacencyPostsById,
+  getPostById,
+  getPostGraphFromPosts,
+  getPostIds,
+} from '@/utils/post-util';
 
 export async function generateStaticParams() {
   try {

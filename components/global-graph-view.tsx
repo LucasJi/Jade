@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import { PiGraphLight } from 'react-icons/pi';
 import clsx from 'clsx';
-import { getPosts } from '@/utils/getPosts';
-import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import { PostGraph } from '@types';
 import { Button } from '@/components/ui/button';
+import { getPostGraphFromPosts, getPosts } from '@/utils/post-util';
 
 const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   const [postGraph, setPostGraph] = useState<PostGraph>();

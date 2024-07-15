@@ -1,6 +1,6 @@
-import { getPostToc } from '@/utils/common';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
 import clsx from 'clsx';
+import { getPostToc } from '@/utils/post-util';
 
 function TocNode({ heading }: { heading: BlockContent | ListItem }) {
   let node;

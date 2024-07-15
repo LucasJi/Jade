@@ -1,6 +1,6 @@
-const repo = 'obsidian-chinese-help';
-const branch = 'master';
-const token = '';
+const repo = 'obsidian-feature-demo-posts'//'obsidian-chinese-help';
+const branch = 'main';
+const token = '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';
 
 const base64Decode = (text) => {
   return Buffer.from(text, 'base64').toString();
@@ -25,7 +25,7 @@ const treeApi = () =>
       // console.log(JSON.stringify(treeObj));
     });
 
-// treeApi();
+treeApi();
 
 const id = 'MDkg56KO6K6wLzIwMjAxMDAxMTUzNeS9v+eUqHF1aWNrZXLlkox6b3Rlcm/lvJXnlKhQREYgYnkgQW9uLm1k'
 const path = base64Decode(id)
@@ -53,4 +53,4 @@ const contentApi = () =>
       console.log('data', data);
     });
 
-contentApi();
+// contentApi();

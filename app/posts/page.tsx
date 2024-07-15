@@ -1,7 +1,6 @@
-import { getPosts } from '@/utils/getPosts';
-import { getPostGraphFromPosts } from '@/utils/getPostGraphFromPosts';
 import Link from 'next/link';
 import GraphView from '@/components/graph-view';
+import { getPostGraphFromPosts, getPosts } from '@/utils/post-util';
 
 export default async function Page() {
   const posts = await getPosts();

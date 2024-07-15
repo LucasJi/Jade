@@ -1,6 +1,8 @@
 # Jade
 
-This project is designed to enable the publication of my blogs, authored in [Obsidian](https://obsidian.md/), to a blog website. The website will strive to support various wonderful features of Obsidian, such as wikilinks, graph view, and more, as much as possible.
+This project is designed to enable the publication of my blogs, authored
+in [Obsidian](https://obsidian.md/), to a blog website. The website will strive to support various
+wonderful features of Obsidian, such as wikilinks, graph view, and more, as much as possible.
 
 ## Getting Started
 
@@ -31,13 +33,17 @@ This project is designed to enable the publication of my blogs, authored in [Obs
    GITHUB_OWNER=
    GITHUB_BRANCH=
 
-   # separate by comma
-   INCLUDE_PATHS=""
+   # Included directories, separated by comma
+   INCLUDE_DIRS=""
    ```
 
-   - `GITHUB_REPO_ACCESS_TOKEN`: When generating your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), the **Read-Only** permission of **Contents** must be selected.
-   - `GITHUB_REPO`: The repository where your posts are stored. If you haven't created a post repository yet, you can folk my [feature test post repository](https://github.com/LucasJi/galaxy-feature-posts).
-   - `GITHUB_OWNER`: The owner of the repository.
+    - `GITHUB_REPO_ACCESS_TOKEN`: When generating
+      your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token),
+      the **Read-Only** permission of **Contents** must be selected.
+    - `GITHUB_REPO`: The repository where your posts are stored. If you haven't created a post
+      repository yet, you can folk
+      my [feature test post repository](https://github.com/LucasJi/galaxy-feature-posts).
+    - `GITHUB_OWNER`: The owner of the repository.
 
 4. Start the server
 
@@ -95,7 +101,8 @@ Galaxy Blog supports displaying all kinds of Obsidian's wikilinks:
 
 Galaxy Post generates a graph view just like what Obsidian does.
 
-The only difference is the nodes in Galaxy Post's graph view are clickable. You will navigate the specific post page after clicking the post node in the graph view.
+The only difference is the nodes in Galaxy Post's graph view are clickable. You will navigate the
+specific post page after clicking the post node in the graph view.
 
 ### File explorer
 
@@ -103,7 +110,8 @@ Galaxy Post shows the directory structure of your posts.
 
 ### Table of Content
 
-Galaxy Post generates a table of content for each post. It will be displayed at the right-bottom side of the post page.
+Galaxy Post generates a table of content for each post. It will be displayed at the right-bottom
+side of the post page.
 
 ### Frontmatter
 
@@ -119,7 +127,8 @@ tags:
 ---
 ```
 
-For now, only the `title`, `tags` and `aliases` keys are supported. The values of them will be resolved and friendly displayed in the post page.
+For now, only the `title`, `tags` and `aliases` keys are supported. The values of them will be
+resolved and friendly displayed in the post page.
 
 ## Tech Stack
 
