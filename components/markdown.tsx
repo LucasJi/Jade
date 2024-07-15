@@ -1,6 +1,5 @@
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 // highlight.js doesn't support React.JSX syntax
 import { Post } from '@/types';
@@ -12,7 +11,6 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import Wikilink from './wikilink';
 import clsx from 'clsx';
-import { buttonVariants } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const slugs = new Slugger();
@@ -42,9 +40,9 @@ const components = (
     const isFragment = href?.startsWith('#');
 
     return (
-      <Link href={href!} className={buttonVariants({ variant: 'outline' })}>
+      <a href={href!} target="_blank">
         {children}
-      </Link>
+      </a>
     );
   },
   h1: props => {
