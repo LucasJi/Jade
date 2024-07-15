@@ -53,7 +53,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     <li className="mt-1">
       <button onClick={toggleExpand} className="flex items-center">
         <FoldIcon isExpanded={isExpanded} />
-        <span className="min-h-0 font-semibold max-w-[200px] text-base inline-block truncate">
+        <span className="min-h-0 max-w-[200px] text-base inline-block truncate">
           {node.name}
         </span>
       </button>
@@ -81,9 +81,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     </li>
   ) : (
     <li
-      className={clsx(
-        'mt-1 w-fit max-w-[200px] truncate text-muted-foreground hover:underline',
-      )}
+      className={clsx('mt-1 w-fit max-w-[200px] truncate hover:underline')}
       title={node.name}
     >
       <Link
