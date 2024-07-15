@@ -80,10 +80,15 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       </div>
     </li>
   ) : (
-    <li className={clsx('mt-1 w-fit max-w-[200px] truncate')}>
+    <li
+      className={clsx(
+        'mt-1 w-fit max-w-[200px] truncate text-muted-foreground hover:underline',
+      )}
+      title={node.name}
+    >
       <Link
         href={`/posts/${encodeURIComponent(node.path || '')}`}
-        className="min-h-0 text-base font-normal"
+        className="min-h-0 text-base"
         // Reduce unnecessary requests
         prefetch={false}
       >
