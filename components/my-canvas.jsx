@@ -5,9 +5,10 @@ import * as d3 from 'd3';
 import data from 'public/miserables.json';
 
 // TODO use document.devicePixelRatio
-const dpi = 1.25;
+const dpi = 1;
 const width = 928;
 const height = 600;
+const radius = 5;
 
 export function MyCanvas() {
   useEffect(() => {
@@ -20,6 +21,8 @@ export function MyCanvas() {
     // so that re-evaluating this cell produces the same result.
     const links = data.links.map(d => ({ ...d }));
     const nodes = data.nodes.map(d => ({ ...d }));
+
+    let transform = d3.zoomIdentity;
 
     // Create a simulation with several forces.
     const simulation = d3
@@ -36,8 +39,12 @@ export function MyCanvas() {
     context.scale(dpi, dpi);
 
     function draw() {
+      context.save();
       context.clearRect(0, 0, width, height);
+      context.translate(transform.x, transform.y);
+      context.scale(transform.k, transform.k);
 
+      // draw links
       context.save();
       context.globalAlpha = 0.6;
       context.strokeStyle = '#999';
@@ -46,6 +53,7 @@ export function MyCanvas() {
       context.stroke();
       context.restore();
 
+      // draw nodes
       context.save();
       context.strokeStyle = '#fff';
       context.globalAlpha = 1;
@@ -66,45 +74,69 @@ export function MyCanvas() {
     }
 
     function drawNode(d) {
-      context.moveTo(d.x + 5, d.y);
-      context.arc(d.x, d.y, 5, 0, 2 * Math.PI);
+      context.moveTo(d.x + radius, d.y);
+      context.arc(d.x, d.y, radius, 0, 2 * Math.PI);
     }
 
     // Add a drag behavior. The _subject_ identifies the closest node to the pointer,
     // conditional on the distance being less than 20 pixels.
-    d3.select(canvas).call(
-      d3
-        .drag()
-        .subject(event => {
-          const [px, py] = d3.pointer(event, canvas);
-          return d3.least(nodes, ({ x, y }) => {
-            const dist2 = (x - px) ** 2 + (y - py) ** 2;
-            return Math.sqrt(dist2);
-          });
-        })
-        .on('start', handleDragStart)
-        .on('drag', handleDrag)
-        .on('end', handleDragEnd),
-    );
+    d3.select(canvas)
+      .call(
+        d3
+          .drag()
+          .subject(event => {
+            const x = transform.invertX(event.x);
+            const y = transform.invertY(event.y);
+            const rSq = radius * radius;
+            let i;
+            let node = undefined;
+            for (i = nodes.length - 1; i >= 0; --i) {
+              const iNode = nodes[i],
+                dx = x - iNode.x,
+                dy = y - iNode.y,
+                distSq = dx * dx + dy * dy;
+              if (distSq < rSq) {
+                node = iNode;
+
+                node.x = transform.applyX(node.x);
+                node.y = transform.applyY(node.y);
+
+                break;
+              }
+            }
+
+            return node;
+          })
+          .on('start', dragStarted)
+          .on('drag', dragged)
+          .on('end', dragEnded),
+      )
+      .call(d3.zoom().scaleExtent([1, 2]).on('zoom', zoomed));
+
+    function zoomed(event) {
+      transform = event.transform;
+      console.log('zoom event', event);
+      // draw();
+    }
 
     // Reheat the simulation when drag starts, and fix the subject position.
-    function handleDragStart(event) {
+    function dragStarted(event) {
       if (!event.active) {
         simulation.alphaTarget(0.3).restart();
       }
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
+      event.subject.fx = transform.invertX(event.subject.x);
+      event.subject.fy = transform.invertY(event.subject.y);
     }
 
     // Update the subject (dragged node) position during drag.
-    function handleDrag(event) {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
+    function dragged(event) {
+      event.subject.fx = transform.invertX(event.x);
+      event.subject.fy = transform.invertY(event.y);
     }
 
     // Restore the target alpha so the simulation cools after dragging ends.
     // Unfix the subject position now that it’s no longer being dragged.
-    function handleDragEnd(event) {
+    function dragEnded(event) {
       if (!event.active) {
         simulation.alphaTarget(0);
       }
@@ -112,10 +144,9 @@ export function MyCanvas() {
       event.subject.fy = null;
     }
 
-    // When this cell is re-run, stop the previous simulation. (This doesn’t
-    // really matter since the target alpha is zero and the simulation will
-    // stop naturally, but it’s a good practice.)
-    // d3.invalidation.then(() => simulation.stop());
+    return () => {
+      simulation.stop();
+    };
   }, []);
 
   return (
