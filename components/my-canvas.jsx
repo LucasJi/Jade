@@ -77,6 +77,7 @@ export function MyCanvas() {
     d3.select(canvas).call(
       d3
         .drag()
+        .container(canvas)
         .subject(event => {
           const x = transform.invertX(event.x);
           const y = transform.invertY(event.y);
@@ -91,8 +92,8 @@ export function MyCanvas() {
             if (distSq < rSq) {
               node = iNode;
 
-              // node.x = transform.applyX(node.x);
-              // node.y = transform.applyY(node.y);
+              node.x = transform.applyX(node.x);
+              node.y = transform.applyY(node.y);
 
               break;
             }
@@ -121,26 +122,21 @@ export function MyCanvas() {
       if (!event.active) {
         simulation.alphaTarget(0.3).restart();
       }
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
+      const rect = canvas.getBoundingClientRect();
+      const [x, y] = d3.pointer(event);
+      event.subject.fx = (x - rect.x) / dpi;
+      event.subject.fy = (y - rect.y) / dpi;
       // event.subject.fx = transform.invertX(event.x);
       // event.subject.fy = transform.invertY(event.y);
     }
 
     // Update the subject (dragged node) position during drag.
     function dragged(event) {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
+      const rect = canvas.getBoundingClientRect();
       const [x, y] = d3.pointer(event);
-      console.log(
-        'dragged',
-        event.x,
-        event.y,
-        event.x * dpi,
-        event.y * dpi,
-        x,
-        y,
-      );
+      event.subject.fx = (x - rect.x) / dpi;
+      event.subject.fy = (y - rect.y) / dpi;
+      console.log(event.x, event.y, x, y, rect.x, rect.y);
       // event.subject.fx = transform.invertX(event.x);
       // event.subject.fy = transform.invertY(event.y);
     }
