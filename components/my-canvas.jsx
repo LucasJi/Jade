@@ -51,6 +51,7 @@ export function MyCanvas({ postGraph }) {
         'forceRadial',
         d3.forceRadial(Math.min(width, height)).strength(0.05),
       )
+      .force('collide', d3.forceCollide(radius).strength(0.6))
       .on('tick', draw);
 
     function draw() {
@@ -62,7 +63,6 @@ export function MyCanvas({ postGraph }) {
       // draw links
       ctx.globalAlpha = 0.6;
       ctx.strokeStyle = '#999';
-      ctx.strokeWidth = 0.5;
       links.forEach(d => {
         ctx.beginPath();
         ctx.moveTo(d.source.x, d.source.y);
