@@ -5,14 +5,19 @@ import * as d3 from 'd3';
 import data from 'public/miserables.json';
 
 // TODO use document.devicePixelRatio
-const dpi = 1;
+const dpi = 1.25;
 const width = 928;
 const height = 600;
 const radius = 5;
 
 export function MyCanvas() {
   useEffect(() => {
+    // canvas
     const canvas = document.getElementById('tutorial');
+
+    // ctx
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpi, dpi);
 
     // Specify the color scale.
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -32,91 +37,83 @@ export function MyCanvas() {
         d3.forceLink(links).id(d => d.id),
       )
       .force('charge', d3.forceManyBody())
-      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('center', d3.forceCenter(width / 2 / dpi, height / 2 / dpi))
       .on('tick', draw);
 
-    const context = canvas.getContext('2d');
-    context.scale(dpi, dpi);
-
     function draw() {
-      context.save();
-      context.clearRect(0, 0, width, height);
-      context.translate(transform.x, transform.y);
-      context.scale(transform.k, transform.k);
+      ctx.save();
+      ctx.clearRect(0, 0, width, height);
+      // ctx.translate(transform.x / dpi, transform.y / dpi);
+      // ctx.scale(transform.k, transform.k);
 
       // draw links
-      context.save();
-      context.globalAlpha = 0.6;
-      context.strokeStyle = '#999';
-      context.beginPath();
-      links.forEach(drawLink);
-      context.stroke();
-      context.restore();
+      ctx.globalAlpha = 0.6;
+      ctx.strokeStyle = '#999';
+      links.forEach(d => {
+        ctx.beginPath();
+        ctx.moveTo(d.source.x, d.source.y);
+        ctx.lineTo(d.target.x, d.target.y);
+        ctx.stroke();
+      });
 
       // draw nodes
-      context.save();
-      context.strokeStyle = '#fff';
-      context.globalAlpha = 1;
-      nodes.forEach(node => {
-        context.beginPath();
-        drawNode(node);
-        context.fillStyle = color(node.group);
-        context.strokeStyle = '#fff';
-        context.fill();
-        context.stroke();
+      ctx.strokeStyle = '#fff';
+      ctx.globalAlpha = 1;
+      nodes.forEach(d => {
+        ctx.beginPath();
+        ctx.moveTo(d.x + radius, d.y);
+        ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = color(d.group);
+        ctx.strokeStyle = '#fff';
+        ctx.fill();
+        ctx.stroke();
       });
-      context.restore();
-    }
 
-    function drawLink(d) {
-      context.moveTo(d.source.x, d.source.y);
-      context.lineTo(d.target.x, d.target.y);
-    }
-
-    function drawNode(d) {
-      context.moveTo(d.x + radius, d.y);
-      context.arc(d.x, d.y, radius, 0, 2 * Math.PI);
+      ctx.restore();
     }
 
     // Add a drag behavior. The _subject_ identifies the closest node to the pointer,
     // conditional on the distance being less than 20 pixels.
-    d3.select(canvas)
-      .call(
-        d3
-          .drag()
-          .subject(event => {
-            const x = transform.invertX(event.x);
-            const y = transform.invertY(event.y);
-            const rSq = radius * radius;
-            let i;
-            let node = undefined;
-            for (i = nodes.length - 1; i >= 0; --i) {
-              const iNode = nodes[i],
-                dx = x - iNode.x,
-                dy = y - iNode.y,
-                distSq = dx * dx + dy * dy;
-              if (distSq < rSq) {
-                node = iNode;
+    d3.select(canvas).call(
+      d3
+        .drag()
+        .subject(event => {
+          const x = transform.invertX(event.x);
+          const y = transform.invertY(event.y);
+          const rSq = radius * radius;
+          let i;
+          let node = undefined;
+          for (i = nodes.length - 1; i >= 0; --i) {
+            const iNode = nodes[i],
+              dx = x / dpi - iNode.x,
+              dy = y / dpi - iNode.y,
+              distSq = dx * dx + dy * dy;
+            if (distSq < rSq) {
+              node = iNode;
 
-                node.x = transform.applyX(node.x);
-                node.y = transform.applyY(node.y);
+              // node.x = transform.applyX(node.x);
+              // node.y = transform.applyY(node.y);
 
-                break;
-              }
+              break;
             }
+          }
 
-            return node;
-          })
-          .on('start', dragStarted)
-          .on('drag', dragged)
-          .on('end', dragEnded),
-      )
-      .call(d3.zoom().scaleExtent([1, 2]).on('zoom', zoomed));
+          return node;
+        })
+        .on('start', dragStarted)
+        .on('drag', dragged)
+        .on('end', dragEnded),
+    );
+    // .call(
+    //   d3
+    //     .zoom()
+    //     .scaleExtent([1 / 10, 8])
+    //     .on('zoom', zoomed),
+    // );
 
     function zoomed(event) {
       transform = event.transform;
-      console.log('zoom event', event);
-      // draw();
+      draw();
     }
 
     // Reheat the simulation when drag starts, and fix the subject position.
@@ -124,14 +121,28 @@ export function MyCanvas() {
       if (!event.active) {
         simulation.alphaTarget(0.3).restart();
       }
-      event.subject.fx = transform.invertX(event.subject.x);
-      event.subject.fy = transform.invertY(event.subject.y);
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+      // event.subject.fx = transform.invertX(event.x);
+      // event.subject.fy = transform.invertY(event.y);
     }
 
     // Update the subject (dragged node) position during drag.
     function dragged(event) {
-      event.subject.fx = transform.invertX(event.x);
-      event.subject.fy = transform.invertY(event.y);
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+      const [x, y] = d3.pointer(event);
+      console.log(
+        'dragged',
+        event.x,
+        event.y,
+        event.x * dpi,
+        event.y * dpi,
+        x,
+        y,
+      );
+      // event.subject.fx = transform.invertX(event.x);
+      // event.subject.fy = transform.invertY(event.y);
     }
 
     // Restore the target alpha so the simulation cools after dragging ends.
@@ -140,8 +151,8 @@ export function MyCanvas() {
       if (!event.active) {
         simulation.alphaTarget(0);
       }
-      event.subject.fx = null;
-      event.subject.fy = null;
+      // event.subject.fx = null;
+      // event.subject.fy = null;
     }
 
     return () => {
@@ -155,7 +166,13 @@ export function MyCanvas() {
         id="tutorial"
         width={width * dpi}
         height={height * dpi}
-        style={{ width: '928px', maxWidth: '100%', height: 'auto' }}
+        style={{
+          width: '928px',
+          maxWidth: '100%',
+          height: 'auto',
+          borderWidth: '1px',
+          borderColor: 'red',
+        }}
       >
         current stock price: $3.15 +0.15
       </canvas>
