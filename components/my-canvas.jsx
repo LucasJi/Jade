@@ -2,30 +2,30 @@
 
 import { useEffect } from 'react';
 import * as d3 from 'd3';
-import data from 'public/miserables.json';
 
-// TODO use document.devicePixelRatio
-const dpi = 1.25;
-const width = 928;
+const dpi = 2;
+const width = 900;
 const height = 600;
 const radius = 5;
 
-export function MyCanvas() {
+export function MyCanvas({ postGraph }) {
   useEffect(() => {
-    // canvas
-    const canvas = document.getElementById('tutorial');
+    if (!dpi) {
+      return () => {};
+    }
 
-    // ctx
+    const canvas = document.getElementById('tutorial');
+    const rect = canvas.getBoundingClientRect();
+
     const ctx = canvas.getContext('2d');
     ctx.scale(dpi, dpi);
 
-    // Specify the color scale.
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    // The force simulation mutates links and nodes, so create a copy
-    // so that re-evaluating this cell produces the same result.
-    const links = data.links.map(d => ({ ...d }));
-    const nodes = data.nodes.map(d => ({ ...d }));
+    // const links = data.links.map(d => ({ ...d }));
+    // const nodes = data.nodes.map(d => ({ ...d }));
+    const links = postGraph.links;
+    const nodes = postGraph.nodes;
 
     let transform = d3.zoomIdentity;
 
@@ -34,21 +34,35 @@ export function MyCanvas() {
       .forceSimulation(nodes)
       .force(
         'link',
-        d3.forceLink(links).id(d => d.id),
+        d3
+          .forceLink(links)
+          .id(d => d.id)
+          .strength(0.02),
       )
-      .force('charge', d3.forceManyBody())
-      .force('center', d3.forceCenter(width / 2 / dpi, height / 2 / dpi))
+      .force(
+        'charge',
+        d3.forceManyBody().distanceMax(Math.min(width, height) / 2),
+      )
+      .force(
+        'center',
+        d3.forceCenter(width / 2 / dpi, height / 2 / dpi).strength(0.5),
+      )
+      .force(
+        'forceRadial',
+        d3.forceRadial(Math.min(width, height)).strength(0.05),
+      )
       .on('tick', draw);
 
     function draw() {
       ctx.save();
       ctx.clearRect(0, 0, width, height);
-      // ctx.translate(transform.x / dpi, transform.y / dpi);
-      // ctx.scale(transform.k, transform.k);
+      ctx.translate(transform.x / dpi, transform.y / dpi);
+      ctx.scale(transform.k, transform.k);
 
       // draw links
       ctx.globalAlpha = 0.6;
       ctx.strokeStyle = '#999';
+      ctx.strokeWidth = 0.5;
       links.forEach(d => {
         ctx.beginPath();
         ctx.moveTo(d.source.x, d.source.y);
@@ -63,7 +77,7 @@ export function MyCanvas() {
         ctx.beginPath();
         ctx.moveTo(d.x + radius, d.y);
         ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = color(d.group);
+        ctx.fillStyle = color((d.id.length % 10).toString());
         ctx.strokeStyle = '#fff';
         ctx.fill();
         ctx.stroke();
@@ -72,83 +86,89 @@ export function MyCanvas() {
       ctx.restore();
     }
 
-    // Add a drag behavior. The _subject_ identifies the closest node to the pointer,
-    // conditional on the distance being less than 20 pixels.
-    d3.select(canvas).call(
-      d3
-        .drag()
-        .container(canvas)
-        .subject(event => {
-          const x = transform.invertX(event.x);
-          const y = transform.invertY(event.y);
-          const rSq = radius * radius;
-          let i;
-          let node = undefined;
-          for (i = nodes.length - 1; i >= 0; --i) {
-            const iNode = nodes[i],
-              dx = x / dpi - iNode.x,
-              dy = y / dpi - iNode.y,
-              distSq = dx * dx + dy * dy;
-            if (distSq < rSq) {
-              node = iNode;
+    d3.select(canvas)
+      .call(
+        d3
+          .drag()
+          .container(canvas)
+          .subject(event => {
+            const x = transform.invertX(event.x);
+            const y = transform.invertY(event.y);
+            const rSq = radius * radius;
+            let i;
+            let node = undefined;
+            for (i = nodes.length - 1; i >= 0; --i) {
+              const iNode = nodes[i],
+                dx = x / dpi - iNode.x,
+                dy = y / dpi - iNode.y,
+                distSq = dx * dx + dy * dy;
+              if (distSq < rSq) {
+                node = iNode;
 
-              node.x = transform.applyX(node.x);
-              node.y = transform.applyY(node.y);
+                node.x = transform.applyX(node.x);
+                node.y = transform.applyY(node.y);
 
-              break;
+                break;
+              }
             }
-          }
 
-          return node;
-        })
-        .on('start', dragStarted)
-        .on('drag', dragged)
-        .on('end', dragEnded),
-    );
-    // .call(
-    //   d3
-    //     .zoom()
-    //     .scaleExtent([1 / 10, 8])
-    //     .on('zoom', zoomed),
-    // );
+            return node;
+          })
+          .on('start', dragStarted)
+          .on('drag', dragged)
+          .on('end', dragEnded),
+      )
+      .call(
+        d3
+          .zoom()
+          .scaleExtent([1 / 10, 8])
+          .on('zoom', zoomed),
+      );
 
     function zoomed(event) {
       transform = event.transform;
       draw();
     }
 
-    // Reheat the simulation when drag starts, and fix the subject position.
     function dragStarted(event) {
       if (!event.active) {
         simulation.alphaTarget(0.3).restart();
       }
-      const rect = canvas.getBoundingClientRect();
-      const [x, y] = d3.pointer(event);
-      event.subject.fx = (x - rect.x) / dpi;
-      event.subject.fy = (y - rect.y) / dpi;
-      // event.subject.fx = transform.invertX(event.x);
-      // event.subject.fy = transform.invertY(event.y);
+      event.subject.fx = transform.invertX(event.x);
+      event.subject.fy = transform.invertY(event.y);
+      // console.log(
+      //   'drag started event (%d, %d) pointer (%d, %d) rect (%d, %d)',
+      //   event.x,
+      //   event.y,
+      //   x,
+      //   y,
+      //   rect.x,
+      //   rect.y,
+      //   event,
+      // );
     }
 
-    // Update the subject (dragged node) position during drag.
     function dragged(event) {
-      const rect = canvas.getBoundingClientRect();
       const [x, y] = d3.pointer(event);
-      event.subject.fx = (x - rect.x) / dpi;
-      event.subject.fy = (y - rect.y) / dpi;
-      console.log(event.x, event.y, x, y, rect.x, rect.y);
-      // event.subject.fx = transform.invertX(event.x);
-      // event.subject.fy = transform.invertY(event.y);
+      event.subject.fx = transform.invertX(x - rect.x) / dpi;
+      event.subject.fy = transform.invertY(y - rect.y) / dpi;
+      // console.log(
+      //   'dragged event (%d, %d) pointer (%d, %d) rect (%d, %d)',
+      //   event.x,
+      //   event.y,
+      //   x,
+      //   y,
+      //   rect.x,
+      //   rect.y,
+      // );
     }
 
-    // Restore the target alpha so the simulation cools after dragging ends.
-    // Unfix the subject position now that it’s no longer being dragged.
     function dragEnded(event) {
       if (!event.active) {
         simulation.alphaTarget(0);
       }
-      // event.subject.fx = null;
-      // event.subject.fy = null;
+      event.subject.fx = null;
+      event.subject.fy = null;
     }
 
     return () => {
@@ -158,20 +178,22 @@ export function MyCanvas() {
 
   return (
     <div>
-      <canvas
-        id="tutorial"
-        width={width * dpi}
-        height={height * dpi}
-        style={{
-          width: '928px',
-          maxWidth: '100%',
-          height: 'auto',
-          borderWidth: '1px',
-          borderColor: 'red',
-        }}
-      >
-        current stock price: $3.15 +0.15
-      </canvas>
+      {dpi && (
+        <canvas
+          id="tutorial"
+          width={width * dpi}
+          height={height * dpi}
+          style={{
+            width: `${width}px`,
+            maxWidth: '100%',
+            height: `${height}px`,
+            borderWidth: '1px',
+            borderColor: 'red',
+          }}
+        >
+          current stock price: $3.15 +0.15
+        </canvas>
+      )}
     </div>
   );
 }
