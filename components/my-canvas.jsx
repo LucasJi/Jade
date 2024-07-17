@@ -10,7 +10,7 @@ const radius = 5;
 const rSq = radius * radius;
 const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-const draw = (ctx, links, nodes, transform) => {
+const draw = (ctx, links, nodes, transform, cachedNode = null) => {
   ctx.save();
   ctx.clearRect(0, 0, width, height);
   ctx.translate(transform.x / dpi, transform.y / dpi);
@@ -36,7 +36,8 @@ const draw = (ctx, links, nodes, transform) => {
     ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
     // const fill = color((d.id.length % 10).toString());
     const fill = '#9ca3af';
-    ctx.fillStyle = fill;
+    // '#a88bfa'
+    ctx.fillStyle = d.id === cachedNode?.id ? '#a88bfa' : fill;
     ctx.strokeStyle = fill;
     ctx.fill();
 
@@ -216,26 +217,30 @@ export function MyCanvas({ postGraph }) {
         }
 
         if (node) {
-          console.log('hovered node:', node);
-          ctx.beginPath();
-          ctx.moveTo(node.x + radius, node.y);
-          ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-          // const fill = color((d.id.length % 10).toString());
-          const fill = '#A88BFA';
-          ctx.fillStyle = fill;
-          ctx.strokeStyle = fill;
-          ctx.fill();
-
-          // ctx.fillText('天若有情', d.x, d.y + radius + 2);
-          // ctx.font = '5px sans-serif';
-          // ctx.textAlign = 'center';
-          // ctx.textBaseline = 'top';
-
-          ctx.stroke();
-          ctx.save();
+          // console.log('hovered node:', node);
+          //
+          // ctx.beginPath();
+          // ctx.moveTo(node.x + radius, node.y);
+          // ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
+          // // const fill = color((d.id.length % 10).toString());
+          // const fill = '#A88BFA';
+          // ctx.fillStyle = fill;
+          // ctx.strokeStyle = fill;
+          // ctx.fill();
+          //
+          // // ctx.fillText('天若有情', d.x, d.y + radius + 2);
+          // // ctx.font = '5px sans-serif';
+          // // ctx.textAlign = 'center';
+          // // ctx.textBaseline = 'top';
+          //
+          // ctx.stroke();
+          // ctx.save();
+          // ctx.restore();
         } else {
           console.log('hover nothing');
         }
+
+        draw(ctx, links, nodes, transform, nodeRef.current);
       });
 
     function zoomed(event) {
