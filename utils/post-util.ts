@@ -296,6 +296,21 @@ export const getPostIds = async (): Promise<string[]> => {
   });
 };
 
+let cachedPostGraph: PostGraph | null = null;
+
+export const getPostGraph = async () => {
+  if (cachedPostGraph) {
+    return Promise.resolve(cachedPostGraph);
+  }
+
+  return getPosts().then(posts =>
+    getPostGraphFromPosts(posts).then(postGraph => {
+      cachedPostGraph = postGraph;
+      return postGraph;
+    }),
+  );
+};
+
 export const getPostGraphFromPosts = async (
   posts: Post[],
 ): Promise<PostGraph> => {
@@ -328,7 +343,11 @@ export const getPostGraphFromPosts = async (
   }
 
   return {
-    nodes: posts,
+    nodes: posts.map(post => ({
+      ...post,
+      content: '',
+      frontmatter: undefined,
+    })),
     links: Array.from(postGraphLinks).map(str => JSON.parse(str)),
   };
 };
