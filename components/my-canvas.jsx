@@ -8,49 +8,7 @@ const width = 900;
 const height = 600;
 const radius = 5;
 const rSq = radius * radius;
-const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-const draw = (ctx, links, nodes, transform, cachedNode = null) => {
-  ctx.save();
-  ctx.clearRect(0, 0, width, height);
-  ctx.translate(transform.x / dpi, transform.y / dpi);
-  ctx.scale(transform.k, transform.k);
-
-  // draw links
-  ctx.globalAlpha = 0.6;
-  ctx.strokeStyle = '#999';
-  links.forEach(d => {
-    ctx.beginPath();
-    ctx.moveTo(d.source.x, d.source.y);
-    ctx.lineTo(d.target.x, d.target.y);
-    ctx.lineWidth = '0.5';
-    ctx.stroke();
-  });
-
-  // draw nodes
-  ctx.strokeStyle = '#fff';
-  ctx.globalAlpha = 1;
-  nodes.forEach(d => {
-    ctx.beginPath();
-    ctx.moveTo(d.x + radius, d.y);
-    ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-    // const fill = color((d.id.length % 10).toString());
-    const fill = '#9ca3af';
-    // '#a88bfa'
-    ctx.fillStyle = d.id === cachedNode?.id ? '#a88bfa' : fill;
-    ctx.strokeStyle = fill;
-    ctx.fill();
-
-    // ctx.fillText('天若有情', d.x, d.y + radius + 2);
-    // ctx.font = '5px sans-serif';
-    // ctx.textAlign = 'center';
-    // ctx.textBaseline = 'top';
-
-    ctx.stroke();
-  });
-
-  ctx.restore();
-};
+const color = '#9ca3af';
 
 const dragStarted = (event, transform, simulation) => {
   if (!event.active) {
@@ -106,6 +64,11 @@ export function MyCanvas({ postGraph }) {
     const ctx = canvas.getContext('2d');
     ctx.scale(dpi, dpi);
 
+    // 性能优化
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.6;
+    ctx.lineWidth = '0.5';
+
     // const links = data.links.map(d => ({ ...d }));
     // const nodes = data.nodes.map(d => ({ ...d }));
     const links = postGraph.links;
@@ -113,7 +76,52 @@ export function MyCanvas({ postGraph }) {
 
     let transform = d3.zoomIdentity;
 
-    // Create a simulation with several forces.
+    function draw() {
+      ctx.save();
+      ctx.clearRect(0, 0, width, height);
+      ctx.translate(transform.x / dpi, transform.y / dpi);
+      ctx.scale(transform.k, transform.k);
+
+      // draw links
+      ctx.strokeStyle = '#999';
+      links.forEach(d => {
+        ctx.beginPath();
+        ctx.moveTo(d.source.x, d.source.y);
+        ctx.lineTo(d.target.x, d.target.y);
+        ctx.stroke();
+      });
+
+      // draw nodes
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 1;
+      nodes.forEach(d => {
+        ctx.beginPath();
+        ctx.moveTo(d.x + radius, d.y);
+        ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
+
+        if (d.id === nodeRef.current?.id) {
+          ctx.fillStyle = '#a88bfa';
+          ctx.strokeStyle = '#a88bfa';
+        }
+
+        ctx.fill();
+
+        // ctx.fillText('天若有情', d.x, d.y + radius + 2);
+        // ctx.font = '5px sans-serif';
+        // ctx.textAlign = 'center';
+        // ctx.textBaseline = 'top';
+
+        ctx.stroke();
+
+        if (d.id === nodeRef.current?.id) {
+          ctx.fillStyle = color;
+          ctx.strokeStyle = color;
+        }
+      });
+
+      ctx.restore();
+    }
+
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -136,7 +144,7 @@ export function MyCanvas({ postGraph }) {
         d3.forceRadial(Math.min(width, height)).strength(0.05),
       )
       .force('collide', d3.forceCollide(radius).strength(0.6))
-      .on('tick', () => draw(ctx, links, nodes, transform));
+      .on('tick', () => draw());
 
     function findNode(event) {
       const x = transform.invertX(event.x);
@@ -195,13 +203,16 @@ export function MyCanvas({ postGraph }) {
             dy = invertedY - cachedNode.y;
 
           if (dx * dx + dy * dy < rSq) {
+            // mouse move on the same node, re-draw
             node = cachedNode;
           } else {
             nodeRef.current = null;
+            // mouse move on new node, re-draw
+            draw();
           }
         }
 
-        // iterate nodes to find target node
+        // iterate to find hovered node
         if (!node) {
           for (let i = nodes.length - 1; i >= 0; --i) {
             const iNode = nodes[i],
@@ -211,41 +222,17 @@ export function MyCanvas({ postGraph }) {
             if (distSq < rSq) {
               nodeRef.current = iNode;
               node = iNode;
+              // mouse move away from node, re-draw
+              draw();
               break;
             }
           }
         }
-
-        if (node) {
-          // console.log('hovered node:', node);
-          //
-          // ctx.beginPath();
-          // ctx.moveTo(node.x + radius, node.y);
-          // ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-          // // const fill = color((d.id.length % 10).toString());
-          // const fill = '#A88BFA';
-          // ctx.fillStyle = fill;
-          // ctx.strokeStyle = fill;
-          // ctx.fill();
-          //
-          // // ctx.fillText('天若有情', d.x, d.y + radius + 2);
-          // // ctx.font = '5px sans-serif';
-          // // ctx.textAlign = 'center';
-          // // ctx.textBaseline = 'top';
-          //
-          // ctx.stroke();
-          // ctx.save();
-          // ctx.restore();
-        } else {
-          console.log('hover nothing');
-        }
-
-        draw(ctx, links, nodes, transform, nodeRef.current);
       });
 
     function zoomed(event) {
       transform = event.transform;
-      draw(ctx, links, nodes, transform);
+      draw();
     }
 
     return () => {
