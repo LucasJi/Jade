@@ -48,7 +48,16 @@ export function MyCanvas({ postGraph }) {
         ctx.beginPath();
         ctx.moveTo(d.source.x, d.source.y);
         ctx.lineTo(d.target.x, d.target.y);
+
+        if (d.source.id === nodeRef.current?.id) {
+          ctx.strokeStyle = '#a88bfa';
+        }
+
         ctx.stroke();
+
+        if (d.source.id === nodeRef.current?.id) {
+          ctx.strokeStyle = color;
+        }
       });
 
       // draw nodes
