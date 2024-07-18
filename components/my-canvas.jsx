@@ -9,6 +9,7 @@ const height = 600;
 const radius = 5;
 const rSq = radius * radius;
 const color = '#9ca3af';
+const hlNodeIds = new Set();
 
 export function MyCanvas({ postGraph }) {
   const nodeRef = useRef(null);
@@ -29,8 +30,6 @@ export function MyCanvas({ postGraph }) {
     ctx.globalAlpha = 0.6;
     ctx.lineWidth = '0.5';
 
-    // const links = data.links.map(d => ({ ...d }));
-    // const nodes = data.nodes.map(d => ({ ...d }));
     const links = postGraph.links;
     const nodes = postGraph.nodes;
 
@@ -42,35 +41,60 @@ export function MyCanvas({ postGraph }) {
       ctx.translate(transform.x / dpi, transform.y / dpi);
       ctx.scale(transform.k, transform.k);
 
+      hlNodeIds.clear();
+
       // draw links
-      ctx.strokeStyle = '#999';
+      ctx.strokeStyle = color;
       links.forEach(d => {
         ctx.beginPath();
         ctx.moveTo(d.source.x, d.source.y);
         ctx.lineTo(d.target.x, d.target.y);
 
-        if (d.source.id === nodeRef.current?.id) {
-          ctx.strokeStyle = '#a88bfa';
+        // the pointer is hovering a node
+        if (nodeRef.current) {
+          const currentNodeId = nodeRef.current.id;
+          hlNodeIds.add(currentNodeId);
+
+          if (d.source.id === currentNodeId || d.target.id === currentNodeId) {
+            ctx.strokeStyle = '#a88bfa';
+            hlNodeIds.add(d.source.id);
+            hlNodeIds.add(d.target.id);
+          }
         }
 
         ctx.stroke();
 
-        if (d.source.id === nodeRef.current?.id) {
-          ctx.strokeStyle = color;
+        // restore style for not hovered links
+        if (nodeRef.current) {
+          if (
+            d.source.id === nodeRef.current.id ||
+            d.target.id === nodeRef.current.id
+          ) {
+            ctx.strokeStyle = color;
+          }
         }
       });
 
-      // draw nodes
+      // set node style
       ctx.strokeStyle = color;
       ctx.globalAlpha = 1;
+
+      // draw nodes
       nodes.forEach(d => {
         ctx.beginPath();
         ctx.moveTo(d.x + radius, d.y);
         ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
 
-        if (d.id === nodeRef.current?.id) {
-          ctx.fillStyle = '#a88bfa';
-          ctx.strokeStyle = '#a88bfa';
+        // the pointer is hovering a node
+        if (nodeRef.current) {
+          if (hlNodeIds.has(d.id)) {
+            // highlight hovered node
+            ctx.fillStyle = '#a88bfa';
+            ctx.strokeStyle = '#a88bfa';
+          } else {
+            // make not hovered nodes transparent
+            ctx.globalAlpha = 0.5;
+          }
         }
 
         ctx.fill();
@@ -82,9 +106,14 @@ export function MyCanvas({ postGraph }) {
 
         ctx.stroke();
 
-        if (d.id === nodeRef.current?.id) {
-          ctx.fillStyle = color;
-          ctx.strokeStyle = color;
+        // restore style for not hovered nodes
+        if (nodeRef.current) {
+          if (hlNodeIds.has(d.id)) {
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+          } else {
+            ctx.globalAlpha = 1;
+          }
         }
       });
 
