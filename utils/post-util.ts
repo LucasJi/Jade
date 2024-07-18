@@ -296,16 +296,16 @@ export const getPostIds = async (): Promise<string[]> => {
   });
 };
 
-let cachedPostGraph: PostGraph | null = null;
+let globalPostGraph: PostGraph | null = null;
 
-export const getPostGraph = async () => {
-  if (cachedPostGraph) {
-    return Promise.resolve(cachedPostGraph);
+export const getGlobalPostGraph = async () => {
+  if (globalPostGraph) {
+    return Promise.resolve(globalPostGraph);
   }
 
   return getPosts().then(posts =>
     getPostGraphFromPosts(posts).then(postGraph => {
-      cachedPostGraph = postGraph;
+      globalPostGraph = postGraph;
       return postGraph;
     }),
   );

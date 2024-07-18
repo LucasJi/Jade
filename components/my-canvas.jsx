@@ -8,7 +8,7 @@ const width = 900;
 const height = 600;
 const radius = 5;
 const rSq = radius * radius;
-const color = '#9ca3af';
+const color = '#3F3F3FFF';
 const hlNodeIds = new Set();
 
 export function MyCanvas({ postGraph }) {

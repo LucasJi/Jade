@@ -1,7 +1,7 @@
 // import GraphView from '@/components/graph-view';
 // import { getPostGraphFromPosts, getPosts } from '@/utils/post-util';
 import { MyCanvas } from '@/components/my-canvas';
-import { getPostGraph } from '@/utils/post-util'; // const isGithubConfigured = () => {
+import { getGlobalPostGraph } from '@/utils/post-util'; // const isGithubConfigured = () => {
 
 // const isGithubConfigured = () => {
 //   return (
@@ -17,7 +17,7 @@ export default async function Home() {
   //   throw new Error('Github repo not configured');
   // }
   //
-  const postGraph = await getPostGraph();
+  const postGraph = await getGlobalPostGraph();
 
   return (
     <div className="flex w-full justify-center">
