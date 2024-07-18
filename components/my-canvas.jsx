@@ -10,48 +10,9 @@ const radius = 5;
 const rSq = radius * radius;
 const color = '#9ca3af';
 
-const dragStarted = (event, transform, simulation) => {
-  if (!event.active) {
-    simulation.alphaTarget(0.3).restart();
-  }
-  event.subject.fx = transform.invertX(event.x);
-  event.subject.fy = transform.invertY(event.y);
-  const [x, y] = d3.pointer(event);
-  console.log(
-    'drag started event (%d, %d) pointer (%d, %d)',
-    event.x,
-    event.y,
-    x,
-    y,
-    event,
-  );
-};
-
-const dragged = (event, transform, rect) => {
-  const [x, y] = d3.pointer(event);
-  event.subject.fx = transform.invertX(x - rect.x) / dpi;
-  event.subject.fy = transform.invertY(y - rect.y) / dpi;
-  // console.log(
-  //   'dragged event (%d, %d) pointer (%d, %d) rect (%d, %d)',
-  //   event.x,
-  //   event.y,
-  //   x,
-  //   y,
-  //   rect.x,
-  //   rect.y,
-  // );
-};
-
-const dragEnded = (event, simulation) => {
-  if (!event.active) {
-    simulation.alphaTarget(0);
-  }
-  event.subject.fx = null;
-  event.subject.fy = null;
-};
-
 export function MyCanvas({ postGraph }) {
   const nodeRef = useRef(null);
+  const dragging = useRef(null);
 
   useEffect(() => {
     if (!dpi) {
@@ -59,7 +20,6 @@ export function MyCanvas({ postGraph }) {
     }
 
     const canvas = document.getElementById('tutorial');
-    const rect = canvas.getBoundingClientRect();
 
     const ctx = canvas.getContext('2d');
     ctx.scale(dpi, dpi);
@@ -164,15 +124,45 @@ export function MyCanvas({ postGraph }) {
       return undefined;
     }
 
+    function dragStarted(event) {
+      if (!event.active) {
+        simulation.alphaTarget(0.3).restart();
+      }
+      event.subject.fx = transform.invertX(event.x);
+      event.subject.fy = transform.invertY(event.y);
+
+      dragging.current = true;
+    }
+
+    function dragged(event) {
+      const rect = canvas.getBoundingClientRect();
+      const [px, py] = d3.pointer(event);
+      event.subject.fx = transform.invertX(px - rect.x) / dpi;
+      event.subject.fy = transform.invertY(py - rect.y) / dpi;
+    }
+
+    function dragEnded(event) {
+      const { active, subject } = event;
+      if (!active) {
+        simulation.alphaTarget(0);
+      }
+      subject.fx = null;
+      subject.fy = null;
+
+      dragging.current = false;
+      nodeRef.current = null;
+      draw();
+    }
+
     d3.select(canvas)
       .call(
         d3
           .drag()
           .container(canvas)
           .subject(findNode)
-          .on('start', event => dragStarted(event, transform, simulation))
-          .on('drag', event => dragged(event, transform, rect))
-          .on('end', event => dragEnded(event, simulation)),
+          .on('start', dragStarted)
+          .on('drag', dragged)
+          .on('end', dragEnded),
       )
       .call(
         d3
@@ -184,27 +174,17 @@ export function MyCanvas({ postGraph }) {
         const [x, y] = d3.pointer(event);
         const invertedX = transform.invertX(x) / dpi;
         const invertedY = transform.invertY(y) / dpi;
-        // console.log(
-        //   'mousemove event (%d, %d) pointer (%d, %d) invert (%d, %d)',
-        //   event.x,
-        //   event.y,
-        //   x,
-        //   y,
-        //   invertedX,
-        //   invertedY,
-        // );
 
-        let node = null;
+        let found = false;
 
         // try to get node from cache
         if (nodeRef.current) {
-          const cachedNode = nodeRef.current,
-            dx = invertedX - cachedNode.x,
-            dy = invertedY - cachedNode.y;
+          const dx = invertedX - nodeRef.current.x,
+            dy = invertedY - nodeRef.current.y;
 
           if (dx * dx + dy * dy < rSq) {
-            // mouse move on the same node, re-draw
-            node = cachedNode;
+            // mouse move on the same node, no need to draw
+            found = true;
           } else {
             nodeRef.current = null;
             // mouse move on new node, re-draw
@@ -213,7 +193,7 @@ export function MyCanvas({ postGraph }) {
         }
 
         // iterate to find hovered node
-        if (!node) {
+        if (!found) {
           for (let i = nodes.length - 1; i >= 0; --i) {
             const iNode = nodes[i],
               dx = invertedX - iNode.x,
@@ -221,12 +201,25 @@ export function MyCanvas({ postGraph }) {
               distSq = dx * dx + dy * dy;
             if (distSq < rSq) {
               nodeRef.current = iNode;
-              node = iNode;
               // mouse move away from node, re-draw
               draw();
               break;
             }
           }
+        }
+
+        // handle edge case: drop node should no-highlight node
+        if (dragging.current !== null) {
+          nodeRef.current = null;
+          draw();
+          dragging.current = null;
+        }
+      })
+      .on('mouseleave', function () {
+        // when mouse leave the canvas but still drag the node, should keep highlighting the node
+        if (!dragging.current) {
+          nodeRef.current = null;
+          draw();
         }
       });
 
