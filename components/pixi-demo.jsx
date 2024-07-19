@@ -26,6 +26,7 @@ export default function PixiDemo({ postGraph }) {
     if (mountedRef.current) {
       return () => {};
     }
+
     const radius = 5,
       stage = new Container(),
       lines = new Graphics(),
@@ -66,8 +67,11 @@ export default function PixiDemo({ postGraph }) {
       circle.lineStyle(0, 0xffffff);
       circle.drawCircle(0, 0, radius);
       circle.endFill();
-
       circle.id = node.id;
+      // accept events, trigger hover status
+      circle.eventMode = 'dynamic';
+      circle.addEventListener('mouseover', () => console.log('pointerover'));
+
       circles.addChild(circle);
     }
 
@@ -149,10 +153,6 @@ export default function PixiDemo({ postGraph }) {
       );
 
     mountedRef.current = true;
-
-    // return () => {
-    //   simulation.stop();
-    // };
   }, []);
 
   return <div id="graph-view" />;
