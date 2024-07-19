@@ -1,7 +1,8 @@
 // import GraphView from '@/components/graph-view';
 // import { getPostGraphFromPosts, getPosts } from '@/utils/post-util';
-import { MyCanvas } from '@/components/my-canvas';
-import { getGlobalPostGraph } from '@/utils/post-util'; // const isGithubConfigured = () => {
+// import { MyCanvas } from '@/components/my-canvas';
+import { getGlobalPostGraph } from '@/utils/post-util';
+import PixiDemo from '@/components/pixi-demo'; // const isGithubConfigured = () => {
 
 // const isGithubConfigured = () => {
 //   return (
@@ -22,7 +23,8 @@ export default async function Home() {
   return (
     <div className="flex w-full justify-center">
       {/*<GraphView postGraph={postGraph} className="mt-8" />*/}
-      <MyCanvas postGraph={postGraph} />
+      {/*<MyCanvas postGraph={postGraph} />*/}
+      <PixiDemo postGraph={postGraph} />
     </div>
   );
 }
