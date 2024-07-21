@@ -21,6 +21,7 @@ const width = 600,
 
 export default function PixiDemo({ postGraph }) {
   const mountedRef = useRef(false);
+  const hoveredNodeRef = useRef(null);
 
   useLayoutEffect(() => {
     if (mountedRef.current) {
@@ -97,16 +98,33 @@ export default function PixiDemo({ postGraph }) {
         app.stage.addChild(circles);
 
         for (const node of nodes) {
-          const number = Number.parseInt(color(node.id).substr(1), 16);
-
           const circle = new Graphics()
             .circle(0, 0, radius)
-            .fill(number)
-            .setStrokeStyle({ width: 0.5, color: number });
-
+            .fill({ color: baseColor });
           circle.id = node.id;
+          circle.forwardLinks = node.forwardLinks;
+
           // accept events, trigger hover status
-          circle.eventMode = 'dynamic';
+          circle.eventMode = 'static';
+          circle.cursor = 'pointer';
+
+          // events
+          circle
+            .on('pointerover', function () {
+              this.isOver = true;
+              this.tint = hlColor;
+
+              console.log(this);
+              circles.children.forEach(child => {
+                if (this.forwardLinks.includes(child.id)) {
+                  child.tint = hlColor;
+                }
+              });
+            })
+            .on('pointerout', function () {
+              this.isOver = false;
+              this.tint = null;
+            });
 
           circles.addChild(circle);
         }
@@ -125,24 +143,24 @@ export default function PixiDemo({ postGraph }) {
           // lines.setStrokeStyle({ width: 0.5, color: baseColor, alpha: 1 });
 
           for (const link of links) {
-            lines.stroke({ width: 0.5, color: baseColor, alpha: 1 });
+            lines.stroke({ width: 0.2, color: baseColor, alpha: 1 });
             lines.moveTo(link.source.x, link.source.y);
             lines.lineTo(link.target.x, link.target.y);
           }
         };
 
         simulation
-          .on('tick', () => {})
+          .on('tick', redraw)
           .nodes(circles.children)
           .force(
             'link',
             forceLink(links).id(d => d.id),
           );
 
-        app.ticker.add(function updateGraphLinks(delta) {
-          simulation.tick();
-          redraw();
-        });
+        // app.ticker.add(function updateGraphLinks(delta) {
+        //   simulation.tick();
+        //   redraw();
+        // });
 
         select(app.canvas)
           .call(
