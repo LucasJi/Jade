@@ -1,7 +1,7 @@
 'use client';
 
 import { useLayoutEffect, useRef } from 'react';
-import { autoDetectRenderer, Container, Graphics } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import {
   drag,
   forceLink,
@@ -16,7 +16,7 @@ import {
   zoomIdentity,
 } from 'd3';
 
-const width = 900,
+const width = 600,
   height = 600;
 
 export default function PixiDemo({ postGraph }) {
@@ -27,8 +27,9 @@ export default function PixiDemo({ postGraph }) {
       return () => {};
     }
 
+    const app = new Application();
+
     const radius = 5,
-      stage = new Container(),
       lines = new Graphics(),
       circles = new Container(),
       rSq = radius * radius,
@@ -37,120 +38,127 @@ export default function PixiDemo({ postGraph }) {
       noHlColor = 'rgba(156,163,175,0.5)',
       hlIds = new Set(),
       color = scaleOrdinal(schemeCategory10);
-    const renderer = autoDetectRenderer({
-      width,
-      height,
-      autoDensity: true,
-      resolution: 2,
-      hello: true,
-      backgroundColor: 'white',
-    });
-    document.getElementById('graph-view').appendChild(renderer.view);
+
     let transform = zoomIdentity.translate(width / 2, height / 2);
 
     const links = postGraph.links;
     const nodes = postGraph.nodes;
-    const view = renderer.view;
 
-    const simulation = forceSimulation()
-      .force('charge', forceManyBody())
-      .force('x', forceX(width / 2))
-      .force('y', forceY(height / 2));
+    app
+      .init({
+        width,
+        height,
+        autoDensity: true,
+        resolution: 2,
+        hello: true,
+        backgroundColor: 'white',
+        antialias: true,
+      })
+      .then(() => {
+        document.getElementById('graph-view').appendChild(app.canvas);
 
-    stage.addChild(lines);
-    stage.addChild(circles);
+        const simulation = forceSimulation()
+          .force('charge', forceManyBody())
+          .force('x', forceX(width / 2))
+          .force('y', forceY(height / 2));
 
-    for (const node of nodes) {
-      const circle = new Graphics();
+        const dragSubject = event => {
+          return simulation.find(
+            transform.invertX(event.x),
+            transform.invertY(event.y),
+            radius,
+          );
+        };
 
-      circle.beginFill(Number.parseInt(color(node.id).substr(1), 16));
-      circle.lineStyle(0, 0xffffff);
-      circle.drawCircle(0, 0, radius);
-      circle.endFill();
-      circle.id = node.id;
-      // accept events, trigger hover status
-      circle.eventMode = 'dynamic';
-      circle.addEventListener('mouseover', () => console.log('pointerover'));
+        const dragStarted = event => {
+          if (!event.active) {
+            simulation.alphaTarget(0.3).restart();
+          }
 
-      circles.addChild(circle);
-    }
+          event.subject.fx = event.subject.x;
+          event.subject.fy = event.subject.y;
+        };
 
-    const zoomed = event => {
-      transform = event.transform;
+        const dragged = event => {
+          event.subject.fx += event.dx / transform.k;
+          event.subject.fy += event.dy / transform.k;
+        };
 
-      stage.x = transform.x;
-      stage.y = transform.y;
-      stage.scale.x = transform.k;
-      stage.scale.y = transform.k;
+        const dragEnded = event => {
+          if (!event.active) {
+            simulation.alphaTarget(0);
+          }
 
-      requestAnimationFrame(() => renderer.render(stage));
-    };
+          event.subject.fx = null;
+          event.subject.fy = null;
+        };
 
-    const dragSubject = event => {
-      return simulation.find(
-        transform.invertX(event.x),
-        transform.invertY(event.y),
-        radius,
-      );
-    };
+        app.stage.addChild(lines);
+        app.stage.addChild(circles);
 
-    const dragStarted = event => {
-      if (!event.active) {
-        simulation.alphaTarget(0.3).restart();
-      }
+        for (const node of nodes) {
+          const number = Number.parseInt(color(node.id).substr(1), 16);
 
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
-    };
+          const circle = new Graphics()
+            .circle(0, 0, radius)
+            .fill(number)
+            .setStrokeStyle({ width: 0.5, color: number });
 
-    const dragged = event => {
-      event.subject.fx += event.dx / transform.k;
-      event.subject.fy += event.dy / transform.k;
-    };
+          circle.id = node.id;
+          // accept events, trigger hover status
+          circle.eventMode = 'dynamic';
 
-    const dragEnded = event => {
-      if (!event.active) {
-        simulation.alphaTarget(0);
-      }
-
-      event.subject.fx = null;
-      event.subject.fy = null;
-    };
-
-    const redraw = () =>
-      requestAnimationFrame(() => {
-        lines.clear();
-        lines.lineStyle(0.5, 0x999999, 0.6);
-
-        for (const link of links) {
-          lines.moveTo(link.source.x, link.source.y);
-          lines.lineTo(link.target.x, link.target.y);
+          circles.addChild(circle);
         }
 
-        renderer.render(stage);
+        const zoomed = event => {
+          transform = event.transform;
+
+          app.stage.x = transform.x;
+          app.stage.y = transform.y;
+          app.stage.scale.x = transform.k;
+          app.stage.scale.y = transform.k;
+
+          requestAnimationFrame(() => app.renderer.render(app.stage));
+        };
+
+        const redraw = () =>
+          requestAnimationFrame(() => {
+            lines.clear();
+
+            for (const link of links) {
+              lines.setStrokeStyle({ width: 0.5, color: 'black', alpha: 0.6 });
+
+              lines.moveTo(link.source.x, link.source.y);
+              lines.lineTo(link.target.x, link.target.y);
+              lines.fill();
+            }
+
+            app.renderer.render(app.stage);
+          });
+
+        simulation
+          .on('tick', redraw)
+          .nodes(circles.children)
+          .force(
+            'link',
+            forceLink(links).id(d => d.id),
+          );
+
+        select(app.canvas)
+          .call(
+            drag()
+              .subject(dragSubject)
+              .on('start', dragStarted)
+              .on('drag', dragged)
+              .on('end', dragEnded),
+          )
+          .call(
+            zoom()
+              .scaleExtent([1 / 10, 8])
+              .on('zoom', zoomed),
+          );
       });
-
-    simulation
-      .on('tick', redraw)
-      .nodes(circles.children)
-      .force(
-        'link',
-        forceLink(links).id(d => d.id),
-      );
-
-    select(view)
-      .call(
-        drag()
-          .subject(dragSubject)
-          .on('start', dragStarted)
-          .on('drag', dragged)
-          .on('end', dragEnded),
-      )
-      .call(
-        zoom()
-          .scaleExtent([1 / 10, 8])
-          .on('zoom', zoomed),
-      );
 
     mountedRef.current = true;
   }, []);

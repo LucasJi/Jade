@@ -21,7 +21,7 @@ export default async function Home() {
   const postGraph = await getGlobalPostGraph();
 
   return (
-    <div className="flex w-full justify-center">
+    <div className="flex w-full">
       {/*<GraphView postGraph={postGraph} className="mt-8" />*/}
       {/*<MyCanvas postGraph={postGraph} />*/}
       <PixiDemo postGraph={postGraph} />
