@@ -118,32 +118,31 @@ export default function PixiDemo({ postGraph }) {
           app.stage.y = transform.y;
           app.stage.scale.x = transform.k;
           app.stage.scale.y = transform.k;
-
-          requestAnimationFrame(() => app.renderer.render(app.stage));
         };
 
-        const redraw = () =>
-          requestAnimationFrame(() => {
-            lines.clear();
+        const redraw = () => {
+          lines.clear();
+          // lines.setStrokeStyle({ width: 0.5, color: baseColor, alpha: 1 });
 
-            for (const link of links) {
-              lines.setStrokeStyle({ width: 0.5, color: 'black', alpha: 0.6 });
-
-              lines.moveTo(link.source.x, link.source.y);
-              lines.lineTo(link.target.x, link.target.y);
-              lines.fill();
-            }
-
-            app.renderer.render(app.stage);
-          });
+          for (const link of links) {
+            lines.stroke({ width: 0.5, color: baseColor, alpha: 1 });
+            lines.moveTo(link.source.x, link.source.y);
+            lines.lineTo(link.target.x, link.target.y);
+          }
+        };
 
         simulation
-          .on('tick', redraw)
+          .on('tick', () => {})
           .nodes(circles.children)
           .force(
             'link',
             forceLink(links).id(d => d.id),
           );
+
+        app.ticker.add(function updateGraphLinks(delta) {
+          simulation.tick();
+          redraw();
+        });
 
         select(app.canvas)
           .call(
