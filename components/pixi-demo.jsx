@@ -9,8 +9,6 @@ import {
   forceSimulation,
   forceX,
   forceY,
-  scaleOrdinal,
-  schemeCategory10,
   select,
   zoom,
   zoomIdentity,
@@ -21,7 +19,9 @@ const width = 600,
 
 export default function PixiDemo({ postGraph }) {
   const mountedRef = useRef(false);
-  const hoveredNodeRef = useRef(null);
+  const overedNodeRef = useRef(null);
+  const nodeIdxMapRef = useRef(new Map());
+  const draggingRef = useRef(false);
 
   useLayoutEffect(() => {
     if (mountedRef.current) {
@@ -33,12 +33,10 @@ export default function PixiDemo({ postGraph }) {
     const radius = 5,
       lines = new Graphics(),
       circles = new Container(),
-      rSq = radius * radius,
-      baseColor = '#5c5c5c',
+      baseColor = '#838383',
       hlColor = '#a88bfa',
-      noHlColor = 'rgba(156,163,175,0.5)',
-      hlIds = new Set(),
-      color = scaleOrdinal(schemeCategory10);
+      hlTintColor = 'rgba(168,139,250,0)',
+      noHlColor = 'rgba(156,163,175,1)';
 
     let transform = zoomIdentity.translate(width / 2, height / 2);
 
@@ -83,6 +81,10 @@ export default function PixiDemo({ postGraph }) {
         const dragged = event => {
           event.subject.fx += event.dx / transform.k;
           event.subject.fy += event.dy / transform.k;
+
+          event.subject.tint = hlTintColor;
+          draggingRef.current = true;
+          overedNodeRef.current = event.subject.id;
         };
 
         const dragEnded = event => {
@@ -92,17 +94,23 @@ export default function PixiDemo({ postGraph }) {
 
           event.subject.fx = null;
           event.subject.fy = null;
+
+          event.subject.tint = null;
+          draggingRef.current = false;
+          overedNodeRef.current = null;
         };
 
         app.stage.addChild(lines);
         app.stage.addChild(circles);
 
-        for (const node of nodes) {
+        for (let i = 0; i < nodes.length; i++) {
+          const node = nodes[i];
+          nodeIdxMapRef.current.set(node.id, i);
+
           const circle = new Graphics()
             .circle(0, 0, radius)
-            .fill({ color: baseColor });
+            .fill({ color: baseColor, alpha: 1 });
           circle.id = node.id;
-          circle.forwardLinks = node.forwardLinks;
 
           // accept events, trigger hover status
           circle.eventMode = 'static';
@@ -111,19 +119,32 @@ export default function PixiDemo({ postGraph }) {
           // events
           circle
             .on('pointerover', function () {
-              this.isOver = true;
-              this.tint = hlColor;
-
-              console.log(this);
-              circles.children.forEach(child => {
-                if (this.forwardLinks.includes(child.id)) {
-                  child.tint = hlColor;
-                }
-              });
+              if (!draggingRef.current) {
+                this.tint = hlTintColor;
+                overedNodeRef.current = this.id;
+                redraw();
+                const overedNodeIdx = nodeIdxMapRef.current.get(this.id);
+                const overedNode = nodes[overedNodeIdx];
+                circles.children.forEach(child => {
+                  if (
+                    child.id !== this.id &&
+                    !overedNode.forwardLinks.includes(child.id)
+                  ) {
+                    child.tint = noHlColor;
+                    child.alpha = 0.1;
+                  }
+                });
+              }
             })
             .on('pointerout', function () {
-              this.isOver = false;
-              this.tint = null;
+              if (!draggingRef.current) {
+                overedNodeRef.current = null;
+                redraw();
+                circles.children.forEach(child => {
+                  child.tint = null;
+                  child.alpha = 1;
+                });
+              }
             });
 
           circles.addChild(circle);
@@ -140,12 +161,19 @@ export default function PixiDemo({ postGraph }) {
 
         const redraw = () => {
           lines.clear();
-          // lines.setStrokeStyle({ width: 0.5, color: baseColor, alpha: 1 });
 
           for (const link of links) {
-            lines.stroke({ width: 0.2, color: baseColor, alpha: 1 });
             lines.moveTo(link.source.x, link.source.y);
             lines.lineTo(link.target.x, link.target.y);
+            if (overedNodeRef.current) {
+              if (link.source.id === overedNodeRef.current) {
+                lines.stroke({ width: 0.2, color: hlColor, alpha: 1 });
+              } else {
+                lines.stroke({ width: 0.2, color: baseColor, alpha: 0.1 });
+              }
+            } else {
+              lines.stroke({ width: 0.2, color: baseColor, alpha: 1 });
+            }
           }
         };
 

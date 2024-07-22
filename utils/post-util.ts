@@ -330,16 +330,16 @@ export const getPostGraphFromPosts = async (
       }
     }
 
-    for (const bl of backlinks) {
-      if (ids.includes(bl)) {
-        postGraphLinks.add(
-          JSON.stringify({
-            source: bl,
-            target: id,
-          }),
-        );
-      }
-    }
+    // for (const bl of backlinks) {
+    //   if (ids.includes(bl)) {
+    //     postGraphLinks.add(
+    //       JSON.stringify({
+    //         source: bl,
+    //         target: id,
+    //       }),
+    //     );
+    //   }
+    // }
   }
 
   return {
