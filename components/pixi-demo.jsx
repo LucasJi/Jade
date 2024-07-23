@@ -20,8 +20,10 @@ const width = 600,
 export default function PixiDemo({ postGraph }) {
   const mountedRef = useRef(false);
   const overedNodeRef = useRef(null);
+  const lastOveredNodeRef = useRef(null);
   const nodeIdxMapRef = useRef(new Map());
   const draggingRef = useRef(false);
+  const dynamicAlphaRef = useRef(1);
 
   useLayoutEffect(() => {
     if (mountedRef.current) {
@@ -31,20 +33,21 @@ export default function PixiDemo({ postGraph }) {
     const radius = 5,
       lines = new Graphics(),
       circles = new Container(),
+      lineWidth = 0.2,
       baseColor = '#5c5c5c',
       hlColor = '#a88bfa',
-      noHlColor = '#9ca3af80',
       links = postGraph.links,
       nodes = postGraph.nodes,
       app = new Application(),
-      duration = 2000, // Duration in milliseconds
+      duration = 3000, // Duration in milliseconds
       simulation = forceSimulation()
         .force('charge', forceManyBody())
         .force('x', forceX(width / 2))
         .force('y', forceY(height / 2));
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
-      elapsed = 0;
+      overElapsed = 0,
+      recoverElapsed = 0;
 
     const dragSubject = event => {
       return simulation.find(
@@ -68,7 +71,8 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fy += event.dy / transform.k;
 
       draggingRef.current = true;
-      overedNodeRef.current = event.subject.id;
+      overedNodeRef.current = nodes[event.subject.index];
+      lastOveredNodeRef.current = null;
     };
 
     const dragEnded = event => {
@@ -79,9 +83,9 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx = null;
       event.subject.fy = null;
 
-      event.subject.tint = null;
       draggingRef.current = false;
       overedNodeRef.current = null;
+      lastOveredNodeRef.current = nodes[event.subject.index];
     };
 
     const zoomed = event => {
@@ -93,20 +97,46 @@ export default function PixiDemo({ postGraph }) {
       app.stage.scale.y = transform.k;
     };
 
-    const drawLines = () => {
+    const drawLines = (baseAlpha = 1, noHlAlpha = 0.2) => {
       lines.clear();
 
       for (const link of links) {
         lines.moveTo(link.source.x, link.source.y);
         lines.lineTo(link.target.x, link.target.y);
         if (overedNodeRef.current) {
-          if (link.source.id === overedNodeRef.current) {
-            lines.stroke({ width: 0.2, color: hlColor, alpha: 1 });
+          if (link.source.id === overedNodeRef.current.id) {
+            lines.stroke({
+              width: lineWidth,
+              color: hlColor,
+              alpha: baseAlpha,
+            });
           } else {
-            lines.stroke({ width: 0.2, color: baseColor, alpha: 0.1 });
+            lines.stroke({
+              width: lineWidth,
+              color: baseColor,
+              alpha: noHlAlpha,
+            });
+          }
+        } else if (lastOveredNodeRef.current) {
+          if (link.source.id === lastOveredNodeRef.current.id) {
+            lines.stroke({
+              width: lineWidth,
+              color: baseColor,
+              alpha: baseAlpha,
+            });
+          } else {
+            lines.stroke({
+              width: lineWidth,
+              color: baseColor,
+              alpha: noHlAlpha,
+            });
           }
         } else {
-          lines.stroke({ width: 0.2, color: baseColor, alpha: 1 });
+          lines.stroke({
+            width: lineWidth,
+            color: baseColor,
+            alpha: baseAlpha,
+          });
         }
       }
     };
@@ -128,7 +158,6 @@ export default function PixiDemo({ postGraph }) {
         app.stage.addChild(circles);
 
         const drawCircles = color => {
-          circles.removeChildren();
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
             nodeIdxMapRef.current.set(node.id, i);
@@ -146,21 +175,14 @@ export default function PixiDemo({ postGraph }) {
             circle
               .on('pointerover', function () {
                 if (!draggingRef.current) {
-                  overedNodeRef.current = this.id;
-                  // drawLines();
-                  this.clear();
-                  this.circle(node.x, node.y, radius).fill(hlColor);
-                  app.renderer.render(app.stage);
+                  overedNodeRef.current = node;
+                  lastOveredNodeRef.current = null;
                 }
               })
               .on('pointerout', function () {
                 if (!draggingRef.current) {
                   overedNodeRef.current = null;
-                  drawLines();
-                  this.clear();
-                  this.circle(node.x, node.y, radius).fill(baseColor);
-                  app.renderer.render(app.stage);
-                  elapsed = 0;
+                  lastOveredNodeRef.current = node;
                 }
               });
 
@@ -194,42 +216,86 @@ export default function PixiDemo({ postGraph }) {
         // change color gradually
         app.ticker.add(delta => {
           if (!overedNodeRef.current) {
+            overElapsed = 0;
             return;
           }
 
-          elapsed += delta.elapsedMS;
-          const factor = Math.min(elapsed / duration, 1);
+          overElapsed += delta.elapsedMS;
+          const factor = Math.min(overElapsed / duration, 1);
 
           if (factor >= 1) {
             return;
           }
 
-          const overedNodeIdx = nodeIdxMapRef.current.get(
-            overedNodeRef.current,
-          );
-          const overedNode = nodes[overedNodeIdx];
+          const overedNode = overedNodeRef.current;
 
-          lines.clear();
-          for (const link of links) {
-            lines.moveTo(link.source.x, link.source.y);
-            lines.lineTo(link.target.x, link.target.y);
-            if (overedNodeRef.current) {
-              if (link.source.id === overedNodeRef.current) {
-                lines.stroke({ width: 0.2, color: hlColor, alpha: 1 });
-              } else {
-                lines.stroke({
-                  width: 0.2,
-                  color: baseColor,
-                  alpha: 1 - 0.9 * factor,
-                });
-              }
-            } else {
-              lines.stroke({ width: 0.2, color: baseColor, alpha: 1 });
-            }
+          dynamicAlphaRef.current -= 0.8 * factor;
+
+          if (dynamicAlphaRef.current <= 0.2) {
+            dynamicAlphaRef.current = 0.2;
           }
+
+          drawLines(1, dynamicAlphaRef.current);
+
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const circle = circles.children[i];
+
+            const alpha =
+              node.id === overedNode.id ||
+              overedNode.forwardLinks.includes(node.id)
+                ? 1
+                : dynamicAlphaRef.current;
+
+            const color = node.id === overedNode.id ? hlColor : baseColor;
+
+            circle.clear();
+            circle.circle(node.x, node.y, radius).fill({ color, alpha });
+          }
+
+          app.render();
         });
 
         // recover color gradually
+        app.ticker.add(delta => {
+          if (!lastOveredNodeRef.current) {
+            recoverElapsed = 0;
+            return;
+          }
+
+          recoverElapsed += delta.elapsedMS;
+          const factor = Math.min(recoverElapsed / duration, 1);
+
+          if (factor >= 1) {
+            lastOveredNodeRef.current = null;
+            return;
+          }
+
+          dynamicAlphaRef.current += 0.8 * factor;
+
+          if (dynamicAlphaRef.current >= 1) {
+            dynamicAlphaRef.current = 1;
+          }
+
+          drawLines(1, dynamicAlphaRef.current);
+          const lastOveredNode = lastOveredNodeRef.current;
+
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const circle = circles.children[i];
+            const alpha =
+              node.id === lastOveredNode.id ||
+              lastOveredNode.forwardLinks.includes(node.id)
+                ? 1
+                : dynamicAlphaRef.current;
+            circle.clear();
+            circle
+              .circle(node.x, node.y, radius)
+              .fill({ color: baseColor, alpha });
+          }
+
+          app.render();
+        });
       });
 
     mountedRef.current = true;
