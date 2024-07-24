@@ -17,6 +17,18 @@ import {
 const width = 600,
   height = 600;
 
+const hexToRgb = hex => {
+  const bigint = parseInt(hex.slice(1), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return [r, g, b];
+};
+
+const rgbToHex = (r, g, b) =>
+  '#' +
+  ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+
 export default function PixiDemo({ postGraph }) {
   const mountedRef = useRef(false);
   const overedNodeRef = useRef(null);
@@ -285,7 +297,6 @@ export default function PixiDemo({ postGraph }) {
           }
 
           drawLines(1, dynamicAlphaRef.current);
-          const lastOveredNode = lastOveredNodeRef.current;
 
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
