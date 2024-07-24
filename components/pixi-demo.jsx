@@ -39,11 +39,13 @@ export default function PixiDemo({ postGraph }) {
       links = postGraph.links,
       nodes = postGraph.nodes,
       app = new Application(),
-      duration = 3000, // Duration in milliseconds
+      duration = 2000, // Duration in milliseconds
       simulation = forceSimulation()
         .force('charge', forceManyBody())
         .force('x', forceX(width / 2))
-        .force('y', forceY(height / 2));
+        .force('y', forceY(height / 2)),
+      minAlpha = 0.2,
+      maxAlpha = 1;
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
@@ -221,15 +223,15 @@ export default function PixiDemo({ postGraph }) {
           }
 
           overElapsed += delta.elapsedMS;
-          const factor = Math.min(overElapsed / duration, 1);
 
-          if (factor >= 1) {
+          if (overElapsed >= duration) {
             return;
           }
 
           const overedNode = overedNodeRef.current;
 
-          dynamicAlphaRef.current -= 0.8 * factor;
+          const variation = (0.8 / duration) * delta.elapsedMS;
+          dynamicAlphaRef.current -= variation;
 
           if (dynamicAlphaRef.current <= 0.2) {
             dynamicAlphaRef.current = 0.2;
@@ -241,16 +243,21 @@ export default function PixiDemo({ postGraph }) {
             const node = nodes[i];
             const circle = circles.children[i];
 
-            const alpha =
-              node.id === overedNode.id ||
-              overedNode.forwardLinks.includes(node.id)
-                ? 1
-                : dynamicAlphaRef.current;
+            let alpha = 1;
+            if (
+              node.id !== overedNode.id &&
+              !overedNode.forwardLinks.includes(node.id)
+            ) {
+              alpha = Math.max(minAlpha, circle.alpha - variation);
+            } else {
+              alpha = Math.min(maxAlpha, circle.alpha + variation);
+            }
 
             const color = node.id === overedNode.id ? hlColor : baseColor;
 
             circle.clear();
-            circle.circle(node.x, node.y, radius).fill({ color, alpha });
+            circle.circle(node.x, node.y, radius).fill(color);
+            circle.alpha = alpha;
           }
 
           app.render();
@@ -264,14 +271,14 @@ export default function PixiDemo({ postGraph }) {
           }
 
           recoverElapsed += delta.elapsedMS;
-          const factor = Math.min(recoverElapsed / duration, 1);
 
-          if (factor >= 1) {
+          if (recoverElapsed >= duration) {
             lastOveredNodeRef.current = null;
             return;
           }
 
-          dynamicAlphaRef.current += 0.8 * factor;
+          const variation = (0.8 / duration) * delta.elapsedMS;
+          dynamicAlphaRef.current += variation;
 
           if (dynamicAlphaRef.current >= 1) {
             dynamicAlphaRef.current = 1;
@@ -283,15 +290,10 @@ export default function PixiDemo({ postGraph }) {
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
             const circle = circles.children[i];
-            const alpha =
-              node.id === lastOveredNode.id ||
-              lastOveredNode.forwardLinks.includes(node.id)
-                ? 1
-                : dynamicAlphaRef.current;
+            const alpha = Math.min(maxAlpha, circle.alpha + variation);
             circle.clear();
-            circle
-              .circle(node.x, node.y, radius)
-              .fill({ color: baseColor, alpha });
+            circle.circle(node.x, node.y, radius).fill(baseColor);
+            circle.alpha = alpha;
           }
 
           app.render();
