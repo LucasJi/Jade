@@ -15,10 +15,19 @@ import {
 } from 'd3';
 
 const width = 600,
-  height = 600;
+  height = 600,
+  lineWidth = 0.2,
+  baseColor = '#5c5c5c',
+  baseRgbColor = [92, 92, 92],
+  hlColor = '#a88bfa',
+  hlRgbColor = [168, 139, 250],
+  duration = 3000, // Duration in milliseconds
+  minAlpha = 0.2,
+  maxAlpha = 1,
+  radius = 5;
 
 const hexToRgb = hex => {
-  const bigint = parseInt(hex.slice(1), 16);
+  const bigint = parseInt(String(hex).slice(1), 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
@@ -29,39 +38,40 @@ const rgbToHex = (r, g, b) =>
   '#' +
   ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 
+const interpolateColor = (startColor, endColor, factor = 0.5) => {
+  const result = startColor.slice();
+  for (let i = 0; i < 3; i++) {
+    result[i] = Math.round(result[i] + factor * (endColor[i] - result[i]));
+  }
+
+  return result;
+};
+
 export default function PixiDemo({ postGraph }) {
   const mountedRef = useRef(false);
-  const overedNodeRef = useRef(null);
-  const lastOveredNodeRef = useRef(null);
-  const nodeIdxMapRef = useRef(new Map());
-  const draggingRef = useRef(false);
-  const dynamicAlphaRef = useRef(1);
 
   useLayoutEffect(() => {
     if (mountedRef.current) {
       return () => {};
     }
 
-    const radius = 5,
-      lines = new Graphics(),
+    const lines = new Graphics(),
       circles = new Container(),
-      lineWidth = 0.2,
-      baseColor = '#5c5c5c',
-      hlColor = '#a88bfa',
       links = postGraph.links,
       nodes = postGraph.nodes,
       app = new Application(),
-      duration = 2000, // Duration in milliseconds
       simulation = forceSimulation()
         .force('charge', forceManyBody())
         .force('x', forceX(width / 2))
-        .force('y', forceY(height / 2)),
-      minAlpha = 0.2,
-      maxAlpha = 1;
+        .force('y', forceY(height / 2));
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
-      recoverElapsed = 0;
+      recoverElapsed = 0,
+      dynamicAlpha = minAlpha,
+      overedNode = null,
+      lastOveredNode = null,
+      dragging = false;
 
     const dragSubject = event => {
       return simulation.find(
@@ -84,9 +94,9 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx += event.dx / transform.k;
       event.subject.fy += event.dy / transform.k;
 
-      draggingRef.current = true;
-      overedNodeRef.current = nodes[event.subject.index];
-      lastOveredNodeRef.current = null;
+      dragging = true;
+      overedNode = nodes[event.subject.index];
+      lastOveredNode = null;
     };
 
     const dragEnded = event => {
@@ -97,9 +107,9 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx = null;
       event.subject.fy = null;
 
-      draggingRef.current = false;
-      overedNodeRef.current = null;
-      lastOveredNodeRef.current = nodes[event.subject.index];
+      dragging = false;
+      overedNode = null;
+      lastOveredNode = nodes[event.subject.index];
     };
 
     const zoomed = event => {
@@ -111,45 +121,45 @@ export default function PixiDemo({ postGraph }) {
       app.stage.scale.y = transform.k;
     };
 
-    const drawLines = (baseAlpha = 1, noHlAlpha = 0.2) => {
+    const drawLines = () => {
       lines.clear();
 
       for (const link of links) {
         lines.moveTo(link.source.x, link.source.y);
         lines.lineTo(link.target.x, link.target.y);
-        if (overedNodeRef.current) {
-          if (link.source.id === overedNodeRef.current.id) {
+        if (overedNode) {
+          if (link.source.id === overedNode.id) {
             lines.stroke({
               width: lineWidth,
-              color: hlColor,
-              alpha: baseAlpha,
+              color: baseColor,
+              alpha: maxAlpha,
             });
           } else {
             lines.stroke({
               width: lineWidth,
               color: baseColor,
-              alpha: noHlAlpha,
+              alpha: dynamicAlpha,
             });
           }
-        } else if (lastOveredNodeRef.current) {
-          if (link.source.id === lastOveredNodeRef.current.id) {
+        } else if (lastOveredNode) {
+          if (link.source.id === lastOveredNode.id) {
             lines.stroke({
               width: lineWidth,
               color: baseColor,
-              alpha: baseAlpha,
+              alpha: maxAlpha,
             });
           } else {
             lines.stroke({
               width: lineWidth,
               color: baseColor,
-              alpha: noHlAlpha,
+              alpha: dynamicAlpha,
             });
           }
         } else {
           lines.stroke({
             width: lineWidth,
             color: baseColor,
-            alpha: baseAlpha,
+            alpha: maxAlpha,
           });
         }
       }
@@ -174,8 +184,6 @@ export default function PixiDemo({ postGraph }) {
         const drawCircles = color => {
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
-            nodeIdxMapRef.current.set(node.id, i);
-
             const circle = new Graphics()
               .circle(node.x, node.y, radius)
               .fill({ color, alpha: 1 });
@@ -188,15 +196,15 @@ export default function PixiDemo({ postGraph }) {
             // events
             circle
               .on('pointerover', function () {
-                if (!draggingRef.current) {
-                  overedNodeRef.current = node;
-                  lastOveredNodeRef.current = null;
+                if (!dragging) {
+                  overedNode = node;
+                  lastOveredNode = null;
                 }
               })
               .on('pointerout', function () {
-                if (!draggingRef.current) {
-                  overedNodeRef.current = null;
-                  lastOveredNodeRef.current = node;
+                if (!dragging) {
+                  overedNode = null;
+                  lastOveredNode = node;
                 }
               });
 
@@ -206,7 +214,9 @@ export default function PixiDemo({ postGraph }) {
         drawCircles(baseColor);
 
         simulation
-          .on('tick', drawLines)
+          .on('tick', () => {
+            drawLines();
+          })
           .nodes(circles.children)
           .force(
             'link',
@@ -229,27 +239,27 @@ export default function PixiDemo({ postGraph }) {
 
         // change color gradually
         app.ticker.add(delta => {
-          if (!overedNodeRef.current) {
+          if (!overedNode) {
             overElapsed = 0;
             return;
           }
 
-          overElapsed += delta.elapsedMS;
+          const { elapsedMS } = delta;
+
+          overElapsed += elapsedMS;
 
           if (overElapsed >= duration) {
             return;
           }
 
-          const overedNode = overedNodeRef.current;
+          const alphaVariation = (0.8 / duration) * elapsedMS;
+          const fillColorVariation = (1 / duration) * elapsedMS;
+          const progress = overElapsed / duration;
 
-          const variation = (0.8 / duration) * delta.elapsedMS;
-          dynamicAlphaRef.current -= variation;
-
-          if (dynamicAlphaRef.current <= 0.2) {
-            dynamicAlphaRef.current = 0.2;
+          // when dragging, d3 simulation draws lines
+          if (!dragging) {
+            drawLines();
           }
-
-          drawLines(1, dynamicAlphaRef.current);
 
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
@@ -260,12 +270,27 @@ export default function PixiDemo({ postGraph }) {
               node.id !== overedNode.id &&
               !overedNode.forwardLinks.includes(node.id)
             ) {
-              alpha = Math.max(minAlpha, circle.alpha - variation);
+              alpha = Math.max(minAlpha, circle.alpha - alphaVariation);
             } else {
-              alpha = Math.min(maxAlpha, circle.alpha + variation);
+              alpha = Math.min(maxAlpha, circle.alpha + alphaVariation);
             }
 
-            const color = node.id === overedNode.id ? hlColor : baseColor;
+            let color = baseColor;
+            if (node.id === overedNode.id) {
+              const fillColor = circle._fillColor || baseColor;
+
+              let dynamicColor = hlColor;
+              if (progress <= 0.9) {
+                const rgb = interpolateColor(
+                  hexToRgb(fillColor),
+                  hlRgbColor,
+                  fillColorVariation,
+                );
+                dynamicColor = rgbToHex(...rgb);
+              }
+              color = dynamicColor;
+              circle._fillColor = dynamicColor;
+            }
 
             circle.clear();
             circle.circle(node.x, node.y, radius).fill(color);
@@ -277,33 +302,51 @@ export default function PixiDemo({ postGraph }) {
 
         // recover color gradually
         app.ticker.add(delta => {
-          if (!lastOveredNodeRef.current) {
+          if (!lastOveredNode) {
             recoverElapsed = 0;
             return;
           }
 
-          recoverElapsed += delta.elapsedMS;
+          const { elapsedMS } = delta;
+
+          recoverElapsed += elapsedMS;
 
           if (recoverElapsed >= duration) {
-            lastOveredNodeRef.current = null;
+            lastOveredNode = null;
             return;
           }
 
-          const variation = (0.8 / duration) * delta.elapsedMS;
-          dynamicAlphaRef.current += variation;
+          const alphaVariation = (0.8 / duration) * elapsedMS;
+          const fillColorVariation = (1 / duration) * elapsedMS;
+          const progress = recoverElapsed / duration;
 
-          if (dynamicAlphaRef.current >= 1) {
-            dynamicAlphaRef.current = 1;
+          if (!dragging) {
+            drawLines();
           }
-
-          drawLines(1, dynamicAlphaRef.current);
 
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
             const circle = circles.children[i];
-            const alpha = Math.min(maxAlpha, circle.alpha + variation);
+            const alpha = Math.min(maxAlpha, circle.alpha + alphaVariation);
+
+            let color = baseColor;
+            if (node.id === lastOveredNode.id) {
+              const fillColor = circle._fillColor || baseColor;
+              let dynamicColor = baseColor;
+              if (progress <= 0.9) {
+                const rgb = interpolateColor(
+                  hexToRgb(fillColor),
+                  baseRgbColor,
+                  fillColorVariation,
+                );
+                dynamicColor = rgbToHex(...rgb);
+              }
+              color = dynamicColor;
+              circle._fillColor = dynamicColor;
+            }
+
             circle.clear();
-            circle.circle(node.x, node.y, radius).fill(baseColor);
+            circle.circle(node.x, node.y, radius).fill(color);
             circle.alpha = alpha;
           }
 
