@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from 'react';
 import { Application, Container, Graphics } from 'pixi.js';
 import {
   drag,
+  forceCollide,
   forceLink,
   forceManyBody,
   forceSimulation,
@@ -21,7 +22,7 @@ const width = 600,
   baseRgbColor = [92, 92, 92],
   hlColor = '#a88bfa',
   hlRgbColor = [168, 139, 250],
-  duration = 3000, // Duration in milliseconds
+  duration = 1000, // Duration in milliseconds
   minAlpha = 0.2,
   maxAlpha = 1,
   radius = 5,
@@ -64,13 +65,13 @@ export default function PixiDemo({ postGraph }) {
       simulation = forceSimulation()
         .force('charge', forceManyBody())
         .force('x', forceX(width / 2))
-        .force('y', forceY(height / 2));
+        .force('y', forceY(height / 2))
+        .force('collision', forceCollide().radius(radius).iterations(2));
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
       recoverElapsed = 0,
       dynamicAlpha = minAlpha,
-      dynamicRgbColor = baseRgbColor,
       overedNode = null,
       lastOveredNode = null,
       dragging = false;
@@ -278,7 +279,7 @@ export default function PixiDemo({ postGraph }) {
             let color = baseColor;
             if (node.id === overedNode.id) {
               const rgb = interpolateColor(
-                dynamicRgbColor,
+                baseRgbColor,
                 hlRgbColor,
                 overElapsed / duration,
               );
