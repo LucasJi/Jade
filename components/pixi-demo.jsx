@@ -24,7 +24,8 @@ const width = 600,
   duration = 3000, // Duration in milliseconds
   minAlpha = 0.2,
   maxAlpha = 1,
-  radius = 5;
+  radius = 5,
+  colorCache = new Map();
 
 const hexToRgb = hex => {
   const bigint = parseInt(String(hex).slice(1), 16);
@@ -69,6 +70,7 @@ export default function PixiDemo({ postGraph }) {
       overElapsed = 0,
       recoverElapsed = 0,
       dynamicAlpha = minAlpha,
+      dynamicRgbColor = baseRgbColor,
       overedNode = null,
       lastOveredNode = null,
       dragging = false;
@@ -253,8 +255,6 @@ export default function PixiDemo({ postGraph }) {
           }
 
           const alphaVariation = (0.8 / duration) * elapsedMS;
-          const fillColorVariation = (1 / duration) * elapsedMS;
-          const progress = overElapsed / duration;
 
           // when dragging, d3 simulation draws lines
           if (!dragging) {
@@ -277,19 +277,12 @@ export default function PixiDemo({ postGraph }) {
 
             let color = baseColor;
             if (node.id === overedNode.id) {
-              const fillColor = circle._fillColor || baseColor;
-
-              let dynamicColor = hlColor;
-              if (progress <= 0.9) {
-                const rgb = interpolateColor(
-                  hexToRgb(fillColor),
-                  hlRgbColor,
-                  fillColorVariation,
-                );
-                dynamicColor = rgbToHex(...rgb);
-              }
-              color = dynamicColor;
-              circle._fillColor = dynamicColor;
+              const rgb = interpolateColor(
+                dynamicRgbColor,
+                hlRgbColor,
+                overElapsed / duration,
+              );
+              color = rgbToHex(...rgb);
             }
 
             circle.clear();
@@ -317,8 +310,6 @@ export default function PixiDemo({ postGraph }) {
           }
 
           const alphaVariation = (0.8 / duration) * elapsedMS;
-          const fillColorVariation = (1 / duration) * elapsedMS;
-          const progress = recoverElapsed / duration;
 
           if (!dragging) {
             drawLines();
@@ -331,18 +322,12 @@ export default function PixiDemo({ postGraph }) {
 
             let color = baseColor;
             if (node.id === lastOveredNode.id) {
-              const fillColor = circle._fillColor || baseColor;
-              let dynamicColor = baseColor;
-              if (progress <= 0.9) {
-                const rgb = interpolateColor(
-                  hexToRgb(fillColor),
-                  baseRgbColor,
-                  fillColorVariation,
-                );
-                dynamicColor = rgbToHex(...rgb);
-              }
-              color = dynamicColor;
-              circle._fillColor = dynamicColor;
+              const rgb = interpolateColor(
+                hlRgbColor,
+                baseRgbColor,
+                recoverElapsed / duration,
+              );
+              color = rgbToHex(...rgb);
             }
 
             circle.clear();
