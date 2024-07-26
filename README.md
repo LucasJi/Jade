@@ -9,13 +9,13 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
 1. Clone this repository
 
    ```bash
-   git clone https://github.com/LucasJi/galaxy.git
+   git clone https://github.com/LucasJi/Jade.git
    ```
 
 2. Install dependencies
 
    ```bash
-   cd galaxy
+   cd Jade
    npm install
    ```
 
@@ -41,8 +41,8 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
       your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token),
       the **Read-Only** permission of **Contents** must be selected.
     - `GITHUB_REPO`: The repository where your posts are stored. If you haven't created a post
-      repository yet, you can folk
-      my [feature test post repository](https://github.com/LucasJi/galaxy-feature-posts).
+      repository yet, you can fork
+      my [feature test post repository](https://github.com/LucasJi/obsidian-feature-demo-posts).
     - `GITHUB_OWNER`: The owner of the repository.
 
 4. Start the server
@@ -137,4 +137,5 @@ resolved and friendly displayed in the post page.
 - [Tailwind CSS](https://tailwindcss.com/)
 - [remarkjs](https://github.com/remarkjs)
 - [D3](https://d3js.org/)
+- [pixi.js](https://pixijs.com/)
 - [React Icons](https://react-icons.github.io/react-icons/)
