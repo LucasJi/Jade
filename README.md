@@ -133,7 +133,7 @@ resolved and friendly displayed in the post page.
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/)
-- [NextUI](https://nextui.org/)
+- [shadcn/ui](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [remarkjs](https://github.com/remarkjs)
 - [D3](https://d3js.org/)
