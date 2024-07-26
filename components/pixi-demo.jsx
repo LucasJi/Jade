@@ -126,42 +126,53 @@ export default function PixiDemo({ postGraph }) {
     const drawLines = () => {
       lines.clear();
 
-      for (const link of links) {
-        lines.moveTo(link.source.x, link.source.y);
-        lines.lineTo(link.target.x, link.target.y);
-        const color = link.source._fillColor || basicColor;
-        if (overedNode) {
-          if (link.source.id === overedNode.id) {
-            lines.stroke({
-              width: lineWidth,
-              color,
-              alpha: link.source.alpha,
-            });
-          } else {
-            lines.stroke({
-              width: lineWidth,
-              color,
-              alpha: link.target.alpha,
-            });
+      if (overedNode) {
+        for (const link of links) {
+          lines.moveTo(link.source.x, link.source.y);
+          lines.lineTo(link.target.x, link.target.y);
+
+          let alpha =
+            link.target.id === overedNode.id
+              ? link.source.alpha
+              : link.target.alpha;
+
+          if (
+            !overedNode.forwardLinks.includes(link.source.id) &&
+            overedNode.forwardLinks.includes(link.target.id)
+          ) {
+            alpha = link.source.alpha;
           }
-        } else if (lastOveredNode) {
-          if (link.source.id === lastOveredNode.id) {
-            lines.stroke({
-              width: lineWidth,
-              color,
-              alpha: link.source.alpha,
-            });
-          } else {
-            lines.stroke({
-              width: lineWidth,
-              color,
-              alpha: link.target.alpha,
-            });
+
+          if (
+            overedNode.forwardLinks.includes(link.source.id) &&
+            overedNode.forwardLinks.includes(link.target.id)
+          ) {
+            alpha = Math.max(minAlpha, link.source.alpha);
           }
-        } else {
+
           lines.stroke({
             width: lineWidth,
-            color,
+            color: link.source._fillColor || basicColor,
+            alpha,
+          });
+        }
+      } else if (lastOveredNode) {
+        for (const link of links) {
+          lines.moveTo(link.source.x, link.source.y);
+          lines.lineTo(link.target.x, link.target.y);
+          lines.stroke({
+            width: lineWidth,
+            color: basicColor,
+            alpha: maxAlpha,
+          });
+        }
+      } else {
+        for (const link of links) {
+          lines.moveTo(link.source.x, link.source.y);
+          lines.lineTo(link.target.x, link.target.y);
+          lines.stroke({
+            width: lineWidth,
+            color: basicColor,
             alpha: maxAlpha,
           });
         }
