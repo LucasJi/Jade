@@ -129,38 +129,39 @@ export default function PixiDemo({ postGraph }) {
       for (const link of links) {
         lines.moveTo(link.source.x, link.source.y);
         lines.lineTo(link.target.x, link.target.y);
+        const color = link.source._fillColor || basicColor;
         if (overedNode) {
           if (link.source.id === overedNode.id) {
             lines.stroke({
               width: lineWidth,
-              color: basicColor,
-              alpha: maxAlpha,
+              color,
+              alpha: link.source.alpha,
             });
           } else {
             lines.stroke({
               width: lineWidth,
-              color: basicColor,
-              alpha: dynamicAlpha,
+              color,
+              alpha: link.target.alpha,
             });
           }
         } else if (lastOveredNode) {
           if (link.source.id === lastOveredNode.id) {
             lines.stroke({
               width: lineWidth,
-              color: basicColor,
-              alpha: maxAlpha,
+              color,
+              alpha: link.source.alpha,
             });
           } else {
             lines.stroke({
               width: lineWidth,
-              color: basicColor,
-              alpha: dynamicAlpha,
+              color,
+              alpha: link.target.alpha,
             });
           }
         } else {
           lines.stroke({
             width: lineWidth,
-            color: basicColor,
+            color,
             alpha: maxAlpha,
           });
         }
@@ -228,9 +229,7 @@ export default function PixiDemo({ postGraph }) {
         drawCircles(basicColor);
 
         simulation
-          .on('tick', () => {
-            drawLines();
-          })
+          .on('tick', () => {})
           .nodes(circles.children)
           .force(
             'link',
@@ -322,6 +321,13 @@ export default function PixiDemo({ postGraph }) {
           }
 
           app.render();
+        });
+
+        app.ticker.add(() => {
+          if (!overedNode && !lastOveredNode) {
+            simulation.tick();
+            drawLines();
+          }
         });
 
         // recover color gradually
