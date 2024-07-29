@@ -22,7 +22,7 @@ const width = 600,
   basicRgbColor = [92, 92, 92],
   hlColor = '#a88bfa',
   hlRgbColor = [168, 139, 250],
-  duration = 1000, // Duration in milliseconds
+  duration = 500, // Duration in milliseconds
   minAlpha = 0.2,
   maxAlpha = 1,
   radius = 5;
@@ -229,7 +229,7 @@ export default function PixiDemo({ postGraph }) {
         drawCircles(basicColor);
 
         simulation
-          .on('tick', () => {
+          .on('tick', function () {
             simulating = true;
             drawLines();
           })
@@ -258,6 +258,10 @@ export default function PixiDemo({ postGraph }) {
 
         // change color gradually
         app.ticker.add(delta => {
+          if (simulating) {
+            return;
+          }
+
           if (!overedNode) {
             return;
           }
@@ -295,12 +299,14 @@ export default function PixiDemo({ postGraph }) {
             // update color: highlight the hovered node and downplay others
             let color = basicColor;
             const fillColor = circle._fillColor || basicColor;
+
             // update color gradually
             let baseRgbColor = circle._baseRgbColor;
             if (!baseRgbColor) {
               baseRgbColor = hexToRgb(fillColor);
               circle._baseRgbColor = baseRgbColor;
             }
+
             if (node.id === overedNode.id) {
               const rgb = interpolateColor(
                 baseRgbColor,
@@ -309,6 +315,10 @@ export default function PixiDemo({ postGraph }) {
               );
               color = rgbToHex(...rgb);
               circle._fillColor = color;
+
+              circle.clear();
+              circle.circle(node.x, node.y, radius).fill(color);
+              app.render();
             } else if (fillColor !== basicColor) {
               const rgb = interpolateColor(
                 baseRgbColor,
@@ -317,19 +327,22 @@ export default function PixiDemo({ postGraph }) {
               );
               color = rgbToHex(...rgb);
               circle._fillColor = color;
+
+              circle.clear();
+              circle.circle(node.x, node.y, radius).fill(color);
+              app.render();
             }
 
-            // apply the updated properties
-            circle.clear();
-            circle.circle(node.x, node.y, radius).fill(color);
             circle.alpha = alpha;
           }
-
-          app.render();
         });
 
         // recover color gradually
         app.ticker.add(delta => {
+          if (simulating) {
+            return;
+          }
+
           if (!lastOveredNode) {
             return;
           }
@@ -358,6 +371,7 @@ export default function PixiDemo({ postGraph }) {
             // update color: downplay all nodes
             let color = basicColor;
             const fillColor = circle._fillColor || basicColor;
+
             // update color gradually
             let baseRgbColor = circle._baseRgbColor;
             if (!baseRgbColor) {
@@ -373,14 +387,13 @@ export default function PixiDemo({ postGraph }) {
               );
               color = rgbToHex(...rgb);
               circle._fillColor = color;
+              circle.clear();
+              circle.circle(node.x, node.y, radius).fill(color);
+              app.render();
             }
 
-            circle.clear();
-            circle.circle(node.x, node.y, radius).fill(color);
             circle.alpha = alpha;
           }
-
-          app.render();
         });
       });
 
