@@ -69,7 +69,7 @@ export default function PixiDemo({ postGraph }) {
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
-      recoverElapsed = 0,
+      outElapsed = 0,
       dynamicAlpha = minAlpha,
       overedNode = null,
       lastOveredNode = null,
@@ -238,6 +238,7 @@ export default function PixiDemo({ postGraph }) {
                     }
                   });
 
+                  overElapsed = 0;
                   overedNode = node;
                   lastOveredNode = null;
                 }
@@ -250,6 +251,7 @@ export default function PixiDemo({ postGraph }) {
                     }
                   });
 
+                  outElapsed = 0;
                   overedNode = null;
                   lastOveredNode = node;
                 }
@@ -285,7 +287,6 @@ export default function PixiDemo({ postGraph }) {
         // change color gradually
         app.ticker.add(delta => {
           if (!overedNode) {
-            overElapsed = 0;
             return;
           }
 
@@ -366,15 +367,14 @@ export default function PixiDemo({ postGraph }) {
         // recover color gradually
         app.ticker.add(delta => {
           if (!lastOveredNode) {
-            recoverElapsed = 0;
             return;
           }
 
           const { elapsedMS } = delta;
 
-          recoverElapsed += elapsedMS;
+          outElapsed += elapsedMS;
 
-          if (recoverElapsed >= duration) {
+          if (outElapsed >= duration) {
             lastOveredNode = null;
             return;
           }
@@ -405,7 +405,7 @@ export default function PixiDemo({ postGraph }) {
               const rgb = interpolateColor(
                 baseRgbColor,
                 basicRgbColor,
-                recoverElapsed / duration,
+                outElapsed / duration,
               );
               color = rgbToHex(...rgb);
               circle._fillColor = color;
