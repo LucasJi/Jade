@@ -73,7 +73,7 @@ export default function PixiDemo({ postGraph }) {
       dynamicAlpha = minAlpha,
       overedNode = null,
       lastOveredNode = null,
-      dragging = false;
+      simulating = false;
 
     const dragSubject = event => {
       return simulation.find(
@@ -96,7 +96,6 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx += event.dx / transform.k;
       event.subject.fy += event.dy / transform.k;
 
-      dragging = true;
       overedNode = nodes[event.subject.index];
       lastOveredNode = null;
     };
@@ -109,9 +108,9 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx = null;
       event.subject.fy = null;
 
-      dragging = false;
       overedNode = null;
       lastOveredNode = nodes[event.subject.index];
+      console.log('drag end');
     };
 
     const zoomed = event => {
@@ -132,24 +131,22 @@ export default function PixiDemo({ postGraph }) {
           lines.moveTo(link.source.x, link.source.y);
           lines.lineTo(link.target.x, link.target.y);
 
-          let alpha =
-            link.target.id === overedNode.id
-              ? link.source.alpha
-              : link.target.alpha;
+          const alpha =
+            link.source.id === overedNode.id ? link.source.alpha : dynamicAlpha;
 
-          if (
-            !overedNode.forwardLinks.includes(link.source.id) &&
-            overedNode.forwardLinks.includes(link.target.id)
-          ) {
-            alpha = link.source.alpha;
-          }
-
-          if (
-            overedNode.forwardLinks.includes(link.source.id) &&
-            overedNode.forwardLinks.includes(link.target.id)
-          ) {
-            alpha = dynamicAlpha;
-          }
+          // if (
+          //   !overedNode.forwardLinks.includes(link.source.id) &&
+          //   overedNode.forwardLinks.includes(link.target.id)
+          // ) {
+          //   alpha = link.source.alpha;
+          // }
+          //
+          // if (
+          //   overedNode.forwardLinks.includes(link.source.id) &&
+          //   overedNode.forwardLinks.includes(link.target.id)
+          // ) {
+          //   alpha = dynamicAlpha;
+          // }
 
           lines.stroke({
             width: lineWidth,
@@ -162,24 +159,24 @@ export default function PixiDemo({ postGraph }) {
           lines.moveTo(link.source.x, link.source.y);
           lines.lineTo(link.target.x, link.target.y);
 
-          let alpha =
-            link.target.id === lastOveredNode.id
+          const alpha =
+            link.source.id === lastOveredNode.id
               ? link.source.alpha
-              : link.target.alpha;
+              : dynamicAlpha;
 
-          if (
-            !lastOveredNode.forwardLinks.includes(link.source.id) &&
-            lastOveredNode.forwardLinks.includes(link.target.id)
-          ) {
-            alpha = link.source.alpha;
-          }
-
-          if (
-            lastOveredNode.forwardLinks.includes(link.source.id) &&
-            lastOveredNode.forwardLinks.includes(link.target.id)
-          ) {
-            alpha = dynamicAlpha;
-          }
+          // if (
+          //   !lastOveredNode.forwardLinks.includes(link.source.id) &&
+          //   lastOveredNode.forwardLinks.includes(link.target.id)
+          // ) {
+          //   alpha = link.source.alpha;
+          // }
+          //
+          // if (
+          //   lastOveredNode.forwardLinks.includes(link.source.id) &&
+          //   lastOveredNode.forwardLinks.includes(link.target.id)
+          // ) {
+          //   alpha = dynamicAlpha;
+          // }
 
           lines.stroke({
             width: lineWidth,
@@ -231,7 +228,7 @@ export default function PixiDemo({ postGraph }) {
             // events
             circle
               .on('pointerover', function () {
-                if (!dragging) {
+                if (!simulating) {
                   circles.children.forEach(child => {
                     if (child._baseRgbColor) {
                       delete child._baseRgbColor;
@@ -244,7 +241,7 @@ export default function PixiDemo({ postGraph }) {
                 }
               })
               .on('pointerout', function () {
-                if (!dragging) {
+                if (!simulating) {
                   circles.children.forEach(child => {
                     if (child._baseRgbColor) {
                       delete child._baseRgbColor;
@@ -254,6 +251,7 @@ export default function PixiDemo({ postGraph }) {
                   outElapsed = 0;
                   overedNode = null;
                   lastOveredNode = node;
+                  console.log('pointerout');
                 }
               });
 
@@ -263,7 +261,13 @@ export default function PixiDemo({ postGraph }) {
         drawCircles(basicColor);
 
         simulation
-          .on('tick', () => {})
+          .on('tick', () => {
+            simulating = true;
+            drawLines();
+          })
+          .on('end', () => {
+            simulating = false;
+          })
           .nodes(circles.children)
           .force(
             'link',
@@ -300,8 +304,7 @@ export default function PixiDemo({ postGraph }) {
 
           const alphaVariation = (0.8 / duration) * elapsedMS;
 
-          // when dragging, d3 simulation draws lines
-          if (!dragging) {
+          if (!simulating) {
             drawLines();
           }
 
@@ -357,13 +360,6 @@ export default function PixiDemo({ postGraph }) {
           app.render();
         });
 
-        app.ticker.add(() => {
-          if (!overedNode && !lastOveredNode) {
-            simulation.tick();
-            drawLines();
-          }
-        });
-
         // recover color gradually
         app.ticker.add(delta => {
           if (!lastOveredNode) {
@@ -381,7 +377,7 @@ export default function PixiDemo({ postGraph }) {
 
           const alphaVariation = (0.8 / duration) * elapsedMS;
 
-          if (!dragging) {
+          if (!simulating) {
             drawLines();
           }
 
