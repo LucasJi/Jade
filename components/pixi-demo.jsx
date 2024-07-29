@@ -96,6 +96,7 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx += event.dx / transform.k;
       event.subject.fy += event.dy / transform.k;
 
+      overElapsed = 0;
       overedNode = nodes[event.subject.index];
       lastOveredNode = null;
     };
@@ -108,6 +109,7 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx = null;
       event.subject.fy = null;
 
+      outElapsed = 0;
       overedNode = null;
       lastOveredNode = nodes[event.subject.index];
       console.log('drag end');
@@ -134,20 +136,6 @@ export default function PixiDemo({ postGraph }) {
           const alpha =
             link.source.id === overedNode.id ? link.source.alpha : dynamicAlpha;
 
-          // if (
-          //   !overedNode.forwardLinks.includes(link.source.id) &&
-          //   overedNode.forwardLinks.includes(link.target.id)
-          // ) {
-          //   alpha = link.source.alpha;
-          // }
-          //
-          // if (
-          //   overedNode.forwardLinks.includes(link.source.id) &&
-          //   overedNode.forwardLinks.includes(link.target.id)
-          // ) {
-          //   alpha = dynamicAlpha;
-          // }
-
           lines.stroke({
             width: lineWidth,
             color: link.source._fillColor || basicColor,
@@ -163,20 +151,6 @@ export default function PixiDemo({ postGraph }) {
             link.source.id === lastOveredNode.id
               ? link.source.alpha
               : dynamicAlpha;
-
-          // if (
-          //   !lastOveredNode.forwardLinks.includes(link.source.id) &&
-          //   lastOveredNode.forwardLinks.includes(link.target.id)
-          // ) {
-          //   alpha = link.source.alpha;
-          // }
-          //
-          // if (
-          //   lastOveredNode.forwardLinks.includes(link.source.id) &&
-          //   lastOveredNode.forwardLinks.includes(link.target.id)
-          // ) {
-          //   alpha = dynamicAlpha;
-          // }
 
           lines.stroke({
             width: lineWidth,
