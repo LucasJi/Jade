@@ -123,6 +123,7 @@ export default function PixiDemo({ postGraph }) {
       app.stage.scale.y = transform.k;
     };
 
+    // TODO refactor
     const drawLines = () => {
       lines.clear();
 
@@ -147,7 +148,7 @@ export default function PixiDemo({ postGraph }) {
             overedNode.forwardLinks.includes(link.source.id) &&
             overedNode.forwardLinks.includes(link.target.id)
           ) {
-            alpha = Math.max(minAlpha, link.source.alpha);
+            alpha = dynamicAlpha;
           }
 
           lines.stroke({
@@ -160,10 +161,30 @@ export default function PixiDemo({ postGraph }) {
         for (const link of links) {
           lines.moveTo(link.source.x, link.source.y);
           lines.lineTo(link.target.x, link.target.y);
+
+          let alpha =
+            link.target.id === lastOveredNode.id
+              ? link.source.alpha
+              : link.target.alpha;
+
+          if (
+            !lastOveredNode.forwardLinks.includes(link.source.id) &&
+            lastOveredNode.forwardLinks.includes(link.target.id)
+          ) {
+            alpha = link.source.alpha;
+          }
+
+          if (
+            lastOveredNode.forwardLinks.includes(link.source.id) &&
+            lastOveredNode.forwardLinks.includes(link.target.id)
+          ) {
+            alpha = dynamicAlpha;
+          }
+
           lines.stroke({
             width: lineWidth,
-            color: basicColor,
-            alpha: maxAlpha,
+            color: link.source._fillColor || basicColor,
+            alpha,
           });
         }
       } else {
@@ -294,6 +315,7 @@ export default function PixiDemo({ postGraph }) {
               !overedNode.forwardLinks.includes(node.id)
             ) {
               alpha = Math.max(minAlpha, circle.alpha - alphaVariation);
+              dynamicAlpha = alpha;
             } else {
               alpha = Math.min(maxAlpha, circle.alpha + alphaVariation);
             }
@@ -367,6 +389,7 @@ export default function PixiDemo({ postGraph }) {
             const node = nodes[i];
             const circle = circles.children[i];
             const alpha = Math.min(maxAlpha, circle.alpha + alphaVariation);
+            dynamicAlpha = alpha;
 
             // update color: downplay all nodes
             let color = basicColor;
