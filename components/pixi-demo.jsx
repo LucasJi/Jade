@@ -300,14 +300,13 @@ export default function PixiDemo({ postGraph }) {
             let color = basicColor;
             const fillColor = circle._fillColor || basicColor;
 
-            // update color gradually
-            let baseRgbColor = circle._baseRgbColor;
-            if (!baseRgbColor) {
-              baseRgbColor = hexToRgb(fillColor);
-              circle._baseRgbColor = baseRgbColor;
-            }
-
             if (node.id === overedNode.id) {
+              let baseRgbColor = circle._baseRgbColor;
+              if (!baseRgbColor) {
+                baseRgbColor = hexToRgb(fillColor);
+                circle._baseRgbColor = baseRgbColor;
+              }
+
               const rgb = interpolateColor(
                 baseRgbColor,
                 hlRgbColor,
@@ -320,6 +319,12 @@ export default function PixiDemo({ postGraph }) {
               circle.circle(node.x, node.y, radius).fill(color);
               app.renderer.render(circle);
             } else if (fillColor !== basicColor) {
+              let baseRgbColor = circle._baseRgbColor;
+              if (!baseRgbColor) {
+                baseRgbColor = hexToRgb(fillColor);
+                circle._baseRgbColor = baseRgbColor;
+              }
+
               const rgb = interpolateColor(
                 baseRgbColor,
                 basicRgbColor,
@@ -331,9 +336,9 @@ export default function PixiDemo({ postGraph }) {
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
               app.renderer.render(circle);
+            } else {
+              circle.alpha = alpha;
             }
-
-            circle.alpha = alpha;
           }
         });
 
