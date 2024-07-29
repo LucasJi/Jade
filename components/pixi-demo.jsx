@@ -318,7 +318,7 @@ export default function PixiDemo({ postGraph }) {
 
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
-              app.render();
+              app.renderer.render(circle);
             } else if (fillColor !== basicColor) {
               const rgb = interpolateColor(
                 baseRgbColor,
@@ -330,7 +330,7 @@ export default function PixiDemo({ postGraph }) {
 
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
-              app.render();
+              app.renderer.render(circle);
             }
 
             circle.alpha = alpha;
@@ -387,9 +387,10 @@ export default function PixiDemo({ postGraph }) {
               );
               color = rgbToHex(...rgb);
               circle._fillColor = color;
+
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
-              app.render();
+              app.renderer.render(circle);
             }
 
             circle.alpha = alpha;
