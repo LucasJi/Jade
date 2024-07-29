@@ -112,7 +112,6 @@ export default function PixiDemo({ postGraph }) {
       outElapsed = 0;
       overedNode = null;
       lastOveredNode = nodes[event.subject.index];
-      console.log('drag end');
     };
 
     const zoomed = event => {
@@ -202,31 +201,26 @@ export default function PixiDemo({ postGraph }) {
             // events
             circle
               .on('pointerover', function () {
-                if (!simulating) {
-                  circles.children.forEach(child => {
-                    if (child._baseRgbColor) {
-                      delete child._baseRgbColor;
-                    }
-                  });
+                circles.children.forEach(child => {
+                  if (child._baseRgbColor) {
+                    delete child._baseRgbColor;
+                  }
+                });
 
-                  overElapsed = 0;
-                  overedNode = node;
-                  lastOveredNode = null;
-                }
+                overElapsed = 0;
+                overedNode = node;
+                lastOveredNode = null;
               })
               .on('pointerout', function () {
-                if (!simulating) {
-                  circles.children.forEach(child => {
-                    if (child._baseRgbColor) {
-                      delete child._baseRgbColor;
-                    }
-                  });
+                circles.children.forEach(child => {
+                  if (child._baseRgbColor) {
+                    delete child._baseRgbColor;
+                  }
+                });
 
-                  outElapsed = 0;
-                  overedNode = null;
-                  lastOveredNode = node;
-                  console.log('pointerout');
-                }
+                outElapsed = 0;
+                overedNode = null;
+                lastOveredNode = node;
               });
 
             circles.addChild(circle);
