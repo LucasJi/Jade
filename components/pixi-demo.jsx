@@ -18,11 +18,11 @@ import {
 const width = 600,
   height = 600,
   lineWidth = 0.2,
-  basicColor = '#5c5c5c',
+  basicColor = '#5C5C5C',
   basicRgbColor = [92, 92, 92],
-  hlColor = '#a88bfa',
+  hlColor = '#A88BFA',
   hlRgbColor = [168, 139, 250],
-  duration = 500, // Duration in milliseconds
+  duration = 600, // Duration in milliseconds
   minAlpha = 0.2,
   maxAlpha = 1,
   radius = 5;
@@ -65,7 +65,12 @@ export default function PixiDemo({ postGraph }) {
         .force('charge', forceManyBody())
         .force('x', forceX(width / 2))
         .force('y', forceY(height / 2))
-        .force('collision', forceCollide().radius(radius).iterations(2));
+        .force(
+          'collision',
+          forceCollide()
+            .radius(radius * 1.2)
+            .iterations(2),
+        );
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
@@ -73,7 +78,8 @@ export default function PixiDemo({ postGraph }) {
       dynamicAlpha = minAlpha,
       overedNode = null,
       lastOveredNode = null,
-      simulating = false;
+      simulating = false,
+      dragging = false;
 
     const dragSubject = event => {
       return simulation.find(
@@ -90,15 +96,18 @@ export default function PixiDemo({ postGraph }) {
 
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
+
+      dragging = true;
+
+      clearCirclesBaseRgbColor();
+      overElapsed = 0;
+      overedNode = nodes[event.subject.index];
+      lastOveredNode = null;
     };
 
     const dragged = event => {
       event.subject.fx += event.dx / transform.k;
       event.subject.fy += event.dy / transform.k;
-
-      overElapsed = 0;
-      overedNode = nodes[event.subject.index];
-      lastOveredNode = null;
     };
 
     const dragEnded = event => {
@@ -109,6 +118,9 @@ export default function PixiDemo({ postGraph }) {
       event.subject.fx = null;
       event.subject.fy = null;
 
+      dragging = false;
+
+      clearCirclesBaseRgbColor();
       outElapsed = 0;
       overedNode = null;
       lastOveredNode = nodes[event.subject.index];
@@ -123,7 +135,6 @@ export default function PixiDemo({ postGraph }) {
       app.stage.scale.y = transform.k;
     };
 
-    // TODO refactor
     const drawLines = () => {
       lines.clear();
 
@@ -170,6 +181,14 @@ export default function PixiDemo({ postGraph }) {
       }
     };
 
+    const clearCirclesBaseRgbColor = () => {
+      circles.children.forEach(child => {
+        if (child._baseRgbColor) {
+          delete child._baseRgbColor;
+        }
+      });
+    };
+
     app
       .init({
         width,
@@ -177,7 +196,7 @@ export default function PixiDemo({ postGraph }) {
         autoDensity: true,
         resolution: 2,
         hello: true,
-        backgroundColor: 'white',
+        background: 'white',
         antialias: true,
       })
       .then(() => {
@@ -201,31 +220,26 @@ export default function PixiDemo({ postGraph }) {
             // events
             circle
               .on('pointerover', function () {
-                circles.children.forEach(child => {
-                  if (child._baseRgbColor) {
-                    delete child._baseRgbColor;
-                  }
-                });
-
-                overElapsed = 0;
-                overedNode = node;
-                lastOveredNode = null;
+                if (!dragging) {
+                  clearCirclesBaseRgbColor();
+                  overElapsed = 0;
+                  overedNode = node;
+                  lastOveredNode = null;
+                }
               })
               .on('pointerout', function () {
-                circles.children.forEach(child => {
-                  if (child._baseRgbColor) {
-                    delete child._baseRgbColor;
-                  }
-                });
-
-                outElapsed = 0;
-                overedNode = null;
-                lastOveredNode = node;
+                if (!dragging) {
+                  clearCirclesBaseRgbColor();
+                  outElapsed = 0;
+                  overedNode = null;
+                  lastOveredNode = node;
+                }
               });
 
             circles.addChild(circle);
           }
         };
+
         drawCircles(basicColor);
 
         simulation
@@ -258,10 +272,6 @@ export default function PixiDemo({ postGraph }) {
 
         // change color gradually
         app.ticker.add(delta => {
-          if (simulating) {
-            return;
-          }
-
           if (!overedNode) {
             return;
           }
@@ -274,7 +284,7 @@ export default function PixiDemo({ postGraph }) {
             return;
           }
 
-          const alphaVariation = (0.8 / duration) * elapsedMS;
+          const alphaVariation = ((1 - minAlpha) / duration) * elapsedMS;
 
           if (!simulating) {
             drawLines();
@@ -285,7 +295,7 @@ export default function PixiDemo({ postGraph }) {
             const circle = circles.children[i];
 
             // update alpha
-            let alpha = 1;
+            let alpha;
             if (
               node.id !== overedNode.id &&
               !overedNode.forwardLinks.includes(node.id)
@@ -317,7 +327,6 @@ export default function PixiDemo({ postGraph }) {
 
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
-              app.renderer.render(circle);
             } else if (fillColor !== basicColor) {
               let baseRgbColor = circle._baseRgbColor;
               if (!baseRgbColor) {
@@ -335,19 +344,16 @@ export default function PixiDemo({ postGraph }) {
 
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
-              app.renderer.render(circle);
-            } else {
-              circle.alpha = alpha;
             }
+
+            circle.alpha = alpha;
           }
+
+          app.renderer.render(circles);
         });
 
         // recover color gradually
         app.ticker.add(delta => {
-          if (simulating) {
-            return;
-          }
-
           if (!lastOveredNode) {
             return;
           }
@@ -361,7 +367,7 @@ export default function PixiDemo({ postGraph }) {
             return;
           }
 
-          const alphaVariation = (0.8 / duration) * elapsedMS;
+          const alphaVariation = ((1 - minAlpha) / duration) * elapsedMS;
 
           if (!simulating) {
             drawLines();
@@ -377,14 +383,13 @@ export default function PixiDemo({ postGraph }) {
             let color = basicColor;
             const fillColor = circle._fillColor || basicColor;
 
-            // update color gradually
-            let baseRgbColor = circle._baseRgbColor;
-            if (!baseRgbColor) {
-              baseRgbColor = hexToRgb(fillColor);
-              circle._baseRgbColor = baseRgbColor;
-            }
+            if (fillColor !== basicColor) {
+              let baseRgbColor = circle._baseRgbColor;
+              if (!baseRgbColor) {
+                baseRgbColor = hexToRgb(fillColor);
+                circle._baseRgbColor = baseRgbColor;
+              }
 
-            if (fillColor !== basicColor || node.id === lastOveredNode.id) {
               const rgb = interpolateColor(
                 baseRgbColor,
                 basicRgbColor,
@@ -395,16 +400,17 @@ export default function PixiDemo({ postGraph }) {
 
               circle.clear();
               circle.circle(node.x, node.y, radius).fill(color);
-              app.renderer.render(circle);
             }
 
             circle.alpha = alpha;
           }
+
+          app.renderer.render(circles);
         });
       });
 
     mountedRef.current = true;
   }, []);
 
-  return <div id="graph-view" />;
+  return <div id="graph-view" className="bg-white" />;
 }
