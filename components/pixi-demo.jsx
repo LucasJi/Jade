@@ -344,8 +344,6 @@ export default function PixiDemo({ postGraph }) {
             return;
           }
 
-          // const alphaVariation = ((1 - minAlpha) / duration) * elapsedMS;
-
           if (!simulating) {
             drawLines();
           }
@@ -353,33 +351,26 @@ export default function PixiDemo({ postGraph }) {
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
             const circle = circles.children[i];
-            // const alpha = Math.min(maxAlpha, circle.alpha + alphaVariation);
-            // dynamicAlpha = alpha;
 
-            // update color: downplay all nodes
             let color = basicCircleColor;
             const fillColor = circle._fillColor || basicCircleColor;
 
-            if (fillColor !== basicCircleColor) {
-              let baseRgbColor = circle._baseRgbColor;
-              if (!baseRgbColor) {
-                baseRgbColor = hexToRgb(fillColor);
-                circle._baseRgbColor = baseRgbColor;
-              }
-
-              const rgb = interpolateColor(
-                baseRgbColor,
-                basicCircleRgbColor,
-                outElapsed / duration,
-              );
-              color = rgbToHex(...rgb);
-              circle._fillColor = color;
-
-              circle.clear();
-              circle.circle(node.x, node.y, radius).fill(color);
+            let baseRgbColor = circle._baseRgbColor;
+            if (!baseRgbColor) {
+              baseRgbColor = hexToRgb(fillColor);
+              circle._baseRgbColor = baseRgbColor;
             }
 
-            // circle.alpha = alpha;
+            const rgb = interpolateColor(
+              baseRgbColor,
+              basicCircleRgbColor,
+              outElapsed / duration,
+            );
+            color = rgbToHex(...rgb);
+            circle._fillColor = color;
+
+            circle.clear();
+            circle.circle(node.x, node.y, radius).fill(color);
           }
 
           app.renderer.render(circles);
