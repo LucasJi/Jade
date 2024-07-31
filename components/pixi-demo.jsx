@@ -15,19 +15,6 @@ import {
   zoomIdentity,
 } from 'd3';
 
-const width = 600,
-  height = 600,
-  lineWidth = 0.2,
-  basicCircleColor = '#5C5C5C',
-  nohlCircleColor = '#DFDFDF',
-  basicCircleRgbColor = [92, 92, 92],
-  hlColor = '#A88BFA',
-  hlRgbColor = [168, 139, 250],
-  duration = 600, // Duration in milliseconds
-  minAlpha = 0.2,
-  maxAlpha = 1,
-  radius = 5;
-
 const hexToRgb = hex => {
   const bigint = parseInt(String(hex).slice(1), 16);
   const r = (bigint >> 16) & 255;
@@ -39,6 +26,24 @@ const hexToRgb = hex => {
 const rgbToHex = (r, g, b) =>
   '#' +
   ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+
+const width = 600,
+  height = 600,
+  lineWidth = 0.2,
+  basicCircleRgbColor = [92, 92, 92],
+  basicCircleColor = rgbToHex(...basicCircleRgbColor),
+  basicLineRgbColor = [230, 230, 230],
+  basicLineColor = rgbToHex(...basicLineRgbColor),
+  nohlCircleColor = '#DFDFDF',
+  nohlCircleRgbColor = [222, 222, 222],
+  nohlLineRgbColor = [240, 240, 240],
+  nohlLineColor = rgbToHex(...nohlLineRgbColor),
+  hlColor = '#A88BFA',
+  hlRgbColor = [133, 106, 234],
+  duration = 600, // Duration in milliseconds
+  minAlpha = 0.2,
+  maxAlpha = 1,
+  radius = 5;
 
 const interpolateColor = (startColor, endColor, factor = 0.5) => {
   const result = startColor.slice();
@@ -76,7 +81,6 @@ export default function PixiDemo({ postGraph }) {
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
       outElapsed = 0,
-      dynamicAlpha = minAlpha,
       overedNode = null,
       lastOveredNode = null,
       simulating = false,
@@ -139,44 +143,24 @@ export default function PixiDemo({ postGraph }) {
     const drawLines = () => {
       lines.clear();
 
-      if (overedNode) {
-        for (const link of links) {
-          lines.moveTo(link.source.x, link.source.y);
-          lines.lineTo(link.target.x, link.target.y);
+      for (const link of links) {
+        lines.moveTo(link.source.x, link.source.y);
+        lines.lineTo(link.target.x, link.target.y);
 
-          // const alpha =
-          //   link.source.id === overedNode.id ? link.source.alpha : dynamicAlpha;
-
+        if (overedNode) {
           lines.stroke({
             width: lineWidth,
-            color: link.source._fillColor || basicCircleColor,
-            alpha: maxAlpha,
+            color: link.source._lineColor || basicLineColor,
           });
-        }
-      } else if (lastOveredNode) {
-        for (const link of links) {
-          lines.moveTo(link.source.x, link.source.y);
-          lines.lineTo(link.target.x, link.target.y);
-
-          // const alpha =
-          //   link.source.id === lastOveredNode.id
-          //     ? link.source.alpha
-          //     : dynamicAlpha;
-
+        } else if (lastOveredNode) {
           lines.stroke({
             width: lineWidth,
-            color: link.source._fillColor || basicCircleColor,
-            alpha: maxAlpha,
+            color: link.source._lineColor || basicLineColor,
           });
-        }
-      } else {
-        for (const link of links) {
-          lines.moveTo(link.source.x, link.source.y);
-          lines.lineTo(link.target.x, link.target.y);
+        } else {
           lines.stroke({
             width: lineWidth,
-            color: basicCircleColor,
-            alpha: maxAlpha,
+            color: basicLineColor,
           });
         }
       }
@@ -186,6 +170,10 @@ export default function PixiDemo({ postGraph }) {
       circles.children.forEach(child => {
         if (child._baseRgbColor) {
           delete child._baseRgbColor;
+        }
+
+        if (child._baseLineRgbColor) {
+          delete child._baseLineRgbColor;
         }
       });
     };
@@ -211,7 +199,7 @@ export default function PixiDemo({ postGraph }) {
             const node = nodes[i];
             const circle = new Graphics()
               .circle(node.x, node.y, radius)
-              .fill({ color, alpha: 1 });
+              .fill({ color, alpha: maxAlpha });
             circle.id = node.id;
 
             // accept events, trigger hover status
@@ -285,19 +273,19 @@ export default function PixiDemo({ postGraph }) {
             return;
           }
 
-          // const alphaVariation = ((1 - minAlpha) / duration) * elapsedMS;
-
           if (!simulating) {
             drawLines();
           }
+
+          const factor = overElapsed / duration;
 
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
             const circle = circles.children[i];
 
-            // update color: highlight the hovered node and downplay others
-            let color = basicCircleColor;
+            let circleColor = basicCircleColor;
             const fillColor = circle._fillColor || basicCircleColor;
+            const lineColor = circle._lineColor || basicLineColor;
 
             let baseRgbColor = circle._baseRgbColor;
             if (!baseRgbColor) {
@@ -305,25 +293,34 @@ export default function PixiDemo({ postGraph }) {
               circle._baseRgbColor = baseRgbColor;
             }
 
-            let targetRgbColor;
-            if (node.id === overedNode.id) {
-              targetRgbColor = hlRgbColor;
-            } else if (overedNode.forwardLinks.includes(node.id)) {
-              targetRgbColor = basicCircleRgbColor;
-            } else {
-              targetRgbColor = hexToRgb(nohlCircleColor);
+            let baseLineRgbColor = circle._baseLineRgbColor;
+            if (!baseLineRgbColor) {
+              baseLineRgbColor = hexToRgb(lineColor);
+              circle._baseLineRgbColor = baseLineRgbColor;
             }
 
-            const rgb = interpolateColor(
-              baseRgbColor,
-              targetRgbColor,
-              overElapsed / duration,
+            let targetRgbColor;
+            let targetLineRgbColor;
+            if (node.id === overedNode.id) {
+              targetRgbColor = hlRgbColor;
+              targetLineRgbColor = hlRgbColor;
+            } else if (overedNode.forwardLinks.includes(node.id)) {
+              targetRgbColor = basicCircleRgbColor;
+              targetLineRgbColor = basicLineRgbColor;
+            } else {
+              targetRgbColor = nohlCircleRgbColor;
+              targetLineRgbColor = nohlLineRgbColor;
+            }
+
+            const rgb = interpolateColor(baseRgbColor, targetRgbColor, factor);
+            circleColor = rgbToHex(...rgb);
+            circle._fillColor = circleColor;
+            circle._lineColor = rgbToHex(
+              ...interpolateColor(baseLineRgbColor, targetLineRgbColor, factor),
             );
-            color = rgbToHex(...rgb);
-            circle._fillColor = color;
 
             circle.clear();
-            circle.circle(node.x, node.y, radius).fill(color);
+            circle.circle(node.x, node.y, radius).fill(circleColor);
           }
 
           app.renderer.render(circles);
@@ -348,17 +345,26 @@ export default function PixiDemo({ postGraph }) {
             drawLines();
           }
 
+          const factor = outElapsed / duration;
+
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
             const circle = circles.children[i];
 
             let color = basicCircleColor;
             const fillColor = circle._fillColor || basicCircleColor;
+            const lineColor = circle._lineColor || basicLineColor;
 
             let baseRgbColor = circle._baseRgbColor;
             if (!baseRgbColor) {
               baseRgbColor = hexToRgb(fillColor);
               circle._baseRgbColor = baseRgbColor;
+            }
+
+            let baseLineRgbColor = circle._baseLineRgbColor;
+            if (!baseLineRgbColor) {
+              baseLineRgbColor = hexToRgb(lineColor);
+              circle._baseLineRgbColor = baseLineRgbColor;
             }
 
             const rgb = interpolateColor(
@@ -368,6 +374,9 @@ export default function PixiDemo({ postGraph }) {
             );
             color = rgbToHex(...rgb);
             circle._fillColor = color;
+            circle._lineColor = rgbToHex(
+              ...interpolateColor(baseLineRgbColor, basicLineRgbColor, factor),
+            );
 
             circle.clear();
             circle.circle(node.x, node.y, radius).fill(color);
