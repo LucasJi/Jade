@@ -23,9 +23,7 @@ const hexToRgb = hex => {
   return [r, g, b];
 };
 
-const rgbToHex = (r, g, b) =>
-  '#' +
-  ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+const rgbToHex = (r, g, b) => (r << 16) | (g << 8) | b;
 
 const width = 600,
   height = 600,
@@ -283,19 +281,19 @@ export default function PixiDemo({ postGraph }) {
             const node = nodes[i];
             const circle = circles.children[i];
 
-            let circleColor = basicCircleColor;
-            const fillColor = circle._fillColor || basicCircleColor;
-            const lineColor = circle._lineColor || basicLineColor;
+            let circleColor = basicCircleRgbColor;
+            const fillColor = circle._fillColor || basicCircleRgbColor;
+            const lineColor = circle._lineColor || basicLineRgbColor;
 
             let baseRgbColor = circle._baseRgbColor;
             if (!baseRgbColor) {
-              baseRgbColor = hexToRgb(fillColor);
+              baseRgbColor = fillColor;
               circle._baseRgbColor = baseRgbColor;
             }
 
             let baseLineRgbColor = circle._baseLineRgbColor;
             if (!baseLineRgbColor) {
-              baseLineRgbColor = hexToRgb(lineColor);
+              baseLineRgbColor = lineColor;
               circle._baseLineRgbColor = baseLineRgbColor;
             }
 
@@ -312,15 +310,22 @@ export default function PixiDemo({ postGraph }) {
               targetLineRgbColor = nohlLineRgbColor;
             }
 
-            const rgb = interpolateColor(baseRgbColor, targetRgbColor, factor);
-            circleColor = rgbToHex(...rgb);
+            circleColor = interpolateColor(
+              baseRgbColor,
+              targetRgbColor,
+              factor,
+            );
             circle._fillColor = circleColor;
-            circle._lineColor = rgbToHex(
-              ...interpolateColor(baseLineRgbColor, targetLineRgbColor, factor),
+            circle._lineColor = interpolateColor(
+              baseLineRgbColor,
+              targetLineRgbColor,
+              factor,
             );
 
             circle.clear();
-            circle.circle(node.x, node.y, radius).fill(circleColor);
+            circle
+              .circle(node.x, node.y, radius)
+              .fill(rgbToHex(...circleColor));
           }
 
           app.renderer.render(circles);
@@ -351,35 +356,36 @@ export default function PixiDemo({ postGraph }) {
             const node = nodes[i];
             const circle = circles.children[i];
 
-            let color = basicCircleColor;
-            const fillColor = circle._fillColor || basicCircleColor;
-            const lineColor = circle._lineColor || basicLineColor;
+            let color = basicCircleRgbColor;
+            const fillColor = circle._fillColor || basicCircleRgbColor;
+            const lineColor = circle._lineColor || basicLineRgbColor;
 
             let baseRgbColor = circle._baseRgbColor;
             if (!baseRgbColor) {
-              baseRgbColor = hexToRgb(fillColor);
+              baseRgbColor = fillColor;
               circle._baseRgbColor = baseRgbColor;
             }
 
             let baseLineRgbColor = circle._baseLineRgbColor;
             if (!baseLineRgbColor) {
-              baseLineRgbColor = hexToRgb(lineColor);
+              baseLineRgbColor = lineColor;
               circle._baseLineRgbColor = baseLineRgbColor;
             }
 
-            const rgb = interpolateColor(
+            color = interpolateColor(
               baseRgbColor,
               basicCircleRgbColor,
               outElapsed / duration,
             );
-            color = rgbToHex(...rgb);
             circle._fillColor = color;
-            circle._lineColor = rgbToHex(
-              ...interpolateColor(baseLineRgbColor, basicLineRgbColor, factor),
+            circle._lineColor = interpolateColor(
+              baseLineRgbColor,
+              basicLineRgbColor,
+              factor,
             );
 
             circle.clear();
-            circle.circle(node.x, node.y, radius).fill(color);
+            circle.circle(node.x, node.y, radius).fill(rgbToHex(...color));
           }
 
           app.renderer.render(circles);
