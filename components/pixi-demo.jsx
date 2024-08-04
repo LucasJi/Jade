@@ -78,7 +78,9 @@ export default function PixiDemo({ postGraph }) {
 
     let transform = zoomIdentity.translate(width / 2, height / 2),
       overElapsed = 0,
+      overLoop = 0,
       outElapsed = 0,
+      outLoop = 0,
       overedNode = null,
       lastOveredNode = null,
       simulating = false,
@@ -212,6 +214,7 @@ export default function PixiDemo({ postGraph }) {
                   overElapsed = 0;
                   overedNode = node;
                   lastOveredNode = null;
+                  outLoop = 0;
                 }
               })
               .on('pointerout', function () {
@@ -220,6 +223,7 @@ export default function PixiDemo({ postGraph }) {
                   outElapsed = 0;
                   overedNode = null;
                   lastOveredNode = node;
+                  overLoop = 0;
                 }
               });
 
@@ -267,15 +271,17 @@ export default function PixiDemo({ postGraph }) {
 
           overElapsed += elapsedMS;
 
-          if (overElapsed >= duration) {
+          if (overElapsed < 60 || overLoop > 9) {
             return;
           }
+
+          overLoop += 1;
 
           if (!simulating) {
             drawLines();
           }
 
-          const factor = overElapsed / duration;
+          const factor = overLoop / 10;
 
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
@@ -328,7 +334,7 @@ export default function PixiDemo({ postGraph }) {
               .fill(rgbToHex(...circleColor));
           }
 
-          app.renderer.render(circles);
+          overElapsed = 0;
         });
 
         // recover color gradually
@@ -341,16 +347,17 @@ export default function PixiDemo({ postGraph }) {
 
           outElapsed += elapsedMS;
 
-          if (outElapsed >= duration) {
-            lastOveredNode = null;
+          if (outElapsed < 60 || outLoop > 9) {
             return;
           }
+
+          outLoop += 1;
 
           if (!simulating) {
             drawLines();
           }
 
-          const factor = outElapsed / duration;
+          const factor = outLoop / 10;
 
           for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
@@ -372,11 +379,7 @@ export default function PixiDemo({ postGraph }) {
               circle._baseLineRgbColor = baseLineRgbColor;
             }
 
-            color = interpolateColor(
-              baseRgbColor,
-              basicCircleRgbColor,
-              outElapsed / duration,
-            );
+            color = interpolateColor(baseRgbColor, basicCircleRgbColor, factor);
             circle._fillColor = color;
             circle._lineColor = interpolateColor(
               baseLineRgbColor,
@@ -388,7 +391,7 @@ export default function PixiDemo({ postGraph }) {
             circle.circle(node.x, node.y, radius).fill(rgbToHex(...color));
           }
 
-          app.renderer.render(circles);
+          outElapsed = 0;
         });
       });
 
