@@ -28,6 +28,7 @@ import GraphTitle from './graph-title';
 import SearchField from './search-field';
 import TagsPanel from './tags-panel';
 import data from 'public/dataset.json';
+import './style.css';
 
 const Root: FC = () => {
   const [showContents, setShowContents] = useState(false);
