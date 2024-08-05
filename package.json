@@ -71,6 +71,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "0.5.13",
     "@types/d3": "7.4.1",
+    "@types/lodash": "^4.17.7",
     "@types/mdast": "4.0.3",
     "@types/node": "20.6.2",
     "@types/react": "18.2.21",
