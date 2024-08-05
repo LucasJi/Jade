@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-import { base64Decode, getPostById, getPostIds } from '@/utils/post-util';
+import { base64Decode, getPostById, getPostIds } from '@/lib/server-utils';
 
 export default async function Wikilink({
   wikilink = '',

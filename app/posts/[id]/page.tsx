@@ -7,7 +7,7 @@ import {
   getPostById,
   getPostGraphFromPosts,
   getPostIds,
-} from '@/utils/post-util';
+} from '@/lib/server-utils';
 
 export async function generateStaticParams() {
   try {

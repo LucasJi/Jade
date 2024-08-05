@@ -1,6 +1,6 @@
 import Tree from '@/components/tree';
 import { ReactNode } from 'react';
-import { getPostTree } from '@/utils/post-util';
+import { getPostTree } from '@/lib/server-utils';
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const postTree = await getPostTree();

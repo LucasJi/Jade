@@ -1,6 +1,6 @@
 'use client';
 // import GraphView from '@/components/graph-view';
-// import { getPostGraphFromPosts, getPosts } from '@/utils/post-util';
+// import { getPostGraphFromPosts, getPosts } from '@/lib/server-utils';
 // import { MyCanvas } from '@/components/my-canvas';
 // const isGithubConfigured = () => {
 // const isGithubConfigured = () => {

@@ -5,7 +5,7 @@ import { PiGraphLight } from 'react-icons/pi';
 import clsx from 'clsx';
 import { PostGraph } from '@types';
 import { Button } from '@/components/ui/button';
-import { getPostGraphFromPosts, getPosts } from '@/utils/post-util';
+import { getPostGraphFromPosts, getPosts } from '@/lib/server-utils';
 
 const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   const [postGraph, setPostGraph] = useState<PostGraph>();
