@@ -298,7 +298,7 @@ export const getPostIds = async (): Promise<string[]> => {
 
 let globalPostGraph: PostGraph | null = null;
 
-export const getGlobalPostGraph = async () => {
+export const getGlobalPostGraph = async (): Promise<PostGraph> => {
   if (globalPostGraph) {
     return Promise.resolve(globalPostGraph);
   }
