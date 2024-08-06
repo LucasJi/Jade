@@ -5,6 +5,7 @@ import Markdown from './markdown';
 import {
   Tooltip,
   TooltipContent,
+  TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
@@ -50,14 +51,16 @@ export default async function Wikilink({
               {children}
             </Link>
           </TooltipTrigger>
-          <TooltipContent>
-            <Markdown
-              className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
-              renderWikilink={false}
-              wikilink={wikilink}
-              post={post!}
-            />
-          </TooltipContent>
+          <TooltipPortal>
+            <TooltipContent>
+              <Markdown
+                className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
+                renderWikilink={false}
+                wikilink={wikilink}
+                post={post!}
+              />
+            </TooltipContent>
+          </TooltipPortal>
         </Tooltip>
       </TooltipProvider>
     );
