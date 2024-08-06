@@ -1,7 +1,6 @@
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import ReactMarkdown, { Components } from 'react-markdown';
-// highlight.js doesn't support React.JSX syntax
+import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Post } from '@/types';
 import Slugger from 'github-slugger';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -16,6 +15,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const slugs = new Slugger();
 
 const getHeadingId = (props: any) => {
+  if (!props?.children) {
+    return '';
+  }
+
   const hContent = props.children[0] as string;
   slugs.reset();
   return slugs.slug(hContent);

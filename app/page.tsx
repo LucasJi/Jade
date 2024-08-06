@@ -30,7 +30,7 @@ export default async function Home() {
       {/* <PixiDemo postGraph={postGraph} /> */}
       {/*<ClientComponent />*/}
       {ids.map(id => (
-        <p>{id}</p>
+        <p key={id}>{id}</p>
       ))}
     </div>
   );

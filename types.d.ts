@@ -17,7 +17,7 @@ export type Frontmatter = undefined | { [key: string]: any };
 
 export type PostGraphNode = d3.SimulationNodeDatum & Post;
 
-export type PostGraphLink = d3.SimulationLinkDatum<string>;
+export type PostGraphLink = d3.SimulationLinkDatum<PostGraphNode>;
 
 export type PostGraph = {
   nodes: PostGraphNode[];
