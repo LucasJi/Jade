@@ -1,13 +1,7 @@
-import GraphView from '@/components/graph-view';
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
 import { notFound } from 'next/navigation';
-import {
-  getAdjacencyPostsById,
-  getPostById,
-  getPostGraphFromPosts,
-  getPostIds,
-} from '@/lib/server-utils';
+import { getPostById, getPostIds } from '@/lib/server-utils';
 
 export async function generateStaticParams() {
   try {
@@ -25,8 +19,8 @@ export default async function Page({
   try {
     const decodedId = decodeURIComponent(id);
     const post = await getPostById(decodedId);
-    const adjPosts = await getAdjacencyPostsById(post!.id);
-    const postGraph = await getPostGraphFromPosts(adjPosts);
+    // const adjPosts = await getAdjacencyPostsById(post!.id);
+    // const postGraph = await getPostGraphFromPosts(adjPosts);
 
     if (!post) {
       return <div>Post not found</div>;
@@ -38,7 +32,7 @@ export default async function Page({
           <Markdown post={post} className="max-h-[820px]" />
         </div>
         <div className="w-1/3 px-4 flex flex-col min-w-[332px] overflow-y-auto">
-          <GraphView postGraph={postGraph} postId={decodedId} />
+          {/*<GraphView postGraph={postGraph} postId={decodedId} />*/}
           <Toc content={post?.content} className="mt-4" />
         </div>
       </div>

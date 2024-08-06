@@ -85,7 +85,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       title={node.name}
     >
       <Link
-        href={`/posts/${encodeURIComponent(node.path || '')}`}
+        href={`/posts/${node.id || ''}`}
         className="min-h-0 text-base"
         // Reduce unnecessary requests
         prefetch={false}
@@ -112,7 +112,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       }
 
       for (const node of nodes) {
-        if (node.path === id) {
+        if (node.id === id) {
           return true;
         }
 

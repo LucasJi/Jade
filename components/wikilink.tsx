@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-import { base64Decode, getPostById, getPostIds } from '@/lib/server-utils';
+import { getPostById, idPathMap } from '@/lib/server-utils';
 
 export default async function Wikilink({
   wikilink = '',
@@ -19,7 +19,6 @@ export default async function Wikilink({
   children: ReactNode;
   currentPost: Post;
 }) {
-  const postIds: string[] = await getPostIds();
   let post = null;
 
   const splits = wikilink.split('#');
@@ -28,11 +27,13 @@ export default async function Wikilink({
   if (title === '') {
     post = currentPost;
   } else {
-    const postId = postIds.find(id => {
-      const path = base64Decode(id);
-      return path === title || path.includes(title);
-    });
-    post = postId ? await getPostById(postId) : null;
+    const entries = idPathMap!.entries();
+    for (const [id, path] of entries) {
+      if (path === title || path.includes(title)) {
+        post = await getPostById(id);
+        break;
+      }
+    }
   }
 
   if (post) {
@@ -44,7 +45,6 @@ export default async function Wikilink({
               className="text-obsidian-purple"
               href={`/posts/${encodeURIComponent(post!.id)}`}
               color="foreground"
-              // as={NextLink}
               prefetch={false}
             >
               {children}
