@@ -36,7 +36,7 @@ const FoldIcon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
 );
 
 const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
-  const expandedNodeNames = useContext(TreeContext);
+  const { expandedNodeNames, id } = useContext(TreeContext);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -53,7 +53,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     <li className="mt-1">
       <button onClick={toggleExpand} className="flex items-center">
         <FoldIcon isExpanded={isExpanded} />
-        <span className="min-h-0 max-w-[200px] text-base inline-block truncate">
+        <span className="min-h-0 max-w-[200px] text-base inline-block truncate ml-1">
           {node.name}
         </span>
       </button>
@@ -81,7 +81,10 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     </li>
   ) : (
     <li
-      className={clsx('mt-1 w-fit max-w-[200px] truncate hover:underline')}
+      className={clsx(
+        'mt-1 w-fit max-w-[200px] truncate hover:underline ml-1',
+        node.id === id && 'underline',
+      )}
       title={node.name}
     >
       <Link
@@ -96,7 +99,10 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   );
 };
 
-const TreeContext = createContext<string[]>([]);
+const TreeContext = createContext<{ expandedNodeNames: string[]; id: string }>({
+  expandedNodeNames: [],
+  id: '',
+});
 
 const Tree: React.FC<TreeProps> = ({ data, className }) => {
   let { id } = useParams<{ id: string }>();
@@ -134,7 +140,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
     <div className={clsx('px-2', className)}>
       <ScrollArea className="w-full h-full mt-2">
         <ul>
-          <TreeContext.Provider value={expandedNodeNames}>
+          <TreeContext.Provider value={{ expandedNodeNames, id }}>
             {data.map((node, idx) => (
               <TreeNodeComponent key={`${idx}-${node.name}`} node={node} />
             ))}
