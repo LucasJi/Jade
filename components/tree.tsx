@@ -44,6 +44,11 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
+    if (isExpanded) {
+      expandedNodeIds.delete(node.id);
+    } else {
+      expandedNodeIds.add(node.id);
+    }
     setIsExpanded(!isExpanded);
   };
 
@@ -134,48 +139,51 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
     }
   };
 
-  useEffect(() => {
-    const contains = (nodes: TreeNode[] | undefined): boolean => {
-      if (!nodes) {
-        return false;
-      }
-
-      for (const node of nodes) {
-        if (node.id === id) {
-          return true;
-        }
-
-        if (contains(node.children)) {
-          node.id && expandedNodeIds.add(node.id);
-          return true;
-        }
-      }
-
+  const contains = (nodes: TreeNode[] | undefined): boolean => {
+    if (!nodes) {
       return false;
-    };
+    }
 
-    expandedNodeIds.clear();
+    for (const node of nodes) {
+      if (node.id === id) {
+        return true;
+      }
+
+      if (contains(node.children)) {
+        expandedNodeIds.add(node.id);
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const selectOpenedPost = () => {
     contains(data);
+    setExpandedNodeIds(new Set([...expandedNodeIds]));
+    setTimeout(() => {
+      if (viewportRef !== null && viewportRef.current !== null) {
+        viewportRef.current
+          .querySelector(`#${CSS.escape(id)}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
+  };
 
-    setExpandedNodeIds(pre => new Set(pre));
+  useEffect(() => {
+    selectOpenedPost();
   }, [id]);
 
   return (
     <div className={clsx('px-2', className)}>
       <div>
         <Button
-          title="Select Opened File"
+          title="Select Opened Post"
           variant="ghost"
           size="icon"
           className="h-5 w-5 rounded-full"
           onClick={() => {
-            if (viewportRef !== null && viewportRef.current !== null) {
-              const el = viewportRef.current.querySelector(
-                `#${CSS.escape(id)}`,
-              );
-              el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              setExpandedNodeIds(new Set([...expandedNodeIds, id]));
-            }
+            selectOpenedPost();
           }}
         >
           <VscTarget size={16} />
@@ -197,7 +205,12 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
           variant="ghost"
           size="icon"
           className="h-5 w-5 rounded-full"
-          onClick={() => setExpandedNodeIds(new Set())}
+          onClick={() => {
+            setExpandedNodeIds(new Set());
+            if (viewportRef !== null && viewportRef.current !== null) {
+              viewportRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
         >
           <BiCollapseVertical size={16} />
         </Button>
