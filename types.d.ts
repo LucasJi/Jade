@@ -25,7 +25,7 @@ export type PostGraph = {
 };
 
 export interface TreeNode {
-  id?: string;
+  id: string;
   name: string;
   children: TreeNode[];
   isDir: boolean;
@@ -37,7 +37,7 @@ export interface TreeProps {
 }
 
 export interface PathItem {
-  id?: string;
+  id: string;
   path: string;
   type: string;
 }

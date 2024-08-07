@@ -16,6 +16,7 @@ import clsx from 'clsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { VscTarget } from 'react-icons/vsc';
 import { Button } from '@/components/ui/button';
+import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
 
 const DEFAULT_ICON_SIZE = 16;
 
@@ -47,9 +48,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   };
 
   useLayoutEffect(() => {
-    if (!isExpanded) {
-      setIsExpanded(expandedNodeIds.has(node.name));
-    }
+    setIsExpanded(expandedNodeIds.has(node.id));
   }, [expandedNodeIds]);
 
   return node.isDir ? (
@@ -121,6 +120,20 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
     new Set(),
   );
 
+  const expandAll = (nodes: TreeNode[] | undefined) => {
+    if (!nodes) {
+      return;
+    }
+
+    for (const node of nodes) {
+      expandedNodeIds.add(node.id);
+
+      if (node.children.length > 0) {
+        expandAll(node.children);
+      }
+    }
+  };
+
   useEffect(() => {
     const contains = (nodes: TreeNode[] | undefined): boolean => {
       if (!nodes) {
@@ -133,7 +146,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
         }
 
         if (contains(node.children)) {
-          expandedNodeIds.add(node.name);
+          node.id && expandedNodeIds.add(node.id);
           return true;
         }
       }
@@ -152,7 +165,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       <div>
         <Button
           title="Select Opened File"
-          variant="outline"
+          variant="ghost"
           size="icon"
           className="h-5 w-5 rounded-full"
           onClick={() => {
@@ -160,12 +173,33 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
               const el = viewportRef.current.querySelector(
                 `#${CSS.escape(id)}`,
               );
-              el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-              setExpandedNodeIds(pre => new Set([...pre, id]));
+              el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              setExpandedNodeIds(new Set([...expandedNodeIds, id]));
             }
           }}
         >
           <VscTarget size={16} />
+        </Button>
+        <Button
+          title="Expand All"
+          variant="ghost"
+          size="icon"
+          className="h-5 w-5 rounded-full"
+          onClick={() => {
+            expandAll(data);
+            setExpandedNodeIds(new Set([...expandedNodeIds]));
+          }}
+        >
+          <BiExpandVertical size={16} />
+        </Button>
+        <Button
+          title="Collapse All"
+          variant="ghost"
+          size="icon"
+          className="h-5 w-5 rounded-full"
+          onClick={() => setExpandedNodeIds(new Set())}
+        >
+          <BiCollapseVertical size={16} />
         </Button>
       </div>
       <ScrollArea className="w-full h-full mt-2" viewportRef={viewportRef}>

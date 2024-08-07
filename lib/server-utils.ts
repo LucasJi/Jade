@@ -109,6 +109,7 @@ const getLocalPostPaths = (
     } else if (file.endsWith('.md')) {
       const relativePath = path.replace(POST_HOME + SEP, '');
       pathItems.push({
+        id: relativePath,
         path: relativePath,
         type: 'blob',
       });
@@ -120,6 +121,7 @@ const getLocalPostPaths = (
 
 const buildPostTree = (paths: PathItem[]): TreeNode[] => {
   const tree: TreeNode = {
+    id: 'root',
     name: 'root',
     children: [],
     isDir: true,
@@ -138,6 +140,7 @@ const buildPostTree = (paths: PathItem[]): TreeNode[] => {
 
       if (!dirNode) {
         dirNode = {
+          id: dir,
           name: dir,
           children: [],
           isDir: true,
@@ -161,6 +164,7 @@ const buildPostTree = (paths: PathItem[]): TreeNode[] => {
     if (item.type === 'tree') {
       const childDir = pathParts[pathParts.length - 1];
       currentNode.children.push({
+        id: childDir,
         name: childDir,
         children: [],
         isDir: true,
