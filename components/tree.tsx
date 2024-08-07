@@ -9,10 +9,13 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
 import clsx from 'clsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { VscTarget } from 'react-icons/vsc';
+import { Button } from '@/components/ui/button';
 
 const DEFAULT_ICON_SIZE = 16;
 
@@ -36,7 +39,7 @@ const FoldIcon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
 );
 
 const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
-  const { expandedNodeNames, id } = useContext(TreeContext);
+  const { expandedNodeIds, id } = useContext(TreeContext);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -45,9 +48,9 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
 
   useLayoutEffect(() => {
     if (!isExpanded) {
-      setIsExpanded(expandedNodeNames.includes(node.name));
+      setIsExpanded(expandedNodeIds.has(node.name));
     }
-  }, [expandedNodeNames]);
+  }, [expandedNodeIds]);
 
   return node.isDir ? (
     <li className="mt-1">
@@ -86,6 +89,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
         node.id === id && 'underline',
       )}
       title={node.name}
+      id={node.id}
     >
       <Link
         href={`/posts/${node.id || ''}`}
@@ -99,8 +103,11 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   );
 };
 
-const TreeContext = createContext<{ expandedNodeNames: string[]; id: string }>({
-  expandedNodeNames: [],
+const TreeContext = createContext<{
+  expandedNodeIds: Set<string>;
+  id: string;
+}>({
+  expandedNodeIds: new Set(),
   id: '',
 });
 
@@ -108,10 +115,13 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
   let { id } = useParams<{ id: string }>();
   id = decodeURIComponent(id);
 
-  const [expandedNodeNames, setExpandedNodeNames] = useState<string[]>([]);
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
-    const nodeNames: string[] = [];
     const contains = (nodes: TreeNode[] | undefined): boolean => {
       if (!nodes) {
         return false;
@@ -123,7 +133,7 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
         }
 
         if (contains(node.children)) {
-          nodeNames.push(node.name);
+          expandedNodeIds.add(node.name);
           return true;
         }
       }
@@ -131,16 +141,36 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       return false;
     };
 
+    expandedNodeIds.clear();
     contains(data);
 
-    setExpandedNodeNames([...nodeNames]);
+    setExpandedNodeIds(pre => new Set(pre));
   }, [id]);
 
   return (
     <div className={clsx('px-2', className)}>
-      <ScrollArea className="w-full h-full mt-2">
+      <div>
+        <Button
+          title="Select Opened File"
+          variant="outline"
+          size="icon"
+          className="h-5 w-5 rounded-full"
+          onClick={() => {
+            if (viewportRef !== null && viewportRef.current !== null) {
+              const el = viewportRef.current.querySelector(
+                `#${CSS.escape(id)}`,
+              );
+              el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              setExpandedNodeIds(pre => new Set([...pre, id]));
+            }
+          }}
+        >
+          <VscTarget size={16} />
+        </Button>
+      </div>
+      <ScrollArea className="w-full h-full mt-2" viewportRef={viewportRef}>
         <ul>
-          <TreeContext.Provider value={{ expandedNodeNames, id }}>
+          <TreeContext.Provider value={{ expandedNodeIds, id }}>
             {data.map((node, idx) => (
               <TreeNodeComponent key={`${idx}-${node.name}`} node={node} />
             ))}
