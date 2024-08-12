@@ -9,7 +9,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-import { getPostById, idPathMap } from '@/lib/server-utils';
+import { getRedisClient } from '@/lib/redis-utils';
+import { POST_ID, POST_PATH } from '@/lib/constants';
+
+const redis = getRedisClient();
 
 export default async function Wikilink({
   wikilink = '',
@@ -20,6 +23,7 @@ export default async function Wikilink({
   children: ReactNode;
   currentPost: Post;
 }) {
+  console.log('component wikilink');
   let post = null;
 
   const splits = wikilink.split('#');
@@ -28,11 +32,16 @@ export default async function Wikilink({
   if (title === '') {
     post = currentPost;
   } else {
-    const entries = idPathMap!.entries();
-    for (const [id, path] of entries) {
-      if (path === title || path.includes(title)) {
-        post = await getPostById(id);
-        break;
+    const matched = await redis.keys(`${POST_PATH}*${title}*`);
+    console.log('wikilink', matched, title);
+    if (matched.length > 0) {
+      const path = matched[0];
+      const id = await redis.get(path);
+      console.log('wikilink id', id);
+
+      if (id) {
+        const postStr = await redis.get(`${POST_ID}${id}`);
+        post = postStr && (JSON.parse(postStr) as Post);
       }
     }
   }

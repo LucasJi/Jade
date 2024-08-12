@@ -1,14 +1,15 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
 import { notFound } from 'next/navigation';
-import { getPostById, getPostIds } from '@/lib/server-utils';
+import { IDS, POST_ID } from '@/lib/constants';
+import { Post } from '@types';
+import { getRedisClient } from '@/lib/redis-utils';
+
+const redis = getRedisClient();
 
 export async function generateStaticParams() {
-  try {
-    return (await getPostIds()).map(id => encodeURIComponent(id));
-  } catch (error) {
-    return [];
-  }
+  const ids = await redis.smembers(IDS);
+  return ids.map(id => ({ id }));
 }
 
 export default async function Page({
@@ -17,12 +18,12 @@ export default async function Page({
   params: { id: string };
 }) {
   try {
-    const decodedId = decodeURIComponent(id);
-    const post = await getPostById(decodedId);
-    // const adjPosts = await getAdjacencyPostsById(post!.id);
-    // const postGraph = await getPostGraphFromPosts(adjPosts);
+    console.log('page: /posts/[id]', id);
+    const postStr = await redis.get(`${POST_ID}${id}`);
+    const post = postStr ? (JSON.parse(postStr) as Post) : undefined;
 
     if (!post) {
+      console.log(`post with id ${id} not found`);
       return <div>Post not found</div>;
     }
 
@@ -32,12 +33,12 @@ export default async function Page({
           <Markdown post={post} className="max-h-[620px]" />
         </div>
         <div className="w-1/3 px-4 flex flex-col min-w-[332px] overflow-y-auto">
-          {/*<GraphView postGraph={postGraph} postId={decodedId} />*/}
           <Toc content={post?.content} className="mt-4" />
         </div>
       </div>
     );
   } catch (error) {
+    console.error('error occurs when building post page with id', id, error);
     notFound();
   }
 }

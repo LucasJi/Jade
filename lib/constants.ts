@@ -14,4 +14,8 @@ export const MD_EXT = '.md';
 // "#", "##", "###", "####", "#####", "######"
 export const MD_HEADING_REG = /^(#{1,6})\s+.+/;
 
-export const IGNORED_DIRS = ['.git'];
+// redis keys
+export const IDS = 'jade:posts:ids';
+export const POST_ID = 'jade:posts:id:';
+export const POSTS_TREE = 'jade:posts:tree';
+export const POST_PATH = 'jade:posts:path:';

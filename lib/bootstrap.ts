@@ -1,0 +1,177 @@
+/* eslint-disable no-console */
+import { IDS, POST_ID, POST_PATH, POSTS_TREE, SEP } from '@/lib/constants';
+import { PathItem, Post } from '@types';
+import fs from 'fs';
+import { join } from 'path';
+import { getGitTree, githubRequest } from '@/lib/github-utils';
+import { env } from '@/lib/env';
+import {
+  base64Decode,
+  buildPostsTree,
+  decimalToBase62,
+  murmurhash,
+  resolvePost,
+} from '@/lib/server-utils';
+import { getRedisClient } from '@/lib/redis-utils';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { fromMarkdownWikilink, syntax } from '@/plugins/remark-wikilink';
+import { visit } from 'unist-util-visit';
+
+const { dir } = env;
+
+const getOnlinePostPaths = () => getGitTree();
+
+const getLocalPostPaths = (
+  dir: string,
+  root: string,
+  excludedPaths: string[],
+  pathItems: PathItem[] = [],
+): PathItem[] => {
+  const files = fs.readdirSync(dir);
+
+  for (const file of files) {
+    const path = join(dir, file);
+    if (fs.statSync(path).isDirectory()) {
+      if (excludedPaths.includes(file)) {
+        continue;
+      }
+      getLocalPostPaths(path, root, excludedPaths, pathItems);
+    } else if (file.endsWith('.md')) {
+      const relativePath = path.replace(root + SEP, '');
+      pathItems.push({
+        id: relativePath,
+        path: relativePath,
+        type: 'blob',
+      });
+    }
+  }
+
+  return pathItems;
+};
+
+const getPostPaths = async () =>
+  dir.root
+    ? getLocalPostPaths(dir.root, dir.root, dir.excluded)
+    : getOnlinePostPaths();
+
+const loadPost = async (path: string, id: string): Promise<Post> => {
+  try {
+    let file;
+    if (dir.root) {
+      file = fs.readFileSync(join(dir.root, path), 'utf8');
+    } else {
+      file = await githubRequest(`/contents/${path}`, `post:${id}`);
+    }
+    // resolve emoji base64 decoding problem
+    const content = dir.root ? file : base64Decode(file.content);
+    const filenameSplits = path.split(SEP);
+    const filename = filenameSplits[filenameSplits.length - 1];
+    const { title, frontmatter } = resolvePost(content, filename);
+
+    return {
+      id,
+      content: content,
+      title,
+      frontmatter,
+      forwardLinks: [],
+      backlinks: [],
+      path,
+    };
+  } catch (e) {
+    console.error('load post failed with path:', path, e);
+    throw e;
+  }
+};
+
+const resolveWikilinks = (posts: Post[]) => {
+  const findPostById = (id: string): Post | undefined => {
+    return posts.find(p => p.id === id);
+  };
+
+  for (const post of posts) {
+    if (post !== null) {
+      const tree = fromMarkdown(post.content, {
+        extensions: [syntax()],
+        mdastExtensions: [fromMarkdownWikilink()],
+      });
+
+      const forwardLinks: Set<string> = new Set();
+
+      visit(tree, 'wikilink', node => {
+        const { value }: { value: string } = node;
+        const post = posts.find(post => {
+          const path = base64Decode(post.id);
+          return path.includes(value.split('#')[0]);
+        });
+        if (post) {
+          forwardLinks.add(post.id);
+        }
+      });
+
+      post.forwardLinks = Array.from(forwardLinks);
+
+      for (const fl of forwardLinks) {
+        const fp = findPostById(fl);
+        if (fp) {
+          const bls = new Set(fp.backlinks);
+          bls.add(post.id);
+          fp.backlinks = Array.from(bls);
+        }
+      }
+    }
+  }
+};
+
+const init = async () => {
+  const begin = new Date().getTime();
+  console.log('initializing jade...');
+  const existIds = new Set<string>();
+  const posts: Post[] = [];
+  const redis = getRedisClient();
+
+  const pathItems = await getPostPaths();
+
+  for (const item of pathItems) {
+    const { path } = item;
+    let hash = murmurhash(path);
+    let id = decimalToBase62(hash);
+
+    if (existIds.has(id)) {
+      hash = murmurhash(item.path + 'DUPLICATED');
+      id = decimalToBase62(hash);
+    }
+    existIds.add(id);
+
+    item.id = id;
+
+    // cache path
+    redis.del(`${POST_PATH}${path}`);
+    redis.set(`${POST_PATH}${path}`, id);
+
+    const post = await loadPost(path, id);
+    posts.push(post);
+  }
+
+  // cache post ids
+  redis.del(IDS);
+  redis.sadd(IDS, [...existIds.values()]);
+
+  resolveWikilinks(posts);
+
+  // cache posts
+  for (const post of posts) {
+    const key = `${POST_ID}${post.id}`;
+    redis.del(key);
+    redis.set(key, JSON.stringify(post));
+  }
+
+  const postsTree = buildPostsTree(pathItems);
+
+  // cache posts tree
+  redis.del(POSTS_TREE);
+  redis.set(POSTS_TREE, JSON.stringify(postsTree));
+
+  console.log('jade initialized in', new Date().getTime() - begin, 'ms');
+};
+
+await init();

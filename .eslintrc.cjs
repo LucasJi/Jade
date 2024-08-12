@@ -28,7 +28,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off', // Possible errors
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
-    'no-console': 'warn',
+    'no-console': 'off',
     // Best practices
     'dot-notation': 'error',
     'no-else-return': 'error',
@@ -75,10 +75,10 @@ module.exports = {
     // eslint looks for the prettier config at the top level of the package/app
     // but the config lives in the `config/` directory. Passing the config here
     // to get around this.
-    'prettier/prettier': ['error', { ...prettierConfig }],
+    'prettier/prettier': ['error', {...prettierConfig}],
     // Unused
     'no-unused-expressions': 'off',
-    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-unused-vars': 'off',
     'no-unused-vars': 'off',
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [

@@ -27,14 +27,14 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
    NEXT_PUBLIC_SITE_TITLE="Lucas Ji's Blog"
    NEXT_PUBLIC_SITE_DESCRIPTION="A personal blog, publishing posts written by Obsidian."
 
-   # Github
-   GITHUB_REPO_ACCESS_TOKEN=
-   GITHUB_REPO=
-   GITHUB_OWNER=
-   GITHUB_BRANCH=
+   REPO_ACCESS_TOKEN=
+   REPO_NAME=
+   REPO_OWNER=
+   REPO_BRANCH=
 
-   # Included directories, separated by comma
-   INCLUDE_DIRS=""
+   DIRS_INCLUDED=
+   DIRS_EXCLUDED=
+   DIRS_ROOT=/Users/lucas/Projects/obsidian-chinese-help
    ```
 
     - `GITHUB_REPO_ACCESS_TOKEN`: When generating

@@ -115,7 +115,8 @@ const TreeContext = createContext<{
   id: '',
 });
 
-const Tree: React.FC<TreeProps> = ({ data, className }) => {
+const Tree: React.FC<TreeProps> = ({ className }) => {
+  const [data, setData] = useState<TreeNode[]>([]);
   let { id } = useParams<{ id: string }>();
   id = decodeURIComponent(id);
 
@@ -165,18 +166,21 @@ const Tree: React.FC<TreeProps> = ({ data, className }) => {
       if (viewportRef !== null && viewportRef.current !== null) {
         viewportRef.current
           .querySelector(`#${CSS.escape(id)}`)
-          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
-    }, 150);
+    }, 300);
   };
 
   useEffect(() => {
-    selectOpenedPost();
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts-tree`)
+      .then(res => res.json())
+      .then(data => setData(data))
+      .then(() => selectOpenedPost());
   }, [id]);
 
   return (
     <div className={clsx('px-2', className)}>
-      <div>
+      <div className="flex flex-row items-center justify-end">
         <Button
           title="Select Opened Post"
           variant="ghost"

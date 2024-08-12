@@ -10,7 +10,8 @@ export interface Post {
   forwardLinks: string[];
   // ids
   backlinks: string[];
-  ctime: Date;
+  // relative path
+  path: string;
 }
 
 export type Frontmatter = undefined | { [key: string]: any };
@@ -32,7 +33,6 @@ export interface TreeNode {
 }
 
 export interface TreeProps {
-  data: TreeNode[];
   className?: string;
 }
 
