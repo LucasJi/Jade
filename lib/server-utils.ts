@@ -44,7 +44,7 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
         } else if (!a.isDir && b.isDir) {
           return 1;
         }
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name, 'zh');
       });
 
       currentNode = dirNode;

@@ -172,7 +172,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts-tree`)
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`)
       .then(res => res.json())
       .then(data => setData(data))
       .then(() => selectOpenedPost());
@@ -182,7 +182,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
     <div className={clsx('px-2', className)}>
       <div className="flex flex-row items-center justify-end">
         <Button
-          title="Select Opened Post"
+          title="Select Opened Note"
           variant="ghost"
           size="icon"
           className="h-5 w-5 rounded-full"

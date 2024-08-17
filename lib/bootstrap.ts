@@ -129,6 +129,11 @@ const init = async () => {
   const posts: Post[] = [];
   const redis = getRedisClient();
 
+  const jadeKeys = await redis.keys('jade:*');
+  jadeKeys.forEach(key => {
+    redis.del(key);
+  });
+
   const pathItems = await getPostPaths();
 
   for (const item of pathItems) {
@@ -145,7 +150,6 @@ const init = async () => {
     item.id = id;
 
     // cache path
-    redis.del(`${POST_PATH}${path}`);
     redis.set(`${POST_PATH}${path}`, id);
 
     const post = await loadPost(path, id);
@@ -153,7 +157,6 @@ const init = async () => {
   }
 
   // cache post ids
-  redis.del(IDS);
   redis.sadd(IDS, [...existIds.values()]);
 
   resolveWikilinks(posts);
@@ -161,14 +164,12 @@ const init = async () => {
   // cache posts
   for (const post of posts) {
     const key = `${POST_ID}${post.id}`;
-    redis.del(key);
     redis.set(key, JSON.stringify(post));
   }
 
   const postsTree = buildPostsTree(pathItems);
 
   // cache posts tree
-  redis.del(POSTS_TREE);
   redis.set(POSTS_TREE, JSON.stringify(postsTree));
 
   console.log('jade initialized in', new Date().getTime() - begin, 'ms');
