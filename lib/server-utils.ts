@@ -17,11 +17,20 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
   };
 
   paths.forEach(item => {
+    // 'a/b/c.md' => ['a', 'b', 'c.md'] or 'a/b/c' => ['a', 'b', 'c']
     const pathParts = item.path.split(SEP);
+    // ['a', 'b']
     const dirs: string[] = pathParts.slice(0, -1);
     let currentNode = tree;
 
-    // find or create nodes for directories
+    /**
+     * Use depth-first algorithm to find item's parent node. If the parent node doesn't exist, create it.
+     *
+     * Example: { id: 'root', isDir: true, children: [{id: 'a', isDir: true, children: [{id: 'b', isDir: true, children: []}]}]}.
+     * If we want to create node with id 'c', we need to find/create node with id 'b' first. And, If
+     * we want to find or create node with id 'b', we need to find/create node with id 'a' first. That's
+     * why we use depth-first search.
+     */
     dirs.forEach(dir => {
       let dirNode = currentNode.children.find(
         node => node.name === dir && node.isDir,
@@ -34,22 +43,23 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
           children: [],
           isDir: true,
         };
-
         currentNode.children.push(dirNode);
-      }
 
-      currentNode.children.sort((a, b) => {
-        if (a.isDir && !b.isDir) {
-          return -1;
-        } else if (!a.isDir && b.isDir) {
-          return 1;
-        }
-        return a.name.localeCompare(b.name, 'zh');
-      });
+        // sort all nodes after any new node added
+        currentNode.children.sort((a, b) => {
+          if (a.isDir && !b.isDir) {
+            return -1;
+          } else if (!a.isDir && b.isDir) {
+            return 1;
+          }
+          return a.name.localeCompare(b.name, 'zh');
+        });
+      }
 
       currentNode = dirNode;
     });
 
+    // c is a directory
     if (item.type === 'tree') {
       const childDir = pathParts[pathParts.length - 1];
       currentNode.children.push({
@@ -60,6 +70,7 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
       });
     }
 
+    // c is a markdown file
     if (item.type === 'blob') {
       const file: string = pathParts[pathParts.length - 1];
       currentNode.children.push({
@@ -69,6 +80,16 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
         isDir: false,
       });
     }
+
+    // sort all nodes after any new node added
+    currentNode.children.sort((a, b) => {
+      if (a.isDir && !b.isDir) {
+        return -1;
+      } else if (!a.isDir && b.isDir) {
+        return 1;
+      }
+      return a.name.localeCompare(b.name, 'zh');
+    });
   });
 
   return tree.children;
