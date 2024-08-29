@@ -1,8 +1,7 @@
 import { posix, sep } from 'path';
+import { env } from './env';
 
-export const POST_HOME = process.env.POST_HOME || '';
-
-export const SEP = POST_HOME ? sep : posix.sep;
+export const SEP = env.dir.root ? sep : posix.sep;
 
 // "#"
 export const MD_TITLE_REG = /^#\s+.+/;

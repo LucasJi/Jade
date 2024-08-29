@@ -11,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import Wikilink from './wikilink';
 import clsx from 'clsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { remarkCallout } from '@/plugins/remark-callout';
 
 const slugs = new Slugger();
 
@@ -181,6 +182,7 @@ const Markdown = ({
           remarkPlugins={[
             remarkGfm,
             remarkFrontmatter,
+            remarkCallout,
             remarkWikilink as any,
             [remarkJade as any, { title, wikilink }],
           ]}
