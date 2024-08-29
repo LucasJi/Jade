@@ -24,7 +24,7 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
    ```env
    # Website
    NEXT_PUBLIC_BASE_URL=http://localhost:3000
-   NEXT_PUBLIC_SITE_TITLE="Lucas Ji's Blog"
+   NEXT_PUBLIC_SITE_TITLE="Jade"
    NEXT_PUBLIC_SITE_DESCRIPTION="A personal blog, publishing posts written by Obsidian."
 
    REPO_ACCESS_TOKEN=
@@ -34,7 +34,7 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
 
    DIRS_INCLUDED=
    DIRS_EXCLUDED=
-   DIRS_ROOT=/Users/lucas/Projects/obsidian-chinese-help
+   DIRS_ROOT=
    ```
 
     - `GITHUB_REPO_ACCESS_TOKEN`: When generating
