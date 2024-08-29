@@ -35,6 +35,8 @@ const process = async (md: string, options?: Options) => {
       .process(md)
   ).toString();
 
+  console.log(html);
+
   // @ts-expect-error: hast and mdast is assigned
   return { hast, mdast, html };
 };
@@ -230,6 +232,7 @@ describe('remarkCallout', () => {
     `;
 
     const { html } = await process(md);
+
     const doc = parser.parseFromString(html, 'text/html');
 
     const callout = doc.querySelector('[data-callout]');
@@ -498,6 +501,32 @@ describe('remarkCallout', () => {
     expect(
       callout?.querySelector('[data-callout-body]')?.children[0].innerHTML,
     ).toBe('body <strong>first</strong> <em>line</em> <code>code</code> here');
+  });
+
+  test('callout with inner callout', async () => {
+    const md = dedent`
+      > [!question]+ Is Callout nestable?
+      > Question Body
+      > > [!todo]+ Yes
+      > > Todo Body
+      > > > [!example]+ Use multiple levels of nesting
+      > > > Example Body
+    `;
+
+    const { html } = await process(md);
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const questionCallout = doc.querySelector('[data-callout]');
+    expect(questionCallout).not.toBe(null);
+    expect(questionCallout?.getAttribute('data-callout-type')).eq('question');
+
+    const todoCallout = questionCallout?.querySelector('[data-callout]');
+    expect(todoCallout).not.toBe(null);
+    expect(todoCallout?.getAttribute('data-callout-type')).eq('todo');
+
+    const exampleCallout = todoCallout?.querySelector('[data-callout]');
+    expect(exampleCallout).not.toBe(null);
+    expect(exampleCallout?.getAttribute('data-callout-type')).eq('example');
   });
 
   test('options.root', async () => {
