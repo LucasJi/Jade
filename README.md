@@ -35,6 +35,10 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
    DIRS_INCLUDED=
    DIRS_EXCLUDED=
    DIRS_ROOT=
+   
+   REDIS_HOST=
+   REDIS_PORT=
+   REDIS_PASS=
    ```
 
     - `GITHUB_REPO_ACCESS_TOKEN`: When generating

@@ -12,6 +12,7 @@ import Wikilink from './wikilink';
 import clsx from 'clsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { remarkCallout } from '@/plugins/remark-callout';
+import { InlineCode, Tr, Td, Th } from '@/components/ui/typography';
 
 const slugs = new Slugger();
 
@@ -143,6 +144,11 @@ const components = (
   //   );
   // },
   li: props => <li>{props.children}</li>,
+  table: props => <table className="w-full">{props.children}</table>,
+  tr: props => <Tr>{props.children}</Tr>,
+  th: props => <Th>{props.children}</Th>,
+  td: props => <Td>{props.children}</Td>,
+  code: props => <InlineCode>{props.children}</InlineCode>,
 });
 
 const Markdown = ({
@@ -173,7 +179,6 @@ const Markdown = ({
           'prose-p:my-2',
           'prose-ul:my-2',
           'prose-hr:my-4',
-          'prose-table:my-2',
           className,
         )}
       >

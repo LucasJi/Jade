@@ -13,9 +13,16 @@ const repo = {
   owner: _env.REPO_OWNER,
 };
 
+const redis = {
+  host: _env.REDIS_HOST || '127.0.0.1',
+  port: Number.parseInt(_env.REDIS_PORT || '') || 6379,
+  pass: _env.REDIS_PASS,
+};
+
 const env = {
   repo,
   dir,
+  redis,
 };
 
 export { env };
