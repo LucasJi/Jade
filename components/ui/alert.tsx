@@ -27,7 +27,6 @@ type VariantType = keyof typeof Variant;
 
 const generateVariants = () => {
   const variants: Partial<Record<VariantType, any>> = {};
-  const stringKeys = Object.keys(Variant).filter(v => isNaN(Number(v)));
   Object.keys(Variant)
     .filter(v => isNaN(Number(v)))
     .forEach(k => {
@@ -43,7 +42,24 @@ const alertVariants = cva(
     variants: {
       variant: {
         default: 'bg-background text-foreground',
-        ...generateVariants(),
+        bug: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        destructive:
+          'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
+        error:
+          'border-error/50 text-error dark:border-error [&>svg]:text-error',
+        example:
+          'border-example/50 text-example dark:border-example [&>svg]:text-example',
+        fail: 'border-fail/50 text-fail dark:border-fail [&>svg]:text-fail',
+        important:
+          'border-important/50 text-important dark:border-important [&>svg]:text-important',
+        info: 'border-info/50 text-info dark:border-info [&>svg]:text-info',
+        question: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        success: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        summary: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        tip: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        todo: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        warning: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
+        quote: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug',
       },
     },
     defaultVariants: {
