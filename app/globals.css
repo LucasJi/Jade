@@ -29,6 +29,40 @@
       --chart-3: 197 37% 24%;
       --chart-4: 43 74% 66%;
       --chart-5: 27 87% 67%;
+
+      /* Obsidian colors */
+      --obsidian-color-red-rgb: 233, 49, 71;
+      --obsidian-color-red: #e93147;
+      --obsidian-color-orange-rgb: 236, 117, 0;
+      --obsidian-color-orange: #ec7500;
+      --obsidian-color-yellow-rgb: 224, 172, 0;
+      --obsidian-color-yellow: #e0ac00;
+      --obsidian-color-green-rgb: 8, 185, 78;
+      --obsidian-color-green: #08b94e;
+      --obsidian-color-cyan-rgb: 0, 191, 188;
+      --obsidian-color-cyan: #00bfbc;
+      --obsidian-color-blue-rgb: 8, 109, 221;
+      --obsidian-color-blue: #086ddd;
+      --obsidian-color-purple-rgb: 120, 82, 238;
+      --obsidian-color-purple: #7852ee;
+      --obsidian-color-pink-rgb: 213, 57, 132;
+      --obsidian-color-pink: #d53984;
+
+      /* callout colors */
+      --callout-bug: var(--obsidian-color-red);
+      --callout-default: var(--obsidian-color-blue);
+      --callout-error: var(--obsidian-color-red);
+      --callout-example: var(--obsidian-color-purple);
+      --callout-fail: var(--obsidian-color-red);
+      --callout-important: var(--obsidian-color-cyan);
+      --callout-info: var(--obsidian-color-blue);
+      --callout-question: var(--obsidian-color-orange);
+      --callout-success: var(--obsidian-color-green);
+      --callout-summary: var(--obsidian-color-cyan);
+      --callout-tip: var(--obsidian-color-cyan);
+      --callout-todo: var(--obsidian-color-blue);
+      --callout-warning: var(--obsidian-color-orange);
+      --callout-quote: 158, 158, 158;
     }
 
     .dark {

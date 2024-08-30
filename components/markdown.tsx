@@ -12,7 +12,16 @@ import Wikilink from './wikilink';
 import clsx from 'clsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { remarkCallout } from '@/plugins/remark-callout';
-import { InlineCode, Tr, Td, Th } from '@/components/ui/typography';
+import { TypographyCode, TypographyP } from '@/components/ui/typography';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const slugs = new Slugger();
 
@@ -55,61 +64,13 @@ const components = (
     const aliases: string[] | undefined = frontmatter?.aliases;
     const tags: string[] | undefined = frontmatter?.tags;
 
-    return (
-      <>
-        <h1>{props.children}</h1>
-        {/*{aliases && (*/}
-        {/*  <div className="flex items-center">*/}
-        {/*    <span className="text-sm">Aliases:</span>*/}
-        {/*    <Spacer x={2} />*/}
-        {/*    {aliases.map((alias, idx) => (*/}
-        {/*      <div key={alias}>*/}
-        {/*        <Chip variant="light" color="warning" size="sm">*/}
-        {/*          {alias}*/}
-        {/*        </Chip>*/}
-        {/*        {idx < aliases.length - 1 && <Spacer x={1} />}*/}
-        {/*      </div>*/}
-        {/*    ))}*/}
-        {/*  </div>*/}
-        {/*)}*/}
-        {/*{tags && (*/}
-        {/*  <div className="flex items-center">*/}
-        {/*    <span className="text-sm">Tags:</span>*/}
-        {/*    <Spacer x={2} />*/}
-        {/*    {tags.map((tag, idx) => (*/}
-        {/*      <div key={tag}>*/}
-        {/*        <Chip*/}
-        {/*          size="sm"*/}
-        {/*          variant="light"*/}
-        {/*          classNames={{*/}
-        {/*            content: 'text-obsidian-purple',*/}
-        {/*          }}*/}
-        {/*        >*/}
-        {/*          {tag}*/}
-        {/*        </Chip>*/}
-        {/*        {idx < tags.length - 1 && <Spacer x={1} />}*/}
-        {/*      </div>*/}
-        {/*    ))}*/}
-        {/*  </div>*/}
-        {/*)}*/}
-      </>
-    );
+    return <h1>{props.children}</h1>;
   },
-  h2: props => {
-    return <h2 id={getHeadingId(props)}>{props.children}</h2>;
-  },
-  h3: props => {
-    return <h3 id={getHeadingId(props)}>{props.children}</h3>;
-  },
-  h4: props => {
-    return <h4 id={getHeadingId(props)}>{props.children}</h4>;
-  },
-  h5: props => {
-    return <h5 id={getHeadingId(props)}>{props.children}</h5>;
-  },
-  h6: props => {
-    return <h6 id={getHeadingId(props)}>{props.children}</h6>;
-  },
+  h2: props => <h2 id={getHeadingId(props)}>{props.children}</h2>,
+  h3: props => <h3 id={getHeadingId(props)}>{props.children}</h3>,
+  h4: props => <h4 id={getHeadingId(props)}>{props.children}</h4>,
+  h5: props => <h5 id={getHeadingId(props)}>{props.children}</h5>,
+  h6: props => <h6 id={getHeadingId(props)}>{props.children}</h6>,
   pre: props => {
     const { children, className, node } = props;
 
@@ -135,20 +96,39 @@ const components = (
       <pre className={clsx(className)}>{children}</pre>
     );
   },
-  // TODO make the style configurable
-  // code: props => {
-  //   return (
-  //     <code className="px-1 whitespace-break-spaces rounded">
-  //       {props.children}
-  //     </code>
-  //   );
-  // },
   li: props => <li>{props.children}</li>,
-  table: props => <table className="w-full">{props.children}</table>,
-  tr: props => <Tr>{props.children}</Tr>,
-  th: props => <Th>{props.children}</Th>,
-  td: props => <Td>{props.children}</Td>,
-  code: props => <InlineCode>{props.children}</InlineCode>,
+  table: props => <Table className="not-prose">{props.children}</Table>,
+  thead: props => <TableHeader>{props.children}</TableHeader>,
+  tr: props => <TableRow className="not-prose">{props.children}</TableRow>,
+  th: props => <TableHead>{props.children}</TableHead>,
+  tbody: props => <TableBody className="not-prose">{props.children}</TableBody>,
+  td: props => <TableCell className="not-prose">{props.children}</TableCell>,
+  code: props => (
+    <TypographyCode className="not-prose">{props.children}</TypographyCode>
+  ),
+  p: props => <TypographyP>{props.children}</TypographyP>,
+  div: props => {
+    if ('data-callout' in props) {
+      const type = (props as any)['data-callout-type'];
+      return (
+        <Alert className="mt-4" variant={type}>
+          {props.children}
+        </Alert>
+      );
+    }
+
+    if ('data-callout-title' in props) {
+      return <AlertTitle>{props.children}</AlertTitle>;
+    }
+
+    if ('data-callout-body' in props) {
+      return <AlertDescription>{props.children}</AlertDescription>;
+    }
+
+    return <div>{props.children}</div>;
+  },
+  details: props => <Alert>{props.children}</Alert>,
+  summary: props => <AlertTitle>{props.children}</AlertTitle>,
 });
 
 const Markdown = ({
