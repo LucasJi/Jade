@@ -116,7 +116,7 @@ const TreeContext = createContext<{
 });
 
 const Tree: React.FC<TreeProps> = ({ className }) => {
-  const [data, setData] = useState<TreeNode[]>([]);
+  const [treeNodes, setTreeNodes] = useState<TreeNode[]>([]);
   let { id } = useParams<{ id: string }>();
   id = decodeURIComponent(id);
 
@@ -160,7 +160,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
   };
 
   const selectOpenedPost = () => {
-    contains(data);
+    contains(treeNodes);
     setExpandedNodeIds(new Set([...expandedNodeIds]));
     setTimeout(() => {
       if (viewportRef !== null && viewportRef.current !== null) {
@@ -174,9 +174,14 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`)
       .then(res => res.json())
-      .then(data => setData(data))
-      .then(() => selectOpenedPost());
+      .then(data => {
+        setTreeNodes(data);
+      });
   }, [id]);
+
+  useEffect(() => {
+    selectOpenedPost();
+  }, [treeNodes]);
 
   return (
     <div className={clsx('px-2', className)}>
@@ -198,7 +203,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
           size="icon"
           className="h-5 w-5 rounded-full"
           onClick={() => {
-            expandAll(data);
+            expandAll(treeNodes);
             setExpandedNodeIds(new Set([...expandedNodeIds]));
           }}
         >
@@ -222,7 +227,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
       <ScrollArea className="w-full h-full mt-2" viewportRef={viewportRef}>
         <ul>
           <TreeContext.Provider value={{ expandedNodeIds, id }}>
-            {data.map((node, idx) => (
+            {treeNodes.map((node, idx) => (
               <TreeNodeComponent key={`${idx}-${node.name}`} node={node} />
             ))}
           </TreeContext.Provider>
