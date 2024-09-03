@@ -24,19 +24,21 @@ import {
   HTMLAttributes,
   ReactElement,
   cloneElement,
-  forwardRef,
 } from 'react';
 
 interface CalloutTitleProps extends HTMLAttributes<HTMLElement> {
   title: string;
+  variant?: VariantType;
+  isFoldable?: boolean;
 }
 
 const CalloutTitle: FC<CalloutTitleProps> = ({
   className,
   title,
-  ...props
+  variant,
+  isFoldable,
 }) => {
-  const variantKey: string = (props as any).variant;
+  const variantKey = variant || 'default';
   let Icon: LucideIcon = Info;
 
   for (const key of Object.keys(variants)) {
@@ -55,18 +57,23 @@ const CalloutTitle: FC<CalloutTitleProps> = ({
     }
   }
 
-  return (
-    <summary
-      className={cn(
-        'flex cursor-pointer select-none items-center font-bold',
-        className,
-      )}
-      {...props}
-    >
+  const _className = cn(
+    'flex select-none items-center font-bold',
+    { 'cursor-pointer': isFoldable },
+    className,
+  );
+
+  return isFoldable ? (
+    <summary className={_className}>
       <Icon size={16} />
       <span className="ml-[4px]">{title}</span>
       <ChevronRight className="ml-3 transition-transform" size={16} />
     </summary>
+  ) : (
+    <div className={_className}>
+      <Icon size={16} />
+      <span className="ml-[4px]">{title}</span>
+    </div>
   );
 };
 
@@ -199,30 +206,45 @@ const calloutVariants = cva<{
   },
 );
 
-const Callout = forwardRef<
-  HTMLDetailsElement,
-  DetailsHTMLAttributes<HTMLDetailsElement> & { variant: VariantType }
->(({ className, variant, children, ...props }, ref) => {
+const Callout: FC<
+  HTMLAttributes<HTMLDivElement> & {
+    variant: VariantType;
+    isFoldable?: boolean;
+    defaultFolded?: boolean;
+  }
+> = ({
+  className,
+  variant,
+  isFoldable = false,
+  defaultFolded,
+  children,
+  ...props
+}) => {
   const childrenWithProps = Children.map(children, child => {
-    console.log(child);
     if ((child as ReactElement).type === CalloutTitle) {
-      console.log('callout variant', variant);
-      return cloneElement(child as ReactElement, { variant });
+      return cloneElement(child as ReactElement, {
+        variant,
+        isFoldable,
+      });
     }
 
     return child;
   });
-
-  return (
+  const _className = cn(calloutVariants({ variant }), className);
+  return isFoldable ? (
     <details
-      className={cn(calloutVariants({ variant }), className)}
-      ref={ref}
-      {...props}
+      className={_className}
+      open={
+        defaultFolded ??
+        (props as DetailsHTMLAttributes<HTMLDetailsElement>).open
+      }
     >
       {childrenWithProps}
     </details>
+  ) : (
+    <div className={_className}>{childrenWithProps}</div>
   );
-});
+};
 Callout.displayName = 'Callout';
 
 export { Callout, CalloutBody, CalloutTitle, type CalloutTitleProps };

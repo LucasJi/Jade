@@ -1,16 +1,14 @@
 import defu from 'defu';
-import type { ElementContent, Properties } from 'hast';
+import type { Properties } from 'hast';
 import type {
   BlockContent,
   Blockquote,
   DefinitionContent,
-  Html,
   Paragraph,
   Root,
 } from 'mdast';
 import type { Plugin } from 'unified';
 import { Node, visit } from 'unist-util-visit';
-import { VFile } from 'vfile';
 
 export type Options = {
   /**
@@ -42,66 +40,6 @@ export type Options = {
   title?: NodeOptions | ((callout: Callout) => NodeOptions);
 
   /**
-   * The inner title node of the callout.
-   *
-   * This node is used to wrap the text content of the title.
-   *
-   * - If `undefined`, title text is not wrapped.
-   *
-   *   Example output:
-   *
-   *   ```html
-   *   <div data-callout data-callout-type="abstract">
-   *     <div data-callout-title>
-   *       <div data-callout-icon>😎</div>
-   *       Title
-   *     </div>
-   *   </div>
-   *   ```
-   *
-   * - If a `object`, the object used as a node to wrap the title text.
-   *
-   *   Example output with options `{ tagName: "div", properties: { dataCalloutTitleInner: true } }`:
-   *
-   *   ```html
-   *   <div data-callout data-callout-type="abstract">
-   *     <div data-callout-title>
-   *       <div data-callout-icon>😎</div>
-   *       <div data-callout-title-inner>Title</div>
-   *     </div>
-   *   </div>
-   *   ```
-   *
-   * @example
-   * () => undefined  // the title text will not be wrapped
-   *
-   * @example
-   * // the title text will be wrapped in a div with the class "callout-title-inner"
-   * () => ({
-   *   tagName: "div",
-   *   properties: { className: "callout-title-inner" },
-   * })
-   *
-   * @default
-   * (callout, options) =>
-   *   options.icon(callout) == null && options.foldIcon(callout) == null
-   *     ? undefined
-   *     : {
-   *         tagName: "div",
-   *         properties: {
-   *           dataCalloutTitleInner: true,
-   *         },
-   *       },
-   */
-  titleInner?:
-    | NodeOptions
-    | undefined
-    | ((
-        callout: Callout,
-        options: Required<Callable<Options>>,
-      ) => NodeOptions | undefined);
-
-  /**
    * The body node of the callout.
    *
    * @default
@@ -113,87 +51,6 @@ export type Options = {
    * })
    */
   body?: NodeOptions | ((callout: Callout) => NodeOptions);
-
-  /**
-   * The icon node of the callout.
-   *
-   * The icon node is added in the title node before the title text.
-   *
-   * - If `undefined`, no icon is added.
-   * - If a `string`, the string is added as HTML in the title node before the title text.
-   * - If a `object`, the object is added as a node before the title text.
-   *
-   * @example
-   * () => '<svg class="lucide-pencil" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497zM15 5l4 4"/></svg>' // lucide:pencil
-   *
-   * @example
-   * (callout) => ({
-   *   tagName: "div",
-   *   properties: {
-   *     className: "callout-icon",
-   *   },
-   *   children:
-   *     callout.type === "warn"
-   *       ? '<svg class="lucide-circle-alert" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>' // lucide:circle-alert
-   *       : '<svg class="lucide-pencil" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497zM15 5l4 4"/></svg>', // lucide:pencil
-   * })
-   *
-   * @default
-   * () => undefined
-   */
-  icon?:
-    | NodeOptionsWithChildren
-    | string
-    | undefined
-    | ((callout: Callout) => NodeOptionsWithChildren | string | undefined);
-
-  /**
-   * The fold icon node of the callout.
-   *
-   * The fold icon node is added in the title node after the title text.
-   *
-   * - If `undefined`, no fold icon is added.
-   * - If a `string`, the string is added as HTML in the title node after the title text.
-   * - If a `object`, the object is added as a node after the title text.
-   *
-   * @example
-   * (callout) =>
-   *   callout.isFoldable
-   *     ? {
-   *         tagName: "div",
-   *         properties: {
-   *           className: "callout-fold-icon",
-   *         },
-   *         children:
-   *           '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>', // lucide:chevron-right
-   *       }
-   *     : undefined,
-   *
-   * @default
-   * () => undefined
-   */
-  foldIcon?:
-    | NodeOptionsWithChildren
-    | string
-    | undefined
-    | ((callout: Callout) => NodeOptionsWithChildren | string | undefined);
-
-  /**
-   * A list of callout types that are supported.
-   * - If `undefined`, all callout types are supported. This means that this plugin will not check if the given callout type is in `callouts` and never call `onUnknownCallout`.
-   * - If a list, only the callout types in the list are supported. This means that if the given callout type is not in `callouts`, this plugin will call `onUnknownCallout`.
-   * @example ["info", "warning", "danger"]
-   * @default undefined
-   */
-  callouts?: string[] | null;
-
-  /**
-   * A function that is called when the given callout type is not in `callouts`.
-   *
-   * - If the function returns `undefined`, the callout is ignored. This means that the callout is rendered as a normal blockquote.
-   * - If the function returns a `Callout`, the callout is replaced with the returned `Callout`.
-   */
-  onUnknownCallout?: (callout: Callout, file: VFile) => Callout | undefined;
 };
 
 export type NodeOptions = {
@@ -221,36 +78,6 @@ export type Callout = {
   title?: string;
 };
 
-export type NodeOptionsWithChildren = NodeOptions & {
-  /**
-   * The HTML children of the node.
-   *
-   * - If a `string`, the string is added as raw HTML in the node.
-   * - If a `object[]`, the object array is added as a hast node.
-   *
-   * @see https://github.com/syntax-tree/mdast?tab=readme-ov-file#html
-   * @see https://github.com/syntax-tree/hast?tab=readme-ov-file#element
-   *
-   * @example '<span class="icon">📝</span>'
-   *
-   * @example
-   * [
-   *   {
-   *     type: "element",
-   *     tagName: "span",
-   *     properties: { className: ["icon"] },
-   *     children: [
-   *       {
-   *         type: "text",
-   *         value: "📝",
-   *       },
-   *     ],
-   *   }
-   * ]
-   */
-  children: ElementContent[] | string;
-};
-
 export type ExtractFunction<T> = Extract<T, (...args: any) => any>;
 
 export type Callable<T> = {
@@ -261,39 +88,31 @@ export type Callable<T> = {
 
 export const defaultOptions: Required<Options> = {
   root: callout => ({
-    tagName: callout.isFoldable ? 'details' : 'div',
+    tagName: 'div',
     properties: {
       dataCallout: true,
       dataCalloutType: formatForAttribute(callout.type),
-      open:
+      dataIsFoldable: callout.isFoldable,
+      dataDefaultFolded:
         callout.defaultFolded === undefined ? false : !callout.defaultFolded,
     },
   }),
   title: callout => ({
-    tagName: callout.isFoldable ? 'summary' : 'div',
+    tagName: 'div',
     properties: {
       dataCalloutTitle: true,
+      dataIsFoldable: callout.isFoldable,
+      dataCalloutType: formatForAttribute(callout.type),
+      dataDefaultFolded:
+        callout.defaultFolded === undefined ? false : !callout.defaultFolded,
     },
   }),
-  titleInner: (callout, options) =>
-    options.icon(callout) == null && options.foldIcon(callout) == null
-      ? undefined
-      : {
-          tagName: 'div',
-          properties: {
-            dataCalloutTitleInner: true,
-          },
-        },
-  icon: () => undefined,
-  foldIcon: () => undefined,
   body: () => ({
     tagName: 'div',
     properties: {
       dataCalloutBody: true,
     },
   }),
-  callouts: null,
-  onUnknownCallout: () => undefined,
 };
 
 const initOptions = (options?: Options) => {
@@ -302,9 +121,7 @@ const initOptions = (options?: Options) => {
   return Object.fromEntries(
     Object.entries(defaultedOptions).map(([key, value]) => {
       if (
-        ['root', 'title', 'titleInner', 'body', 'icon', 'foldIcon'].includes(
-          key,
-        ) &&
+        ['root', 'title', 'titleInner', 'body'].includes(key) &&
         typeof value !== 'function'
       ) {
         return [key, () => value];
@@ -347,23 +164,6 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         return;
       }
 
-      // Handle unknown callout type
-      if (
-        options.callouts != null &&
-        !options.callouts.includes(calloutData.type)
-      ) {
-        const newCallout = options.onUnknownCallout(calloutData, file);
-        if (newCallout == null) {
-          return;
-        }
-
-        calloutData.type = newCallout.type;
-        calloutData.isFoldable = newCallout.isFoldable;
-        if (newCallout.title != null) {
-          calloutData.title = newCallout.title;
-        }
-      }
-
       // Generate callout root node
       node.data = {
         ...node.data,
@@ -395,10 +195,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
 
       // Generate callout title node
       const titleNode: Blockquote | Paragraph = {
-        type:
-          options.titleInner(calloutData, options) == null
-            ? 'paragraph'
-            : 'blockquote',
+        type: 'paragraph',
         data: {
           hName: options.title(calloutData).tagName,
           hProperties: {
@@ -408,23 +205,8 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         children: [],
       };
 
-      // Add icon node before the title text
-      const iconNode = options.icon(calloutData);
-      if (iconNode != null) {
-        titleNode.children.push(toHtml(iconNode));
-      }
-
-      // Add title text node
-      const titleInnerNode: Paragraph = {
-        type: 'paragraph',
-        data: {
-          hName: options.titleInner(calloutData, options)?.tagName,
-          hProperties: options.titleInner(calloutData, options)?.properties,
-        },
-        children: [],
-      };
       if (calloutData.title != null) {
-        titleInnerNode.children.push({
+        titleNode.children.push({
           type: 'text',
           value: calloutData.title,
         });
@@ -433,7 +215,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         for (const [i, child] of paragraphNode.children.slice(1).entries()) {
           // Add all nodes after the break as callout body
           if (child.type === 'break') {
-            titleInnerNode.children.push(child); // Add the line break as callout title
+            titleNode.children.push(child); // Add the line break as callout title
             bodyNode[0].children.push(
               ...paragraphNode.children.slice(i + 1 + 1),
             ); // +1 for the callout type node, +1 for the break
@@ -442,7 +224,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
 
           // All inline node before the line break is added as callout title
           if (child.type !== 'text') {
-            titleInnerNode.children.push(child);
+            titleNode.children.push(child);
             continue;
           }
 
@@ -450,7 +232,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
           const [titleText, ...bodyTextLines] = child.value.split('\n');
           if (titleText) {
             // Add the part before the line break as callout title
-            titleInnerNode.children.push({
+            titleNode.children.push({
               type: 'text',
               value: titleText,
             });
@@ -473,17 +255,6 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         // Add all nodes after the current node as callout body
         bodyNode[0].children.push(...paragraphNode.children.slice(1));
       }
-      if (titleNode.type === 'paragraph') {
-        titleNode.children.push(...titleInnerNode.children);
-      } else {
-        titleNode.children.push(titleInnerNode);
-      }
-
-      // Add fold icon node after the title text
-      const foldIconNode = options.foldIcon(calloutData);
-      if (foldIconNode != null) {
-        titleNode.children.push(toHtml(foldIconNode));
-      }
 
       // Add body and title to callout root node children
       node.children = [titleNode];
@@ -500,34 +271,6 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         });
       }
     });
-  };
-};
-
-export const toHtml = (from: NodeOptionsWithChildren | string): Html => {
-  if (typeof from === 'string') {
-    return {
-      type: 'html',
-      value: from,
-    };
-  }
-  if (typeof from.children === 'string') {
-    return {
-      type: 'html',
-      data: {
-        hName: from.tagName,
-        hProperties: from.properties,
-      },
-      value: from.children,
-    };
-  }
-  return {
-    type: 'html',
-    data: {
-      hName: from.tagName,
-      hProperties: from.properties,
-      hChildren: from.children,
-    },
-    value: '',
   };
 };
 

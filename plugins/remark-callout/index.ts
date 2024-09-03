@@ -1,9 +1,8 @@
 export {
-  type Callout,
-  type Options,
-  type NodeOptions,
-  type NodeOptionsWithChildren,
+  remarkCallout as default,
   defaultOptions,
   remarkCallout,
-  remarkCallout as default,
+  type Callout,
+  type NodeOptions,
+  type Options,
 } from './plugin';

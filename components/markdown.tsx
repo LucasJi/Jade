@@ -110,11 +110,30 @@ const components = (
   div: props => {
     if ('data-callout' in props) {
       const type = (props as any)['data-callout-type'];
-      return <Callout variant={type}>{props.children}</Callout>;
+      const isFoldable = (props as any)['data-is-foldable'] !== undefined;
+      const defaultFolded = (props as any)['data-default-folded'] !== undefined;
+      return (
+        <Callout
+          variant={type}
+          isFoldable={isFoldable}
+          defaultFolded={defaultFolded}
+        >
+          {props.children}
+        </Callout>
+      );
     }
 
     if ('data-callout-title' in props) {
-      return <CalloutTitle title={props.children as string} />;
+      const type = (props as any)['data-callout-type'];
+      const isFoldable = (props as any)['data-is-foldable'] !== undefined;
+      const defaultFolded = (props as any)['data-default-folded'] !== undefined;
+      return (
+        <CalloutTitle
+          title={props.children as string}
+          variant={type}
+          isFoldable={isFoldable}
+        />
+      );
     }
 
     if ('data-callout-body' in props) {
@@ -122,14 +141,6 @@ const components = (
     }
 
     return <div>{props.children}</div>;
-  },
-  summary: props => <CalloutTitle title={props.children as string} />,
-  details: props => {
-    let variant = 'default';
-    if ('data-callout' in props) {
-      variant = (props as any)['data-callout-type'];
-    }
-    return <Callout variant={variant}>{props.children}</Callout>;
   },
 });
 
