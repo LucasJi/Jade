@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
-import { revalidateTag } from 'next/cache';
-import { PathItem } from '@types';
 import { MD_EXT } from '@/lib/constants';
 import { env } from '@/lib/env';
+import { PathItem } from '@types';
+import { revalidateTag } from 'next/cache';
 
 export const githubRequest = (url: string, tag: string = '') =>
   fetch(

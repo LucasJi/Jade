@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { IDS } from '@/lib/constants';
 import { getRedisClient } from '@/lib/redis-utils';
+import Link from 'next/link';
 
 export default async function Page() {
   const redis = getRedisClient();

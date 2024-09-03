@@ -4,8 +4,8 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 import { MdGroupWork } from 'react-icons/md';
 
-import { Cluster, FiltersState } from './types';
 import Panel from './panel';
+import { Cluster, FiltersState } from './types';
 
 const ClustersPanel: FC<{
   clusters: Cluster[];

@@ -17,8 +17,8 @@ import {
 import { GrClose } from 'react-icons/gr';
 import { Settings } from 'sigma/settings';
 
+import data from 'public/dataset.json';
 import { drawHover, drawLabel } from './canvas-utils';
-import { Dataset, FiltersState } from './types';
 import ClustersPanel from './clusters-panel';
 import DescriptionPanel from './description-panel';
 import GraphDataController from './graph-data-controller';
@@ -26,9 +26,9 @@ import GraphEventsController from './graph-events-controller';
 import GraphSettingsController from './graph-settings-controller';
 import GraphTitle from './graph-title';
 import SearchField from './search-field';
-import TagsPanel from './tags-panel';
-import data from 'public/dataset.json';
 import './style.css';
+import TagsPanel from './tags-panel';
+import { Dataset, FiltersState } from './types';
 
 const Root: FC = () => {
   const [showContents, setShowContents] = useState(false);

@@ -1,3 +1,5 @@
+import { POST_ID, POST_PATH } from '@/lib/constants';
+import { getRedisClient } from '@/lib/redis-utils';
 import { Post } from '@/types';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -9,8 +11,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-import { getRedisClient } from '@/lib/redis-utils';
-import { POST_ID, POST_PATH } from '@/lib/constants';
 
 const redis = getRedisClient();
 

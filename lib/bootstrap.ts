@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
 import { IDS, POST_ID, POST_PATH, POSTS_TREE, SEP } from '@/lib/constants';
-import { PathItem, Post } from '@types';
-import fs from 'fs';
-import { join } from 'path';
-import { getGitTree, githubRequest } from '@/lib/github-utils';
 import { env } from '@/lib/env';
+import { getGitTree, githubRequest } from '@/lib/github-utils';
+import { getRedisClient } from '@/lib/redis-utils';
 import {
   base64Decode,
   buildPostsTree,
@@ -12,9 +10,11 @@ import {
   murmurhash,
   resolvePost,
 } from '@/lib/server-utils';
-import { getRedisClient } from '@/lib/redis-utils';
-import { fromMarkdown } from 'mdast-util-from-markdown';
 import { fromMarkdownWikilink, syntax } from '@/plugins/remark-wikilink';
+import { PathItem, Post } from '@types';
+import fs from 'fs';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { join } from 'path';
 import { visit } from 'unist-util-visit';
 
 const { dir } = env;

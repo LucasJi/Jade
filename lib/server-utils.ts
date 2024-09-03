@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
+import { MD_EXT_REG, MD_HEADING_REG, MD_TITLE_REG, SEP } from '@/lib/constants';
+import { PathItem, Post, PostGraph, TreeNode } from '@types';
 import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
-import { PathItem, Post, PostGraph, TreeNode } from '@types';
-import remarkFrontmatter from 'remark-frontmatter';
 import { remark } from 'remark';
+import remarkFrontmatter from 'remark-frontmatter';
 import { matter } from 'vfile-matter';
-import { MD_EXT_REG, MD_HEADING_REG, MD_TITLE_REG, SEP } from '@/lib/constants';
 
 export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
   const tree: TreeNode = {

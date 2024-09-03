@@ -1,6 +1,6 @@
 import { PostGraph } from '@types';
-import ForceDirectedGraph from './force-directed-graph';
 import clsx from 'clsx';
+import ForceDirectedGraph from './force-directed-graph';
 
 const GraphView = ({
   postId,

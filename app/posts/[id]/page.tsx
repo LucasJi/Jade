@@ -1,9 +1,9 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
-import { notFound } from 'next/navigation';
 import { IDS, POST_ID } from '@/lib/constants';
-import { Post } from '@types';
 import { getRedisClient } from '@/lib/redis-utils';
+import { Post } from '@types';
+import { notFound } from 'next/navigation';
 
 const redis = getRedisClient();
 

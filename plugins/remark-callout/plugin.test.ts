@@ -1,8 +1,6 @@
-import { beforeAll, describe, expect, test } from 'vitest';
-import { JSDOM } from 'jsdom';
-import { Callout, type Options, parseCallout, remarkCallout } from './plugin';
 import dedent from 'dedent';
 import type * as hast from 'hast';
+import { JSDOM } from 'jsdom';
 import type * as mdast from 'mdast';
 import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
@@ -11,6 +9,8 @@ import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+import { beforeAll, describe, expect, test } from 'vitest';
+import { Callout, parseCallout, remarkCallout, type Options } from './plugin';
 
 const process = async (md: string, options?: Options) => {
   let hast: hast.Node;

@@ -1,4 +1,4 @@
-import { VFile } from 'vfile';
+import defu from 'defu';
 import type { ElementContent, Properties } from 'hast';
 import type {
   BlockContent,
@@ -8,9 +8,9 @@ import type {
   Paragraph,
   Root,
 } from 'mdast';
-import { Node, visit } from 'unist-util-visit';
-import defu from 'defu';
 import type { Plugin } from 'unified';
+import { Node, visit } from 'unist-util-visit';
+import { VFile } from 'vfile';
 
 export type Options = {
   /**

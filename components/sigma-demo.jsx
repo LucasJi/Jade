@@ -1,9 +1,9 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
 import chroma from 'chroma-js';
 import Graph from 'graphology';
 import ForceSupervisor from 'graphology-layout-force/worker';
+import { useLayoutEffect, useRef } from 'react';
 import Sigma from 'sigma';
 import { v4 as uuid } from 'uuid';
 

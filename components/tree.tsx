@@ -1,22 +1,22 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { TreeNode, TreeProps } from '@types';
+import clsx from 'clsx';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, {
-  createContext,
   FC,
+  createContext,
   useContext,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from 'react';
-import clsx from 'clsx';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { VscTarget } from 'react-icons/vsc';
-import { Button } from '@/components/ui/button';
 import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
+import { VscTarget } from 'react-icons/vsc';
 
 const DEFAULT_ICON_SIZE = 16;
 

@@ -1,13 +1,5 @@
-import {
-  Children,
-  cloneElement,
-  DetailsHTMLAttributes,
-  FC,
-  forwardRef,
-  HTMLAttributes,
-  ReactElement,
-} from 'react';
 import { cn } from '@/lib/utils';
+import { cva } from 'class-variance-authority';
 import {
   Bug,
   Check,
@@ -25,7 +17,15 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { cva } from 'class-variance-authority';
+import {
+  Children,
+  DetailsHTMLAttributes,
+  FC,
+  HTMLAttributes,
+  ReactElement,
+  cloneElement,
+  forwardRef,
+} from 'react';
 
 interface CalloutTitleProps extends HTMLAttributes<HTMLElement> {
   title: string;
@@ -225,4 +225,4 @@ const Callout = forwardRef<
 });
 Callout.displayName = 'Callout';
 
-export { Callout, CalloutTitle, CalloutBody, type CalloutTitleProps };
+export { Callout, CalloutBody, CalloutTitle, type CalloutTitleProps };

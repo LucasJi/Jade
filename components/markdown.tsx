@@ -1,18 +1,5 @@
-import remarkJade from '@/plugins/remark-jade';
-import { remarkWikilink } from '@/plugins/remark-wikilink';
-import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
-import { Post } from '@/types';
-import Slugger from 'github-slugger';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import rehypeRaw from 'rehype-raw';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import Wikilink from './wikilink';
-import clsx from 'clsx';
+import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { remarkCallout } from '@/plugins/remark-callout';
-import { TypographyCode, TypographyP } from '@/components/ui/typography';
 import {
   Table,
   TableBody,
@@ -21,7 +8,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
+import { TypographyCode, TypographyP } from '@/components/ui/typography';
+import { remarkCallout } from '@/plugins/remark-callout';
+import remarkJade from '@/plugins/remark-jade';
+import { remarkWikilink } from '@/plugins/remark-wikilink';
+import { Post } from '@/types';
+import clsx from 'clsx';
+import Slugger from 'github-slugger';
+import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import rehypeRaw from 'rehype-raw';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+import Wikilink from './wikilink';
 
 const slugs = new Slugger();
 

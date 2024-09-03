@@ -1,7 +1,5 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
-import { Application, Container, Graphics } from 'pixi.js';
 import {
   drag,
   forceCollide,
@@ -14,6 +12,8 @@ import {
   zoom,
   zoomIdentity,
 } from 'd3';
+import { Application, Container, Graphics } from 'pixi.js';
+import { useLayoutEffect, useRef } from 'react';
 
 const hexToRgb = hex => {
   const bigint = parseInt(String(hex).slice(1), 16);
