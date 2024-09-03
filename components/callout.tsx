@@ -1,4 +1,12 @@
-import { DetailsHTMLAttributes, forwardRef, HTMLAttributes } from 'react';
+import {
+  Children,
+  cloneElement,
+  DetailsHTMLAttributes,
+  FC,
+  forwardRef,
+  HTMLAttributes,
+  ReactElement,
+} from 'react';
 import { cn } from '@/lib/utils';
 import {
   Bug,
@@ -10,6 +18,7 @@ import {
   Flame,
   Info,
   List,
+  LucideIcon,
   Pencil,
   Quote,
   TriangleAlert,
@@ -22,30 +31,49 @@ interface CalloutTitleProps extends HTMLAttributes<HTMLElement> {
   title: string;
 }
 
-const CalloutTitle = forwardRef<HTMLElement, CalloutTitleProps>(
-  ({ className, title, ...props }, ref) => (
+const CalloutTitle: FC<CalloutTitleProps> = ({
+  className,
+  title,
+  ...props
+}) => {
+  const variantKey: string = (props as any).variant;
+  let Icon: LucideIcon = Info;
+
+  for (const key of Object.keys(variants)) {
+    const variant = variants[key as VariantKey];
+    if (variantKey === key) {
+      Icon = variant.icon;
+      break;
+    }
+
+    if (
+      (variant as any).alias &&
+      ((variant as any).alias as Array<string>).includes(variantKey)
+    ) {
+      Icon = variant.icon;
+      break;
+    }
+  }
+
+  return (
     <summary
       className={cn(
         'flex items-center font-bold cursor-pointer select-none',
         className,
       )}
-      ref={ref}
       {...props}
     >
-      <Info size={16} />
+      <Icon size={16} />
       <span className="ml-[4px]">{title}</span>
       <ChevronRight className="ml-3 transition-transform" size={16} />
     </summary>
-  ),
-);
-CalloutTitle.displayName = 'CalloutTitle';
+  );
+};
 
-const CalloutBody = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div className={cn('mt-4 p-0', className)} ref={ref} {...props} />
-  ),
-);
-CalloutBody.displayName = 'CalloutBody';
+const CalloutBody: FC<HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...props
+}) => <div className={cn('mt-4 p-0', className)} {...props} />;
 
 const generateVariant = (variant: string) =>
   `border-${variant}/50 text-${variant} dark:border-${variant} [&>svg]:text-${variant}`;
@@ -53,6 +81,7 @@ const generateVariant = (variant: string) =>
 const variants = {
   note: {
     icon: Pencil,
+    alias: ['default'],
   },
   abstract: {
     icon: ClipboardList,
@@ -100,7 +129,7 @@ const variants = {
 type Variants = typeof variants;
 
 // 提取 Variant 中所有的键和值
-type Variant = keyof Variants;
+type VariantKey = keyof Variants;
 
 // 提取每个对象中的 alias 数组的元素类型
 type AliasUnion<T> = T extends { alias: (infer U)[] } ? U : never;
@@ -111,13 +140,13 @@ type VariantAlias = {
 }[keyof Variants];
 
 // 合并 name 和 alias 成联合类型
-type VariantType = Variant | VariantAlias | 'default';
+type VariantType = VariantKey | VariantAlias;
 
 const generateVariants = (): { [k: VariantType]: string } => {
   const result: { [k: VariantType]: string } = {};
 
   Object.keys(variants).forEach(k => {
-    const variant = variants[k as Variant];
+    const variant = variants[k as VariantKey];
     result[k as VariantType] = generateVariant(k);
 
     if ((variant as any).alias) {
@@ -137,7 +166,6 @@ const calloutVariants = cva<{
   {
     variants: {
       variant: {
-        default: 'bg-background text-foreground',
         ...generateVariants(),
       },
     },
@@ -150,13 +178,25 @@ const calloutVariants = cva<{
 const Callout = forwardRef<
   HTMLDetailsElement,
   DetailsHTMLAttributes<HTMLDetailsElement> & { variant: VariantType }
->(({ className, variant, ...props }, ref) => (
-  <details
-    className={cn(calloutVariants({ variant }), className)}
-    ref={ref}
-    {...props}
-  />
-));
+>(({ className, variant, children, ...props }, ref) => {
+  const childrenWithProps = Children.map(children, child => {
+    if ((child as ReactElement).type === CalloutTitle) {
+      return cloneElement(child as ReactElement, { variant });
+    }
+
+    return child;
+  });
+
+  return (
+    <details
+      className={cn(calloutVariants({ variant }), className)}
+      ref={ref}
+      {...props}
+    >
+      {childrenWithProps}
+    </details>
+  );
+});
 Callout.displayName = 'Callout';
 
 export { Callout, CalloutTitle, CalloutBody, type CalloutTitleProps };

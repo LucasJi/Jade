@@ -3,7 +3,7 @@ import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 export default async function Home() {
   return (
     <div className="flex w-full items-center flex-col">
-      <Callout variant="quote">
+      <Callout variant="info">
         <CalloutTitle title="Outer Callout" />
         <CalloutBody>
           <Callout variant="error">
@@ -19,6 +19,13 @@ export default async function Home() {
             </CalloutBody>
           </Callout>
           <p>Outer Callout Body</p>
+        </CalloutBody>
+      </Callout>
+
+      <Callout variant="important">
+        <CalloutTitle title="Callout Title" />
+        <CalloutBody>
+          <p>Callout Body</p>
         </CalloutBody>
       </Callout>
     </div>
