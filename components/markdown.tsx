@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 
 const slugs = new Slugger();
 
@@ -110,25 +110,27 @@ const components = (
   div: props => {
     if ('data-callout' in props) {
       const type = (props as any)['data-callout-type'];
-      return (
-        <Alert className="mt-4" variant={type}>
-          {props.children}
-        </Alert>
-      );
+      return <Callout variant={type}>{props.children}</Callout>;
     }
 
     if ('data-callout-title' in props) {
-      return <AlertTitle>{props.children}</AlertTitle>;
+      return <CalloutTitle title={props.children as string} />;
     }
 
     if ('data-callout-body' in props) {
-      return <AlertDescription>{props.children}</AlertDescription>;
+      return <CalloutBody>{props.children}</CalloutBody>;
     }
 
     return <div>{props.children}</div>;
   },
-  details: props => <Alert>{props.children}</Alert>,
-  summary: props => <AlertTitle>{props.children}</AlertTitle>,
+  summary: props => <CalloutTitle title={props.children as string} />,
+  details: props => {
+    let variant = 'default';
+    if ('data-callout' in props) {
+      variant = (props as any)['data-callout-type'];
+    }
+    return <Callout variant={variant}>{props.children}</Callout>;
+  },
 });
 
 const Markdown = ({

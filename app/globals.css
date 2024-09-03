@@ -51,14 +51,14 @@
     /* callout colors */
     --callout-bug: var(--obsidian-color-red-rgba);
     --callout-note: var(--obsidian-color-blue-rgba);
-    --callout-error: var(--obsidian-color-red-rgba);
+    --callout-danger: var(--obsidian-color-red-rgba);
     --callout-example: var(--obsidian-color-purple-rgba);
-    --callout-fail: var(--obsidian-color-red-rgba);
+    --callout-failure: var(--obsidian-color-red-rgba);
     --callout-important: var(--obsidian-color-cyan-rgba);
     --callout-info: var(--obsidian-color-blue-rgba);
     --callout-question: var(--obsidian-color-orange-rgba);
     --callout-success: var(--obsidian-color-green-rgba);
-    --callout-summary: var(--obsidian-color-cyan-rgba);
+    --callout-abstract: var(--obsidian-color-cyan-rgba);
     --callout-tip: var(--obsidian-color-cyan-rgba);
     --callout-todo: var(--obsidian-color-blue-rgba);
     --callout-warning: var(--obsidian-color-orange-rgba);

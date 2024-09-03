@@ -204,7 +204,9 @@ const Callout = forwardRef<
   DetailsHTMLAttributes<HTMLDetailsElement> & { variant: VariantType }
 >(({ className, variant, children, ...props }, ref) => {
   const childrenWithProps = Children.map(children, child => {
+    console.log(child);
     if ((child as ReactElement).type === CalloutTitle) {
+      console.log('callout variant', variant);
       return cloneElement(child as ReactElement, { variant });
     }
 
