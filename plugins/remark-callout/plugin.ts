@@ -346,6 +346,8 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
       if (calloutData == null) {
         return;
       }
+
+      // Handle unknown callout type
       if (
         options.callouts != null &&
         !options.callouts.includes(calloutData.type)
