@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TreeNode, TreeProps } from '@types';
 import clsx from 'clsx';
+import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, {
@@ -17,27 +18,6 @@ import React, {
 } from 'react';
 import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
 import { VscTarget } from 'react-icons/vsc';
-
-const DEFAULT_ICON_SIZE = 16;
-
-const FoldIcon: FC<{ isExpanded: boolean }> = ({ isExpanded }) => (
-  <svg
-    className={clsx('transition-transform', isExpanded && 'rotate-90')}
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    width={DEFAULT_ICON_SIZE}
-    height={DEFAULT_ICON_SIZE}
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="m8.25 4.5 7.5 7.5-7.5 7.5"
-    />
-  </svg>
-);
 
 const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   const { expandedNodeIds, id } = useContext(TreeContext);
@@ -59,8 +39,12 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   return node.isDir ? (
     <li className="mt-1">
       <button onClick={toggleExpand} className="flex items-center">
-        <FoldIcon isExpanded={isExpanded} />
-        <span className="ml-1 inline-block min-h-0 max-w-[200px] truncate text-base">
+        <ChevronRight
+          size={16}
+          className={clsx('transition-transform', { 'rotate-90': isExpanded })}
+          color="#5C5C5C"
+        />
+        <span className="ml-1 inline-block min-h-0 max-w-[200px] truncate text-base font-medium">
           {node.name}
         </span>
       </button>
@@ -89,7 +73,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   ) : (
     <li
       className={clsx(
-        'ml-1 mt-1 w-fit max-w-[200px] truncate hover:underline',
+        'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] hover:underline',
         node.id === id && 'underline',
       )}
       title={node.name}
