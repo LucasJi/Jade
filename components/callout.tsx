@@ -58,7 +58,7 @@ const CalloutTitle: FC<CalloutTitleProps> = ({
   return (
     <summary
       className={cn(
-        'flex items-center font-bold cursor-pointer select-none',
+        'flex cursor-pointer select-none items-center font-bold',
         className,
       )}
       {...props}
@@ -75,54 +75,78 @@ const CalloutBody: FC<HTMLAttributes<HTMLDivElement>> = ({
   ...props
 }) => <div className={cn('mt-4 p-0', className)} {...props} />;
 
-const generateVariant = (variant: string) =>
-  `border-${variant}/50 text-${variant} dark:border-${variant} [&>svg]:text-${variant}`;
-
 const variants = {
   note: {
     icon: Pencil,
     alias: ['default'],
+    class:
+      'border-note/50 text-note dark:border-note [&>svg]:text-note bg-note/10',
   },
   abstract: {
     icon: ClipboardList,
     alias: ['summary', 'tldr'],
+    class:
+      'border-abstract/50 text-abstract dark:border-abstract [&>svg]:text-abstract bg-abstract/10',
   },
   info: {
     icon: Info,
+    class:
+      'border-info/50 text-info dark:border-info [&>svg]:text-info bg-info/10',
   },
   todo: {
     icon: CircleCheck,
+    class:
+      'border-todo/50 text-todo dark:border-todo [&>svg]:text-todo bg-todo/10',
   },
   tip: {
     icon: Flame,
     alias: ['hint', 'important'],
+    class: 'border-tip/50 text-tip dark:border-tip [&>svg]:text-tip bg-tip/10',
   },
   success: {
     icon: Check,
     alias: ['check', 'done'],
+    class:
+      'border-success/50 text-success dark:border-success [&>svg]:text-success bg-success/10',
   },
-  question: { icon: CircleHelp, alias: ['faq', 'help'] },
+  question: {
+    icon: CircleHelp,
+    alias: ['faq', 'help'],
+    class:
+      'border-question/50 text-question dark:border-question [&>svg]:text-question bg-question/10',
+  },
   warning: {
     icon: TriangleAlert,
     alias: ['caution', 'attention'],
+    class:
+      'border-warning/50 text-warning dark:border-warning [&>svg]:text-warning bg-warning/10',
   },
   failure: {
     icon: X,
     alias: ['fail', 'missing'],
+    class:
+      'border-failure/50 text-failure dark:border-failure [&>svg]:text-failure bg-failure/10',
   },
   bug: {
     icon: Bug,
+    class: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug bg-bug/10',
   },
   danger: {
     icon: Zap,
     alias: ['error'],
+    class:
+      'border-danger/50 text-danger dark:border-danger [&>svg]:text-danger bg-danger/10',
   },
   example: {
     icon: List,
+    class:
+      'border-example/50 text-example dark:border-example [&>svg]:text-example bg-example/10',
   },
   quote: {
     icon: Quote,
     alias: ['cite'],
+    class:
+      'border-quote/50 text-quote dark:border-quote [&>svg]:text-quote bg-quote/10',
   },
 };
 
@@ -147,11 +171,11 @@ const generateVariants = (): { [k: VariantType]: string } => {
 
   Object.keys(variants).forEach(k => {
     const variant = variants[k as VariantKey];
-    result[k as VariantType] = generateVariant(k);
+    result[k as VariantType] = variant.class;
 
     if ((variant as any).alias) {
       (variant as any).alias.forEach((a: string) => {
-        result[a] = generateVariant(a);
+        result[a] = variant.class;
       });
     }
   });
@@ -162,7 +186,7 @@ const generateVariants = (): { [k: VariantType]: string } => {
 const calloutVariants = cva<{
   variant: { [k: VariantType]: string };
 }>(
-  'border rounded p-3 pl-6 [&>summary>.lucide-chevron-right]:open:rotate-90 w-[inherit] max-w-96 my-4',
+  'my-4 w-[inherit] max-w-96 rounded border p-3 pl-6 mix-blend-darken [&>summary>.lucide-chevron-right]:open:rotate-90',
   {
     variants: {
       variant: {
