@@ -8,7 +8,7 @@ import type {
   Paragraph,
   Root,
 } from 'mdast';
-import { visit, Node } from 'unist-util-visit';
+import { Node, visit } from 'unist-util-visit';
 import defu from 'defu';
 import type { Plugin } from 'unified';
 

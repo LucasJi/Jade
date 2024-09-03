@@ -29,10 +29,10 @@ export default async function Page({
 
     return (
       <div className="flex h-full">
-        <div className="w-2/3 px-4 min-h-[600px]">
+        <div className="min-h-[600px] w-2/3 px-4">
           <Markdown post={post} className="max-h-[620px]" />
         </div>
-        <div className="w-1/3 px-4 flex flex-col min-w-[332px] overflow-y-auto">
+        <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
           <Toc content={post?.content} className="mt-4" />
         </div>
       </div>

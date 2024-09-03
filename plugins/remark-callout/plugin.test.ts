@@ -1,6 +1,6 @@
-import { describe, expect, test, beforeAll } from 'vitest';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { JSDOM } from 'jsdom';
-import { parseCallout, type Options, remarkCallout, Callout } from './plugin';
+import { Callout, type Options, parseCallout, remarkCallout } from './plugin';
 import dedent from 'dedent';
 import type * as hast from 'hast';
 import type * as mdast from 'mdast';

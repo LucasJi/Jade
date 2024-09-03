@@ -18,7 +18,7 @@ const GlobalGraphView = ({ className = '' }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={clsx('w-fit h-fit', className)}>
+    <div className={clsx('h-fit w-fit', className)}>
       <Button
         // onClick={onOpen}
         // isIconOnly

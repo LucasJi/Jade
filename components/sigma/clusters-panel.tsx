@@ -60,7 +60,7 @@ const ClustersPanel: FC<{
         <>
           <MdGroupWork className="text-muted" /> Clusters
           {visibleClustersCount < clusters.length ? (
-            <span className="text-muted text-small">
+            <span className="text-small text-muted">
               {' '}
               ({visibleClustersCount} / {clusters.length})
             </span>

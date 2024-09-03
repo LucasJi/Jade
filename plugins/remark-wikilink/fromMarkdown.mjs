@@ -8,16 +8,16 @@ function fromMarkdown(opts = {}) {
 
   function enterWikilink(token) {
     this.enter(
-      {
-        type: 'wikilink',
-        value: null,
-        data: {
-          alias: null,
-          permalink: null,
-          exists: null,
+        {
+          type: 'wikilink',
+          value: null,
+          data: {
+            alias: null,
+            permalink: null,
+            exists: null,
+          },
         },
-      },
-      token,
+        token,
     );
   }
 

@@ -8,7 +8,7 @@ export default async function Page() {
   console.log('page: /posts');
   return (
     <div className="flex w-full justify-center">
-      <div className="w-2/3 flex flex-col items-center">
+      <div className="flex w-2/3 flex-col items-center">
         {ids.map(id => (
           <div key={id} className="flex items-center">
             <Link

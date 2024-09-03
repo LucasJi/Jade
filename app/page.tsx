@@ -2,7 +2,7 @@ import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 
 export default async function Home() {
   return (
-    <div className="flex w-full  items-center flex-col">
+    <div className="flex w-full  flex-col items-center">
       {/*<Callout variant="info">*/}
       {/*  <CalloutTitle title="Outer Callout" />*/}
       {/*  <CalloutBody>*/}

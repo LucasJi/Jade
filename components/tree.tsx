@@ -60,7 +60,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     <li className="mt-1">
       <button onClick={toggleExpand} className="flex items-center">
         <FoldIcon isExpanded={isExpanded} />
-        <span className="min-h-0 max-w-[200px] text-base inline-block truncate ml-1">
+        <span className="ml-1 inline-block min-h-0 max-w-[200px] truncate text-base">
           {node.name}
         </span>
       </button>
@@ -77,7 +77,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
             'min-h-0',
             'ml-4',
             'transition-all',
-            isExpanded ? 'opacity-100 visible' : 'opacity-0 invisible',
+            isExpanded ? 'visible opacity-100' : 'invisible opacity-0',
           )}
         >
           {node.children.map((child, idx) => (
@@ -89,7 +89,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   ) : (
     <li
       className={clsx(
-        'mt-1 w-fit max-w-[200px] truncate hover:underline ml-1',
+        'ml-1 mt-1 w-fit max-w-[200px] truncate hover:underline',
         node.id === id && 'underline',
       )}
       title={node.name}
@@ -224,7 +224,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
           <BiCollapseVertical size={16} />
         </Button>
       </div>
-      <ScrollArea className="w-full h-full mt-2" viewportRef={viewportRef}>
+      <ScrollArea className="mt-2 h-full w-full" viewportRef={viewportRef}>
         <ul>
           <TreeContext.Provider value={{ expandedNodeIds, id }}>
             {treeNodes.map((node, idx) => (

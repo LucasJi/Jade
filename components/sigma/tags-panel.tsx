@@ -60,7 +60,7 @@ const TagsPanel: FC<{
         <>
           <MdCategory className="text-muted" /> Categories
           {visibleTagsCount < tags.length ? (
-            <span className="text-muted text-small">
+            <span className="text-small text-muted">
               {' '}
               ({visibleTagsCount} / {tags.length})
             </span>
