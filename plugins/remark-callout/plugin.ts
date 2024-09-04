@@ -7,6 +7,7 @@ import type {
   Paragraph,
   Root,
 } from 'mdast';
+import * as os from 'node:os';
 import type { Plugin } from 'unified';
 import { Node, visit } from 'unist-util-visit';
 
@@ -142,25 +143,29 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
     visit(tree as Node, 'blockquote', (node: Blockquote) => {
       const paragraphNode = node.children.at(0);
       if (paragraphNode == null || paragraphNode.type !== 'paragraph') {
+        console.debug('blockquote first child is not a paragraph', node);
         return;
       }
 
       // Skip if the first line is empty
       if (node.position?.start.line !== paragraphNode.position?.start.line) {
+        console.debug('first line is empty');
         return;
       }
 
       const calloutTypeTextNode = paragraphNode.children.at(0);
       if (calloutTypeTextNode == null || calloutTypeTextNode.type !== 'text') {
+        console.debug('invalid callout type node', calloutTypeTextNode);
         return;
       }
 
       // Parse callout syntax
       // e.g. "[!note] title"
       const [calloutTypeText, ...calloutBodyText] =
-        calloutTypeTextNode.value.split('\n');
+        calloutTypeTextNode.value.split(os.EOL);
       const calloutData = parseCallout(calloutTypeText);
       if (calloutData == null) {
+        console.debug('cannot parse callout:', calloutTypeText);
         return;
       }
 
@@ -189,7 +194,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
       if (calloutBodyText.length > 0) {
         bodyNode[0].children.push({
           type: 'text',
-          value: calloutBodyText.join('\n'),
+          value: calloutBodyText.join(os.EOL),
         });
       }
 
@@ -229,7 +234,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
           }
 
           // Add the part before the line break as callout title and the part after as callout body
-          const [titleText, ...bodyTextLines] = child.value.split('\n');
+          const [titleText, ...bodyTextLines] = child.value.split(os.EOL);
           if (titleText) {
             // Add the part before the line break as callout title
             titleNode.children.push({
@@ -244,7 +249,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
             }
             bodyNode[0].children.push({
               type: 'text',
-              value: bodyTextLines.join('\n'),
+              value: bodyTextLines.join(os.EOL),
             });
             // Add all nodes after the current node as callout body
             bodyNode[0].children.push(...paragraphNode.children.slice(i + 2));

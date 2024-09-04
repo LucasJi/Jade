@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
+import * as os from 'node:os';
 
 const filepath = '_posts/tech/java/spring.md';
 const markdownContent = readFileSync(
@@ -14,11 +15,11 @@ const TITLE_REG = /^#\s+.+/;
 const HEADING_REG = /^(#{1,6})\s+.+/;
 
 const removeTitle = post => {
-  const tokens = post.split('\n');
+  const tokens = post.split(os.EOL);
   const restTokens = tokens
     .filter(token => !TITLE_REG.test(token))
     .filter(token => HEADING_REG.test(token));
-  return restTokens.join('\n');
+  return restTokens.join(os.EOL);
 };
 
 const resolvedPost = removeTitle(markdownContent);

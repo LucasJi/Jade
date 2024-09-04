@@ -87,73 +87,73 @@ const variants = {
     icon: Pencil,
     alias: ['default'],
     class:
-      'border-note/50 text-note dark:border-note [&>svg]:text-note bg-note/10',
+      'border-note/50 dark:border-note [&>*:first-child]:text-note bg-note/10',
   },
   abstract: {
     icon: ClipboardList,
     alias: ['summary', 'tldr'],
     class:
-      'border-abstract/50 text-abstract dark:border-abstract [&>svg]:text-abstract bg-abstract/10',
+      'border-abstract/50 dark:border-abstract [&>*:first-child]:text-abstract bg-abstract/10',
   },
   info: {
     icon: Info,
     class:
-      'border-info/50 text-info dark:border-info [&>svg]:text-info bg-info/10',
+      'border-info/50 dark:border-info [&>*:first-child]:text-info bg-info/10',
   },
   todo: {
     icon: CircleCheck,
     class:
-      'border-todo/50 text-todo dark:border-todo [&>svg]:text-todo bg-todo/10',
+      'border-todo/50 dark:border-todo [&>*:first-child]:text-todo bg-todo/10',
   },
   tip: {
     icon: Flame,
     alias: ['hint', 'important'],
-    class: 'border-tip/50 text-tip dark:border-tip [&>svg]:text-tip bg-tip/10',
+    class: 'border-tip/50 dark:border-tip [&>*:first-child]:text-tip bg-tip/10',
   },
   success: {
     icon: Check,
     alias: ['check', 'done'],
     class:
-      'border-success/50 text-success dark:border-success [&>svg]:text-success bg-success/10',
+      'border-success/50 dark:border-success [&>*:first-child]:text-success bg-success/10',
   },
   question: {
     icon: CircleHelp,
     alias: ['faq', 'help'],
     class:
-      'border-question/50 text-question dark:border-question [&>svg]:text-question bg-question/10',
+      'border-question/50 dark:border-question [&>*:first-child]:text-question bg-question/10',
   },
   warning: {
     icon: TriangleAlert,
     alias: ['caution', 'attention'],
     class:
-      'border-warning/50 text-warning dark:border-warning [&>svg]:text-warning bg-warning/10',
+      'border-warning/50 dark:border-warning [&>*:first-child]:text-warning bg-warning/10',
   },
   failure: {
     icon: X,
     alias: ['fail', 'missing'],
     class:
-      'border-failure/50 text-failure dark:border-failure [&>svg]:text-failure bg-failure/10',
+      'border-failure/50 dark:border-failure [&>*:first-child]:text-failure bg-failure/10',
   },
   bug: {
     icon: Bug,
-    class: 'border-bug/50 text-bug dark:border-bug [&>svg]:text-bug bg-bug/10',
+    class: 'border-bug/50 dark:border-bug [&>*:first-child]:text-bug bg-bug/10',
   },
   danger: {
     icon: Zap,
     alias: ['error'],
     class:
-      'border-danger/50 text-danger dark:border-danger [&>svg]:text-danger bg-danger/10',
+      'border-danger/50 dark:border-danger [&>*:first-child]:text-danger bg-danger/10',
   },
   example: {
     icon: List,
     class:
-      'border-example/50 text-example dark:border-example [&>svg]:text-example bg-example/10',
+      'border-example/50 dark:border-example [&>*:first-child]:text-example bg-example/10',
   },
   quote: {
     icon: Quote,
     alias: ['cite'],
     class:
-      'border-quote/50 text-quote dark:border-quote [&>svg]:text-quote bg-quote/10',
+      'border-quote/50 dark:border-quote [&>*:first-child]:text-quote bg-quote/10',
   },
 };
 

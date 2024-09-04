@@ -4,6 +4,7 @@ import { PathItem, Post, PostGraph, TreeNode } from '@types';
 import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
+import * as os from 'node:os';
 import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
 import { matter } from 'vfile-matter';
@@ -96,11 +97,11 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
 };
 
 export const removeTitle = (content: string) => {
-  const tokens = content.split('\n');
+  const tokens = content.split(os.EOL);
   const restTokens = tokens
     .filter(token => !MD_TITLE_REG.test(token))
     .filter(token => MD_HEADING_REG.test(token));
-  return restTokens.join('\n');
+  return restTokens.join(os.EOL);
 };
 
 export const getPostToc = (content: string) => {

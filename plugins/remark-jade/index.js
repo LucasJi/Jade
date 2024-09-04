@@ -26,10 +26,10 @@ function separateHeadings(tree, headingText) {
 }
 
 /**
- * 1. Remove frontmatter part from markdown (the galaxy blog supports custom frontmatter)
- * 2. Set correct title (can be from frontmatter, heading "#" and filename)
+ * 1. Remove frontmatter part from markdown
+ * 2. Set correct title (can be from frontmatter, heading "#" or filename)
  *
- * @param title the title of the post
+ * @param title the title of the note
  * @param headings only the headings' content will be displayed
  * @returns
  */

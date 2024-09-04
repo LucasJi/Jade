@@ -17,7 +17,7 @@ import clsx from 'clsx';
 import Slugger from 'github-slugger';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
@@ -88,12 +88,10 @@ const components = (
       return match ? [match[1]] : [];
     })[0];
 
-    return language ? (
-      <SyntaxHighlighter style={oneDark} language={language} showLineNumbers>
+    return (
+      <SyntaxHighlighter style={oneLight} language={language} showLineNumbers>
         {(code.children[0] as any).value.replace(/\n$/, '')}
       </SyntaxHighlighter>
-    ) : (
-      <pre className={clsx(className)}>{children}</pre>
     );
   },
   li: props => <li>{props.children}</li>,
@@ -126,7 +124,6 @@ const components = (
     if ('data-callout-title' in props) {
       const type = (props as any)['data-callout-type'];
       const isFoldable = (props as any)['data-is-foldable'] !== undefined;
-      const defaultFolded = (props as any)['data-default-folded'] !== undefined;
       return (
         <CalloutTitle
           title={props.children as string}
@@ -157,7 +154,7 @@ const Markdown = ({
 }) => {
   const { title, content, frontmatter } = post;
   return (
-    <ScrollArea>
+    <ScrollArea className="overflow-x-auto">
       <article
         className={clsx(
           'prose',
@@ -167,7 +164,9 @@ const Markdown = ({
           'prose-h3:my-4',
           'prose-h4:my-4',
           'prose-h5:my-4',
+          'prose-h5:font-semibold',
           'prose-h6:my-4',
+          'prose-h6:font-semibold',
           'prose-a:my-0',
           'prose-p:my-2',
           'prose-ul:my-2',

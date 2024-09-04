@@ -29,8 +29,8 @@ export default async function Page({
 
     return (
       <div className="flex h-full">
-        <div className="min-h-[600px] w-2/3 px-4">
-          <Markdown post={post} className="max-h-[620px]" />
+        <div className="min-h-[600px] w-2/3">
+          <Markdown post={post} className="max-h-[620px] px-4" />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
           <Toc content={post?.content} className="mt-4" />
