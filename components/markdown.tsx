@@ -8,17 +8,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { TypographyCode, TypographyP } from '@/components/ui/typography';
+import { TypographyCode } from '@/components/ui/typography';
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkJade from '@/plugins/remark-jade';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Post } from '@/types';
 import clsx from 'clsx';
 import Slugger from 'github-slugger';
+import { ExternalLink } from 'lucide-react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
+import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import Wikilink from './wikilink';
@@ -54,8 +56,13 @@ const components = (
     const isFragment = href?.startsWith('#');
 
     return (
-      <a href={href!} target="_blank">
-        {children}
+      <a
+        href={href!}
+        target="_blank"
+        className="inline-flex items-center px-1 text-obsidian"
+      >
+        <span>{children}</span>
+        <ExternalLink size={16} />
       </a>
     );
   },
@@ -89,7 +96,7 @@ const components = (
     })[0];
 
     return (
-      <SyntaxHighlighter style={oneLight} language={language} showLineNumbers>
+      <SyntaxHighlighter style={oneLight} language={language}>
         {(code.children[0] as any).value.replace(/\n$/, '')}
       </SyntaxHighlighter>
     );
@@ -104,7 +111,6 @@ const components = (
   code: props => (
     <TypographyCode className="not-prose">{props.children}</TypographyCode>
   ),
-  p: props => <TypographyP>{props.children}</TypographyP>,
   div: props => {
     if ('data-callout' in props) {
       const type = (props as any)['data-callout-type'];
@@ -169,6 +175,8 @@ const Markdown = ({
           'prose-h6:font-semibold',
           'prose-a:my-0',
           'prose-p:my-2',
+          'prose-p:before:content-none',
+          'prose-p:after:content-none',
           'prose-ul:my-2',
           'prose-hr:my-4',
           className,
@@ -178,6 +186,7 @@ const Markdown = ({
           components={components(renderWikilink, post)}
           remarkPlugins={[
             remarkGfm,
+            remarkBreaks,
             remarkFrontmatter,
             remarkCallout,
             remarkWikilink as any,

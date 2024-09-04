@@ -10,7 +10,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { parseCallout, remarkCallout, type Options } from './plugin';
+import { type Options, parseCallout, remarkCallout } from './plugin';
 
 const process = async (md: string, options?: Options) => {
   let hast: hast.Node;
@@ -337,6 +337,27 @@ describe('remarkCallout', () => {
         '',
       ].join('\n'),
     );
+  });
+
+  test('callout with body consisting of multiple lines', async () => {
+    const md = dedent`
+      > [!note]- 多个空格
+      > 在段落内部的多个空格和段落之间的多个空行在[[编辑与预览笔记|阅读视图]]中会被合并显示为一个空格和一个空行，在 [[发布服务简介|Obsidian 发布服务]]的站点上也是如此。
+      >
+      > \`\`\`md
+      > 多个          相邻          空格
+      >
+      >
+      >
+      > 和多个段落之间的换行。
+      > \`\`\`
+      >
+      > > 多个相邻空格
+      > > 和多个段落之间的换行。
+      >
+      > 如果想要显示多个空格或空行，你可以在笔记中使用 \`&nbsp;\`（空格）和 \`<br>\`（换行）。
+    `;
+    const { html } = await process(md);
   });
 
   test('callout with type with spaces and special characters', async () => {

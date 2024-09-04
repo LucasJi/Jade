@@ -193,7 +193,7 @@ const generateVariants = (): { [k: VariantType]: string } => {
 const calloutVariants = cva<{
   variant: { [k: VariantType]: string };
 }>(
-  'my-4 w-[inherit] max-w-96 rounded border p-3 pl-6 mix-blend-darken [&>summary>.lucide-chevron-right]:open:rotate-90',
+  'my-4 w-[inherit] rounded border p-3 pl-6 mix-blend-darken [&>summary>.lucide-chevron-right]:open:rotate-90',
   {
     variants: {
       variant: {

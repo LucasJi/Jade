@@ -165,7 +165,6 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         calloutTypeTextNode.value.split(os.EOL);
       const calloutData = parseCallout(calloutTypeText);
       if (calloutData == null) {
-        console.debug('cannot parse callout:', calloutTypeText);
         return;
       }
 
@@ -258,6 +257,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         }
       } else {
         // Add all nodes after the current node as callout body
+        console.log('sdfsdfsdf');
         bodyNode[0].children.push(...paragraphNode.children.slice(1));
       }
 
