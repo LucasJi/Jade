@@ -23,11 +23,11 @@ const Footer = () => {
           <span className="text-xs">
             ©2024 Powered by{' '}
             <a
-              className="underline decoration-jade-green"
+              className="underline decoration-jade"
               href="https://github.com/LucasJi/Jade"
               target="_blank"
             >
-              <span className="text-jade-green">Jade</span>
+              <span className="text-jade">Jade</span>
             </a>
           </span>
           <a

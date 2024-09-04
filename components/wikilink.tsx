@@ -52,7 +52,7 @@ export default async function Wikilink({
         <Tooltip>
           <TooltipTrigger>
             <Link
-              className="text-obsidian-purple"
+              className="text-obsidian"
               href={`/posts/${encodeURIComponent(post!.id)}`}
               color="foreground"
               prefetch={false}
@@ -75,5 +75,5 @@ export default async function Wikilink({
     );
   }
 
-  return <span className="text-obsidian-purple">{children}</span>;
+  return <span className="text-obsidian">{children}</span>;
 }

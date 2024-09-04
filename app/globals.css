@@ -47,8 +47,9 @@
     --obsidian-color-purple: #7852ee;
     --obsidian-color-pink-rgba: 213, 57, 132;
     --obsidian-color-pink: #d53984;
+    --obsidian-color-primary: #A88BFA;
 
-    /* callout colors */
+    /* Callout colors */
     --callout-bug: var(--obsidian-color-red-rgba);
     --callout-note: var(--obsidian-color-blue-rgba);
     --callout-danger: var(--obsidian-color-red-rgba);
@@ -63,6 +64,9 @@
     --callout-todo: var(--obsidian-color-blue-rgba);
     --callout-warning: var(--obsidian-color-orange-rgba);
     --callout-quote: 158, 158, 158;
+
+    /* Jade colors */
+    --jade-color-primary: #A4CAB6;
   }
 
   .dark {

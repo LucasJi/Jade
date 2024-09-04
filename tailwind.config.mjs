@@ -17,8 +17,6 @@ const config = {
     },
     extend: {
       colors: {
-        'obsidian-purple': '#A88BFA',
-        'jade-green': '#A4CAB6',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -53,6 +51,11 @@ const config = {
           foreground: 'hsl(var(--card-foreground))',
         },
 
+        // --- Jade ---
+        jade: 'var(--jade-color-primary)',
+
+        // --- Obsidian ---
+        obsidian: 'var(--obsidian-color-primary)',
         // Callout colors
         bug: 'rgba(var(--callout-bug))',
         note: 'rgba(var(--callout-note))',
@@ -88,6 +91,13 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            maxWidth: "100ch",
+          },
+        },
+      })
     },
   },
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import { TreeNode, TreeProps } from '@types';
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
@@ -41,26 +42,22 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       <button onClick={toggleExpand} className="flex items-center">
         <ChevronRight
           size={16}
-          className={clsx('transition-transform', { 'rotate-90': isExpanded })}
+          className={cn('transition-transform', { 'rotate-90': isExpanded })}
           color="#5C5C5C"
         />
-        <span className="ml-1 inline-block min-h-0 max-w-[200px] truncate text-base font-medium">
+        <span className="ml-1 inline-block min-h-0 max-w-[200px] truncate text-base font-semibold">
           {node.name}
         </span>
       </button>
       <div
-        className={clsx(
+        className={cn(
           isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-          'transition-all',
-          'grid',
-          'overflow-hidden',
+          'transition-all grid overflow-hidden',
         )}
       >
         <ul
-          className={clsx(
-            'min-h-0',
-            'ml-4',
-            'transition-all',
+          className={cn(
+            'min-h-0 ml-4 transition-all',
             isExpanded ? 'visible opacity-100' : 'invisible opacity-0',
           )}
         >
@@ -72,9 +69,9 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
     </li>
   ) : (
     <li
-      className={clsx(
-        'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] hover:underline',
-        node.id === id && 'underline',
+      className={cn(
+        'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] hover:underline decoration-obsidian',
+        { underline: node.id === id },
       )}
       title={node.name}
       id={node.id}
