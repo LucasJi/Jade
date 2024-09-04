@@ -20,7 +20,7 @@ export type Options = {
    *   tagName: callout.isFoldable ? "details" : "div",
    *   properties: {
    *     dataCallout: true,
-   *     dataCalloutType: callout.type,
+   *     dataCalloutType: callout['type'],
    *     open: callout.defaultFolded === undefined ? false : !callout.defaultFolded,
    *   },
    * })
