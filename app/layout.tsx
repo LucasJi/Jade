@@ -1,7 +1,7 @@
 // import WebVitals from '@/components/webVitals';
 import Footer from '@/components/footer';
+import '@/styles/globals.css';
 import { ReactNode } from 'react';
-import './globals.css';
 import { Providers } from './providers';
 
 export const metadata = {

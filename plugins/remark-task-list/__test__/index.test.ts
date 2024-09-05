@@ -5,13 +5,13 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { beforeAll, describe, expect, test } from 'vitest';
-import remarkHighlight from '../index';
+import remarkTaskList from '../index';
 
 const process = async (md: string) => {
   const html = (
     await unified()
       .use(remarkParse)
-      .use(remarkHighlight)
+      .use(remarkTaskList)
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
       .use(rehypeStringify)

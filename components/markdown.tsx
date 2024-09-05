@@ -23,7 +23,7 @@ import { Children, ReactElement, cloneElement } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import rehypeMathJaxCHtml from 'rehype-mathjax/chtml';
+import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -68,7 +68,7 @@ const components = (
         className={cn(className, 'inline-flex items-center px-1 text-obsidian')}
       >
         <span>{children}</span>
-        <ExternalLink size={16} />
+        <ExternalLink size={12} />
       </a>
     );
   },
@@ -96,10 +96,14 @@ const components = (
     }
 
     const codeClassName = code.properties?.className as string[];
-    const language = codeClassName?.flatMap(cls => {
+    let language = codeClassName?.flatMap(cls => {
       const match = /language-(\w+)/.exec(cls);
       return match ? [match[1]] : [];
     })[0];
+
+    if (language === 'md') {
+      language = 'text';
+    }
 
     return (
       <SyntaxHighlighter style={oneLight} language={language}>
@@ -178,10 +182,6 @@ const components = (
       </ul>
     );
   },
-  //@ts-ignore
-  'mjx-container': props => {
-    return <span>TODO</span>;
-  },
 });
 
 const Markdown = ({
@@ -233,18 +233,8 @@ const Markdown = ({
             remarkWikilink as any,
             [remarkJade as any, { title, wikilink }],
           ]}
-          rehypePlugins={[
-            rehypeRaw as any,
-            [
-              rehypeMathJaxCHtml,
-              {
-                chtml: {
-                  fontURL:
-                    'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2',
-                },
-              },
-            ],
-          ]}
+          // TODO: Support rehypeMathjaxCHtml
+          rehypePlugins={[rehypeRaw as any, rehypeKatex]}
         >
           {content}
         </ReactMarkdown>
