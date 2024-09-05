@@ -18,7 +18,7 @@ import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Post } from '@/types';
 import clsx from 'clsx';
 import Slugger from 'github-slugger';
-import { ExternalLink } from 'lucide-react';
+import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, ReactElement, cloneElement } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -48,8 +48,7 @@ const components = (
   currentPost: Post,
 ): Components => ({
   a: props => {
-    const { className, href, children } = props;
-    console.log(className);
+    const { node, className, href, children, ...rest } = props;
     if (className?.includes('wikilink') && href) {
       return renderWikilink ? (
         <Wikilink wikilink={href} currentPost={currentPost}>
@@ -60,12 +59,46 @@ const components = (
       );
     }
 
+    if ('data-footnote-ref' in rest) {
+      return (
+        <a
+          href={href!}
+          title={href}
+          className={cn(className, 'text-obsidian no-underline')}
+          {...rest}
+        >
+          <span>
+            <span>[</span>
+            {children}
+            <span>]</span>
+          </span>
+        </a>
+      );
+    }
+
+    if ('data-footnote-backref' in rest) {
+      return (
+        <a
+          href={href!}
+          title={href}
+          className={cn(
+            className,
+            'inline-flex items-center text-obsidian no-underline',
+          )}
+          {...rest}
+        >
+          <CornerDownLeft size={12} />
+        </a>
+      );
+    }
+
     return (
       <a
         href={href!}
         target="_blank"
         title={href}
         className={cn(className, 'inline-flex items-center px-1 text-obsidian')}
+        {...rest}
       >
         <span>{children}</span>
         <ExternalLink size={12} />
