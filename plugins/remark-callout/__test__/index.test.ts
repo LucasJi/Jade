@@ -10,7 +10,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { parseCallout, remarkCallout, type Options } from './plugin';
+import { parseCallout, remarkCallout, type Options } from '../plugin';
 
 const process = async (md: string, options?: Options) => {
   let hast: hast.Node;

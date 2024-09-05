@@ -7,10 +7,17 @@ export interface InlineMark extends Parent {
 
 declare module 'micromark-util-types' {
   interface TokenTypeMap {
+    // remark-highlight
     highlight: 'highlight';
     highlightSequenceTemporary: 'highlightSequenceTemporary';
     highlightSequence: 'highlightSequence';
     highlightText: 'highlightText';
+
+    // remark-task-list
+    taskListCheck: 'taskListCheck';
+    taskListCheckMarker: 'taskListCheckMarker';
+    taskListCheckValueChecked: 'taskListCheckValueChecked';
+    taskListCheckValueUnchecked: 'taskListCheckValueUnchecked';
   }
 }
 

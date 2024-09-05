@@ -43,6 +43,9 @@ dependencies:
   defu:
     specifier: ^6.1.4
     version: 6.1.4
+  devlop:
+    specifier: ^1.1.0
+    version: 1.1.0
   framer-motion:
     specifier: ~11.1.1
     version: 11.1.1(react-dom@18.3.0)(react@18.3.0)

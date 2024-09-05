@@ -1,13 +1,12 @@
-import { Options } from '@/plugins/remark-callout';
 import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { describe, test } from 'vitest';
-import remarkHighlight from './index';
+import remarkHighlight from '../index';
 
-const process = async (md: string, options?: Options) => {
+const process = async (md: string) => {
   const html = (
     await unified()
       .use(remarkParse)

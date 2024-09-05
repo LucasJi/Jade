@@ -9,13 +9,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TypographyCode } from '@/components/ui/typography';
+import { cn } from '@/lib/utils';
 import { remarkCallout } from '@/plugins/remark-callout';
+import remarkHighlight from '@/plugins/remark-highlight';
 import remarkJade from '@/plugins/remark-jade';
+import remarkTaskList from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Post } from '@/types';
 import clsx from 'clsx';
 import Slugger from 'github-slugger';
 import { ExternalLink } from 'lucide-react';
+import { Children, ReactElement, cloneElement } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -101,7 +105,6 @@ const components = (
       </SyntaxHighlighter>
     );
   },
-  li: props => <li>{props.children}</li>,
   table: props => <Table className="not-prose">{props.children}</Table>,
   thead: props => <TableHeader>{props.children}</TableHeader>,
   tr: props => <TableRow className="not-prose">{props.children}</TableRow>,
@@ -145,6 +148,50 @@ const components = (
 
     return <div>{props.children}</div>;
   },
+  ul: props => {
+    const { node, children, className, ...rest } = props;
+    const isTaskList = !!className?.includes('contains-task-list');
+    const customChildren = Children.map(children, child => {
+      if (isTaskList && (child as ReactElement).type === 'li') {
+        const reactChild = child as ReactElement;
+        return cloneElement(reactChild, {
+          className: cn(
+            (child as ReactElement).props.className,
+            'ps-0',
+            '[&_ul]:ps-4',
+          ),
+        });
+      }
+
+      return child;
+    });
+    return (
+      <ul
+        className={cn(className, {
+          'list-none ps-0': isTaskList,
+        })}
+        {...rest}
+      >
+        {customChildren}
+      </ul>
+    );
+  },
+  // li: props => {
+  //   const { node, children, className, ...rest } = props;
+  //   if (className?.includes('task-list-item')) {
+  //     return (
+  //       <li className={cn(className, 'ps-0', '[&_ul]:ps-4')} {...rest}>
+  //         {children}
+  //       </li>
+  //     );
+  //   }
+  //
+  //   return (
+  //     <li className={className} {...rest}>
+  //       {children}
+  //     </li>
+  //   );
+  // },
 });
 
 const Markdown = ({
@@ -179,6 +226,7 @@ const Markdown = ({
           'prose-p:after:content-none',
           'prose-ul:my-2',
           'prose-hr:my-4',
+          'prose-blockquote:border-s-obsidian',
           className,
         )}
       >
@@ -187,6 +235,8 @@ const Markdown = ({
           remarkPlugins={[
             remarkGfm,
             remarkBreaks,
+            remarkHighlight,
+            remarkTaskList,
             remarkFrontmatter,
             remarkCallout,
             remarkWikilink as any,
