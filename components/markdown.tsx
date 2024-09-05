@@ -23,10 +23,12 @@ import { Children, ReactElement, cloneElement } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import rehypeMathJaxCHtml from 'rehype-mathjax/chtml';
 import rehypeRaw from 'rehype-raw';
 import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import Wikilink from './wikilink';
 
 const slugs = new Slugger();
@@ -47,6 +49,7 @@ const components = (
 ): Components => ({
   a: props => {
     const { className, href, children } = props;
+    console.log(className);
     if (className?.includes('wikilink') && href) {
       return renderWikilink ? (
         <Wikilink wikilink={href} currentPost={currentPost}>
@@ -57,13 +60,12 @@ const components = (
       );
     }
 
-    const isFragment = href?.startsWith('#');
-
     return (
       <a
         href={href!}
         target="_blank"
-        className="inline-flex items-center px-1 text-obsidian"
+        title={href}
+        className={cn(className, 'inline-flex items-center px-1 text-obsidian')}
       >
         <span>{children}</span>
         <ExternalLink size={16} />
@@ -176,22 +178,10 @@ const components = (
       </ul>
     );
   },
-  // li: props => {
-  //   const { node, children, className, ...rest } = props;
-  //   if (className?.includes('task-list-item')) {
-  //     return (
-  //       <li className={cn(className, 'ps-0', '[&_ul]:ps-4')} {...rest}>
-  //         {children}
-  //       </li>
-  //     );
-  //   }
-  //
-  //   return (
-  //     <li className={className} {...rest}>
-  //       {children}
-  //     </li>
-  //   );
-  // },
+  //@ts-ignore
+  'mjx-container': props => {
+    return <span>TODO</span>;
+  },
 });
 
 const Markdown = ({
@@ -222,9 +212,9 @@ const Markdown = ({
           'prose-h6:font-semibold',
           'prose-a:my-0',
           'prose-p:my-2',
-          'prose-p:before:content-none',
-          'prose-p:after:content-none',
+          'prose-p:before:content-none prose-p:after:content-none',
           'prose-ul:my-2',
+          'prose-li:my-0',
           'prose-hr:my-4',
           'prose-blockquote:border-s-obsidian',
           className,
@@ -239,10 +229,22 @@ const Markdown = ({
             remarkTaskList,
             remarkFrontmatter,
             remarkCallout,
+            remarkMath,
             remarkWikilink as any,
             [remarkJade as any, { title, wikilink }],
           ]}
-          rehypePlugins={[rehypeRaw as any]}
+          rehypePlugins={[
+            rehypeRaw as any,
+            [
+              rehypeMathJaxCHtml,
+              {
+                chtml: {
+                  fontURL:
+                    'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2',
+                },
+              },
+            ],
+          ]}
         >
           {content}
         </ReactMarkdown>
