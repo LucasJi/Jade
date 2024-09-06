@@ -155,7 +155,6 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
 
       const calloutTypeTextNode = paragraphNode.children.at(0);
       if (calloutTypeTextNode == null || calloutTypeTextNode.type !== 'text') {
-        console.debug('invalid callout type node', calloutTypeTextNode);
         return;
       }
 

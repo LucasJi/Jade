@@ -215,6 +215,30 @@ const components = (
       </ul>
     );
   },
+  section: props => {
+    const { node, children, className, ...rest } = props;
+
+    // footnotes
+    if ('data-footnotes' in rest) {
+      return (
+        <section className={className} {...rest}>
+          {Children.map(children, child => {
+            // TODO: Use 'ol' type to recreate footnotes section
+            if ((child as ReactElement).props?.node?.tagName !== 'h2') {
+              return child;
+            }
+            return <hr />;
+          })}
+        </section>
+      );
+    }
+
+    return (
+      <section className={className} {...rest}>
+        {children}
+      </section>
+    );
+  },
 });
 
 const Markdown = ({

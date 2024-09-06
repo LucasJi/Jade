@@ -12,6 +12,7 @@ export default async function Home() {
               <Callout variant="abstract">
                 <CalloutTitle title="Innermost Callout" />
                 <CalloutBody>
+                  <h2>H2 Title</h2>
                   <p>Innermost Callout Body</p>
                 </CalloutBody>
               </Callout>
