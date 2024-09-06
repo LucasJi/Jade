@@ -223,7 +223,7 @@ const components = (
       return (
         <section className={className} {...rest}>
           {Children.map(children, child => {
-            // TODO: Use 'ol' type to recreate footnotes section
+            // TODO: Use 'ol' type to custom footnotes section
             if ((child as ReactElement).props?.node?.tagName !== 'h2') {
               return child;
             }

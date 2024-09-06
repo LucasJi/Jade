@@ -8,14 +8,14 @@ import {
   buildPostsTree,
   decimalToBase62,
   murmurhash,
-  resolvePost,
+  parseNote,
 } from '@/lib/server-utils';
 import { fromMarkdownWikilink, syntax } from '@/plugins/remark-wikilink';
 import { PathItem, Post } from '@types';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
-import { visit } from 'unist-util-visit';
+import { Node, visit } from 'unist-util-visit';
 
 const { dir } = env;
 
@@ -62,11 +62,11 @@ const loadPost = async (path: string, id: string): Promise<Post> => {
     } else {
       file = await githubRequest(`/contents/${path}`, `post:${id}`);
     }
-    // resolve emoji base64 decoding problem
+    // base64Decode: resolve emoji base64 decoding problem
     const content = dir.root ? file : base64Decode(file.content);
     const filenameSplits = path.split(SEP);
     const filename = filenameSplits[filenameSplits.length - 1];
-    const { title, frontmatter } = resolvePost(content, filename);
+    const { title, frontmatter } = parseNote(content, filename);
 
     return {
       id,
@@ -97,7 +97,7 @@ const resolveWikilinks = (posts: Post[]) => {
 
       const forwardLinks: Set<string> = new Set();
 
-      visit(tree, 'wikilink', node => {
+      visit(tree as Node, 'wikilink', node => {
         const { value }: { value: string } = node;
         const post = posts.find(post => {
           const path = base64Decode(post.id);
@@ -123,8 +123,9 @@ const resolveWikilinks = (posts: Post[]) => {
 };
 
 const init = async () => {
-  const begin = new Date().getTime();
   console.log('initializing jade...');
+
+  const begin = new Date().getTime();
   const existIds = new Set<string>();
   const posts: Post[] = [];
   const redis = getRedisClient();

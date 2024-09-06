@@ -1,8 +1,18 @@
-import type { Parent, PhrasingContent } from 'mdast';
+import { Node, Parent, PhrasingContent } from 'mdast';
 
 export interface InlineMark extends Parent {
   type: 'mark';
   children: PhrasingContent[];
+}
+
+export interface Wikilink extends Node {
+  type: 'wikilink';
+  value: string | null;
+  data: {
+    alias: string | null;
+    permalink: string | null;
+    exists: boolean | null;
+  };
 }
 
 declare module 'micromark-util-types' {
@@ -18,6 +28,14 @@ declare module 'micromark-util-types' {
     taskListCheckMarker: 'taskListCheckMarker';
     taskListCheckValueChecked: 'taskListCheckValueChecked';
     taskListCheckValueUnchecked: 'taskListCheckValueUnchecked';
+
+    // remark-wikilink
+    wikilink: 'wikilink';
+    wikilinkMarker: 'wikilinkMarker';
+    wikilinkData: 'wikilinkData';
+    wikilinkTarget: 'wikilinkTarget';
+    wikilinkAlias: 'wikilinkAlias';
+    wikilinkAliasMarker: 'wikilinkAliasMarker';
   }
 }
 
@@ -30,5 +48,6 @@ declare module 'mdast-util-to-markdown' {
 declare module 'mdast' {
   interface RootContentMap {
     inlineMark: InlineMark;
+    wikilink: Wikilink;
   }
 }

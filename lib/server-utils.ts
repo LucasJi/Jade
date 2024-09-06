@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import { MD_EXT_REG, MD_HEADING_REG, MD_TITLE_REG, SEP } from '@/lib/constants';
 import { PathItem, Post, PostGraph, TreeNode } from '@types';
 import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
@@ -7,7 +6,9 @@ import { toc } from 'mdast-util-toc';
 import * as os from 'node:os';
 import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
+import { VFile } from 'vfile';
 import { matter } from 'vfile-matter';
+import { MD_EXT_REG, MD_HEADING_REG, MD_TITLE_REG, SEP } from './constants';
 
 export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
   const tree: TreeNode = {
@@ -168,16 +169,30 @@ export const getPostGraphFromPosts = async (
 // convert frontmatter to metadata, see: https://github.com/remarkjs/remark-frontmatter?tab=readme-ov-file#example-frontmatter-as-metadata
 function frontYamlMatterHandler() {
   return function (tree: any, file: any) {
-    matter(file);
+    matter(file, { strip: true });
   };
 }
 
 const DEFAULT_MD_PROCESSOR = remark()
-  .use(remarkFrontmatter, ['yaml'])
+  .use(remarkFrontmatter)
   .use(frontYamlMatterHandler);
 
-export const resolvePost = (
-  post: string,
+export const parseFrontMatter = (mdVFile: VFile) => {
+  return DEFAULT_MD_PROCESSOR.process(mdVFile);
+};
+
+/**
+ * Parse plain note with following steps:
+ *  1. Parse frontmatter and remove it to custom frontmatter
+ *  2. extract note title
+ *  3. extract note content
+ *  4. generate table of content(TOC)
+ *
+ * @param note markdown
+ * @param filename markdown file name
+ */
+export const parseNote = (
+  note: string,
   filename: string,
 ): { title: string; frontmatter: { [key: string]: any } | undefined } => {
   let title: string = '';
