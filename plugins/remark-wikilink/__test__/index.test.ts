@@ -4,7 +4,7 @@ import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
-import { beforeAll, describe, test } from 'vitest';
+import { beforeAll, describe, expect, test } from 'vitest';
 import { remarkWikilink } from '../index';
 
 const process = async (md: string) => {
@@ -32,8 +32,57 @@ describe('remarkWikilink', () => {
     parser = new jsdom.window.DOMParser();
   });
 
-  test('basic syntax', async () => {
-    const html = await process('[[wikilink]]');
-    console.log(html);
+  test('invalid syntax', async () => {
+    const html = await process('[invalid syntax]');
+    const doc = parser.parseFromString(html, 'text/html');
+    const a = doc.querySelector('a');
+    expect(a).toBeNull();
+  });
+
+  test('Link to a file', async () => {
+    const filename = 'filename';
+    const html = await process(`[[${filename}]]`);
+    const doc = parser.parseFromString(html, 'text/html');
+    const a = doc.querySelector('a');
+    expect(a).not.toBeNull();
+    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('href')).toBe(filename);
+  });
+
+  test('Linking to a heading within the same note', async () => {
+    const html = await process('[[#heading]]');
+    const doc = parser.parseFromString(html, 'text/html');
+    const a = doc.querySelector('a');
+    expect(a).not.toBeNull();
+    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('href')).toBe('#heading');
+  });
+
+  test('Linking to a heading in another note', async () => {
+    const html = await process('[[another file#heading]]');
+    const doc = parser.parseFromString(html, 'text/html');
+    const a = doc.querySelector('a');
+    expect(a).not.toBeNull();
+    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('href')).toBe('another file#heading');
+  });
+
+  test('Linking to subheadings', async () => {
+    const html = await process('[[another file#heading#sub heading]]');
+    const doc = parser.parseFromString(html, 'text/html');
+    const a = doc.querySelector('a');
+    expect(a).not.toBeNull();
+    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('href')).toBe('another file#heading#sub heading');
+  });
+
+  test('Change the link display text', async () => {
+    const html = await process('[[Internal links|custom display text]]');
+    const doc = parser.parseFromString(html, 'text/html');
+    const a = doc.querySelector('a');
+    expect(a).not.toBeNull();
+    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('href')).toBe('Internal links');
+    expect(a?.innerHTML).toBe('custom display text');
   });
 });
