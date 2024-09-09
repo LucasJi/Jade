@@ -49,7 +49,7 @@ const components = (
 ): Components => ({
   a: props => {
     const { node, className, href, children, ...rest } = props;
-    if (className?.includes('wikilink') && href) {
+    if ('data-wikilink' in rest && href) {
       return renderWikilink ? (
         <Wikilink wikilink={href} currentPost={currentPost}>
           {children}
@@ -287,7 +287,7 @@ const Markdown = ({
             remarkFrontmatter,
             remarkCallout,
             remarkMath,
-            remarkWikilink as any,
+            remarkWikilink,
             [remarkJade as any, { title, wikilink }],
           ]}
           // TODO: Support rehypeMathjaxCHtml

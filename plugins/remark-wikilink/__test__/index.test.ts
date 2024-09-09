@@ -45,7 +45,7 @@ describe('remarkWikilink', () => {
     const doc = parser.parseFromString(html, 'text/html');
     const a = doc.querySelector('a');
     expect(a).not.toBeNull();
-    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('data-wikilink')).not.toBeNull();
     expect(a?.getAttribute('href')).toBe(filename);
   });
 
@@ -54,7 +54,7 @@ describe('remarkWikilink', () => {
     const doc = parser.parseFromString(html, 'text/html');
     const a = doc.querySelector('a');
     expect(a).not.toBeNull();
-    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('data-wikilink')).not.toBeNull();
     expect(a?.getAttribute('href')).toBe('#heading');
   });
 
@@ -63,7 +63,7 @@ describe('remarkWikilink', () => {
     const doc = parser.parseFromString(html, 'text/html');
     const a = doc.querySelector('a');
     expect(a).not.toBeNull();
-    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('data-wikilink')).not.toBeNull();
     expect(a?.getAttribute('href')).toBe('another file#heading');
   });
 
@@ -72,7 +72,7 @@ describe('remarkWikilink', () => {
     const doc = parser.parseFromString(html, 'text/html');
     const a = doc.querySelector('a');
     expect(a).not.toBeNull();
-    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('data-wikilink')).not.toBeNull();
     expect(a?.getAttribute('href')).toBe('another file#heading#sub heading');
   });
 
@@ -81,7 +81,7 @@ describe('remarkWikilink', () => {
     const doc = parser.parseFromString(html, 'text/html');
     const a = doc.querySelector('a');
     expect(a).not.toBeNull();
-    expect(a?.getAttribute('class')).toBe('wikilink');
+    expect(a?.getAttribute('data-wikilink')).not.toBeNull();
     expect(a?.getAttribute('href')).toBe('Internal links');
     expect(a?.innerHTML).toBe('custom display text');
   });

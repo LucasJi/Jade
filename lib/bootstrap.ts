@@ -10,7 +10,10 @@ import {
   murmurhash,
   parseNote,
 } from '@/lib/server-utils';
-import { fromMarkdownWikilink, syntax } from '@/plugins/remark-wikilink';
+import {
+  fromWikilinkMarkdown,
+  wikilinkSyntax,
+} from '@/plugins/remark-wikilink';
 import { PathItem, Post } from '@types';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
@@ -83,7 +86,7 @@ const loadPost = async (path: string, id: string): Promise<Post> => {
   }
 };
 
-const resolveWikilinks = (posts: Post[]) => {
+const resolveWikilinks = async (posts: Post[]) => {
   const findPostById = (id: string): Post | undefined => {
     return posts.find(p => p.id === id);
   };
@@ -91,8 +94,8 @@ const resolveWikilinks = (posts: Post[]) => {
   for (const post of posts) {
     if (post !== null) {
       const tree = fromMarkdown(post.content, {
-        extensions: [syntax()],
-        mdastExtensions: [fromMarkdownWikilink()],
+        extensions: [wikilinkSyntax()],
+        mdastExtensions: [fromWikilinkMarkdown()],
       });
 
       const forwardLinks: Set<string> = new Set();
@@ -160,7 +163,7 @@ const init = async () => {
   // cache post ids
   redis.sadd(IDS, [...existIds.values()]);
 
-  resolveWikilinks(posts);
+  await resolveWikilinks(posts);
 
   // cache posts
   for (const post of posts) {

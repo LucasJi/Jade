@@ -1,12 +1,5 @@
 import type { Extension, Handle } from 'mdast-util-from-markdown';
 
-const permalinks: string[] = [];
-const defaultPageResolver = (name: any) => [name];
-const pageResolver = defaultPageResolver;
-const wikilinkClassName = 'wikilink';
-const defaultHrefTemplate = (permalink: string) => `${permalink}`;
-const hrefTemplate = defaultHrefTemplate;
-
 const top = (stack: any) => {
   return stack[stack.length - 1];
 };
@@ -18,7 +11,6 @@ const enterWikilink: Handle = function (token) {
       value: null,
       data: {
         alias: null,
-        permalink: null,
         exists: null,
       },
     },
@@ -45,30 +37,20 @@ const exitWikilink: Handle = function (node) {
     return;
   }
 
-  const pagePermalinks = pageResolver(wikilink.value);
-  let permalink = pagePermalinks.find(p => permalinks.indexOf(p) !== -1);
-  const exists = permalink !== undefined;
-  if (!exists) {
-    permalink = pagePermalinks[0];
-  }
+  const href = wikilink.value;
+  const exists = href !== undefined;
   let displayName = wikilink.value;
   if (wikilink.data.alias) {
     displayName = wikilink.data.alias;
   }
 
-  const classNames = wikilinkClassName;
-  // if (!exists) {
-  //   classNames += ' ' + newClassName;
-  // }
-
   wikilink.data.alias = displayName;
-  wikilink.data.permalink = permalink;
   wikilink.data.exists = exists;
 
   wikilink.data.hName = 'a';
-  const href = hrefTemplate(permalink);
+
   wikilink.data.hProperties = {
-    className: classNames,
+    dataWikilink: true,
     href,
   };
   wikilink.data.hChildren = [

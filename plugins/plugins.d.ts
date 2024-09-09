@@ -10,7 +10,6 @@ export interface Wikilink extends Node {
   value: string | null;
   data: {
     alias: string | null;
-    permalink: string | null;
     exists: boolean | null;
   };
 }

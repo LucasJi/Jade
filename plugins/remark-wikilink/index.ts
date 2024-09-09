@@ -3,7 +3,7 @@ import type { Plugin } from 'unified';
 import { fromMarkdown } from './fromMarkdown';
 import { syntax } from './syntax';
 
-export const remarkWikilink: Plugin<[], Root> = function (
+const remarkWikilink: Plugin<[], Root> = function (
   opts = { markdownFolder: 'page' },
 ) {
   const data = this.data();
@@ -15,4 +15,10 @@ export const remarkWikilink: Plugin<[], Root> = function (
 
   micromarkExtensions.push(syntax());
   fromMarkdownExtensions.push(fromMarkdown());
+};
+
+export {
+  fromMarkdown as fromWikilinkMarkdown,
+  remarkWikilink,
+  syntax as wikilinkSyntax,
 };
