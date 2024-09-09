@@ -106,7 +106,7 @@ export const removeTitle = (content: string) => {
 };
 
 export const getPostToc = (content: string) => {
-  const tree = fromMarkdown(removeTitle(content)) as Root;
+  const tree = fromMarkdown(content) as Root;
   const result = toc(tree);
   const map = result.map;
 

@@ -35,6 +35,10 @@ declare module 'micromark-util-types' {
     wikilinkTarget: 'wikilinkTarget';
     wikilinkAlias: 'wikilinkAlias';
     wikilinkAliasMarker: 'wikilinkAliasMarker';
+
+    // remark-comment
+    comment: 'comment';
+    commentMarker: 'commentMarker';
   }
 }
 
