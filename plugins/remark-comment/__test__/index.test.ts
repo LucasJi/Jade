@@ -60,6 +60,31 @@ describe('micromark', () => {
 
     assert.equal(result, '<p>comment%%</p>');
   });
+
+  test('comment in inline block', () => {
+    const result = micromark('`inline: %%comment%%`', {
+      extensions: [commentSyntax()],
+    });
+
+    assert.equal(result, '<p><code>inline: %%comment%%</code></p>');
+  });
+
+  test('comment in multi lines', () => {
+    const result = micromark('%%\ncomment\n%%', {
+      extensions: [commentSyntax()],
+    });
+
+    console.log(result);
+    assert.equal(result, '<p>%%\ncomment\n%%</p>');
+  });
+
+  test('complex', () => {
+    const result = micromark(md, {
+      extensions: [commentSyntax()],
+    });
+
+    console.log(result);
+  });
 });
 
 describe('remark-comment', () => {

@@ -1,12 +1,27 @@
-comment text: %%comment%%
+这是一个 %%行内%% 注释。
 
-comment block:  
-%%  
-comment block  
+%%
+这是一个块注释。
+
+块注释可以跨多行。
 %%
 
-inline block: `%%comment in inline block%%`
+1. 列表，非注释
+2. %%列表，注释%%
 
-1. non-comment
-2. %%comment%%
+%%**加粗**%%
 
+%%_斜体_%%
+
+%%`code`%%
+
+| 表格注释       |
+|------------|
+| 表格，非注释     |
+| %% 表格，注释%% |
+
+```
+%%
+代码块注释
+%%
+```
