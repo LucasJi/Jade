@@ -17,7 +17,6 @@ import remarkTaskList from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Post } from '@/types';
 import clsx from 'clsx';
-import Slugger from 'github-slugger';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, ReactElement, cloneElement } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
@@ -25,23 +24,12 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import Wikilink from './wikilink';
-
-const slugs = new Slugger();
-
-const getHeadingId = (props: any) => {
-  if (!props?.children) {
-    return '';
-  }
-
-  const hContent = props.children[0] as string;
-  slugs.reset();
-  return slugs.slug(hContent);
-};
 
 const components = (
   renderWikilink: boolean,
@@ -105,18 +93,6 @@ const components = (
       </a>
     );
   },
-  h1: props => {
-    const frontmatter = currentPost.frontmatter;
-    const aliases: string[] | undefined = frontmatter?.aliases;
-    const tags: string[] | undefined = frontmatter?.tags;
-
-    return <h1>{props.children}</h1>;
-  },
-  h2: props => <h2 id={getHeadingId(props)}>{props.children}</h2>,
-  h3: props => <h3 id={getHeadingId(props)}>{props.children}</h3>,
-  h4: props => <h4 id={getHeadingId(props)}>{props.children}</h4>,
-  h5: props => <h5 id={getHeadingId(props)}>{props.children}</h5>,
-  h6: props => <h6 id={getHeadingId(props)}>{props.children}</h6>,
   pre: props => {
     const { children, className, node } = props;
 
@@ -291,7 +267,7 @@ const Markdown = ({
             [remarkJade as any, { title, wikilink }],
           ]}
           // TODO: Support rehypeMathjaxCHtml
-          rehypePlugins={[rehypeRaw as any, rehypeKatex]}
+          rehypePlugins={[rehypeRaw as any, rehypeKatex, rehypeSlug]}
         >
           {content}
         </ReactMarkdown>
