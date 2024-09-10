@@ -15,4 +15,4 @@ const remarkTaskList: Plugin<[], Root> = function () {
   fromMarkdownExtensions.push(fromMarkdown());
 };
 
-export default remarkTaskList;
+export { remarkTaskList };

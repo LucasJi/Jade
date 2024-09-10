@@ -5,7 +5,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { beforeAll, describe, expect, test } from 'vitest';
-import remarkTaskList from '../index';
+import { remarkTaskList } from '../index';
 
 const process = async (md: string) => {
   const html = (

@@ -9,9 +9,22 @@ export interface Wikilink extends Node {
   type: 'wikilink';
   value: string | null;
   data: {
-    alias: string | null;
-    exists: boolean | null;
+    alias?: string;
+    exists?: boolean;
   };
+}
+
+export interface EmbedFile extends Node {
+  type: 'embedFile';
+  filename: string;
+}
+
+declare module 'mdast' {
+  interface RootContentMap {
+    inlineMark: InlineMark;
+    wikilink: Wikilink;
+    embedFile: EmbedFile;
+  }
 }
 
 declare module 'micromark-util-types' {
@@ -39,18 +52,16 @@ declare module 'micromark-util-types' {
     // remark-comment
     comment: 'comment';
     commentMarker: 'commentMarker';
+
+    // remark-embed-files
+    embedFile: 'embedFile';
+    embedFileName: 'embedFileName';
+    embedFileEndMarker: 'embedFileEndMarker';
   }
 }
 
 declare module 'mdast-util-to-markdown' {
   interface ConstructNameMap {
     highlight: 'highlight';
-  }
-}
-
-declare module 'mdast' {
-  interface RootContentMap {
-    inlineMark: InlineMark;
-    wikilink: Wikilink;
   }
 }

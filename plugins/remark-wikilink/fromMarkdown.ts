@@ -9,10 +9,7 @@ const enterWikilink: Handle = function (token) {
     {
       type: 'wikilink',
       value: null,
-      data: {
-        alias: null,
-        exists: null,
-      },
+      data: {},
     },
     token,
   );

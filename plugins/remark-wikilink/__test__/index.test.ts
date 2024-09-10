@@ -1,11 +1,12 @@
 import { JSDOM } from 'jsdom';
+import { micromark } from 'micromark';
 import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { remarkWikilink } from '../index';
+import { remarkWikilink, wikilinkSyntax } from '../index';
 
 const process = async (md: string) => {
   const html = (
@@ -84,5 +85,16 @@ describe('remarkWikilink', () => {
     expect(a?.getAttribute('data-wikilink')).not.toBeNull();
     expect(a?.getAttribute('href')).toBe('Internal links');
     expect(a?.innerHTML).toBe('custom display text');
+  });
+});
+
+describe('micromark', () => {
+  test('basic syntax', () => {
+    const result = micromark('[[wikilink]]', {
+      extensions: [wikilinkSyntax()],
+    });
+
+    console.log(result);
+    // assert.equal(result, '<p></p>');
   });
 });

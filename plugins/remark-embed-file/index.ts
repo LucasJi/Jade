@@ -3,20 +3,20 @@ import type { Plugin } from 'unified';
 import { fromMarkdown } from './fromMarkdown';
 import { syntax } from './syntax';
 
-const remarkWikilink: Plugin<[], Root> = function () {
+const remarkEmbedFile: Plugin<[], Root> = function () {
   const data = this.data();
 
-  const micromarkExtensions =
-    data.micromarkExtensions || (data.micromarkExtensions = []);
   const fromMarkdownExtensions =
     data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []);
+  const micromarkExtensions =
+    data.micromarkExtensions || (data.micromarkExtensions = []);
 
-  micromarkExtensions.push(syntax());
   fromMarkdownExtensions.push(fromMarkdown());
+  micromarkExtensions.push(syntax());
 };
 
 export {
-  fromMarkdown as fromWikilinkMarkdown,
-  remarkWikilink,
-  syntax as wikilinkSyntax,
+  syntax as embedFileSyntax,
+  fromMarkdown as fromEmbedFileMarkdown,
+  remarkEmbedFile,
 };

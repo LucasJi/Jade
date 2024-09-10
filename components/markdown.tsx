@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
 import remarkJade from '@/plugins/remark-jade';
-import remarkTaskList from '@/plugins/remark-task-list';
+import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Post } from '@/types';
 import clsx from 'clsx';
