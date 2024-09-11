@@ -1,8 +1,8 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
-import { IDS, POST_ID } from '@/lib/constants';
+import { IDS, PIC_FORMATS, POST_ID, RK_ID } from '@/lib/constants';
 import { getRedisClient } from '@/lib/redis-utils';
-import { Post } from '@types';
+import { PathItem, Post } from '@types';
 import { notFound } from 'next/navigation';
 
 const redis = getRedisClient();
@@ -19,12 +19,25 @@ export default async function Page({
 }) {
   try {
     console.log('page: /posts/[id]', id);
+    const pathIteStr = await redis.get(`${RK_ID}${id}`);
+
+    if (!pathIteStr) {
+      console.log(`post with id ${id} not found`);
+      return <div>Note not found</div>;
+    }
+
+    const pathItem = JSON.parse(pathIteStr) as PathItem;
+
+    if (PIC_FORMATS.includes(pathItem.ext)) {
+      return <span>{`TODO: show image: ${pathItem.path}`}</span>;
+    }
+
     const postStr = await redis.get(`${POST_ID}${id}`);
     const post = postStr ? (JSON.parse(postStr) as Post) : undefined;
 
     if (!post) {
       console.log(`post with id ${id} not found`);
-      return <div>Post not found</div>;
+      return <div>Note not found</div>;
     }
 
     return (

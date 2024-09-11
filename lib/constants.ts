@@ -18,17 +18,21 @@ export const IDS = 'jade:posts:ids';
 export const POST_ID = 'jade:posts:id:';
 export const POSTS_TREE = 'jade:posts:tree';
 export const POST_PATH = 'jade:posts:path:';
+export const RK_ID = 'jade:id:';
 
 // accepted file formats
-const mdFormats = ['md'];
-const picFormats = ['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'];
-const audioFormats = ['flac', 'm4a', 'mp3', 'ogg', 'wav', 'webm', '3gp'];
-const videoFormats = ['mkv', 'mov', 'mp4', 'ogv', 'webm'];
-const pdfFormats = ['pdf'];
-export const ACCEPTED_FILE_FORMATS = [
-  ...mdFormats,
-  ...pdfFormats,
-  ...audioFormats,
-  ...videoFormats,
-  ...picFormats,
+const MD_FORMATS = [MD_EXT];
+export const PIC_FORMATS = [
+  '.avif',
+  '.bmp',
+  '.gif',
+  '.jpeg',
+  '.jpg',
+  '.png',
+  '.svg',
+  '.webp',
 ];
+const audioFormats = ['.flac', '.m4a', '.mp3', '.ogg', '.wav', '.webm', '.3gp'];
+const videoFormats = ['.mkv', '.mov', '.mp4', '.ogv', '.webm'];
+const pdfFormats = ['.pdf'];
+export const ACCEPTED_FILE_FORMATS = [...MD_FORMATS, ...PIC_FORMATS];

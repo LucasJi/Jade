@@ -1,5 +1,14 @@
 /* eslint-disable no-console */
-import { IDS, POST_ID, POST_PATH, POSTS_TREE, SEP } from '@/lib/constants';
+import {
+  ACCEPTED_FILE_FORMATS,
+  IDS,
+  MD_EXT,
+  POST_ID,
+  POST_PATH,
+  POSTS_TREE,
+  RK_ID,
+  SEP,
+} from '@/lib/constants';
 import { env } from '@/lib/env';
 import { getGitTree, githubRequest } from '@/lib/github-utils';
 import { getRedisClient } from '@/lib/redis-utils';
@@ -17,14 +26,14 @@ import {
 import { PathItem, Post } from '@types';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import { join } from 'path';
+import path, { join } from 'path';
 import { Node, visit } from 'unist-util-visit';
 
 const { dir } = env;
 
-const getOnlinePostPaths = () => getGitTree();
+const loadRemoteVaultFilePathItems = (): Promise<PathItem[]> => getGitTree();
 
-const getLocalPostPaths = (
+const loadLocalVaultFilePathItems = (
   dir: string,
   root: string,
   excludedPaths: string[],
@@ -33,29 +42,33 @@ const getLocalPostPaths = (
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
-    const path = join(dir, file);
-    if (fs.statSync(path).isDirectory()) {
+    const absolutePath = join(dir, file);
+    if (fs.statSync(absolutePath).isDirectory()) {
       if (excludedPaths.includes(file)) {
         continue;
       }
-      getLocalPostPaths(path, root, excludedPaths, pathItems);
-    } else if (file.endsWith('.md')) {
-      const relativePath = path.replace(root + SEP, '');
-      pathItems.push({
-        id: relativePath,
-        path: relativePath,
-        type: 'blob',
-      });
+      loadLocalVaultFilePathItems(absolutePath, root, excludedPaths, pathItems);
+    } else {
+      const ext = path.extname(file);
+      if (ACCEPTED_FILE_FORMATS.includes(ext)) {
+        const relativePath = absolutePath.replace(root + SEP, '');
+        pathItems.push({
+          id: relativePath,
+          path: relativePath,
+          type: 'blob',
+          ext,
+        });
+      }
     }
   }
 
   return pathItems;
 };
 
-const getPostPaths = async () =>
+const loadVaultFilePathItems = async () =>
   dir.root
-    ? getLocalPostPaths(dir.root, dir.root, dir.excluded)
-    : getOnlinePostPaths();
+    ? loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded)
+    : loadRemoteVaultFilePathItems();
 
 const loadPost = async (path: string, id: string): Promise<Post> => {
   try {
@@ -125,23 +138,19 @@ const resolveWikilinks = async (posts: Post[]) => {
   }
 };
 
-const init = async () => {
-  console.log('initializing jade...');
-
-  const begin = new Date().getTime();
-  const existIds = new Set<string>();
-  const posts: Post[] = [];
+const loadVault = async () => {
   const redis = getRedisClient();
-
   const jadeKeys = await redis.keys('jade:*');
   jadeKeys.forEach(key => {
     redis.del(key);
   });
+  const existIds = new Set<string>();
+  const posts: Post[] = [];
 
-  const pathItems = await getPostPaths();
+  const pathItems = await loadVaultFilePathItems();
 
   for (const item of pathItems) {
-    const { path } = item;
+    const { path, ext } = item;
     let hash = murmurhash(path);
     let id = decimalToBase62(hash);
 
@@ -155,12 +164,15 @@ const init = async () => {
 
     // cache path
     redis.set(`${POST_PATH}${path}`, id);
+    redis.set(`${RK_ID}${id}`, JSON.stringify(item));
 
-    const post = await loadPost(path, id);
-    posts.push(post);
+    if (ext === MD_EXT) {
+      const post = await loadPost(path, id);
+      posts.push(post);
+    }
   }
 
-  // cache post ids
+  // cache ids
   redis.sadd(IDS, [...existIds.values()]);
 
   await resolveWikilinks(posts);
@@ -175,6 +187,13 @@ const init = async () => {
 
   // cache posts tree
   redis.set(POSTS_TREE, JSON.stringify(postsTree));
+};
+
+const init = async () => {
+  console.log('initializing jade...');
+  const begin = new Date().getTime();
+
+  await loadVault();
 
   console.log('jade initialized in', new Date().getTime() - begin, 'ms');
 };

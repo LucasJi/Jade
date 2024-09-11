@@ -40,4 +40,5 @@ export interface PathItem {
   id: string;
   path: string;
   type: string;
+  ext: string;
 }

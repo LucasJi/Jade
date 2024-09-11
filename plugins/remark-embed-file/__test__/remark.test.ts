@@ -35,15 +35,15 @@ describe('remarkEmbedFile', () => {
   test('valid syntax', async () => {
     const html = await process('![[file]]');
     const doc = parser.parseFromString(html, 'text/html');
-    const span = doc.querySelector('span');
-    expect(span).not.toBe(null);
-    expect(span?.getAttribute('data-embed-file')).not.toBeNull();
+    const section = doc.querySelector('section');
+    expect(section).not.toBe(null);
+    expect(section?.getAttribute('data-embed-file')).not.toBeNull();
   });
 
   test('invalid syntax', async () => {
     const html = await process('![file]]');
     const doc = parser.parseFromString(html, 'text/html');
-    const span = doc.querySelector('span');
-    expect(span).toBe(null);
+    const section = doc.querySelector('section');
+    expect(section).toBe(null);
   });
 });

@@ -10,7 +10,7 @@ const enterEmbedFile: Handle = function (token) {
       type: 'embedFile',
       filename: '',
       data: {
-        hName: 'span',
+        hName: 'section',
         hProperties: { dataEmbedFile: true },
       },
     },
@@ -25,12 +25,12 @@ const exitEmbedFile: Handle = function (node) {
     return;
   }
 
-  embedFile.data.hChildren = [
-    {
-      type: 'text',
-      value: embedFile.filename,
-    },
-  ];
+  // embedFile.data.hChildren = [
+  //   {
+  //     type: 'text',
+  //     value: embedFile.filename,
+  //   },
+  // ];
 
   this.exit(node);
 };

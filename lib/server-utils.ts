@@ -72,12 +72,16 @@ export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
       });
     }
 
-    // c is a markdown file
+    // c is a file
     if (item.type === 'blob') {
       const file: string = pathParts[pathParts.length - 1];
+      const ext = item.ext;
+      const extPosition = file.lastIndexOf(ext);
+      const name = file.slice(0, extPosition);
       currentNode.children.push({
         id: item.id,
-        name: file.replace(MD_EXT_REG, ''),
+        // name: file.replace(MD_EXT_REG, ''),
+        name,
         children: [],
         isDir: false,
       });
