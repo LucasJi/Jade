@@ -14,11 +14,11 @@ export const MD_EXT_REG = /\.md$/;
 export const MD_EXT = '.md';
 
 // redis keys
-export const IDS = 'jade:posts:ids';
-export const POST_ID = 'jade:posts:id:';
-export const POSTS_TREE = 'jade:posts:tree';
-export const POST_PATH = 'jade:posts:path:';
-export const RK_ID = 'jade:id:';
+export const RK_IDS = 'jade:ids';
+export const RK_TREE = 'jade:tree';
+export const RK_ID_NOTE = 'jade:note:';
+export const RK_NOTE_PATH_ID = 'jade:note.path:';
+export const RK_ID_PATH = 'jade:path:';
 
 // accepted file formats
 const MD_FORMATS = [MD_EXT];

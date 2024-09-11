@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 import {
   ACCEPTED_FILE_FORMATS,
-  IDS,
   MD_EXT,
-  POST_ID,
-  POST_PATH,
-  POSTS_TREE,
-  RK_ID,
+  RK_ID_NOTE,
+  RK_ID_PATH,
+  RK_IDS,
+  RK_NOTE_PATH_ID,
+  RK_TREE,
   SEP,
 } from '@/lib/constants';
 import { env } from '@/lib/env';
@@ -14,7 +14,7 @@ import { getGitTree, githubRequest } from '@/lib/github-utils';
 import { getRedisClient } from '@/lib/redis-utils';
 import {
   base64Decode,
-  buildPostsTree,
+  buildNoteTree,
   decimalToBase62,
   murmurhash,
   parseNote,
@@ -23,7 +23,7 @@ import {
   fromWikilinkMarkdown,
   wikilinkSyntax,
 } from '@/plugins/remark-wikilink';
-import { PathItem, Post } from '@types';
+import { Note, PathItem } from '@types';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import path, { join } from 'path';
@@ -70,13 +70,13 @@ const loadVaultFilePathItems = async () =>
     ? loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded)
     : loadRemoteVaultFilePathItems();
 
-const loadPost = async (path: string, id: string): Promise<Post> => {
+const loadNote = async (path: string, id: string): Promise<Note> => {
   try {
     let file;
     if (dir.root) {
       file = fs.readFileSync(join(dir.root, path), 'utf8');
     } else {
-      file = await githubRequest(`/contents/${path}`, `post:${id}`);
+      file = await githubRequest(`/contents/${path}`, `note:${id}`);
     }
     // base64Decode: resolve emoji base64 decoding problem
     const content = dir.root ? file : base64Decode(file.content);
@@ -94,19 +94,19 @@ const loadPost = async (path: string, id: string): Promise<Post> => {
       path,
     };
   } catch (e) {
-    console.error('load post failed with path:', path, e);
+    console.error('load note failed with path:', path, e);
     throw e;
   }
 };
 
-const resolveWikilinks = async (posts: Post[]) => {
-  const findPostById = (id: string): Post | undefined => {
-    return posts.find(p => p.id === id);
+const resolveWikilinks = async (notes: Note[]) => {
+  const findNoteById = (id: string): Note | undefined => {
+    return notes.find(p => p.id === id);
   };
 
-  for (const post of posts) {
-    if (post !== null) {
-      const tree = fromMarkdown(post.content, {
+  for (const note of notes) {
+    if (note !== null) {
+      const tree = fromMarkdown(note.content, {
         extensions: [wikilinkSyntax()],
         mdastExtensions: [fromWikilinkMarkdown()],
       });
@@ -115,22 +115,22 @@ const resolveWikilinks = async (posts: Post[]) => {
 
       visit(tree as Node, 'wikilink', node => {
         const { value }: { value: string } = node;
-        const post = posts.find(post => {
-          const path = base64Decode(post.id);
+        const note = notes.find(note => {
+          const path = base64Decode(note.id);
           return path.includes(value.split('#')[0]);
         });
-        if (post) {
-          forwardLinks.add(post.id);
+        if (note) {
+          forwardLinks.add(note.id);
         }
       });
 
-      post.forwardLinks = Array.from(forwardLinks);
+      note.forwardLinks = Array.from(forwardLinks);
 
       for (const fl of forwardLinks) {
-        const fp = findPostById(fl);
+        const fp = findNoteById(fl);
         if (fp) {
           const bls = new Set(fp.backlinks);
-          bls.add(post.id);
+          bls.add(note.id);
           fp.backlinks = Array.from(bls);
         }
       }
@@ -145,7 +145,7 @@ const loadVault = async () => {
     redis.del(key);
   });
   const existIds = new Set<string>();
-  const posts: Post[] = [];
+  const notes: Note[] = [];
 
   const pathItems = await loadVaultFilePathItems();
 
@@ -163,30 +163,30 @@ const loadVault = async () => {
     item.id = id;
 
     // cache path
-    redis.set(`${POST_PATH}${path}`, id);
-    redis.set(`${RK_ID}${id}`, JSON.stringify(item));
+    redis.set(`${RK_NOTE_PATH_ID}${path}`, id);
+    redis.set(`${RK_ID_PATH}${id}`, JSON.stringify(item));
 
     if (ext === MD_EXT) {
-      const post = await loadPost(path, id);
-      posts.push(post);
+      const note = await loadNote(path, id);
+      notes.push(note);
     }
   }
 
   // cache ids
-  redis.sadd(IDS, [...existIds.values()]);
+  redis.sadd(RK_IDS, [...existIds.values()]);
 
-  await resolveWikilinks(posts);
+  await resolveWikilinks(notes);
 
-  // cache posts
-  for (const post of posts) {
-    const key = `${POST_ID}${post.id}`;
-    redis.set(key, JSON.stringify(post));
+  // cache notes
+  for (const note of notes) {
+    const key = `${RK_ID_NOTE}${note.id}`;
+    redis.set(key, JSON.stringify(note));
   }
 
-  const postsTree = buildPostsTree(pathItems);
+  const noteTree = buildNoteTree(pathItems);
 
-  // cache posts tree
-  redis.set(POSTS_TREE, JSON.stringify(postsTree));
+  // cache notes tree
+  redis.set(RK_TREE, JSON.stringify(noteTree));
 };
 
 const init = async () => {

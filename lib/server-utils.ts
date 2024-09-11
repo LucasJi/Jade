@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { PathItem, Post, PostGraph, TreeNode } from '@types';
+import { Note, NoteGraph, PathItem, TreeNode } from '@types';
 import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toc } from 'mdast-util-toc';
@@ -10,7 +10,7 @@ import { VFile } from 'vfile';
 import { matter } from 'vfile-matter';
 import { MD_EXT_REG, MD_HEADING_REG, MD_TITLE_REG, SEP } from './constants';
 
-export const buildPostsTree = (paths: PathItem[]): TreeNode[] => {
+export const buildNoteTree = (paths: PathItem[]): TreeNode[] => {
   const tree: TreeNode = {
     id: 'root',
     name: 'root',
@@ -109,7 +109,7 @@ export const removeTitle = (content: string) => {
   return restTokens.join(os.EOL);
 };
 
-export const getPostToc = (content: string) => {
+export const getNoteToc = (content: string) => {
   const tree = fromMarkdown(content) as Root;
   const result = toc(tree);
   const map = result.map;
@@ -129,17 +129,17 @@ export const base64Decode = (text: string) => {
   return Buffer.from(text, 'base64').toString();
 };
 
-export const getPostGraphFromPosts = async (
-  posts: Post[],
-): Promise<PostGraph> => {
-  const postGraphLinks: Set<string> = new Set();
-  const ids = posts.map(p => p.id);
+export const getNoteGraphFromNotes = async (
+  notes: Note[],
+): Promise<NoteGraph> => {
+  const noteGraphLinks: Set<string> = new Set();
+  const ids = notes.map(p => p.id);
 
-  for (const post of posts) {
-    const { forwardLinks, backlinks, id } = post;
+  for (const note of notes) {
+    const { forwardLinks, backlinks, id } = note;
     for (const fl of forwardLinks) {
       if (ids.includes(fl)) {
-        postGraphLinks.add(
+        noteGraphLinks.add(
           JSON.stringify({
             source: id,
             target: fl,
@@ -150,7 +150,7 @@ export const getPostGraphFromPosts = async (
 
     // for (const bl of backlinks) {
     //   if (ids.includes(bl)) {
-    //     postGraphLinks.add(
+    //     noteGraphLinks.add(
     //       JSON.stringify({
     //         source: bl,
     //         target: id,
@@ -161,12 +161,12 @@ export const getPostGraphFromPosts = async (
   }
 
   return {
-    nodes: posts.map(post => ({
-      ...post,
+    nodes: notes.map(note => ({
+      ...note,
       content: '',
       frontmatter: undefined,
     })),
-    links: Array.from(postGraphLinks).map(str => JSON.parse(str)),
+    links: Array.from(noteGraphLinks).map(str => JSON.parse(str)),
   };
 };
 
@@ -204,8 +204,8 @@ export const parseNote = (
   // try to get title from frontmatter
   const frontmatter: { [key: string]: any } | undefined = {};
   try {
-    // const postVFile = DEFAULT_MD_PROCESSOR.processSync(post);
-    // frontmatter = postVFile.data.matter as undefined | { [key: string]: any };
+    // const vFile = DEFAULT_MD_PROCESSOR.processSync(note);
+    // frontmatter = vFile.data.matter as undefined | { [key: string]: any };
     // title = frontmatter?.title;
   } catch (e) {
     // do nothing
@@ -213,7 +213,7 @@ export const parseNote = (
 
   // try to get title from heading `#`
   // if (!title) {
-  //   const root = DEFAULT_MD_PROCESSOR.parse(post);
+  //   const root = DEFAULT_MD_PROCESSOR.parse(note);
   //   const titleHeadingIdx = root.children.findIndex(
   //     node => node.type === 'heading' && node.depth === 1,
   //   );

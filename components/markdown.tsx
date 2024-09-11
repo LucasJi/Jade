@@ -15,7 +15,7 @@ import remarkHighlight from '@/plugins/remark-highlight';
 import remarkJade from '@/plugins/remark-jade';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { Post } from '@/types';
+import { Note } from '@/types';
 import clsx from 'clsx';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, ReactElement, cloneElement } from 'react';
@@ -33,13 +33,13 @@ import Wikilink from './wikilink';
 
 const components = (
   renderWikilink: boolean,
-  currentPost: Post,
+  currentNote: Note,
 ): Components => ({
   a: props => {
     const { node, className, href, children, ...rest } = props;
     if ('data-wikilink' in rest && href) {
       return renderWikilink ? (
-        <Wikilink wikilink={href} currentPost={currentPost}>
+        <Wikilink wikilink={href} currentNote={currentNote}>
           {children}
         </Wikilink>
       ) : (
@@ -221,14 +221,14 @@ const Markdown = ({
   className,
   renderWikilink = true,
   wikilink = '',
-  post,
+  note,
 }: {
   className?: string;
   renderWikilink?: boolean;
   wikilink?: string;
-  post: Post;
+  note: Note;
 }) => {
-  const { title, content, frontmatter } = post;
+  const { title, content, frontmatter } = note;
   return (
     <ScrollArea className="overflow-x-auto">
       <article
@@ -254,7 +254,7 @@ const Markdown = ({
         )}
       >
         <ReactMarkdown
-          components={components(renderWikilink, post)}
+          components={components(renderWikilink, note)}
           remarkPlugins={[
             remarkGfm,
             remarkBreaks,

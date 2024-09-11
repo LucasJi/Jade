@@ -1,13 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { PostGraph } from '@types';
+import { NoteGraph } from '@types';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { PiGraphLight } from 'react-icons/pi';
 
 const GlobalGraphView = ({ className = '' }: { className?: string }) => {
-  const [postGraph, setPostGraph] = useState<PostGraph>();
+  const [postGraph, setPostGraph] = useState<NoteGraph>();
 
   useEffect(() => {
     // getPosts()

@@ -25,7 +25,7 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
    # Website
    NEXT_PUBLIC_BASE_URL=http://localhost:3000
    NEXT_PUBLIC_SITE_TITLE="Jade"
-   NEXT_PUBLIC_SITE_DESCRIPTION="A personal blog, publishing posts written by Obsidian."
+   NEXT_PUBLIC_SITE_DESCRIPTION="A personal blog, publishing notes written by Obsidian."
 
    REPO_ACCESS_TOKEN=
    REPO_NAME=
@@ -44,9 +44,9 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
     - `GITHUB_REPO_ACCESS_TOKEN`: When generating
       your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token),
       the **Read-Only** permission of **Contents** must be selected.
-    - `GITHUB_REPO`: The repository where your posts are stored. If you haven't created a post
+    - `GITHUB_REPO`: The repository where your notes are stored. If you haven't created a note
       repository yet, you can fork
-      my [feature test post repository](https://github.com/LucasJi/obsidian-feature-demo-posts).
+      my [feature test note repository](https://github.com/LucasJi/obsidian-feature-demo-notes).
     - `GITHUB_OWNER`: The owner of the repository.
 
 4. Start the server
@@ -59,15 +59,15 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
 
 ## Features
 
-### Post tile
+### Note tile
 
-This project now supports three types of post title definitions:
+This project now supports three types of note title definitions:
 
 1. The `title` key in frontmatter
 
    ```md
    ---
-   title: Post Title
+   title: Note Title
    ---
 
    ## Heading 2
@@ -78,14 +78,14 @@ This project now supports three types of post title definitions:
 2. The heading starts with number sign `#`
 
    ```md
-   # Post Title
+   # Note Title
 
    ## Heading 2
 
    More contents
    ```
 
-3. The filename of post, just like what Obsidian does.
+3. The filename of note, just like what Obsidian does.
 
 The first type(title defined in the front matter) takes highest precedence over others.
 
@@ -103,27 +103,27 @@ Galaxy Blog supports displaying all kinds of Obsidian's wikilinks:
 
 ### Graph View
 
-Galaxy Post generates a graph view just like what Obsidian does.
+Galaxy Note generates a graph view just like what Obsidian does.
 
-The only difference is the nodes in Galaxy Post's graph view are clickable. You will navigate the
-specific post page after clicking the post node in the graph view.
+The only difference is the nodes in Galaxy Note's graph view are clickable. You will navigate the
+specific note page after clicking the note node in the graph view.
 
 ### File explorer
 
-Galaxy Post shows the directory structure of your posts.
+Galaxy Note shows the directory structure of your notes.
 
 ### Table of Content
 
-Galaxy Post generates a table of content for each post. It will be displayed at the right-bottom
-side of the post page.
+Galaxy Note generates a table of content for each note. It will be displayed at the right-bottom
+side of the note page.
 
 ### Frontmatter
 
-Galaxy Post only supports `yaml` style frontmatter now. For example:
+Galaxy Note only supports `yaml` style frontmatter now. For example:
 
 ```yaml
 ---
-title: Post Title
+title: Note Title
 aliases: 2023-01-01
 tags:
   - tag1
@@ -132,7 +132,7 @@ tags:
 ```
 
 For now, only the `title`, `tags` and `aliases` keys are supported. The values of them will be
-resolved and friendly displayed in the post page.
+resolved and friendly displayed in the note page.
 
 ## Tech Stack
 

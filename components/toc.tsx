@@ -1,4 +1,4 @@
-import { getPostToc } from '@/lib/server-utils';
+import { getNoteToc } from '@/lib/server-utils';
 import clsx from 'clsx';
 import { BlockContent, Link, List, ListItem, Text } from 'mdast';
 
@@ -47,7 +47,7 @@ export default async function Toc({
   content: string;
   className?: string;
 }) {
-  const headings: ListItem[] = getPostToc(content);
+  const headings: ListItem[] = getNoteToc(content);
 
   return (
     headings?.length > 0 && (

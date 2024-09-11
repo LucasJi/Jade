@@ -52,12 +52,12 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
       <div
         className={cn(
           isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-          'transition-all grid overflow-hidden',
+          'grid overflow-hidden transition-all',
         )}
       >
         <ul
           className={cn(
-            'min-h-0 ml-4 transition-all',
+            'ml-4 min-h-0 transition-all',
             isExpanded ? 'visible opacity-100' : 'invisible opacity-0',
           )}
         >
@@ -70,14 +70,14 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   ) : (
     <li
       className={cn(
-        'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] hover:underline decoration-obsidian',
+        'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] decoration-obsidian hover:underline',
         { underline: node.id === id },
       )}
       title={node.name}
       id={node.id}
     >
       <Link
-        href={`/posts/${node.id || ''}`}
+        href={`/notes/${node.id || ''}`}
         className="min-h-0 text-base"
         // Reduce unnecessary requests
         prefetch={false}
@@ -140,7 +140,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
     return false;
   };
 
-  const selectOpenedPost = () => {
+  const selectOpenedNote = () => {
     contains(treeNodes);
     setExpandedNodeIds(new Set([...expandedNodeIds]));
     setTimeout(() => {
@@ -153,7 +153,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/tree`)
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/tree`)
       .then(res => res.json())
       .then(data => {
         setTreeNodes(data);
@@ -161,7 +161,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
   }, [id]);
 
   useEffect(() => {
-    selectOpenedPost();
+    selectOpenedNote();
   }, [treeNodes]);
 
   return (
@@ -173,7 +173,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
           size="icon"
           className="h-5 w-5 rounded-full"
           onClick={() => {
-            selectOpenedPost();
+            selectOpenedNote();
           }}
         >
           <VscTarget size={16} />

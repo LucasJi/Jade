@@ -1,4 +1,4 @@
-import { PostGraph } from '@types';
+import { NoteGraph } from '@types';
 import clsx from 'clsx';
 import ForceDirectedGraph from './force-directed-graph';
 
@@ -8,7 +8,7 @@ const GraphView = ({
   className,
 }: {
   postId?: string;
-  postGraph: PostGraph;
+  postGraph: NoteGraph;
   className?: string;
 }) => {
   return (

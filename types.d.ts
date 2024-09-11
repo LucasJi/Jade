@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-export interface Post {
+export interface Note {
   // base64Encode(path)
   id: string;
   content: string;
@@ -16,13 +16,13 @@ export interface Post {
 
 export type Frontmatter = undefined | { [key: string]: any };
 
-export type PostGraphNode = d3.SimulationNodeDatum & Post;
+export type NoteGraphNode = d3.SimulationNodeDatum & Note;
 
-export type PostGraphLink = d3.SimulationLinkDatum<PostGraphNode>;
+export type NoteGraphLink = d3.SimulationLinkDatum<NoteGraphNode>;
 
-export type PostGraph = {
-  nodes: PostGraphNode[];
-  links: PostGraphLink[];
+export type NoteGraph = {
+  nodes: NoteGraphNode[];
+  links: NoteGraphLink[];
 };
 
 export interface TreeNode {

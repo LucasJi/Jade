@@ -1,6 +1,6 @@
 'use client';
 
-import { PostGraph, PostGraphLink, PostGraphNode } from '@types';
+import { NoteGraph, NoteGraphLink, NoteGraphNode } from '@types';
 import clsx from 'clsx';
 import * as d3 from 'd3';
 import { useRouter } from 'next/navigation';
@@ -18,7 +18,7 @@ const DURATION = 100;
 const BASE_RADIUS = 6;
 const OPACITY_SCALE = 1;
 
-const calcNodeRadius = (node: PostGraphNode) =>
+const calcNodeRadius = (node: NoteGraphNode) =>
   BASE_RADIUS + Math.sqrt(node.backlinks.length);
 
 const ForceDirectedGraph = ({
@@ -29,7 +29,7 @@ const ForceDirectedGraph = ({
   border = true,
   full = false,
 }: {
-  postGraph: PostGraph;
+  postGraph: NoteGraph;
   size?: number;
   className?: string;
   postId?: string;
@@ -44,7 +44,7 @@ const ForceDirectedGraph = ({
   useEffect(() => {
     const { links, nodes } = postGraph;
 
-    const drag = (simulation: d3.Simulation<PostGraphNode, PostGraphLink>) => {
+    const drag = (simulation: d3.Simulation<NoteGraphNode, NoteGraphLink>) => {
       const dragstarted = (event: any, d: any) => {
         if (!event.active) {
           simulation.alphaTarget(0.3).restart();
@@ -81,7 +81,7 @@ const ForceDirectedGraph = ({
         .force(
           'link',
           d3
-            .forceLink<PostGraphNode, PostGraphLink>(links)
+            .forceLink<NoteGraphNode, NoteGraphLink>(links)
             .id(d => d.id)
             .strength(0.1)
             .distance(LINK_DISTANCE),
@@ -140,22 +140,22 @@ const ForceDirectedGraph = ({
         })
         .on('mouseover', function (_, d) {
           const { id } = d;
-          const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
-          const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
-          const title = d3.selectAll<HTMLElement, PostGraphNode>('.title');
+          const link = d3.selectAll<HTMLElement, NoteGraphLink>('.link');
+          const node = d3.selectAll<HTMLElement, NoteGraphNode>('.node');
+          const title = d3.selectAll<HTMLElement, NoteGraphNode>('.title');
 
           const connectedNodeIds = [...d.backlinks, ...d.forwardLinks];
           const connectedLinks = link.filter(d => {
-            const source = d.source as PostGraphNode;
-            const target = d.target as PostGraphNode;
+            const source = d.source as NoteGraphNode;
+            const target = d.target as NoteGraphNode;
             return id === source.id || id === target.id;
           });
 
           // fade out not connected links and nodes
           link
             .filter(d => {
-              const source = d.source as PostGraphNode;
-              const target = d.target as PostGraphNode;
+              const source = d.source as NoteGraphNode;
+              const target = d.target as NoteGraphNode;
               return !(id === source.id || id === target.id);
             })
             .transition()
@@ -193,9 +193,9 @@ const ForceDirectedGraph = ({
         })
         .on('mouseleave', function (_, d) {
           const { id } = d;
-          const link = d3.selectAll<HTMLElement, PostGraphLink>('.link');
-          const node = d3.selectAll<HTMLElement, PostGraphNode>('.node');
-          const title = d3.selectAll<HTMLElement, PostGraphNode>('.title');
+          const link = d3.selectAll<HTMLElement, NoteGraphLink>('.link');
+          const node = d3.selectAll<HTMLElement, NoteGraphNode>('.node');
+          const title = d3.selectAll<HTMLElement, NoteGraphNode>('.title');
 
           // recover all links and nodes
           link

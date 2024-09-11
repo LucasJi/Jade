@@ -1,6 +1,6 @@
-import { POST_ID, POST_PATH } from '@/lib/constants';
+import { RK_ID_NOTE, RK_NOTE_PATH_ID } from '@/lib/constants';
 import { getRedisClient } from '@/lib/redis-utils';
-import { Post } from '@/types';
+import { Note } from '@/types';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import Markdown from './markdown';
@@ -17,22 +17,22 @@ const redis = getRedisClient();
 export default async function Wikilink({
   wikilink = '',
   children,
-  currentPost,
+  currentNote,
 }: {
   wikilink: string;
   children: ReactNode;
-  currentPost: Post;
+  currentNote: Note;
 }) {
   console.log('component wikilink');
-  let post = null;
+  let note = null;
 
   const splits = wikilink.split('#');
   const title = splits[0];
 
   if (title === '') {
-    post = currentPost;
+    note = currentNote;
   } else {
-    const matched = await redis.keys(`${POST_PATH}*${title}*`);
+    const matched = await redis.keys(`${RK_NOTE_PATH_ID}*${title}*`);
     console.log('wikilink', matched, title);
     if (matched.length > 0) {
       const path = matched[0];
@@ -40,20 +40,20 @@ export default async function Wikilink({
       console.log('wikilink id', id);
 
       if (id) {
-        const postStr = await redis.get(`${POST_ID}${id}`);
-        post = postStr && (JSON.parse(postStr) as Post);
+        const noteStr = await redis.get(`${RK_ID_NOTE}${id}`);
+        note = noteStr && (JSON.parse(noteStr) as Note);
       }
     }
   }
 
-  if (post) {
+  if (note) {
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
             <Link
               className="text-obsidian"
-              href={`/posts/${encodeURIComponent(post!.id)}`}
+              href={`/notes/${encodeURIComponent(note!.id)}`}
               color="foreground"
               prefetch={false}
             >
@@ -66,7 +66,7 @@ export default async function Wikilink({
                 className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"
                 renderWikilink={false}
                 wikilink={wikilink}
-                post={post!}
+                note={note!}
               />
             </TooltipContent>
           </TooltipPortal>
