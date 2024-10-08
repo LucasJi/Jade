@@ -9,7 +9,9 @@ function TocNode({ heading }: { heading: BlockContent | ListItem }) {
     const text = link.children[0] as Text;
     node = (
       <li>
-        <a href={link.url}>{text.value}</a>
+        <a className="text-base text-[#5c5c5c]" href={link.url}>
+          {text.value}
+        </a>
       </li>
     );
   } else if (heading.type === 'listItem') {
@@ -53,7 +55,7 @@ export default async function Toc({
     headings?.length > 0 && (
       <div className={clsx(className)}>
         <span className="font-bold">On this page</span>
-        <ul className="text-sm font-thin">
+        <ul>
           {headings.map((heading, index) => (
             <TocNode key={`${heading.type}-${index}`} heading={heading} />
           ))}
