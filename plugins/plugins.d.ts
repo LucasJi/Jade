@@ -50,8 +50,10 @@ declare module 'micromark-util-types' {
     wikilinkAliasMarker: 'wikilinkAliasMarker';
 
     // remark-comment
+    commentSequenceTemporary: 'commentSequenceTemporary';
+    commentSequence: 'commentSequence';
+    commentText: 'commentText';
     comment: 'comment';
-    commentMarker: 'commentMarker';
 
     // remark-embed-files
     embedFile: 'embedFile';
