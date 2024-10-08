@@ -139,7 +139,7 @@ const initOptions = (options?: Options) => {
 export const remarkCallout: Plugin<[Options?], Root> = _options => {
   const options = initOptions(_options);
 
-  return (tree, file) => {
+  return (tree, _) => {
     visit(tree as Node, 'blockquote', (node: Blockquote) => {
       const paragraphNode = node.children.at(0);
       if (paragraphNode == null || paragraphNode.type !== 'paragraph') {
