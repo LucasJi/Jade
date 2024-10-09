@@ -50,4 +50,28 @@ describe('remarkHighlight', () => {
       '"<p><code>==a==</code></p>"',
     );
   });
+
+  test('should supports more equal signs at the beginning', async () => {
+    expect(await process('===a==')).toMatchInlineSnapshot(
+      '"<p><mark>=a</mark></p>"',
+    );
+  });
+
+  test('should supports more equal signs at the end', async () => {
+    expect(await process('==a===')).toMatchInlineSnapshot(
+      '"<p><mark>=a</mark></p>"',
+    );
+  });
+
+  test('should support text with unwanted space at the end', async () => {
+    expect(await process('==a ==')).toMatchInlineSnapshot(
+      '"<p><mark>=a</mark></p>"',
+    );
+  });
+
+  test('should not support text with unwanted space at the beginning', async () => {
+    expect(await process('== a==')).toMatchInlineSnapshot(
+      '"<p><mark>=a</mark></p>"',
+    );
+  });
 });
