@@ -20,6 +20,7 @@ export const fromMarkdown = (): FromMarkdownExtension => {
   const exitHighlight: Handle = function (token) {
     this.exit(token);
   };
+
   return {
     canContainEols: ['mark'],
     enter: {

@@ -1,4 +1,18 @@
-import type { ConstructName, Handle, Unsafe } from 'mdast-util-to-markdown';
+import type {
+  ConstructName,
+  Handle,
+  Options,
+  Unsafe,
+} from 'mdast-util-to-markdown';
+
+const constructsWithoutMark: ConstructName[] = [
+  'autolink',
+  'destinationLiteral',
+  'destinationRaw',
+  'reference',
+  'titleQuote',
+  'titleApostrophe',
+];
 
 const handleMark: Handle = function (node, _, state, info) {
   const tracker = state.createTracker(info);
@@ -14,14 +28,9 @@ const handleMark: Handle = function (node, _, state, info) {
   return value;
 };
 
-const constructsWithoutMark: ConstructName[] = [
-  'autolink',
-  'destinationLiteral',
-  'destinationRaw',
-  'reference',
-  'titleQuote',
-  'titleApostrophe',
-];
+function peekMark() {
+  return '=';
+}
 
 const unsafe: Unsafe = {
   character: '=',
@@ -29,7 +38,7 @@ const unsafe: Unsafe = {
   notInConstruct: constructsWithoutMark,
 };
 
-export const toMarkdown = () => ({
+export const toMarkdown = (): Options => ({
   unsafe: [unsafe],
   handlers: { mark: handleMark },
 });

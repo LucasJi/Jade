@@ -1,22 +1,17 @@
 import type { Root } from 'mdast';
 import type { Plugin } from 'unified';
+import { addExtensions } from '../utils';
 import { fromMarkdown } from './fromMarkdown';
-import { syntax } from './syntax';
+import { syntax } from './micromark/syntax';
 import { toMarkdown } from './toMarkdown';
 
 const remarkHighlight: Plugin<[], Root> = function () {
-  const data = this.data();
-
-  const micromarkExtensions =
-    data.micromarkExtensions || (data.micromarkExtensions = []);
-  const fromMarkdownExtensions =
-    data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []);
-  const toMarkdownExtensions =
-    data.toMarkdownExtensions || (data.toMarkdownExtensions = []);
-
-  micromarkExtensions.push(syntax());
-  fromMarkdownExtensions.push(fromMarkdown());
-  toMarkdownExtensions.push(toMarkdown());
+  addExtensions({
+    data: this.data(),
+    micromarkExtension: syntax(),
+    fromMarkdownExtension: fromMarkdown(),
+    toMarkdownExtension: toMarkdown(),
+  });
 };
 
 export default remarkHighlight;
