@@ -143,13 +143,11 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
     visit(tree as Node, 'blockquote', (node: Blockquote) => {
       const paragraphNode = node.children.at(0);
       if (paragraphNode == null || paragraphNode.type !== 'paragraph') {
-        console.debug('blockquote first child is not a paragraph', node);
         return;
       }
 
       // Skip if the first line is empty
       if (node.position?.start.line !== paragraphNode.position?.start.line) {
-        console.debug('first line is empty');
         return;
       }
 
@@ -256,7 +254,6 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
         }
       } else {
         // Add all nodes after the current node as callout body
-        console.log('sdfsdfsdf');
         bodyNode[0].children.push(...paragraphNode.children.slice(1));
       }
 
