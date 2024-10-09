@@ -1,11 +1,11 @@
 import { micromark } from 'micromark';
 import { assert, describe, test } from 'vitest';
-import { embedFileSyntax } from '../index';
+import { remarkEmbedFileSyntax } from '../index';
 
 describe('micromark', () => {
   test('embed file', () => {
     const result = micromark('![[a]]', {
-      extensions: [embedFileSyntax()],
+      extensions: [remarkEmbedFileSyntax()],
     });
 
     assert.equal(result, '<p></p>');
@@ -13,7 +13,7 @@ describe('micromark', () => {
 
   test('invalid syntax - 1', () => {
     const result = micromark('[[a]]', {
-      extensions: [embedFileSyntax()],
+      extensions: [remarkEmbedFileSyntax()],
     });
 
     assert.equal(result, '<p>[[a]]</p>');
@@ -21,7 +21,7 @@ describe('micromark', () => {
 
   test('invalid syntax - 2', () => {
     const result = micromark('![[a]', {
-      extensions: [embedFileSyntax()],
+      extensions: [remarkEmbedFileSyntax()],
     });
 
     assert.equal(result, '<p>![[a]</p>');
@@ -29,7 +29,7 @@ describe('micromark', () => {
 
   test('valid syntax - 1', () => {
     const result = micromark('![[a]]]', {
-      extensions: [embedFileSyntax()],
+      extensions: [remarkEmbedFileSyntax()],
     });
 
     assert.equal(result, '<p>]</p>');

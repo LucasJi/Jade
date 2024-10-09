@@ -21,7 +21,7 @@ import {
 } from '@/lib/server-utils';
 import {
   fromWikilinkMarkdown,
-  wikilinkSyntax,
+  remarkWikilinkSyntax,
 } from '@/plugins/remark-wikilink';
 import { Note, PathItem } from '@types';
 import fs from 'fs';
@@ -107,7 +107,7 @@ const resolveWikilinks = async (notes: Note[]) => {
   for (const note of notes) {
     if (note !== null) {
       const tree = fromMarkdown(note.content, {
-        extensions: [wikilinkSyntax()],
+        extensions: [remarkWikilinkSyntax()],
         mdastExtensions: [fromWikilinkMarkdown()],
       });
 

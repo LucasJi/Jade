@@ -18,5 +18,5 @@ const remarkWikilink: Plugin<[], Root> = function () {
 export {
   fromMarkdown as fromWikilinkMarkdown,
   remarkWikilink,
-  syntax as wikilinkSyntax,
+  syntax as remarkWikilinkSyntax,
 };

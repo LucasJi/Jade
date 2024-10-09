@@ -6,7 +6,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { beforeAll, describe, expect, test } from 'vitest';
-import { remarkWikilink, wikilinkSyntax } from '../index';
+import { remarkWikilink, remarkWikilinkSyntax } from '../index';
 
 const process = async (md: string) => {
   const html = (
@@ -91,7 +91,7 @@ describe('remarkWikilink', () => {
 describe('micromark', () => {
   test('basic syntax', () => {
     const result = micromark('[[wikilink]]', {
-      extensions: [wikilinkSyntax()],
+      extensions: [remarkWikilinkSyntax()],
     });
 
     console.log(result);

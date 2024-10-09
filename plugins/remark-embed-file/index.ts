@@ -16,7 +16,7 @@ const remarkEmbedFile: Plugin<[], Root> = function () {
 };
 
 export {
-  syntax as embedFileSyntax,
   fromMarkdown as fromEmbedFileMarkdown,
   remarkEmbedFile,
+  syntax as remarkEmbedFileSyntax,
 };
