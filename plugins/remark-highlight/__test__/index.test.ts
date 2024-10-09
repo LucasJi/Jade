@@ -3,7 +3,7 @@ import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
-import { describe, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import remarkHighlight from '../index';
 
 const process = async (md: string) => {
@@ -23,8 +23,25 @@ const process = async (md: string) => {
 };
 
 describe('remarkHighlight', () => {
-  test('plain text', async () => {
-    const md = '==highlight==';
-    const html = await process(md);
+  test('should ignore single equal sign', async () => {
+    expect(await process('a =b=')).toMatchInlineSnapshot('"<p>a =b=</p>"');
+  });
+
+  test('should parse markdown to micromark', async () => {
+    expect(await process('a ==b = c==')).toMatchInlineSnapshot(
+      '"<p>a <mark>b = c</mark></p>"',
+    );
+  });
+
+  test('should support several adjacent marks', async () => {
+    expect(await process('a ==b== ==c== ~~d~~')).toMatchInlineSnapshot(
+      '"<p>a <mark>b</mark> <mark>c</mark> ~~d~~</p>"',
+    );
+  });
+
+  test('should preserve token inside highlighted', async () => {
+    expect(await process('a ==**b**==')).toMatchInlineSnapshot(
+      '"<p>a <mark><strong>b</strong></mark></p>"',
+    );
   });
 });
