@@ -44,4 +44,10 @@ describe('remarkHighlight', () => {
       '"<p>a <mark><strong>b</strong></mark></p>"',
     );
   });
+
+  test('should ignore mark in blockquote', async () => {
+    expect(await process('```==a==```')).toMatchInlineSnapshot(
+      '"<p><code>==a==</code></p>"',
+    );
+  });
 });
