@@ -65,5 +65,6 @@ declare module 'micromark-util-types' {
 declare module 'mdast-util-to-markdown' {
   interface ConstructNameMap {
     highlight: 'highlight';
+    comment: 'comment';
   }
 }

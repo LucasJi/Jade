@@ -1,24 +1,18 @@
 import type { Root } from 'mdast';
 import type { Plugin } from 'unified';
-// import { fromMarkdown } from './fromMarkdown';
-import { syntax } from './syntax';
+import { addExtensions } from '../utils';
+import { fromMarkdown } from './fromMarkdown';
+import { html } from './micromark/html';
+import { syntax } from './micromark/syntax';
+import { toMarkdown } from './toMarkdown';
 
-const remarkComment: Plugin<[], Root> = function (
-  opts = { markdownFolder: 'page' },
-) {
-  const data = this.data();
-
-  const micromarkExtensions =
-    data.micromarkExtensions || (data.micromarkExtensions = []);
-  const fromMarkdownExtensions =
-    data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []);
-
-  micromarkExtensions.push(syntax());
-  // fromMarkdownExtensions.push(fromMarkdown());
+const remarkComment: Plugin<[], Root> = function () {
+  addExtensions({
+    data: this.data(),
+    micromarkExtension: syntax(),
+    fromMarkdownExtension: fromMarkdown(),
+    toMarkdownExtension: toMarkdown(),
+  });
 };
 
-export {
-  syntax as commentSyntax,
-  // fromMarkdown as fromWikilinkMarkdown,
-  remarkComment,
-};
+export { html as commentHtml, syntax as commentSyntax, remarkComment };

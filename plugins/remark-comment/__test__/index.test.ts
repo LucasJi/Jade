@@ -2,82 +2,50 @@ import { readFileSync } from 'fs';
 import { micromark } from 'micromark';
 import path from 'path';
 import { assert, describe, test } from 'vitest';
-import { commentSyntax } from '../index';
+import { commentHtml, commentSyntax } from '../index';
 
 const mdPath = path.join(__dirname, 'test.md');
 const md = readFileSync(mdPath);
+const parser = (md: string) => {
+  const result = micromark(md, {
+    extensions: [commentSyntax()],
+    htmlExtensions: [commentHtml()],
+  });
+
+  console.log(result);
+
+  return result;
+};
 
 describe('micromark', () => {
   test('comment in paragraph', () => {
-    const result = micromark('%%comment%%', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p>comment</p>');
+    assert.equal(parser('%%a%%'), '<p><div>a</div></p>');
   });
 
   test('comment(contains %) in paragraph', () => {
-    const result = micromark('%%c%omment%%', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p>c%omment</p>');
+    assert.equal(parser('%%c%a%%'), '<p><div>c%a</div></p>');
   });
 
   test('comment(contains spaces and tabs) in paragraph', () => {
-    const result = micromark('%%  comment  %%', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p>comment</p>');
+    assert.equal(parser('%%  a  %%'), '<p>%%  a  %%</p>');
   });
 
   test('comment(start with %) in paragraph', () => {
-    const result = micromark('%%%comment%%', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p>%comment</p>');
+    assert.equal(parser('%%%comment%%'), '<p>%comment</p>');
   });
 
   test('comment(end with %) in paragraph', () => {
-    const result = micromark('%%comment%%%', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p>comment%</p>');
-  });
-
-  test('comment(with %%) in paragraph', () => {
-    const result = micromark('%%comment%%%%', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p>comment%%</p>');
+    assert.equal(parser('%%comment%%%'), '<p>comment%</p>');
   });
 
   test('comment in inline block', () => {
-    const result = micromark('`inline: %%comment%%`', {
-      extensions: [commentSyntax()],
-    });
-
-    assert.equal(result, '<p><code>inline: %%comment%%</code></p>');
+    assert.equal(
+      parser('`inline: %%comment%%`'),
+      '<p><code>inline: %%comment%%</code></p>',
+    );
   });
 
   test('comment in multi lines', () => {
-    const result = micromark('%%\ncomment\n%%', {
-      extensions: [commentSyntax()],
-    });
-
-    console.log(result);
-    assert.equal(result, '<p>%%\ncomment\n%%</p>');
-  });
-
-  test('complex', () => {
-    const result = micromark(md, {
-      extensions: [commentSyntax()],
-    });
-
-    console.log(result);
+    assert.equal(parser('%%\ncomment\n%%'), '<p>%%\ncomment\n%%</p>');
   });
 });
