@@ -1,17 +1,19 @@
-import { Node, Parent, PhrasingContent } from 'mdast';
+import { Data, Node, Parent, PhrasingContent } from 'mdast';
 
 export interface InlineMark extends Parent {
   type: 'mark';
   children: PhrasingContent[];
 }
 
+interface WikilinkData extends Data {
+  alias?: string;
+  exists?: boolean;
+}
+
 export interface Wikilink extends Node {
   type: 'wikilink';
   value: string | null;
-  data: {
-    alias?: string;
-    exists?: boolean;
-  };
+  data: WikilinkData;
 }
 
 export interface EmbedFile extends Node {
