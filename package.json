@@ -1,5 +1,5 @@
 {
-  "name": "starry-blog",
+  "name": "jade",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -54,7 +54,7 @@
     "micromark-util-resolve-all": "^2.0.0",
     "micromark-util-symbol": "^2.0.0",
     "micromark-util-types": "^2.0.0",
-    "next": "14.2.5",
+    "next": "14.2.10",
     "next-themes": "^0.2.1",
     "pixi.js": "^8.2.5",
     "react": "18.3.0",
