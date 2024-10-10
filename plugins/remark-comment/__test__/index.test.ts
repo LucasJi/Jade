@@ -4,7 +4,7 @@ import path from 'path';
 import { assert, describe, test } from 'vitest';
 import { commentHtml, commentSyntax } from '../index';
 
-const mdPath = path.join(__dirname, 'test.md');
+const mdPath = path.join(__dirname, 'demo.md');
 const md = readFileSync(mdPath);
 const parser = (md: string) => {
   const result = micromark(md, {
