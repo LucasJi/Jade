@@ -1,4 +1,6 @@
 [
   "obsidian-linter",
-  "obsidian-kanban"
+  "obsidian-kanban",
+  "remotely-save",
+  "obsidian-excalidraw-plugin"
 ]

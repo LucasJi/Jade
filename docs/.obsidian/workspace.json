@@ -11,23 +11,26 @@
             "id": "e673935063f79b4c",
             "type": "leaf",
             "state": {
-              "type": "kanban",
+              "type": "markdown",
               "state": {
-                "file": "Kanban.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
+                "file": "原理/Syncing Algorithm.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "aa2fa50aa791abf6",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "原理/Drawing 2024-10-11 14.56.18.excalidraw.md"
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -56,7 +59,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#渲染",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -73,8 +76,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -94,7 +96,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Kanban.md",
+                "file": "原理/Drawing 2024-10-11 14.56.18.excalidraw.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -111,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Kanban.md",
+                "file": "原理/Drawing 2024-10-11 14.56.18.excalidraw.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -134,7 +136,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Kanban.md"
+                "file": "原理/Drawing 2024-10-11 14.56.18.excalidraw.md"
               }
             }
           },
@@ -167,15 +169,27 @@
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
       "zk-prefixer:Create new unique note": false,
-      "obsidian-kanban:Create new board": false
+      "obsidian-kanban:Create new board": false,
+      "remotely-save:Remotely Save": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "2a5ac9d950a05f01",
+  "active": "aa2fa50aa791abf6",
   "lastOpenFiles": [
+    "原理/Syncing Algorithm.md",
+    "原理/Drawing 2024-10-11 14.56.18.excalidraw.md",
+    "Excalidraw/Drawing 2024-10-11 15.08.52.excalidraw.md",
+    "Excalidraw",
+    "原理/Untitled.canvas",
+    "从此开始.md",
+    "Kanban Notes/Vault Syncing.md",
+    "原理",
+    "Kanban.md",
+    "Remark 插件测试/Callout.md",
+    "Remark 插件测试/remark-comment.md",
+    "Kanban Notes/Vault Sync @{2024-10-11}.md",
     "Kanban Notes",
     "嵌套斜体渲染支持 @{2024-10-11}.md",
-    "Kanban.md",
-    "从此开始.md",
     "语法/高级格式语法.md",
     "语法/基本格式语法.md",
     "链接笔记与文件/内部链接.md",
@@ -184,8 +198,6 @@
     "语法/Obsidian 风格的 Markdown 语法.md",
     "由此开始.md",
     "格式/属性.md",
-    "Remark 插件测试/remark-comment.md",
-    "Remark 插件测试/Callout.md",
     "格式/标签.md",
     "格式/标注.md",
     "格式/附件.md",
@@ -208,14 +220,9 @@
     "附件/video/街舞.mp4",
     "附件/图标/obsidian-icon-vault-switcher.svg",
     "附件/图标/obsidian-icon-side-bar-right.svg",
-    "202410082052.md",
-    "核心插件/搜索.md",
-    "核心插件/页面预览.md",
-    "核心插件/斜杠命令.md",
     "格式",
     "附件/video",
     "附件/pdf",
-    "Untitled.canvas",
-    "Remark 插件测试"
+    "Untitled.canvas"
   ]
 }

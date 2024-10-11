@@ -1,11 +1,12 @@
 ---
 
-kanban-plugin: board
+kanban-plugin: list
 
 ---
 
 ## Thoughts
 
+- [ ] [[Vault Syncing]] @{2024-10-11}
 
 
 ## Features
@@ -13,9 +14,11 @@ kanban-plugin: board
 - [ ] Mermaid Support @{2024-10-11}
 	
 	https://mermaid.js.org/#/
-- [ ] 嵌套斜体渲染支持 @{2024-10-11} #render
-	
-	`**粗体和 _嵌套斜体_ 文本**`: **粗体和 _ 嵌套斜体 _ 文本**
+- [ ] Nested render support @{2024-10-11} #render
+	- `**粗体和 _嵌套斜体_ 文本**`: **粗体和 _ 嵌套斜体 _ 文本**
+- [ ] Graph View @{2024-10-11}
+- [ ] Search @{2024-10-11}
+- [ ] Make wikilink card be pinned @{2024-10-11}
 
 
 ## Improvements
@@ -34,6 +37,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false,false]}
+{"kanban-plugin":"list","list-collapse":[false,true,true,true,true]}
 ```
 %%
