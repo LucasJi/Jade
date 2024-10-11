@@ -198,6 +198,7 @@ const components = (
     if ('data-footnotes' in rest) {
       return (
         <section className={className} {...rest}>
+          <hr />
           {Children.map(children, child => {
             // TODO: Use 'ol' type to custom footnotes section
             if ((child as ReactElement).props?.node?.tagName !== 'h2') {
