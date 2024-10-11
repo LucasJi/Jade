@@ -11,11 +11,19 @@
             "id": "e673935063f79b4c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "kanban",
               "state": {
-                "file": "从此开始.md",
-                "mode": "source",
-                "source": false
+                "file": "Kanban.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                  ]
+                }
               }
             }
           }
@@ -48,7 +56,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#渲染",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -65,7 +73,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -85,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "从此开始.md",
+                "file": "Kanban.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "从此开始.md",
+                "file": "Kanban.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "从此开始.md"
+                "file": "Kanban.md"
               }
             }
           },
@@ -157,18 +166,22 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "zk-prefixer:Create new unique note": false
+      "zk-prefixer:Create new unique note": false,
+      "obsidian-kanban:Create new board": false
     }
   },
-  "active": "e673935063f79b4c",
+  "active": "2a5ac9d950a05f01",
   "lastOpenFiles": [
+    "Kanban Notes",
+    "嵌套斜体渲染支持 @{2024-10-11}.md",
+    "Kanban.md",
+    "从此开始.md",
     "语法/高级格式语法.md",
     "语法/基本格式语法.md",
     "链接笔记与文件/内部链接.md",
     "链接笔记与文件/插入文件.md",
     "链接笔记与文件/别名.md",
     "语法/Obsidian 风格的 Markdown 语法.md",
-    "从此开始.md",
     "由此开始.md",
     "格式/属性.md",
     "Remark 插件测试/remark-comment.md",
@@ -199,9 +212,6 @@
     "核心插件/搜索.md",
     "核心插件/页面预览.md",
     "核心插件/斜杠命令.md",
-    "核心插件/文件恢复.md",
-    "核心插件/属性列表.md",
-    "核心插件/书签.md",
     "格式",
     "附件/video",
     "附件/pdf",

@@ -1,0 +1,39 @@
+---
+
+kanban-plugin: board
+
+---
+
+## Thoughts
+
+
+
+## Features
+
+- [ ] Mermaid Support @{2024-10-11}
+	
+	https://mermaid.js.org/#/
+- [ ] 嵌套斜体渲染支持 @{2024-10-11} #render
+	
+	`**粗体和 _嵌套斜体_ 文本**`: **粗体和 _ 嵌套斜体 _ 文本**
+
+
+## Improvements
+
+
+
+## In progress
+
+
+
+## Done
+
+
+
+
+
+%% kanban:settings
+```
+{"kanban-plugin":"board","list-collapse":[false,false,false,false,false]}
+```
+%%
