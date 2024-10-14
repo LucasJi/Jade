@@ -1,3 +1,5 @@
+import * as Minio from 'minio';
+
 const _env = process.env;
 
 const dir = {
@@ -19,10 +21,26 @@ const redis = {
   pass: _env.REDIS_PASS,
 };
 
+interface s3 {
+  clientOptions: Minio.ClientOptions;
+  bucket: string;
+}
+
+const s3: s3 = {
+  clientOptions: {
+    endPoint: _env.S3_ENDPOINT || '',
+    port: 9000,
+    accessKey: _env.S3_ACCESS_KEY || '',
+    secretKey: _env.S3_SECRET_KEY || '',
+  },
+  bucket: _env.S3_BUCKET || '',
+};
+
 const env = {
   repo,
   dir,
   redis,
+  s3,
 };
 
 export { env };

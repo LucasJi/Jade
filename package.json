@@ -54,6 +54,7 @@
     "micromark-util-resolve-all": "^2.0.0",
     "micromark-util-symbol": "^2.0.0",
     "micromark-util-types": "^2.0.0",
+    "minio": "^8.0.1",
     "next": "14.2.10",
     "next-themes": "^0.2.1",
     "pixi.js": "^8.2.5",

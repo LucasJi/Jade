@@ -10,8 +10,9 @@ import {
   SEP,
 } from '@/lib/constants';
 import { env } from '@/lib/env';
-import { getGitTree, githubRequest } from '@/lib/github-utils';
+import { githubRequest } from '@/lib/github-utils';
 import { getRedisClient } from '@/lib/redis-utils';
+import { getS3Client, listObjects } from '@/lib/s3-utils';
 import {
   base64Decode,
   buildNoteTree,
@@ -29,9 +30,13 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import path, { join } from 'path';
 import { Node, visit } from 'unist-util-visit';
 
-const { dir } = env;
+const { dir, s3 } = env;
 
-const loadRemoteVaultFilePathItems = (): Promise<PathItem[]> => getGitTree();
+const s3Client = getS3Client(s3.clientOptions);
+
+const loadRemoteVaultFilePathItems = (): Promise<PathItem[]> => {
+  return listObjects(s3Client, s3.bucket);
+};
 
 const loadLocalVaultFilePathItems = (
   dir: string,

@@ -39,6 +39,12 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
    REDIS_HOST=
    REDIS_PORT=
    REDIS_PASS=
+   
+   S3_ENDPOINT=
+   S3_PORT=
+   S3_ACCESS_KEY=
+   S3_SECRET_KEY=
+   S3_BUCKET=
    ```
 
     - `GITHUB_REPO_ACCESS_TOKEN`: When generating
