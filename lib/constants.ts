@@ -11,7 +11,7 @@ export const MD_HEADING_REG = /^(#{1,6})\s+.+/;
 
 export const MD_EXT_REG = /\.md$/;
 
-export const MD_EXT = '.md';
+export const MD_EXT = 'md';
 
 // redis keys
 export const RK_IDS = 'jade:ids';
@@ -23,16 +23,16 @@ export const RK_ID_PATH = 'jade:path:';
 // accepted file formats
 const MD_FORMATS = [MD_EXT];
 export const PIC_FORMATS = [
-  '.avif',
-  '.bmp',
-  '.gif',
-  '.jpeg',
-  '.jpg',
-  '.png',
-  '.svg',
-  '.webp',
+  'avif',
+  'bmp',
+  'gif',
+  'jpeg',
+  'jpg',
+  'png',
+  'svg',
+  'webp',
 ];
-const audioFormats = ['.flac', '.m4a', '.mp3', '.ogg', '.wav', '.webm', '.3gp'];
-const videoFormats = ['.mkv', '.mov', '.mp4', '.ogv', '.webm'];
-const pdfFormats = ['.pdf'];
+const audioFormats = ['flac', 'm4a', 'mp3', 'ogg', 'wav', 'webm', '3gp'];
+const videoFormats = ['mkv', 'mov', 'mp4', 'ogv', 'webm'];
+const pdfFormats = ['pdf'];
 export const ACCEPTED_FILE_FORMATS = [...MD_FORMATS, ...PIC_FORMATS];

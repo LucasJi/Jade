@@ -10,9 +10,8 @@ import {
   SEP,
 } from '@/lib/constants';
 import { env } from '@/lib/env';
-import { githubRequest } from '@/lib/github-utils';
 import { getRedisClient } from '@/lib/redis-utils';
-import { getS3Client, listObjects } from '@/lib/s3-utils';
+import { getObject, getS3Client, listObjects } from '@/lib/s3-utils';
 import {
   base64Decode,
   buildNoteTree,
@@ -20,6 +19,7 @@ import {
   murmurhash,
   parseNote,
 } from '@/lib/server-utils';
+import { getFileExt } from '@/lib/utils';
 import {
   fromWikilinkMarkdown,
   remarkWikilinkSyntax,
@@ -27,15 +27,19 @@ import {
 import { Note, PathItem } from '@types';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import path, { join } from 'path';
+import { join } from 'path';
 import { Node, visit } from 'unist-util-visit';
 
 const { dir, s3 } = env;
 
 const s3Client = getS3Client(s3.clientOptions);
 
-const loadRemoteVaultFilePathItems = (): Promise<PathItem[]> => {
-  return listObjects(s3Client, s3.bucket);
+const loadRemoteVaultFilePathItems = async (
+  excluded: string[],
+): Promise<PathItem[]> => {
+  return listObjects(s3Client, s3.bucket).then(objs =>
+    objs.filter(obj => !excluded.includes(obj.path.split('/')[0])),
+  );
 };
 
 const loadLocalVaultFilePathItems = (
@@ -54,13 +58,13 @@ const loadLocalVaultFilePathItems = (
       }
       loadLocalVaultFilePathItems(absolutePath, root, excludedPaths, pathItems);
     } else {
-      const ext = path.extname(file);
+      const ext = getFileExt(file);
       if (ACCEPTED_FILE_FORMATS.includes(ext)) {
         const relativePath = absolutePath.replace(root + SEP, '');
         pathItems.push({
           id: relativePath,
           path: relativePath,
-          type: 'blob',
+          type: 'file',
           ext,
         });
       }
@@ -70,10 +74,19 @@ const loadLocalVaultFilePathItems = (
   return pathItems;
 };
 
-const loadVaultFilePathItems = async () =>
-  dir.root
-    ? loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded)
-    : loadRemoteVaultFilePathItems();
+const loadVaultFilePathItems = async () => {
+  if (dir.root) {
+    console.log(
+      `Load vault from local dir: ${dir.root}. Those folders will be ignored: ${dir.excluded}`,
+    );
+    return loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded);
+  }
+
+  console.log(
+    `Load vault from s3 bucket: ${s3.bucket}. Those folders will be ignored: ${dir.excluded}`,
+  );
+  return loadRemoteVaultFilePathItems(dir.excluded);
+};
 
 const loadNote = async (path: string, id: string): Promise<Note> => {
   try {
@@ -81,10 +94,14 @@ const loadNote = async (path: string, id: string): Promise<Note> => {
     if (dir.root) {
       file = fs.readFileSync(join(dir.root, path), 'utf8');
     } else {
-      file = await githubRequest(`/contents/${path}`, `note:${id}`);
+      // file = await githubRequest(`/contents/${path}`, `note:${id}`);
+      file = await getObject(s3Client, s3.bucket, path);
     }
-    // base64Decode: resolve emoji base64 decoding problem
-    const content = dir.root ? file : base64Decode(file.content);
+    // Github: use base64Decode to resolve emoji base64 decoding problem
+    // const content = dir.root ? file : base64Decode(file.content);
+
+    const content = file;
+
     const filenameSplits = path.split(SEP);
     const filename = filenameSplits[filenameSplits.length - 1];
     const { title, frontmatter } = parseNote(content, filename);
@@ -153,6 +170,7 @@ const loadVault = async () => {
   const notes: Note[] = [];
 
   const pathItems = await loadVaultFilePathItems();
+  console.log(`There are ${pathItems.length} notes in the vault`);
 
   for (const item of pathItems) {
     const { path, ext } = item;

@@ -5,6 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function ext(filename: string): string {
+export function getFileExt(filename: string): string {
   return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
 }

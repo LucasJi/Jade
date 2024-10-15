@@ -62,7 +62,7 @@ export const buildNoteTree = (paths: PathItem[]): TreeNode[] => {
     });
 
     // c is a directory
-    if (item.type === 'tree') {
+    if (item.type === 'dir') {
       const childDir = pathParts[pathParts.length - 1];
       currentNode.children.push({
         id: childDir,
@@ -73,14 +73,13 @@ export const buildNoteTree = (paths: PathItem[]): TreeNode[] => {
     }
 
     // c is a file
-    if (item.type === 'blob') {
+    if (item.type === 'file') {
       const file: string = pathParts[pathParts.length - 1];
       const ext = item.ext;
       const extPosition = file.lastIndexOf(ext);
-      const name = file.slice(0, extPosition);
+      const name = file.slice(0, extPosition - 1);
       currentNode.children.push({
         id: item.id,
-        // name: file.replace(MD_EXT_REG, ''),
         name,
         children: [],
         isDir: false,

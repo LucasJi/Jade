@@ -36,9 +36,11 @@ export interface TreeProps {
   className?: string;
 }
 
+export type PathItemType = 'file' | 'dir';
+
 export interface PathItem {
   id: string;
   path: string;
-  type: string;
+  type: PathItemType;
   ext: string;
 }

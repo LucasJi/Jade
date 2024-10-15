@@ -1,6 +1,6 @@
 import { PathItem } from '@types';
 import * as Minio from 'minio';
-import { ext } from './utils';
+import { getFileExt } from './utils';
 
 const getS3Client = (params: Minio.ClientOptions) => new Minio.Client(params);
 
@@ -21,8 +21,8 @@ const listObjects = async (
         data.push({
           id: obj.name || '',
           path: obj.name || '',
-          type: 'blob',
-          ext: ext(obj.name || ''),
+          ext: getFileExt(obj.name || ''),
+          type: 'file',
         });
       }
     });
@@ -39,7 +39,7 @@ const getObject = async (
   minioClient: Minio.Client,
   bucket: string,
   objectName: string,
-) => {
+): Promise<string> => {
   let data: string = '';
   const stream = await minioClient.getObject(bucket, objectName);
 

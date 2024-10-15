@@ -30,6 +30,7 @@ const s3: s3 = {
   clientOptions: {
     endPoint: _env.S3_ENDPOINT || '',
     port: 9000,
+    useSSL: false,
     accessKey: _env.S3_ACCESS_KEY || '',
     secretKey: _env.S3_SECRET_KEY || '',
   },
