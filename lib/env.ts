@@ -1,4 +1,4 @@
-import * as Minio from 'minio';
+import type { ClientOptions } from 'minio';
 
 const _env = process.env;
 
@@ -21,12 +21,12 @@ const redis = {
   pass: _env.REDIS_PASS,
 };
 
-interface s3 {
-  clientOptions: Minio.ClientOptions;
+interface S3 {
+  clientOptions: ClientOptions;
   bucket: string;
 }
 
-const s3: s3 = {
+const s3: S3 = {
   clientOptions: {
     endPoint: _env.S3_ENDPOINT || '',
     port: 9000,

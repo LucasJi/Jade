@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation';
 
 const redis = getRedisClient();
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const ids = await redis.smembers(RK_IDS);
   return ids.map(id => ({ id }));

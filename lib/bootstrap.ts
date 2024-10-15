@@ -38,7 +38,19 @@ const loadRemoteVaultFilePathItems = async (
   excluded: string[],
 ): Promise<PathItem[]> => {
   return listObjects(s3Client, s3.bucket).then(objs =>
-    objs.filter(obj => !excluded.includes(obj.path.split('/')[0])),
+    objs
+      .filter(
+        obj =>
+          obj.isLatest &&
+          !obj.isDeleteMarker &&
+          !excluded.includes(obj.name.split('/')[0]),
+      )
+      .map(obj => ({
+        id: obj.name || '',
+        path: obj.name || '',
+        ext: getFileExt(obj.name || ''),
+        type: 'file',
+      })),
   );
 };
 
@@ -212,13 +224,19 @@ const loadVault = async () => {
   redis.set(RK_TREE, JSON.stringify(noteTree));
 };
 
-const init = async () => {
-  console.log('initializing jade...');
+const logStartupTime = async (func: () => Promise<any>) => {
   const begin = new Date().getTime();
+  console.log('Jade is starting...');
 
-  await loadVault();
+  await func();
 
-  console.log('jade initialized in', new Date().getTime() - begin, 'ms');
+  console.log(`Jade starts in ${new Date().getTime() - begin} ms`);
 };
 
-await init();
+const init = async () => {
+  await loadVault();
+};
+
+logStartupTime(init).catch(err =>
+  console.log('Jade starts failed with err:', err),
+);

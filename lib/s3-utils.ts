@@ -1,14 +1,13 @@
-import { PathItem } from '@types';
+import { BucketItem } from '@/types';
 import * as Minio from 'minio';
-import { getFileExt } from './utils';
 
 const getS3Client = (params: Minio.ClientOptions) => new Minio.Client(params);
 
 const listObjects = async (
   minioClient: Minio.Client,
   bucket: string,
-): Promise<PathItem[]> => {
-  const data: PathItem[] = [];
+): Promise<BucketItem[]> => {
+  const data: BucketItem[] = [];
   // @ts-ignore: https://github.com/minio/minio-js/issues/1279
   const stream = minioClient.listObjects(bucket, '', true, {
     IncludeVersion: true,
@@ -16,15 +15,7 @@ const listObjects = async (
 
   return new Promise((resolve, reject) => {
     stream.on('data', function (obj) {
-      // @ts-ignore
-      if (obj.isLatest && !obj.isDeleteMarker) {
-        data.push({
-          id: obj.name || '',
-          path: obj.name || '',
-          ext: getFileExt(obj.name || ''),
-          type: 'file',
-        });
-      }
+      data.push(obj as BucketItem);
     });
     stream.on('end', function () {
       resolve(data);

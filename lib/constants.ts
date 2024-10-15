@@ -19,6 +19,7 @@ export const RK_TREE = 'jade:tree';
 export const RK_ID_NOTE = 'jade:note:';
 export const RK_NOTE_PATH_ID = 'jade:note.path:';
 export const RK_ID_PATH = 'jade:path:';
+export const RK_HISTORY = 'jade:history';
 
 // accepted file formats
 const MD_FORMATS = [MD_EXT];
