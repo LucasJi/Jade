@@ -1,7 +1,7 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
 import { PIC_FORMATS, RK_ID_NOTE, RK_ID_PATH, RK_IDS } from '@/lib/constants';
-import { getRedisClient } from '@/lib/redis-utils';
+import { getRedisClient } from '@/lib/redis';
 import { Note, PathItem } from '@types';
 import { notFound } from 'next/navigation';
 

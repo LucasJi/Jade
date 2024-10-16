@@ -1,5 +1,5 @@
 import { RK_ID_NOTE, RK_NOTE_PATH_ID } from '@/lib/constants';
-import { getRedisClient } from '@/lib/redis-utils';
+import { getRedisClient } from '@/lib/redis';
 import { Note } from '@/types';
 import Link from 'next/link';
 import { ReactNode } from 'react';

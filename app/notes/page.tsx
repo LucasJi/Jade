@@ -1,5 +1,5 @@
 import { RK_IDS } from '@/lib/constants';
-import { getRedisClient } from '@/lib/redis-utils';
+import { getRedisClient } from '@/lib/redis';
 import Link from 'next/link';
 
 export default async function Page() {

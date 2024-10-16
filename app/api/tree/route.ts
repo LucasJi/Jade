@@ -1,5 +1,5 @@
 import { RK_TREE } from '@/lib/constants';
-import { getRedisClient } from '@/lib/redis-utils';
+import { getRedisClient } from '@/lib/redis';
 
 const redis = getRedisClient();
 

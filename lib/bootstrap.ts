@@ -10,8 +10,8 @@ import {
   SEP,
 } from '@/lib/constants';
 import { env } from '@/lib/env';
-import { getRedisClient } from '@/lib/redis-utils';
-import { getObject, getS3Client, listObjects } from '@/lib/s3-utils';
+import { getRedisClient } from '@/lib/redis';
+import { getObject, getS3Client, listObjects } from '@/lib/s3';
 import {
   base64Decode,
   buildNoteTree,
