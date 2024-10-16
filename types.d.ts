@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { Redis } from 'ioredis';
 
 export interface Note {
   // base64Encode(path)
@@ -53,4 +54,12 @@ export interface BucketItem {
   lastModified: Date;
   isLatest: boolean;
   isDeleteMarker: boolean;
+}
+
+declare global {
+  namespace globalThis {
+    // This will not work with let or const, you must use var.
+    // eslint-disable-next-line no-var
+    var redis: Redis;
+  }
 }
