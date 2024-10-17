@@ -12,14 +12,8 @@ import {
 import { env } from '@/lib/env';
 import { getRedisClient } from '@/lib/redis';
 import { getObject, getS3Client, listObjects } from '@/lib/s3';
-import {
-  base64Decode,
-  buildNoteTree,
-  decimalToBase62,
-  murmurhash,
-  parseNote,
-} from '@/lib/server-utils';
-import { getFileExt } from '@/lib/utils';
+import { base64Decode, buildNoteTree, parseNote } from '@/lib/server-utils';
+import { decimalToBase62, getFileExt, murmurhash } from '@/lib/utils';
 import {
   fromWikilinkMarkdown,
   remarkWikilinkSyntax,

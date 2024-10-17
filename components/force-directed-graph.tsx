@@ -271,7 +271,6 @@ const ForceDirectedGraph = ({
         // update title positions
         title.attr('x', (d: any) => d.x).attr('y', (d: any) => d.y);
       });
-      console.log('graph init');
     }
 
     onMountRef.current = false;

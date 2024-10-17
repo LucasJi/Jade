@@ -23,7 +23,6 @@ export default async function Wikilink({
   children: ReactNode;
   currentNote: Note;
 }) {
-  console.log('component wikilink');
   let note = null;
 
   const splits = wikilink.split('#');
@@ -33,11 +32,9 @@ export default async function Wikilink({
     note = currentNote;
   } else {
     const matched = await redis.keys(`${RK_NOTE_PATH_ID}*${title}*`);
-    console.log('wikilink', matched, title);
     if (matched.length > 0) {
       const path = matched[0];
       const id = await redis.get(path);
-      console.log('wikilink id', id);
 
       if (id) {
         const noteStr = await redis.get(`${RK_ID_NOTE}${id}`);
