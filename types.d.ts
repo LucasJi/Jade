@@ -36,12 +36,11 @@ export interface TreeProps {
   className?: string;
 }
 
-export type PathItemType = 'file' | 'dir';
+export type NoteObjectType = 'file' | 'dir';
 
-export interface PathItem {
-  id: string;
-  path: string;
-  type: PathItemType;
+export interface NoteObject {
+  name: string;
+  type: NoteObjectType;
   ext: string;
 }
 

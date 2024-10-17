@@ -2,7 +2,7 @@ import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
 import { PIC_FORMATS, RK_ID_NOTE, RK_ID_PATH, RK_IDS } from '@/lib/constants';
 import { getRedisClient } from '@/lib/redis';
-import { Note, PathItem } from '@types';
+import { Note, NoteObject } from '@types';
 import { notFound } from 'next/navigation';
 
 const redis = getRedisClient();
@@ -26,10 +26,10 @@ export default async function Page({
       return <div>Note not found</div>;
     }
 
-    const pathItem = JSON.parse(pathIteStr) as PathItem;
+    const pathItem = JSON.parse(pathIteStr) as NoteObject;
 
     if (PIC_FORMATS.includes(pathItem.ext)) {
-      return <span>{`TODO: show image: ${pathItem.path}`}</span>;
+      return <span>{`TODO: show image: ${pathItem.name}`}</span>;
     }
 
     const noteJson = await redis.get(`${RK_ID_NOTE}${id}`);

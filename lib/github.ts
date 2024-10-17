@@ -2,7 +2,7 @@
 
 import { MD_EXT } from '@/lib/constants';
 import { env } from '@/lib/env';
-import { PathItem } from '@types';
+import { NoteObject } from '@types';
 import { revalidateTag } from 'next/cache';
 
 export const githubRequest = (url: string, tag: string = '') =>
@@ -33,7 +33,7 @@ export const githubRequest = (url: string, tag: string = '') =>
       revalidateTag(tag);
     });
 
-export const getGitTree = async (): Promise<PathItem[]> => {
+export const getGitTree = async (): Promise<NoteObject[]> => {
   return githubRequest(`/git/trees/${env.repo.branch}?recursive=1`).then(
     data => {
       const { tree }: { tree: any[] } = data;

@@ -26,6 +26,15 @@ const listObjects = async (
   });
 };
 
+const listLatestExistingObjects = async (
+  minioClient: Minio.Client,
+  bucket: string,
+): Promise<BucketItem[]> => {
+  return listObjects(minioClient, bucket).then(objects =>
+    objects.filter(obj => obj.isLatest && !obj.isDeleteMarker),
+  );
+};
+
 const getObject = async (
   minioClient: Minio.Client,
   bucket: string,
@@ -47,4 +56,4 @@ const getObject = async (
   });
 };
 
-export { getObject, getS3Client, listObjects };
+export { getObject, getS3Client, listLatestExistingObjects, listObjects };

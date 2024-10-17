@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: true,
   experimental: {
     instrumentationHook: true,
+    serverComponentsExternalPackages: ['pino', 'pino-pretty'],
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
