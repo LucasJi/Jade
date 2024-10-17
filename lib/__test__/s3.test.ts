@@ -1,6 +1,6 @@
 import * as Minio from 'minio';
 import { describe, test } from 'vitest';
-import { getObject, listObjects } from '../s3-utils';
+import { getObject, listObjects } from '../s3';
 
 const bucket = 'jade-test';
 
