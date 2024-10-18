@@ -12,10 +12,8 @@ import { TypographyCode } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
-import remarkJade from '@/plugins/remark-jade';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { Note } from '@/types';
 import clsx from 'clsx';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, ReactElement, cloneElement } from 'react';
@@ -29,22 +27,20 @@ import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import Wikilink from './wikilink';
 
-const components = (
-  renderWikilink: boolean,
-  currentNote: Note,
-): Components => ({
+const components = (): Components => ({
   a: props => {
     const { node, className, href, children, ...rest } = props;
     if ('data-wikilink' in rest && href) {
-      return renderWikilink ? (
-        <Wikilink wikilink={href} currentNote={currentNote}>
-          {children}
-        </Wikilink>
-      ) : (
-        <span>{children}</span>
-      );
+      // return renderWikilink ? (
+      //   <Wikilink wikilink={href} currentNote={currentNote}>
+      //     {children}
+      //   </Wikilink>
+      // ) : (
+      //   <span className="text-obsidian">{children}</span>
+      // );
+
+      return <span className="text-obsidian">{children}</span>;
     }
 
     if ('data-footnote-ref' in rest) {
@@ -227,9 +223,8 @@ const Markdown = ({
   className?: string;
   renderWikilink?: boolean;
   wikilink?: string;
-  note: Note;
+  note: string;
 }) => {
-  const { title, content, frontmatter } = note;
   return (
     <ScrollArea className="overflow-x-auto">
       <article
@@ -255,7 +250,7 @@ const Markdown = ({
         )}
       >
         <ReactMarkdown
-          components={components(renderWikilink, note)}
+          components={components()}
           remarkPlugins={[
             remarkGfm,
             remarkBreaks,
@@ -265,12 +260,12 @@ const Markdown = ({
             remarkCallout,
             remarkMath,
             remarkWikilink,
-            [remarkJade as any, { title, wikilink }],
+            // [remarkJade as any, { title, wikilink }],
           ]}
           // TODO: Support rehypeMathjaxCHtml
           rehypePlugins={[rehypeRaw as any, rehypeKatex, rehypeSlug]}
         >
-          {content}
+          {note}
         </ReactMarkdown>
       </article>
     </ScrollArea>

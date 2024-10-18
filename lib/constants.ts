@@ -1,5 +1,5 @@
 import { posix, sep } from 'path';
-import { config } from './config';
+import config from './config';
 
 export const SEP = config.dir.root ? sep : posix.sep;
 
@@ -22,8 +22,8 @@ export const RK_ID_PATH = 'jade:path:';
 export const RK_HISTORY = 'jade:history';
 
 // accepted file formats
-const MD_FORMATS = [MD_EXT];
-export const PIC_FORMATS = [
+const MD_EXTS = [MD_EXT];
+export const IMAGE_EXTS = [
   'avif',
   'bmp',
   'gif',
@@ -33,7 +33,7 @@ export const PIC_FORMATS = [
   'svg',
   'webp',
 ];
-const audioFormats = ['flac', 'm4a', 'mp3', 'ogg', 'wav', 'webm', '3gp'];
-const videoFormats = ['mkv', 'mov', 'mp4', 'ogv', 'webm'];
-const pdfFormats = ['pdf'];
-export const ACCEPTED_FILE_FORMATS = [...MD_FORMATS, ...PIC_FORMATS];
+const AUDIO_EXTS = ['flac', 'm4a', 'mp3', 'ogg', 'wav', 'webm', '3gp'];
+const VIDEO_EXTS = ['mkv', 'mov', 'mp4', 'ogv', 'webm'];
+const PDF_EXTS = ['pdf'];
+export const ACCEPTED_FILE_FORMATS = [...MD_EXTS];

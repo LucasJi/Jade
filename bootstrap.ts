@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
-import { config } from '@/lib/config';
-import { RK_ID_PATH, SEP } from '@/lib/constants';
+import config from '@/lib/config';
+import { SEP } from '@/lib/constants';
 import { logger } from '@/lib/logger';
-import { listNoteObjects } from '@/lib/note';
 import { getRedisClient } from '@/lib/redis';
 import { getObject, getS3Client } from '@/lib/s3';
 import { base64Decode, parseNote } from '@/lib/server-utils';
@@ -18,7 +17,7 @@ import { Node, visit } from 'unist-util-visit';
 
 const log = logger.child({ module: 'bootstrap' });
 const { dir, s3 } = config;
-const s3Client = getS3Client(s3.clientOptions);
+const s3Client = getS3Client();
 const redis = getRedisClient();
 
 // TODO: Refactor
@@ -136,22 +135,16 @@ const clearCache = async () => {
 };
 
 const loadVault = async () => {
-  await clearCache();
-
-  const notes: Note[] = [];
-
-  const noteObjects = await listNoteObjects(s3Client);
-
-  for (const noteObject of noteObjects) {
-    const { name, ext } = noteObject;
-
-    redis.set(`${RK_ID_PATH}${name}`, JSON.stringify(noteObject));
-
-    const note = await loadNote(name, '');
-    notes.push(note);
-  }
-
-  await resolveWikilinks(notes);
+  // await clearCache();
+  // const notes: Note[] = [];
+  // const noteObjects = await listNoteObjects(s3Client);
+  // for (const noteObject of noteObjects) {
+  // const { name, ext } = noteObject;
+  // redis.set(`${RK_ID_PATH}${name}`, JSON.stringify(noteObject));
+  // const note = await loadNote(name, '');
+  // notes.push(note);
+  // }
+  // await resolveWikilinks(notes);
 };
 
 const init = async () => {

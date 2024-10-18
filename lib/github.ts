@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { config } from '@/lib/config';
+import config from '@/lib/config';
 import { MD_EXT } from '@/lib/constants';
 import { NoteObject } from '@types';
 import { revalidateTag } from 'next/cache';

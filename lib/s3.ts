@@ -1,8 +1,8 @@
+import config from '@/lib/config';
 import { BucketItem } from '@/types';
 import * as Minio from 'minio';
 
-export const getS3Client = (params: Minio.ClientOptions) =>
-  new Minio.Client(params);
+export const getS3Client = () => new Minio.Client(config.s3.clientOptions);
 
 export const listObjects =
   (s3Client: Minio.Client) =>

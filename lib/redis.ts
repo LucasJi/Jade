@@ -1,6 +1,6 @@
 import { logger } from '@/lib/logger';
 import { Redis, RedisOptions } from 'ioredis';
-import { config } from './config';
+import config from './config';
 
 const log = logger.child({ module: 'lib:redis' });
 

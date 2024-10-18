@@ -44,4 +44,4 @@ const config = {
   s3,
 };
 
-export { config };
+export default config;

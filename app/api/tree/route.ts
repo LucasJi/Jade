@@ -1,8 +1,7 @@
-import { config } from '@/lib/config';
 import { getNoteTreeView, listNoteObjects } from '@/lib/note';
 import { getS3Client } from '@/lib/s3';
 
-const s3Client = getS3Client(config.s3.clientOptions);
+const s3Client = getS3Client();
 
 export async function GET() {
   const noteObjects = await listNoteObjects(s3Client);

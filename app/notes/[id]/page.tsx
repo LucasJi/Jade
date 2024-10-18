@@ -1,17 +1,17 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
-import { PIC_FORMATS, RK_ID_NOTE, RK_ID_PATH, RK_IDS } from '@/lib/constants';
-import { getRedisClient } from '@/lib/redis';
-import { Note, NoteObject } from '@types';
+import config from '@/lib/config';
+import { getNoteId, listNoteObjects } from '@/lib/note';
+import { getObject, getS3Client } from '@/lib/s3';
 import { notFound } from 'next/navigation';
 
-const redis = getRedisClient();
+const s3Client = getS3Client();
 
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const ids = await redis.smembers(RK_IDS);
-  return ids.map(id => ({ id }));
+  const noteObjects = await listNoteObjects(s3Client);
+  return noteObjects.map(noteObject => ({ id: getNoteId(noteObject.name) }));
 }
 
 export default async function Page({
@@ -20,21 +20,7 @@ export default async function Page({
   params: { id: string };
 }) {
   try {
-    const pathIteStr = await redis.get(`${RK_ID_PATH}${id}`);
-
-    if (!pathIteStr) {
-      return <div>Note not found</div>;
-    }
-
-    const pathItem = JSON.parse(pathIteStr) as NoteObject;
-
-    if (PIC_FORMATS.includes(pathItem.ext)) {
-      return <span>{`TODO: show image: ${pathItem.name}`}</span>;
-    }
-
-    const noteJson = await redis.get(`${RK_ID_NOTE}${id}`);
-    const note = noteJson ? (JSON.parse(noteJson) as Note) : undefined;
-
+    const note = await getObject(s3Client)(config.s3.bucket, id);
     if (!note) {
       return <div>Note not found</div>;
     }
@@ -45,7 +31,7 @@ export default async function Page({
           <Markdown note={note} className="max-h-[620px] px-4" />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
-          <Toc content={note?.content} className="mt-4" />
+          <Toc content={note} className="mt-4" />
         </div>
       </div>
     );
