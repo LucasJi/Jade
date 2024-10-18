@@ -2,9 +2,10 @@
 import { config } from '@/lib/config';
 import { RK_ID_NOTE, RK_ID_PATH, RK_TREE, SEP } from '@/lib/constants';
 import { logger } from '@/lib/logger';
+import { getNoteTreeView } from '@/lib/note';
 import { getRedisClient } from '@/lib/redis';
 import { getObject, getS3Client, listLatestExistingObjects } from '@/lib/s3';
-import { base64Decode, buildNoteTree, parseNote } from '@/lib/server-utils';
+import { base64Decode, parseNote } from '@/lib/server-utils';
 import { getFileExt } from '@/lib/utils';
 import {
   fromWikilinkMarkdown,
@@ -174,7 +175,6 @@ const clearCache = async () => {
 const loadVault = async () => {
   await clearCache();
 
-  const existIds = new Set<string>();
   const notes: Note[] = [];
 
   const noteObjects = await listNoteObjects();
@@ -196,7 +196,7 @@ const loadVault = async () => {
     redis.set(key, JSON.stringify(note));
   }
 
-  const noteTree = buildNoteTree(noteObjects);
+  const noteTree = getNoteTreeView(noteObjects);
 
   // cache notes tree
   redis.set(RK_TREE, JSON.stringify(noteTree));
@@ -206,6 +206,6 @@ const init = async () => {
   await loadVault();
 };
 
-log.info('Jade is initializing...');
+log.info('Jade bootstrap starts...');
 await init();
-log.info('Jade initialization ends');
+log.info('Jade bootstrap ends');

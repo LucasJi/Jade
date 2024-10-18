@@ -25,14 +25,14 @@ export type NoteGraph = {
   links: NoteGraphLink[];
 };
 
-export interface TreeNode {
+export interface TreeViewNode {
   id: string;
   name: string;
-  children: TreeNode[];
+  children: TreeViewNode[];
   isDir: boolean;
 }
 
-export interface TreeProps {
+export interface TreeViewProps {
   className?: string;
 }
 

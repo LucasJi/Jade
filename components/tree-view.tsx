@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { TreeNode, TreeProps } from '@types';
+import { TreeViewNode, TreeViewProps } from '@types';
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -20,8 +20,8 @@ import React, {
 import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
 import { VscTarget } from 'react-icons/vsc';
 
-const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
-  const { expandedNodeIds, id } = useContext(TreeContext);
+const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
+  const { expandedNodeIds, id } = useContext(TreeViewContext);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
@@ -62,7 +62,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
           )}
         >
           {node.children.map((child, idx) => (
-            <TreeNodeComponent key={`${idx}-${child.name}`} node={child} />
+            <TreeViewNode key={`${idx}-${child.name}`} node={child} />
           ))}
         </ul>
       </div>
@@ -88,7 +88,7 @@ const TreeNodeComponent: FC<{ node: TreeNode }> = ({ node }) => {
   );
 };
 
-const TreeContext = createContext<{
+const TreeViewContext = createContext<{
   expandedNodeIds: Set<string>;
   id: string;
 }>({
@@ -96,8 +96,8 @@ const TreeContext = createContext<{
   id: '',
 });
 
-const Tree: React.FC<TreeProps> = ({ className }) => {
-  const [treeNodes, setTreeNodes] = useState<TreeNode[]>([]);
+const TreeView: React.FC<TreeViewProps> = ({ className }) => {
+  const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
   let { id } = useParams<{ id: string }>();
   id = decodeURIComponent(id);
 
@@ -107,7 +107,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
     new Set(),
   );
 
-  const expandAll = (nodes: TreeNode[] | undefined) => {
+  const expandAll = (nodes: TreeViewNode[] | undefined) => {
     if (!nodes) {
       return;
     }
@@ -121,7 +121,7 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
     }
   };
 
-  const contains = (nodes: TreeNode[] | undefined): boolean => {
+  const contains = (nodes: TreeViewNode[] | undefined): boolean => {
     if (!nodes) {
       return false;
     }
@@ -207,15 +207,15 @@ const Tree: React.FC<TreeProps> = ({ className }) => {
       </div>
       <ScrollArea className="mt-2 h-full w-full" viewportRef={viewportRef}>
         <ul>
-          <TreeContext.Provider value={{ expandedNodeIds, id }}>
+          <TreeViewContext.Provider value={{ expandedNodeIds, id }}>
             {treeNodes.map((node, idx) => (
-              <TreeNodeComponent key={`${idx}-${node.name}`} node={node} />
+              <TreeViewNode key={`${idx}-${node.name}`} node={node} />
             ))}
-          </TreeContext.Provider>
+          </TreeViewContext.Provider>
         </ul>
       </ScrollArea>
     </div>
   );
 };
 
-export default Tree;
+export default TreeView;
