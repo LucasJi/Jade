@@ -19,9 +19,9 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
    npm install
    ```
 
-3. Config environment variables in `.env` file
+3. Config environment variables in `.config` file
 
-   ```env
+   ```config
    # Website
    NEXT_PUBLIC_BASE_URL=http://localhost:3000
    NEXT_PUBLIC_SITE_TITLE="Jade"

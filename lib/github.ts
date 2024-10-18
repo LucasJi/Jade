@@ -1,18 +1,18 @@
 /* eslint-disable no-console */
 
+import { config } from '@/lib/config';
 import { MD_EXT } from '@/lib/constants';
-import { env } from '@/lib/env';
 import { NoteObject } from '@types';
 import { revalidateTag } from 'next/cache';
 
 export const githubRequest = (url: string, tag: string = '') =>
   fetch(
-    `https://api.github.com/repos/${env.repo.owner}/${env.repo.name}${url}`,
+    `https://api.github.com/repos/${config.repo.owner}/${config.repo.name}${url}`,
     {
       // cache: 'no-cache',
       headers: {
         Accept: 'application/vnd.github.object+json',
-        Authorization: `Bearer ${env.repo.accessToken}`,
+        Authorization: `Bearer ${config.repo.accessToken}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
       next: {
@@ -34,15 +34,17 @@ export const githubRequest = (url: string, tag: string = '') =>
     });
 
 export const getGitTree = async (): Promise<NoteObject[]> => {
-  return githubRequest(`/git/trees/${env.repo.branch}?recursive=1`).then(
+  return githubRequest(`/git/trees/${config.repo.branch}?recursive=1`).then(
     data => {
       const { tree }: { tree: any[] } = data;
       return tree.filter(value =>
-        env.dir.included.length <= 0
+        config.dir.included.length <= 0
           ? value.type === 'blob' && value.path.endsWith(MD_EXT)
           : value.type === 'blob' &&
             value.path.endsWith(MD_EXT) &&
-            env.dir.included.find(predicate => value.path.includes(predicate)),
+            config.dir.included.find(predicate =>
+              value.path.includes(predicate),
+            ),
       );
     },
   );

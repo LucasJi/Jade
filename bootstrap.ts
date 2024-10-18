@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
+import { config } from '@/lib/config';
 import { RK_ID_NOTE, RK_ID_PATH, RK_TREE, SEP } from '@/lib/constants';
-import { env } from '@/lib/env';
 import { logger } from '@/lib/logger';
 import { getRedisClient } from '@/lib/redis';
 import { getObject, getS3Client, listLatestExistingObjects } from '@/lib/s3';
@@ -17,7 +17,7 @@ import { join } from 'path';
 import { Node, visit } from 'unist-util-visit';
 
 const log = logger.child({ module: 'bootstrap' });
-const { dir, s3 } = env;
+const { dir, s3 } = config;
 const s3Client = getS3Client(s3.clientOptions);
 const redis = getRedisClient();
 

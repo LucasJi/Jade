@@ -1,7 +1,7 @@
 import { posix, sep } from 'path';
-import { env } from './env';
+import { config } from './config';
 
-export const SEP = env.dir.root ? sep : posix.sep;
+export const SEP = config.dir.root ? sep : posix.sep;
 
 // "#"
 export const MD_TITLE_REG = /^#\s+.+/;

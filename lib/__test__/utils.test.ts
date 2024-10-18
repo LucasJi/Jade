@@ -18,8 +18,8 @@ describe('ext', () => {
     assert.equal(getFileExt('.htpasswd'), '');
   });
 
-  test('when filename is "name.with.many.dots.myext" then should return "myext"', () => {
-    assert.equal(getFileExt('name.with.many.dots.myext'), 'myext');
+  test('when filename is "name.with.many.dots.ext" then should return "ext"', () => {
+    assert.equal(getFileExt('name.with.many.dots.ext'), 'ext');
   });
 });
 

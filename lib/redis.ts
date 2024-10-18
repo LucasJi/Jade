@@ -1,14 +1,14 @@
 import { Redis, RedisOptions } from 'ioredis';
-import { env } from './env';
+import { config } from './config';
 
 export const getRedisClient = () => {
   const redisOptions: RedisOptions = {
-    host: env.redis.host,
-    port: env.redis.port,
+    host: config.redis.host,
+    port: config.redis.port,
   };
 
-  if (env.redis.pass) {
-    redisOptions.password = env.redis.pass;
+  if (config.redis.pass) {
+    redisOptions.password = config.redis.pass;
   }
 
   console.log('Create a redis client at', new Date());

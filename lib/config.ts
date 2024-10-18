@@ -37,11 +37,11 @@ const s3: S3 = {
   bucket: _env.S3_BUCKET || '',
 };
 
-const env = {
+const config = {
   repo,
   dir,
   redis,
   s3,
 };
 
-export { env };
+export { config };
