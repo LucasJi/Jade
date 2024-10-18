@@ -26,8 +26,8 @@ export type NoteGraph = {
 };
 
 export interface TreeViewNode {
-  id: string;
   name: string;
+  path: string;
   children: TreeViewNode[];
   isDir: boolean;
 }

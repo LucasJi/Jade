@@ -1,7 +1,18 @@
+import { config } from '@/lib/config';
 import { SEP } from '@/lib/constants';
+import { logger } from '@/lib/logger';
+import { listLatestExistingObjects } from '@/lib/s3';
 import { NoteObject, TreeViewNode } from '@types';
 import { trimEnd } from 'lodash';
+import { Client } from 'minio';
 import { decimalToBase62, getFileExt, murmurhash } from './utils';
+
+const log = logger.child({ module: 'lib:note' });
+
+export const getNoteNameWithoutExt = (name: string): string => {
+  const ext = getFileExt(name);
+  return trimEnd(name, '.' + ext);
+};
 
 /**
  * Encode note name by replacing whitespaces with char '-' and removing file extension.
@@ -10,9 +21,7 @@ import { decimalToBase62, getFileExt, murmurhash } from './utils';
  * @return encoded note name. For example: '/path/some-note'
  */
 export const encodeNoteName = (name: string): string => {
-  const ext = getFileExt(name);
-  const nameWithoutExt = trimEnd(name, '.' + ext);
-  return nameWithoutExt.split(' ').join('-');
+  return getNoteNameWithoutExt(name).split(' ').join('-');
 };
 
 /**
@@ -32,25 +41,25 @@ export const getNoteId = (name: string): string =>
 export const getNotePath = (name: string): string =>
   encodeNoteName(name) + '-' + getNoteId(name);
 
-export const getNoteTreeView = (paths: NoteObject[]): TreeViewNode[] => {
-  const tree: TreeViewNode = {
-    id: 'root',
+export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
+  const _root: TreeViewNode = {
     name: 'root',
+    path: '',
     children: [],
     isDir: true,
   };
 
-  paths.forEach(item => {
-    // 'a/b/c.md' => ['a', 'b', 'c.md'] or 'a/b/c' => ['a', 'b', 'c']
-    const pathParts = item.name.split(SEP);
+  noteObjects.forEach(noteObject => {
+    // note: 'a/b/c.md' or directory: 'a/b/c' => ['a', 'b', 'c.md'] or 'a/b/c' => ['a', 'b', 'c']
+    const splits = noteObject.name.split(SEP);
     // ['a', 'b']
-    const dirs: string[] = pathParts.slice(0, -1);
-    let currentNode = tree;
+    const dirs: string[] = splits.slice(0, -1);
+    let currentNode = _root;
 
     /**
-     * Use depth-first algorithm to find item's parent node. If the parent node doesn't exist, create it.
+     * Use depth-first algorithm to find noteObject's parent node. If the parent node doesn't exist, create it.
      *
-     * Example: { id: 'root', isDir: true, children: [{id: 'a', isDir: true, children: [{id: 'b', isDir: true, children: []}]}]}.
+     * Example: { id: '_root', isDir: true, children: [{id: 'a', isDir: true, children: [{id: 'b', isDir: true, children: []}]}]}.
      * If we want to create node with id 'c', we need to find/create node with id 'b' first. And, If
      * we want to find or create node with id 'b', we need to find/create node with id 'a' first. That's
      * why we use depth-first search.
@@ -62,8 +71,8 @@ export const getNoteTreeView = (paths: NoteObject[]): TreeViewNode[] => {
 
       if (!dirNode) {
         dirNode = {
-          id: dir,
           name: dir,
+          path: dir,
           children: [],
           isDir: true,
         };
@@ -84,25 +93,22 @@ export const getNoteTreeView = (paths: NoteObject[]): TreeViewNode[] => {
     });
 
     // c is a directory
-    if (item.type === 'dir') {
-      const childDir = pathParts[pathParts.length - 1];
+    if (noteObject.type === 'dir') {
+      const childDir = splits[splits.length - 1];
       currentNode.children.push({
-        id: childDir,
         name: childDir,
+        path: childDir,
         children: [],
         isDir: true,
       });
     }
 
     // c is a file
-    if (item.type === 'file') {
-      const file: string = pathParts[pathParts.length - 1];
-      const ext = item.ext;
-      const extPosition = file.lastIndexOf(ext);
-      const name = file.slice(0, extPosition - 1);
+    if (noteObject.type === 'file') {
+      const filename: string = splits[splits.length - 1];
       currentNode.children.push({
-        id: item.name,
-        name,
+        name: getNoteNameWithoutExt(filename),
+        path: getNotePath(noteObject.name),
         children: [],
         isDir: false,
       });
@@ -119,5 +125,44 @@ export const getNoteTreeView = (paths: NoteObject[]): TreeViewNode[] => {
     });
   });
 
-  return tree.children;
+  return _root.children;
+};
+
+const listNoteObjectsRemotely = async (
+  s3Client: Client,
+  excluded: string[],
+): Promise<NoteObject[]> => {
+  return listLatestExistingObjects(s3Client)(config.s3.bucket).then(objs =>
+    objs
+      .filter(obj => !excluded.includes(obj.name.split('/')[0]))
+      .map(obj => ({
+        name: obj.name,
+        ext: getFileExt(obj.name),
+        type: 'file',
+      })),
+  );
+};
+
+export const listNoteObjects = async (
+  s3Client: Client,
+): Promise<NoteObject[]> => {
+  // if (dir.root) {
+  //   log.info(
+  //     `Load vault from local dir: ${dir.root}. Those folders will be ignored: ${dir.excluded}`,
+  //   );
+  //   return loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded);
+  // }
+
+  return listNoteObjectsRemotely(s3Client, config.dir.excluded).then(objs => {
+    log.info(
+      {
+        noteObjSize: objs.length,
+        from: 'remote',
+        excludedDirs: config.dir.excluded,
+        bucket: config.s3.bucket,
+      },
+      'List note objects',
+    );
+    return objs;
+  });
 };

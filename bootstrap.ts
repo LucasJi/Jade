@@ -1,17 +1,16 @@
 /* eslint-disable no-console */
 import { config } from '@/lib/config';
-import { RK_ID_NOTE, RK_ID_PATH, RK_TREE, SEP } from '@/lib/constants';
+import { RK_ID_PATH, SEP } from '@/lib/constants';
 import { logger } from '@/lib/logger';
-import { getNoteTreeView } from '@/lib/note';
+import { listNoteObjects } from '@/lib/note';
 import { getRedisClient } from '@/lib/redis';
-import { getObject, getS3Client, listLatestExistingObjects } from '@/lib/s3';
+import { getObject, getS3Client } from '@/lib/s3';
 import { base64Decode, parseNote } from '@/lib/server-utils';
-import { getFileExt } from '@/lib/utils';
 import {
   fromWikilinkMarkdown,
   remarkWikilinkSyntax,
 } from '@/plugins/remark-wikilink';
-import { Note, NoteObject } from '@types';
+import { Note } from '@types';
 import fs from 'fs';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { join } from 'path';
@@ -21,20 +20,6 @@ const log = logger.child({ module: 'bootstrap' });
 const { dir, s3 } = config;
 const s3Client = getS3Client(s3.clientOptions);
 const redis = getRedisClient();
-
-const listNoteObjectsRemotely = async (
-  excluded: string[],
-): Promise<NoteObject[]> => {
-  return listLatestExistingObjects(s3Client, s3.bucket).then(objs =>
-    objs
-      .filter(obj => !excluded.includes(obj.name.split('/')[0]))
-      .map(obj => ({
-        name: obj.name,
-        ext: getFileExt(obj.name),
-        type: 'file',
-      })),
-  );
-};
 
 // TODO: Refactor
 // const loadLocalVaultFilePathItems = (
@@ -69,28 +54,6 @@ const listNoteObjectsRemotely = async (
 //   return pathItems;
 // };
 
-const listNoteObjects = async (): Promise<NoteObject[]> => {
-  // if (dir.root) {
-  //   log.info(
-  //     `Load vault from local dir: ${dir.root}. Those folders will be ignored: ${dir.excluded}`,
-  //   );
-  //   return loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded);
-  // }
-
-  return listNoteObjectsRemotely(dir.excluded).then(objs => {
-    log.info(
-      {
-        noteObjSize: objs.length,
-        from: 'remote',
-        excludedDirs: dir.excluded,
-        bucket: s3.bucket,
-      },
-      'List note objects',
-    );
-    return objs;
-  });
-};
-
 const loadNote = async (name: string, id: string): Promise<Note> => {
   try {
     let file;
@@ -98,7 +61,7 @@ const loadNote = async (name: string, id: string): Promise<Note> => {
       file = fs.readFileSync(join(dir.root, name), 'utf8');
     } else {
       // file = await githubRequest(`/contents/${path}`, `note:${id}`);
-      file = await getObject(s3Client, s3.bucket, name);
+      file = await getObject(s3Client)(s3.bucket, name);
     }
     // Github: use base64Decode to resolve emoji base64 decoding problem
     // const content = dir.root ? file : base64Decode(file.content);
@@ -177,7 +140,7 @@ const loadVault = async () => {
 
   const notes: Note[] = [];
 
-  const noteObjects = await listNoteObjects();
+  const noteObjects = await listNoteObjects(s3Client);
 
   for (const noteObject of noteObjects) {
     const { name, ext } = noteObject;
@@ -189,17 +152,6 @@ const loadVault = async () => {
   }
 
   await resolveWikilinks(notes);
-
-  // cache notes
-  for (const note of notes) {
-    const key = `${RK_ID_NOTE}${note.id}`;
-    redis.set(key, JSON.stringify(note));
-  }
-
-  const noteTree = getNoteTreeView(noteObjects);
-
-  // cache notes tree
-  redis.set(RK_TREE, JSON.stringify(noteTree));
 };
 
 const init = async () => {

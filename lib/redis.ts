@@ -1,5 +1,8 @@
+import { logger } from '@/lib/logger';
 import { Redis, RedisOptions } from 'ioredis';
 import { config } from './config';
+
+const log = logger.child({ module: 'lib:redis' });
 
 export const getRedisClient = () => {
   const redisOptions: RedisOptions = {
@@ -11,7 +14,7 @@ export const getRedisClient = () => {
     redisOptions.password = config.redis.pass;
   }
 
-  console.log('Create a redis client at', new Date());
+  log.info('Create a redis client');
 
   return new Redis(redisOptions);
 };
