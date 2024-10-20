@@ -1,40 +1,40 @@
-import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-const generateVariant = (variant: string) =>
-  `border-${variant}/50 text-${variant} dark:border-${variant} [&>svg]:text-${variant}`;
+// const generateVariant = (variant: string) =>
+//   `border-${variant}/50 text-${variant} dark:border-${variant} [&>svg]:text-${variant}`;
+//
+// enum Variant {
+//   destructive,
+//   bug,
+//   error,
+//   example,
+//   fail,
+//   important,
+//   info,
+//   question,
+//   success,
+//   summary,
+//   tip,
+//   todo,
+//   warning,
+//   quote,
+// }
 
-enum Variant {
-  destructive,
-  bug,
-  error,
-  example,
-  fail,
-  important,
-  info,
-  question,
-  success,
-  summary,
-  tip,
-  todo,
-  warning,
-  quote,
-}
+// type VariantType = keyof typeof Variant;
 
-type VariantType = keyof typeof Variant;
-
-const generateVariants = () => {
-  const variants: Partial<Record<VariantType, any>> = {};
-  Object.keys(Variant)
-    .filter(v => isNaN(Number(v)))
-    .forEach(k => {
-      variants[k as VariantType] = generateVariant(k);
-    });
-
-  return variants;
-};
+// const generateVariants = () => {
+//   const variants: Partial<Record<VariantType, any>> = {};
+//   Object.keys(Variant)
+//     .filter(v => isNaN(Number(v)))
+//     .forEach(k => {
+//       variants[k as VariantType] = generateVariant(k);
+//     });
+//
+//   return variants;
+// };
 
 const alertVariants = cva(
   'relative w-full rounded-lg border p-4 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7',
@@ -105,4 +105,4 @@ const AlertDescription = React.forwardRef<
 ));
 AlertDescription.displayName = 'AlertDescription';
 
-export { Alert, AlertTitle, AlertDescription };
+export { Alert, AlertDescription, AlertTitle };

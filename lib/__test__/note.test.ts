@@ -1,14 +1,28 @@
 import { assert, describe, test } from 'vitest';
-import { encodeNoteName, getNoteId, getNotePath } from '../note';
+import {
+  decodeNotePath,
+  encodeNoteName,
+  getNoteId,
+  getNotePath,
+} from '../note';
 import { decimalToBase62, murmurhash } from '../utils';
 
 describe('lib note', () => {
   test('encodeNoteName', () => {
-    assert.equal(encodeNoteName('/path/some note.md'), '/path/some-note');
-    assert.equal(encodeNoteName('/path/some-note.md'), '/path/some-note');
+    assert.equal(encodeNoteName('/folder/some note.md'), '/folder/some+note');
+    assert.equal(encodeNoteName('/folder/something.md'), '/folder/something');
     assert.equal(
-      encodeNoteName('/path/some note-with more-whitespaces.md'),
-      '/path/some-note-with-more-whitespaces',
+      encodeNoteName('/folder/some note++.md'),
+      '/folder/some+note%2B%2B',
+    );
+  });
+
+  test('decodeNotePath', () => {
+    assert.equal(decodeNotePath('/folder/some+note'), '/folder/some note');
+    assert.equal(decodeNotePath('/folder/something'), '/folder/something');
+    assert.equal(
+      decodeNotePath('/folder/some+note%2B%2B'),
+      '/folder/some note++',
     );
   });
 
@@ -19,9 +33,6 @@ describe('lib note', () => {
 
   test('getNotePath', () => {
     const noteName = '/path/some note.md';
-    assert.equal(
-      getNotePath(noteName),
-      '/path/some-note-' + getNoteId(noteName),
-    );
+    assert.equal(getNotePath(noteName), '/path/some+note');
   });
 });

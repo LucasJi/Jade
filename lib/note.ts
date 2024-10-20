@@ -1,10 +1,10 @@
-import { config } from '@/lib/config';
-import { SEP } from '@/lib/constants';
-import { logger } from '@/lib/logger';
-import { listLatestExistingObjects } from '@/lib/s3';
 import { NoteObject, TreeViewNode } from '@types';
 import { trimEnd } from 'lodash';
 import { Client } from 'minio';
+import config from './config';
+import { SEP } from './constants';
+import { logger } from './logger';
+import { listLatestExistingObjects } from './s3';
 import { decimalToBase62, getFileExt, murmurhash } from './utils';
 
 const log = logger.child({ module: 'lib:note' });
@@ -15,13 +15,21 @@ export const getNoteNameWithoutExt = (name: string): string => {
 };
 
 /**
- * Encode note name by replacing whitespaces with char '-' and removing file extension.
+ * Encode note name by
+ *  1. Replacing all '+' by '%2B'
+ *  2. Replacing all whitespaces by character '+'
  *
- * @param name note name. For example: '/path/some note.md'
- * @return encoded note name. For example: '/path/some-note'
+ * @param name note name. For example: '/some folder/some note+.md' will be encoded to '/some+folder/some+note%2B'.
+ * @return encoded note name.
  */
 export const encodeNoteName = (name: string): string => {
-  return getNoteNameWithoutExt(name).split(' ').join('-');
+  return getNoteNameWithoutExt(name)
+    .replaceAll('+', '%2B')
+    .replaceAll(' ', '+');
+};
+
+export const decodeNotePath = (path: string): string => {
+  return path.replaceAll('+', ' ').replaceAll('%2B', '+');
 };
 
 /**
@@ -32,14 +40,7 @@ export const encodeNoteName = (name: string): string => {
 export const getNoteId = (name: string): string =>
   decimalToBase62(murmurhash(name));
 
-/**
- * Get note path by note name.
- * For example, given note name '/path/some note.md' then returns '/path/some-note-2P50uY'.
- *
- * @param name note name
- */
-export const getNotePath = (name: string): string =>
-  encodeNoteName(name) + '-' + getNoteId(name);
+export const getNotePath = (name: string): string => encodeNoteName(name);
 
 export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {

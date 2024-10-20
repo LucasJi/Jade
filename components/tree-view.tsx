@@ -21,21 +21,21 @@ import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
 import { VscTarget } from 'react-icons/vsc';
 
 const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
-  const { expandedNodeIds, id } = useContext(TreeViewContext);
+  const { expandedNoteNameSet, id } = useContext(TreeViewContext);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
     if (isExpanded) {
-      expandedNodeIds.delete(node.id);
+      expandedNoteNameSet.delete(node.name);
     } else {
-      expandedNodeIds.add(node.id);
+      expandedNoteNameSet.add(node.name);
     }
     setIsExpanded(!isExpanded);
   };
 
   useLayoutEffect(() => {
-    setIsExpanded(expandedNodeIds.has(node.id));
-  }, [expandedNodeIds]);
+    setIsExpanded(expandedNoteNameSet.has(node.name));
+  }, [expandedNoteNameSet]);
 
   return node.isDir ? (
     <li className="mt-1">
@@ -71,13 +71,13 @@ const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
     <li
       className={cn(
         'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] decoration-obsidian hover:underline',
-        { underline: node.id === id },
+        { underline: node.name === id },
       )}
       title={node.name}
-      id={node.id}
+      id={node.name}
     >
       <Link
-        href={`/notes/${node.id || ''}`}
+        href={`/notes/${node.name || ''}`}
         className="min-h-0 text-base"
         // Reduce unnecessary requests
         prefetch={false}
@@ -89,10 +89,10 @@ const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
 };
 
 const TreeViewContext = createContext<{
-  expandedNodeIds: Set<string>;
+  expandedNoteNameSet: Set<string>;
   id: string;
 }>({
-  expandedNodeIds: new Set(),
+  expandedNoteNameSet: new Set(),
   id: '',
 });
 
@@ -113,7 +113,7 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
     }
 
     for (const node of nodes) {
-      expandedNodeIds.add(node.id);
+      expandedNodeIds.add(node.name);
 
       if (node.children.length > 0) {
         expandAll(node.children);
@@ -127,12 +127,12 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
     }
 
     for (const node of nodes) {
-      if (node.id === id) {
+      if (node.name === id) {
         return true;
       }
 
       if (contains(node.children)) {
-        expandedNodeIds.add(node.id);
+        expandedNodeIds.add(node.name);
         return true;
       }
     }
@@ -207,7 +207,9 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
       </div>
       <ScrollArea className="mt-2 h-full w-full" viewportRef={viewportRef}>
         <ul>
-          <TreeViewContext.Provider value={{ expandedNodeIds, id }}>
+          <TreeViewContext.Provider
+            value={{ expandedNoteNameSet: expandedNodeIds, id }}
+          >
             {treeNodes.map((node, idx) => (
               <TreeViewNode key={`${idx}-${node.name}`} node={node} />
             ))}

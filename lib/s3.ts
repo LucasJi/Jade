@@ -1,6 +1,6 @@
-import config from '@/lib/config';
 import { BucketItem } from '@/types';
 import * as Minio from 'minio';
+import config from './config';
 
 export const getS3Client = () => new Minio.Client(config.s3.clientOptions);
 
