@@ -1,11 +1,18 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
+import config from '@/lib/config';
 import { logger } from '@/lib/logger';
-import { getNoteId, listNoteObjects } from '@/lib/note';
-import { getS3Client } from '@/lib/s3';
+import {
+  decodeNoteName,
+  getEncodedNoteNameFromSlugs,
+  getNotePath,
+  getNoteSlugsFromPath,
+  listNoteObjects,
+} from '@/lib/note';
+import { getObject, getS3Client } from '@/lib/s3';
 import { notFound } from 'next/navigation';
 
-const log = logger.child({ module: 'page:notes/[path]' });
+const log = logger.child({ module: 'page:notes/[...slug]' });
 const s3Client = getS3Client();
 
 export const dynamicParams = true;
@@ -13,20 +20,28 @@ export const dynamicParams = true;
 export async function generateStaticParams() {
   const noteObjects = await listNoteObjects(s3Client);
   const staticParams = noteObjects.map(noteObject => ({
-    id: getNoteId(noteObject.name),
+    slug: getNoteSlugsFromPath(getNotePath(noteObject.name)),
   }));
-  log.info({ paths: staticParams }, 'Generate static params');
+  log.info(
+    { paths: staticParams, notePageCount: staticParams.length },
+    'Generate static params',
+  );
   return staticParams;
 }
 
 export default async function Page({
-  params: { id },
+  params: { slug },
 }: {
-  params: { id: string };
+  params: { slug: string[] };
 }) {
   try {
-    // const note = await getObject(s3Client)(config.s3.bucket, id);
-    const note = '';
+    const encodedNoteName = getEncodedNoteNameFromSlugs(slug);
+    const noteName = decodeURIComponent(decodeNoteName(encodedNoteName));
+
+    log.info({ slug, noteName }, 'Build note page');
+
+    const note = await getObject(s3Client)(config.s3.bucket, noteName);
+
     if (!note) {
       return <div>Note not found</div>;
     }
@@ -42,7 +57,7 @@ export default async function Page({
       </div>
     );
   } catch (error) {
-    console.error('error occurs when building note page with id', id, error);
+    log.error({ slug, error }, 'Error occurs when building note page');
     notFound();
   }
 }

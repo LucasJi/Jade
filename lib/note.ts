@@ -19,17 +19,15 @@ export const getNoteNameWithoutExt = (name: string): string => {
  *  1. Replacing all '+' by '%2B'
  *  2. Replacing all whitespaces by character '+'
  *
- * @param name note name. For example: '/some folder/some note+.md' will be encoded to '/some+folder/some+note%2B'.
+ * @param name note name. For example: '/some folder/some note+.md' will be encoded to '/some+folder/some+note%2B.md'.
  * @return encoded note name.
  */
 export const encodeNoteName = (name: string): string => {
-  return getNoteNameWithoutExt(name)
-    .replaceAll('+', '%2B')
-    .replaceAll(' ', '+');
+  return name.replaceAll('+', '%2B').replaceAll(' ', '+');
 };
 
-export const decodeNotePath = (path: string): string => {
-  return path.replaceAll('+', ' ').replaceAll('%2B', '+');
+export const decodeNoteName = (encoded: string): string => {
+  return encoded.replaceAll('+', ' ').replaceAll('%2B', '+');
 };
 
 /**
@@ -41,6 +39,10 @@ export const getNoteId = (name: string): string =>
   decimalToBase62(murmurhash(name));
 
 export const getNotePath = (name: string): string => encodeNoteName(name);
+
+export const getNoteSlugsFromPath = (path: string): string[] => path.split('/');
+
+export const getEncodedNoteNameFromSlugs = (slugs: string[]) => slugs.join('/');
 
 export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {
@@ -161,6 +163,7 @@ export const listNoteObjects = async (
         from: 'remote',
         excludedDirs: config.dir.excluded,
         bucket: config.s3.bucket,
+        noteObjects: objs,
       },
       'List note objects',
     );
