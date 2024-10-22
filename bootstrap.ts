@@ -3,8 +3,8 @@ import config from '@/lib/config';
 import { SEP } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { getRedisClient } from '@/lib/redis';
-import { getObject, getS3Client } from '@/lib/s3';
 import { base64Decode, parseNote } from '@/lib/server-utils';
+import { getObject, getS3Client } from '@/lib/server/s3';
 import {
   fromWikilinkMarkdown,
   remarkWikilinkSyntax,

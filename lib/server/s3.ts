@@ -1,6 +1,8 @@
-import { BucketItem } from '@/types';
+import { getFileExt } from '@/lib/utils';
+import { BucketItem, NoteObject } from '@types';
 import * as Minio from 'minio';
-import config from './config';
+import { Client } from 'minio';
+import config from '../config';
 
 export const getS3Client = () => new Minio.Client(config.s3.clientOptions);
 
@@ -52,3 +54,33 @@ export const getObject =
       });
     });
   };
+
+const listNoteObjectsRemotely = async (
+  s3Client: Client,
+  excluded: string[],
+): Promise<NoteObject[]> => {
+  return listLatestExistingObjects(s3Client)(config.s3.bucket).then(objs =>
+    objs
+      .filter(obj => !excluded.includes(obj.name.split('/')[0]))
+      .map(obj => ({
+        name: obj.name,
+        ext: getFileExt(obj.name),
+        type: 'file',
+      })),
+  );
+};
+
+export const listNoteObjects = async (
+  s3Client: Client,
+): Promise<NoteObject[]> => {
+  // if (dir.root) {
+  //   log.info(
+  //     `Load vault from local dir: ${dir.root}. Those folders will be ignored: ${dir.excluded}`,
+  //   );
+  //   return loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded);
+  // }
+
+  return listNoteObjectsRemotely(s3Client, config.dir.excluded).then(objs => {
+    return objs;
+  });
+};

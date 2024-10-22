@@ -1,10 +1,6 @@
 import { NoteObject, TreeViewNode } from '@types';
 import { trimEnd } from 'lodash';
-import { Client } from 'minio';
-import config from './config';
-import { SEP } from './constants';
 import { logger } from './logger';
-import { listLatestExistingObjects } from './s3';
 import { decimalToBase62, getFileExt, murmurhash } from './utils';
 
 const log = logger.child({ module: 'lib:note' });
@@ -54,7 +50,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
 
   noteObjects.forEach(noteObject => {
     // note: 'a/b/c.md' or directory: 'a/b/c' => ['a', 'b', 'c.md'] or 'a/b/c' => ['a', 'b', 'c']
-    const splits = noteObject.name.split(SEP);
+    const splits = noteObject.name.split('/');
     // ['a', 'b']
     const dirs: string[] = splits.slice(0, -1);
     let currentNode = _root;
@@ -111,7 +107,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
       const filename: string = splits[splits.length - 1];
       currentNode.children.push({
         name: getNoteNameWithoutExt(filename),
-        path: getNotePath(noteObject.name),
+        path: encodeNoteName(noteObject.name),
         children: [],
         isDir: false,
       });
@@ -129,44 +125,4 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   });
 
   return _root.children;
-};
-
-const listNoteObjectsRemotely = async (
-  s3Client: Client,
-  excluded: string[],
-): Promise<NoteObject[]> => {
-  return listLatestExistingObjects(s3Client)(config.s3.bucket).then(objs =>
-    objs
-      .filter(obj => !excluded.includes(obj.name.split('/')[0]))
-      .map(obj => ({
-        name: obj.name,
-        ext: getFileExt(obj.name),
-        type: 'file',
-      })),
-  );
-};
-
-export const listNoteObjects = async (
-  s3Client: Client,
-): Promise<NoteObject[]> => {
-  // if (dir.root) {
-  //   log.info(
-  //     `Load vault from local dir: ${dir.root}. Those folders will be ignored: ${dir.excluded}`,
-  //   );
-  //   return loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded);
-  // }
-
-  return listNoteObjectsRemotely(s3Client, config.dir.excluded).then(objs => {
-    log.info(
-      {
-        noteObjSize: objs.length,
-        from: 'remote',
-        excludedDirs: config.dir.excluded,
-        bucket: config.s3.bucket,
-        noteObjects: objs,
-      },
-      'List note objects',
-    );
-    return objs;
-  });
 };

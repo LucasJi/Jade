@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getEncodedNoteNameFromSlugs } from '@/lib/note';
 import { cn } from '@/lib/utils';
 import { TreeViewNode, TreeViewProps } from '@types';
 import clsx from 'clsx';
@@ -21,20 +22,20 @@ import { BiCollapseVertical, BiExpandVertical } from 'react-icons/bi';
 import { VscTarget } from 'react-icons/vsc';
 
 const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
-  const { expandedNoteNameSet, id } = useContext(TreeViewContext);
+  const { expandedNoteNameSet, currentNotePath } = useContext(TreeViewContext);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
     if (isExpanded) {
-      expandedNoteNameSet.delete(node.name);
+      expandedNoteNameSet.delete(node.path);
     } else {
-      expandedNoteNameSet.add(node.name);
+      expandedNoteNameSet.add(node.path);
     }
     setIsExpanded(!isExpanded);
   };
 
   useLayoutEffect(() => {
-    setIsExpanded(expandedNoteNameSet.has(node.name));
+    setIsExpanded(expandedNoteNameSet.has(node.path));
   }, [expandedNoteNameSet]);
 
   return node.isDir ? (
@@ -71,13 +72,13 @@ const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
     <li
       className={cn(
         'ml-1 mt-1 w-fit max-w-[200px] truncate text-[#5c5c5c] decoration-obsidian hover:underline',
-        { underline: node.name === id },
+        { underline: node.path === currentNotePath },
       )}
       title={node.name}
-      id={node.name}
+      id={node.path}
     >
       <Link
-        href={`/notes/${node.name || ''}`}
+        href={`/notes/${node.path || ''}`}
         className="min-h-0 text-base"
         // Reduce unnecessary requests
         prefetch={false}
@@ -90,20 +91,22 @@ const TreeViewNode: FC<{ node: TreeViewNode }> = ({ node }) => {
 
 const TreeViewContext = createContext<{
   expandedNoteNameSet: Set<string>;
-  id: string;
+  currentNotePath: string;
 }>({
   expandedNoteNameSet: new Set(),
-  id: '',
+  currentNotePath: '',
 });
 
 const TreeView: React.FC<TreeViewProps> = ({ className }) => {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
-  let { id } = useParams<{ id: string }>();
-  id = decodeURIComponent(id);
+  const { slug } = useParams<{ slug: string[] }>();
+  const currentNotePath = getEncodedNoteNameFromSlugs(
+    slug.map(e => decodeURIComponent(e)),
+  );
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
+  const [expandedNotePaths, setExpandedNotePaths] = useState<Set<string>>(
     new Set(),
   );
 
@@ -113,7 +116,7 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
     }
 
     for (const node of nodes) {
-      expandedNodeIds.add(node.name);
+      expandedNotePaths.add(node.path);
 
       if (node.children.length > 0) {
         expandAll(node.children);
@@ -127,12 +130,12 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
     }
 
     for (const node of nodes) {
-      if (node.name === id) {
+      if (node.path === currentNotePath) {
         return true;
       }
 
       if (contains(node.children)) {
-        expandedNodeIds.add(node.name);
+        expandedNotePaths.add(node.name);
         return true;
       }
     }
@@ -142,23 +145,25 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
 
   const selectOpenedNote = () => {
     contains(treeNodes);
-    setExpandedNodeIds(new Set([...expandedNodeIds]));
+    setExpandedNotePaths(new Set([...expandedNotePaths]));
     setTimeout(() => {
       if (viewportRef !== null && viewportRef.current !== null) {
         viewportRef.current
-          .querySelector(`#${CSS.escape(id)}`)
+          .querySelector(`#${CSS.escape(currentNotePath)}`)
           ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }, 300);
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/tree`)
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/tree`, {
+      next: { tags: ['/api/tree'] },
+    })
       .then(res => res.json())
       .then(data => {
         setTreeNodes(data);
       });
-  }, [id]);
+  }, [currentNotePath]);
 
   useEffect(() => {
     selectOpenedNote();
@@ -185,7 +190,7 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
           className="h-5 w-5 rounded-full"
           onClick={() => {
             expandAll(treeNodes);
-            setExpandedNodeIds(new Set([...expandedNodeIds]));
+            setExpandedNotePaths(new Set([...expandedNotePaths]));
           }}
         >
           <BiExpandVertical size={16} />
@@ -196,7 +201,7 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
           size="icon"
           className="h-5 w-5 rounded-full"
           onClick={() => {
-            setExpandedNodeIds(new Set());
+            setExpandedNotePaths(new Set());
             if (viewportRef !== null && viewportRef.current !== null) {
               viewportRef.current.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -208,7 +213,7 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
       <ScrollArea className="mt-2 h-full w-full" viewportRef={viewportRef}>
         <ul>
           <TreeViewContext.Provider
-            value={{ expandedNoteNameSet: expandedNodeIds, id }}
+            value={{ expandedNoteNameSet: expandedNotePaths, currentNotePath }}
           >
             {treeNodes.map((node, idx) => (
               <TreeViewNode key={`${idx}-${node.name}`} node={node} />
