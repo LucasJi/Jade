@@ -31,11 +31,13 @@ export async function generateStaticParams() {
   return staticParams;
 }
 
-export default async function Page({
-  params: { slug },
-}: {
-  params: { slug: string[] };
+export default async function Page(props: {
+  params: Promise<{ slug: string[] }>;
 }) {
+  const params = await props.params;
+
+  const { slug } = params;
+
   try {
     const encodedNoteName = getEncodedNoteNameFromSlugs(
       slug.map(e => decodeURIComponent(e)),

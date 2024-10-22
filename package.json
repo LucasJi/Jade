@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -55,14 +55,14 @@
     "micromark-util-symbol": "^2.0.0",
     "micromark-util-types": "^2.0.0",
     "minio": "^8.0.1",
-    "next": "14.2.15",
+    "next": "15.0.0",
     "next-themes": "^0.2.1",
     "pino": "^9.5.0",
     "pino-pretty": "^11.3.0",
     "pixi.js": "^8.2.5",
-    "react": "18.3.0",
+    "react": "19.0.0-rc-65a56d0e-20241020",
     "react-animate-height": "^3.2.3",
-    "react-dom": "18.3.0",
+    "react-dom": "19.0.0-rc-65a56d0e-20241020",
     "react-icons": "4.11.0",
     "react-markdown": "9.0.1",
     "react-syntax-highlighter": "15.5.0",
@@ -103,8 +103,8 @@
     "@types/lodash": "^4.17.7",
     "@types/mdast": "4.0.4",
     "@types/node": "20.6.2",
-    "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
+    "@types/react": "npm:types-react@19.0.0-rc.1",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
     "@types/react-syntax-highlighter": "15.5.7",
     "@typescript-eslint/eslint-plugin": "8.4.0",
     "@typescript-eslint/parser": "8.4.0",
@@ -112,7 +112,7 @@
     "autoprefixer": "10.4.15",
     "dedent": "^1.5.3",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.7",
+    "eslint-config-next": "15.0.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-react": "7.35.1",
@@ -124,5 +124,11 @@
     "tailwindcss": "3.4.0",
     "typescript": "5.2.2",
     "vitest": "^2.0.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "npm:types-react@19.0.0-rc.1",
+      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+    }
   }
 }

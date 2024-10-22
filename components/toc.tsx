@@ -42,7 +42,7 @@ function TocNode({ heading }: { heading: BlockContent | ListItem }) {
   return node;
 }
 
-export default async function Toc({
+export default function Toc({
   content,
   className,
 }: {

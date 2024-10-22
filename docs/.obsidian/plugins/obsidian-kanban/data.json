@@ -1,9 +1,0 @@
-{
-  "new-note-folder": "Kanban Notes",
-  "move-task-metadata": true,
-  "inline-metadata-position": "footer",
-  "date-picker-week-start": 1,
-  "move-dates": true,
-  "move-tags": true,
-  "full-list-lane-width": true
-}

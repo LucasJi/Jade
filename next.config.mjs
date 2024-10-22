@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    instrumentationHook: true,
-    serverComponentsExternalPackages: ['pino', 'pino-pretty'],
-  },
+  serverExternalPackages: ['pino', 'pino-pretty'],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.resolve.fallback ??= {};
