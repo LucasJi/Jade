@@ -16,7 +16,7 @@ import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import clsx from 'clsx';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
-import { Children, ReactElement, cloneElement } from 'react';
+import { Children, cloneElement } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -93,7 +93,7 @@ const components = (): Components => ({
     const { children, className, node } = props;
 
     const code = node?.children.find(
-      child => (child as any).tagName === 'code',
+      (child: any) => child.tagName === 'code',
     ) as any | undefined;
 
     if (!code) {
@@ -163,14 +163,9 @@ const components = (): Components => ({
     const { node, children, className, ...rest } = props;
     const isTaskList = !!className?.includes('contains-task-list');
     const customChildren = Children.map(children, child => {
-      if (isTaskList && (child as ReactElement).type === 'li') {
-        const reactChild = child as ReactElement;
-        return cloneElement(reactChild, {
-          className: cn(
-            (child as ReactElement).props.className,
-            'ps-0',
-            '[&_ul]:ps-4',
-          ),
+      if (isTaskList && child.type === 'li') {
+        return cloneElement(child, {
+          className: cn(child.props.className, 'ps-0', '[&_ul]:ps-4'),
         });
       }
 
@@ -197,7 +192,7 @@ const components = (): Components => ({
           <hr />
           {Children.map(children, child => {
             // TODO: Use 'ol' type to custom footnotes section
-            if ((child as ReactElement).props?.node?.tagName !== 'h2') {
+            if (child.props?.node?.tagName !== 'h2') {
               return child;
             }
             return <hr />;
