@@ -9,6 +9,7 @@ import {
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
+import { join } from 'lodash';
 import { notFound } from 'next/navigation';
 
 const log = logger.child({ module: 'page:notes/[...slug]' });
@@ -24,7 +25,10 @@ export async function generateStaticParams() {
   }));
 
   log.info(
-    { paths: staticParams, notePageCount: staticParams.length },
+    {
+      paths: staticParams.map(param => join(param.slug, '/')),
+      notePageCount: staticParams.length,
+    },
     'Generate static params',
   );
 
@@ -37,14 +41,13 @@ export default async function Page(props: {
   const params = await props.params;
 
   const { slug } = params;
+  const decodedSlug = slug.map(s => decodeURIComponent(s));
 
   try {
-    const encodedNoteName = getEncodedNoteNameFromSlugs(
-      slug.map(e => decodeURIComponent(e)),
-    );
+    const encodedNoteName = getEncodedNoteNameFromSlugs(decodedSlug);
     const noteName = decodeNoteName(encodedNoteName);
 
-    log.info({ slug, noteName }, 'Build note page');
+    log.info({ decodedSlug, noteName: noteName }, 'Build note page');
 
     const note = await getObject(s3Client)(config.s3.bucket, noteName);
 

@@ -100,9 +100,9 @@ const TreeViewContext = createContext<{
 const TreeView: React.FC<TreeViewProps> = ({ className }) => {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
   const { slug } = useParams<{ slug: string[] }>();
-  const currentNotePath = getEncodedNoteNameFromSlugs(
-    slug.map(e => decodeURIComponent(e)),
-  );
+  const currentNotePath = slug
+    ? getEncodedNoteNameFromSlugs(slug.map(e => decodeURIComponent(e)))
+    : '';
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -144,6 +144,10 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
   };
 
   const selectOpenedNote = () => {
+    if (!slug) {
+      return;
+    }
+
     contains(treeNodes);
     setExpandedNotePaths(new Set([...expandedNotePaths]));
     setTimeout(() => {
