@@ -10,23 +10,15 @@ import {
 } from '@/components/ui/table';
 import { TypographyCode } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
-import { remarkCallout } from '@/plugins/remark-callout';
-import remarkHighlight from '@/plugins/remark-highlight';
-import { remarkTaskList } from '@/plugins/remark-task-list';
-import { remarkWikilink } from '@/plugins/remark-wikilink';
 import clsx from 'clsx';
+import { Nodes } from 'hast';
+import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, cloneElement } from 'react';
-import ReactMarkdown, { Components } from 'react-markdown'; // highlight.js doesn't support React.JSX syntax
+import { Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import rehypeKatex from 'rehype-katex';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkBreaks from 'remark-breaks';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
+import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
 
 const components = (): Components => ({
   a: props => {
@@ -211,14 +203,10 @@ const components = (): Components => ({
 
 const Markdown = ({
   className,
-  renderWikilink = true,
-  wikilink = '',
-  note,
+  hastTree,
 }: {
   className?: string;
-  renderWikilink?: boolean;
-  wikilink?: string;
-  note: string;
+  hastTree: Nodes;
 }) => {
   return (
     <ScrollArea className="overflow-x-auto">
@@ -244,24 +232,17 @@ const Markdown = ({
           className,
         )}
       >
-        <ReactMarkdown
-          components={components()}
-          remarkPlugins={[
-            remarkGfm,
-            remarkBreaks,
-            remarkHighlight,
-            remarkTaskList,
-            remarkFrontmatter,
-            remarkCallout,
-            remarkMath,
-            remarkWikilink,
-            // [remarkJade as any, { title, wikilink }],
-          ]}
-          // TODO: Support rehypeMathjaxCHtml
-          rehypePlugins={[rehypeRaw as any, rehypeKatex, rehypeSlug]}
-        >
-          {note}
-        </ReactMarkdown>
+        {toJsxRuntime(hastTree, {
+          Fragment,
+          components: components(),
+          ignoreInvalidStyle: true,
+          // @ts-ignore
+          jsx,
+          // @ts-ignore
+          jsxs,
+          passKeys: true,
+          passNode: true,
+        })}
       </article>
     </ScrollArea>
   );
