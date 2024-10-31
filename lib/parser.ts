@@ -1,6 +1,8 @@
 import { Element, Nodes } from 'hast';
 import { Components as JsxRuntimeComponents } from 'hast-util-to-jsx-runtime';
 import { urlAttributes } from 'html-url-attributes';
+import { Root } from 'mdast';
+import { toc } from 'mdast-util-toc';
 import remarkParse from 'remark-parse';
 import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
 import { PluggableList, unified } from 'unified';
@@ -67,7 +69,13 @@ const emptyRemarkRehypeOptions: Readonly<RemarkRehypeOptions> = {
 };
 const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
 
-export function parse(options: Options): Nodes {
+/**
+ * Parse note to hast tree
+ * @param options
+ */
+export const parse = (
+  options: Options,
+): { mdastTree: Root; hastTree: Nodes } => {
   const note = options.note || '';
   const className = options.className;
   const rehypePlugins = options.rehypePlugins || emptyPlugins;
@@ -133,8 +141,14 @@ export function parse(options: Options): Nodes {
 
   visit(hastTree as any, transform);
 
-  return hastTree;
-}
+  return { mdastTree, hastTree };
+};
+
+export const getNoteHeadings = (mdastTree: Root) => {
+  const result = toc(mdastTree);
+  const map = result.map;
+  return map ? map.children : [];
+};
 
 /**
  * Make a URL safe.

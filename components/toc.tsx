@@ -1,16 +1,45 @@
-import { getNoteToc } from '@/lib/server-utils';
 import clsx from 'clsx';
-import { BlockContent, Link, List, ListItem, Text } from 'mdast';
+import {
+  BlockContent,
+  List,
+  ListItem,
+  Paragraph,
+  PhrasingContent,
+} from 'mdast';
+
+const findText = (heading: Paragraph): { text: string; url: string } => {
+  let text = '';
+  let url = '';
+
+  const find = (children: PhrasingContent[]) => {
+    for (const child of children) {
+      if (child.type === 'link') {
+        url = child.url;
+      }
+
+      if (child.type === 'text') {
+        text = child.value;
+      }
+
+      if ('children' in child) {
+        find(child.children);
+      }
+    }
+  };
+
+  find(heading.children);
+
+  return { text, url };
+};
 
 function TocNode({ heading }: { heading: BlockContent | ListItem }) {
   let node;
   if (heading.type === 'paragraph') {
-    const link = heading.children[0] as Link;
-    const text = link.children[0] as Text;
+    const { text, url } = findText(heading);
     node = (
       <li>
-        <a className="text-base text-[#5c5c5c]" href={link.url}>
-          {text.value}
+        <a className="text-base text-[#5c5c5c]" href={url}>
+          {text}
         </a>
       </li>
     );
@@ -43,14 +72,12 @@ function TocNode({ heading }: { heading: BlockContent | ListItem }) {
 }
 
 export default function Toc({
-  content,
+  headings,
   className,
 }: {
-  content: string;
+  headings: ListItem[];
   className?: string;
 }) {
-  const headings: ListItem[] = getNoteToc(content);
-
   return (
     headings?.length > 0 && (
       <div className={clsx(className)}>

@@ -8,7 +8,7 @@ import {
   getEncodedNoteNameFromSlugs,
   getNoteSlugsFromPath,
 } from '@/lib/note';
-import { parse } from '@/lib/parser';
+import { getNoteHeadings, parse } from '@/lib/parser';
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
@@ -67,29 +67,30 @@ export default async function Page(props: {
       notFound();
     }
 
-    const hastTree = parse({
+    const { hastTree, mdastTree } = parse({
       note,
       rehypePlugins: [rehypeRaw as any, rehypeKatex, rehypeSlug],
       remarkPlugins: [
+        remarkFrontmatter,
         remarkGfm,
         remarkBreaks,
         remarkHighlight,
         remarkTaskList,
-        remarkFrontmatter,
         remarkCallout,
         remarkMath,
         remarkWikilink,
       ],
-      className: 'max-h-[620px] px-4',
     });
+
+    const headings = getNoteHeadings(mdastTree);
 
     return (
       <div className="flex h-full">
         <div className="min-h-[600px] w-2/3">
-          <Markdown hastTree={hastTree} />
+          <Markdown hastTree={hastTree} className="max-h-[620px] px-4" />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
-          <Toc content={note} className="mt-4" />
+          <Toc headings={headings} className="mt-4" />
         </div>
       </div>
     );

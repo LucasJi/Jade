@@ -107,3 +107,11 @@ export const decimalToBase62 = (decimal: number): string => {
 
   return base62;
 };
+
+export const base64Encode = (text: string) => {
+  return Buffer.from(text).toString('base64');
+};
+
+export const base64Decode = (text: string) => {
+  return Buffer.from(text, 'base64').toString();
+};
