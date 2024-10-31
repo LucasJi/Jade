@@ -2,7 +2,9 @@
 import { Note, NoteGraph } from '@types';
 import { Root } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
+import { frontmatterFromMarkdown } from 'mdast-util-frontmatter';
 import { toc } from 'mdast-util-toc';
+import { frontmatter } from 'micromark-extension-frontmatter';
 import * as os from 'node:os';
 import { remark } from 'remark';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -19,7 +21,10 @@ export const removeTitle = (content: string) => {
 };
 
 export const getNoteToc = (content: string) => {
-  const tree = fromMarkdown(content) as Root;
+  const tree = fromMarkdown(content, 'utf-8', {
+    extensions: [frontmatter(['yaml'])],
+    mdastExtensions: [frontmatterFromMarkdown(['yaml'])],
+  }) as Root;
   const result = toc(tree);
   const map = result.map;
 
