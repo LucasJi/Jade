@@ -11,26 +11,13 @@ import { VFile } from 'vfile';
 
 export type Components = Partial<JsxRuntimeComponents>;
 
-type UrlTransform = (
+type UrlTransformer = (
   url: string,
   key: string,
   node: Readonly<Element>,
 ) => string | null | undefined;
 
-type Deprecation = {
-  /**
-   *   Old field.
-   */
-  from: string;
-  /**
-   *   ID in readme.
-   */
-  id: string;
-  /**
-   * New field.
-   */
-  to?: keyof Options;
-};
+type TextTransformer = (note: string) => string;
 
 type Options = {
   /**
@@ -58,9 +45,9 @@ type Options = {
    */
   skipHtml?: boolean | null | undefined;
   /**
-   * Change URLs (default: `defaultUrlTransform`)
+   * Change URLs (default: `defaultUrlTransformer`)
    */
-  urlTransform?: UrlTransform | null | undefined;
+  urlTransformer?: UrlTransformer | null | undefined;
 };
 
 const emptyPlugins: PluggableList = [];
@@ -73,7 +60,7 @@ const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
  * Parse note to hast tree
  * @param options
  */
-export const parse = (
+export const hastTransformer = (
   options: Options,
 ): { mdastTree: Root; hastTree: Nodes } => {
   const note = options.note || '';
@@ -84,7 +71,7 @@ export const parse = (
     ? { ...options.remarkRehypeOptions, ...emptyRemarkRehypeOptions }
     : emptyRemarkRehypeOptions;
   const skipHtml = options.skipHtml;
-  const urlTransform = options.urlTransform || defaultUrlTransform;
+  const urlTransformer = options.urlTransformer || defaultUrlTransformer;
 
   const processor = unified()
     .use(remarkParse)
@@ -132,7 +119,11 @@ export const parse = (
           const value = node.properties[key];
           const test = urlAttributes[key];
           if (test === null || test.includes(node.tagName)) {
-            node.properties[key] = urlTransform(String(value || ''), key, node);
+            node.properties[key] = urlTransformer(
+              String(value || ''),
+              key,
+              node,
+            );
           }
         }
       }
@@ -154,7 +145,7 @@ export const getNoteHeadings = (mdastTree: Root) => {
  * Make a URL safe.
  *
  */
-export function defaultUrlTransform(value: string): string {
+function defaultUrlTransformer(value: string): string {
   // Same as:
   // <https://github.com/micromark/micromark/blob/929275e/packages/micromark-util-sanitize-uri/dev/index.js#L34>
   // But without the `encode` part.
@@ -178,3 +169,7 @@ export function defaultUrlTransform(value: string): string {
 
   return '';
 }
+
+const obsidianCommentTextTransformer: TextTransformer = note => {
+  return note;
+};

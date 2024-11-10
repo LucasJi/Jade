@@ -4,12 +4,13 @@ import config from '@/lib/config';
 import { logger } from '@/lib/logger';
 import {
   decodeNoteName,
+  decodeURISlug,
   encodeNoteName,
-  getEncodedNoteNameFromSlugs,
+  getEncodedNoteNameFromURISlug,
   getNoteSlugsFromPath,
 } from '@/lib/note';
-import { getNoteHeadings, parse } from '@/lib/parser';
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
+import { getNoteHeadings, hastTransformer } from '@/lib/transformer';
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
 import { remarkTaskList } from '@/plugins/remark-task-list';
@@ -53,10 +54,10 @@ export default async function Page(props: {
   const params = await props.params;
 
   const { slug } = params;
-  const decodedSlug = slug.map(s => decodeURIComponent(s));
+  const decodedSlug = decodeURISlug(slug);
 
   try {
-    const encodedNoteName = getEncodedNoteNameFromSlugs(decodedSlug);
+    const encodedNoteName = getEncodedNoteNameFromURISlug(decodedSlug);
     const noteName = decodeNoteName(encodedNoteName);
 
     log.info({ decodedSlug, noteName: noteName }, 'Build note page');
@@ -67,9 +68,13 @@ export default async function Page(props: {
       notFound();
     }
 
-    const { hastTree, mdastTree } = parse({
+    const { hastTree, mdastTree } = hastTransformer({
       note,
-      rehypePlugins: [rehypeRaw as any, rehypeKatex, rehypeSlug],
+      rehypePlugins: [
+        rehypeRaw as any,
+        [rehypeKatex, { strict: false }],
+        rehypeSlug,
+      ],
       remarkPlugins: [
         remarkFrontmatter,
         remarkGfm,
