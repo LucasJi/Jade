@@ -24,32 +24,3 @@ export type NoteGraph = {
   nodes: NoteGraphNode[];
   links: NoteGraphLink[];
 };
-
-export interface TreeViewNode {
-  name: string;
-  path: string;
-  children: TreeViewNode[];
-  isDir: boolean;
-}
-
-export interface TreeViewProps {
-  className?: string;
-}
-
-export type NoteObjectType = 'file' | 'dir';
-
-export interface NoteObject {
-  name: string;
-  type: NoteObjectType;
-  ext: string;
-}
-
-export interface BucketItem {
-  name: string;
-  size: number;
-  etag: string;
-  prefix?: never;
-  lastModified: Date;
-  isLatest: boolean;
-  isDeleteMarker: boolean;
-}

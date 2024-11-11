@@ -1,10 +1,10 @@
 'use client';
 
+import { TreeViewNode, TreeViewProps } from '@/components/types';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getEncodedNoteNameFromURISlug } from '@/lib/note';
 import { cn } from '@/lib/utils';
-import { TreeViewNode, TreeViewProps } from '@types';
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';

@@ -1,4 +1,5 @@
-import { NoteObject, TreeViewNode } from '@types';
+import { TreeViewNode } from '@/components/types';
+import { NoteObject } from '@/lib/types';
 import { trimEnd } from 'lodash';
 import { ListItem, Root } from 'mdast';
 import { toc } from 'mdast-util-toc';
