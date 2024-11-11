@@ -1,14 +1,39 @@
+import { remarkCallout } from '@/plugins/remark-callout';
+import remarkHighlight from '@/plugins/remark-highlight';
+import { remarkTaskList } from '@/plugins/remark-task-list';
+import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { Options } from '@/transformer/types';
 import { Nodes } from 'hast';
 import { urlAttributes } from 'html-url-attributes';
 import { Root } from 'mdast';
+import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
+import remarkBreaks from 'remark-breaks';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
 import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
 import { PluggableList, unified } from 'unified';
 import { Visitor, VisitorResult, visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
-const emptyPlugins: PluggableList = [];
+const defaultRemarkPlugins: PluggableList = [
+  remarkFrontmatter,
+  remarkGfm,
+  remarkBreaks,
+  remarkHighlight,
+  remarkTaskList,
+  remarkCallout,
+  remarkMath,
+  remarkWikilink,
+];
+const defaultRehypePlugins: PluggableList = [
+  rehypeRaw as any,
+  [rehypeKatex, { strict: false }],
+  rehypeSlug,
+];
 
 const emptyRemarkRehypeOptions: Readonly<RemarkRehypeOptions> = {
   allowDangerousHtml: true,
@@ -54,8 +79,8 @@ export const astTransformer = (
 ): { mdast: Root; hast: Nodes } => {
   const note = options.note || '';
   const className = options.className;
-  const rehypePlugins = options.rehypePlugins || emptyPlugins;
-  const remarkPlugins = options.remarkPlugins || emptyPlugins;
+  const rehypePlugins = options.rehypePlugins || defaultRehypePlugins;
+  const remarkPlugins = options.remarkPlugins || defaultRemarkPlugins;
   const remarkRehypeOptions = options.remarkRehypeOptions
     ? { ...options.remarkRehypeOptions, ...emptyRemarkRehypeOptions }
     : emptyRemarkRehypeOptions;

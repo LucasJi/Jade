@@ -10,20 +10,9 @@ import {
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
-import { remarkCallout } from '@/plugins/remark-callout';
-import remarkHighlight from '@/plugins/remark-highlight';
-import { remarkTaskList } from '@/plugins/remark-task-list';
-import { remarkWikilink } from '@/plugins/remark-wikilink';
 import { astTransformer } from '@/transformer/ast-transformer';
 import { join } from 'lodash';
 import { notFound } from 'next/navigation';
-import rehypeKatex from 'rehype-katex';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkBreaks from 'remark-breaks';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
 
 const log = logger.child({ module: 'page:notes/[...slug]' });
 
@@ -68,24 +57,7 @@ export default async function Page(props: {
       notFound();
     }
 
-    const { hast, mdast } = astTransformer({
-      note,
-      rehypePlugins: [
-        rehypeRaw as any,
-        [rehypeKatex, { strict: false }],
-        rehypeSlug,
-      ],
-      remarkPlugins: [
-        remarkFrontmatter,
-        remarkGfm,
-        remarkBreaks,
-        remarkHighlight,
-        remarkTaskList,
-        remarkCallout,
-        remarkMath,
-        remarkWikilink,
-      ],
-    });
+    const { hast, mdast } = astTransformer({ note });
 
     return (
       <div className="flex h-full">
