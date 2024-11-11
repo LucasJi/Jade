@@ -1,5 +1,7 @@
 import { NoteObject, TreeViewNode } from '@types';
 import { trimEnd } from 'lodash';
+import { ListItem, Root } from 'mdast';
+import { toc } from 'mdast-util-toc';
 import { logger } from './logger';
 import { decimalToBase62, getFileExt, murmurhash } from './utils';
 
@@ -130,3 +132,9 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
 
 export const decodeURISlug = (slug: string[]) =>
   slug.map(s => decodeURIComponent(s));
+
+export const getNoteHeadings = (mdastTree: Root): ListItem[] => {
+  const result = toc(mdastTree);
+  const map = result.map;
+  return map ? map.children : [];
+};

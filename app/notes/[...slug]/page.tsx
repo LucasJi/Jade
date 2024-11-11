@@ -10,11 +10,11 @@ import {
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
-import { getNoteHeadings, hastTransformer } from '@/lib/transformer';
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
+import { astTransformer } from '@/transformer/ast-transformer';
 import { join } from 'lodash';
 import { notFound } from 'next/navigation';
 import rehypeKatex from 'rehype-katex';
@@ -68,7 +68,7 @@ export default async function Page(props: {
       notFound();
     }
 
-    const { hastTree, mdastTree } = hastTransformer({
+    const { hast, mdast } = astTransformer({
       note,
       rehypePlugins: [
         rehypeRaw as any,
@@ -87,15 +87,13 @@ export default async function Page(props: {
       ],
     });
 
-    const headings = getNoteHeadings(mdastTree);
-
     return (
       <div className="flex h-full">
         <div className="min-h-[600px] w-2/3">
-          <Markdown hastTree={hastTree} className="max-h-[620px] px-4" />
+          <Markdown hast={hast} className="max-h-[620px] px-4" />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
-          <Toc headings={headings} className="mt-4" />
+          <Toc mdast={mdast} className="mt-4" />
         </div>
       </div>
     );

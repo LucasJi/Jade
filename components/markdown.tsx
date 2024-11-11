@@ -9,8 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TypographyCode } from '@/components/ui/typography';
-import { Components } from '@/lib/transformer';
 import { cn } from '@/lib/utils';
+import { Components } from '@/transformer/types';
 import clsx from 'clsx';
 import { Nodes } from 'hast';
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
@@ -201,13 +201,7 @@ const components = (): Components => ({
   },
 });
 
-const Markdown = ({
-  className,
-  hastTree,
-}: {
-  className?: string;
-  hastTree: Nodes;
-}) => {
+const Markdown = ({ className, hast }: { className?: string; hast: Nodes }) => {
   return (
     <ScrollArea className="overflow-x-auto">
       <article
@@ -232,7 +226,7 @@ const Markdown = ({
           className,
         )}
       >
-        {toJsxRuntime(hastTree, {
+        {toJsxRuntime(hast, {
           Fragment,
           components: components(),
           ignoreInvalidStyle: true,

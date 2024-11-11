@@ -1,3 +1,4 @@
+import { getNoteHeadings } from '@/lib/note';
 import clsx from 'clsx';
 import {
   BlockContent,
@@ -5,6 +6,7 @@ import {
   ListItem,
   Paragraph,
   PhrasingContent,
+  Root,
 } from 'mdast';
 
 const findText = (heading: Paragraph): { text: string; url: string } => {
@@ -72,12 +74,13 @@ function TocNode({ heading }: { heading: BlockContent | ListItem }) {
 }
 
 export default function Toc({
-  headings,
+  mdast,
   className,
 }: {
-  headings: ListItem[];
+  mdast: Root;
   className?: string;
 }) {
+  const headings = getNoteHeadings(mdast);
   return (
     headings?.length > 0 && (
       <div className={clsx(className)}>

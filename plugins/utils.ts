@@ -19,6 +19,7 @@ export const addExtensions = ({
   const fromMarkdownExtensions =
     data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []);
   const toMarkdownExtensions =
+    // @ts-ignore
     data.toMarkdownExtensions || (data.toMarkdownExtensions = []);
 
   if (micromarkExtension) {
