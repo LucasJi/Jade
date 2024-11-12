@@ -9,8 +9,8 @@ const getS3Client = () =>
     endPoint: '127.0.0.1',
     port: 9000,
     useSSL: false,
-    accessKey: 'MrhjREcKfEMnUCwDm86c',
-    secretKey: '759Ywn3J0r7C8VDOiuYR2n0q2CZ3yGAYQPJp7sVK',
+    accessKey: '',
+    secretKey: '',
   });
 
 const minioClient = getS3Client();

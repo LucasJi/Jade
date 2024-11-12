@@ -210,6 +210,9 @@ importers:
       remark-rehype:
         specifier: 11.1.0
         version: 11.1.0
+      remark-stringify:
+        specifier: ^11.0.0
+        version: 11.0.0
       remark-toc:
         specifier: 9.0.0
         version: 9.0.0

@@ -2,7 +2,7 @@ import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { Options } from '@/transformer/types';
+import { Options } from '@/processor/types';
 import { Nodes } from 'hast';
 import { urlAttributes } from 'html-url-attributes';
 import { Root } from 'mdast';
@@ -45,7 +45,7 @@ const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
  * Make a URL safe.
  *
  */
-const defaultUrlTransformer = (value: string): string => {
+const makeUrlSafe = (value: string): string => {
   // Same as:
   // <https://github.com/micromark/micromark/blob/929275e/packages/micromark-util-sanitize-uri/dev/index.js#L34>
   // But without the `encode` part.
@@ -71,10 +71,10 @@ const defaultUrlTransformer = (value: string): string => {
 };
 
 /**
- * Transform note to hast tree
+ * Transform note to mdast and hast
  * @param options
  */
-export const astTransformer = (
+export const transformNoteToAst = (
   options: Options,
 ): { mdast: Root; hast: Nodes } => {
   const note = options.note || '';
@@ -85,7 +85,6 @@ export const astTransformer = (
     ? { ...options.remarkRehypeOptions, ...emptyRemarkRehypeOptions }
     : emptyRemarkRehypeOptions;
   const skipHtml = options.skipHtml;
-  const urlTransformer = options.urlTransformer || defaultUrlTransformer;
 
   const processor = unified()
     .use(remarkParse)
@@ -133,11 +132,7 @@ export const astTransformer = (
           const value = node.properties[key];
           const test = urlAttributes[key];
           if (test === null || test.includes(node.tagName)) {
-            node.properties[key] = urlTransformer(
-              String(value || ''),
-              key,
-              node,
-            );
+            node.properties[key] = makeUrlSafe(String(value || ''));
           }
         }
       }
