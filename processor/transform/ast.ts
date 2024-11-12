@@ -2,10 +2,10 @@ import { remarkCallout } from '@/plugins/remark-callout';
 import remarkHighlight from '@/plugins/remark-highlight';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { Options } from '@/processor/types';
+import { frontYamlMatterHandler } from '@/plugins/unified-matter/plugin';
+import { Transformer } from '@/processor/types';
 import { Nodes } from 'hast';
 import { urlAttributes } from 'html-url-attributes';
-import { Root } from 'mdast';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
@@ -14,7 +14,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
-import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
+import remarkRehype from 'remark-rehype';
 import { PluggableList, unified } from 'unified';
 import { Visitor, VisitorResult, visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
@@ -35,9 +35,7 @@ const defaultRehypePlugins: PluggableList = [
   rehypeSlug,
 ];
 
-const emptyRemarkRehypeOptions: Readonly<RemarkRehypeOptions> = {
-  allowDangerousHtml: true,
-};
+const unifiedPlugins: PluggableList = [frontYamlMatterHandler];
 
 const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
 
@@ -70,76 +68,71 @@ const makeUrlSafe = (value: string): string => {
   return '';
 };
 
-/**
- * Transform note to mdast and hast
- * @param options
- */
-export const transformNoteToAst = (
-  options: Options,
-): { mdast: Root; hast: Nodes } => {
-  const note = options.note || '';
-  const className = options.className;
-  const rehypePlugins = options.rehypePlugins || defaultRehypePlugins;
-  const remarkPlugins = options.remarkPlugins || defaultRemarkPlugins;
-  const remarkRehypeOptions = options.remarkRehypeOptions
-    ? { ...options.remarkRehypeOptions, ...emptyRemarkRehypeOptions }
-    : emptyRemarkRehypeOptions;
-  const skipHtml = options.skipHtml;
+const skipHtml = false;
 
-  const processor = unified()
-    .use(remarkParse)
-    .use(remarkPlugins)
-    .use(remarkRehype, remarkRehypeOptions)
-    .use(rehypePlugins);
-
-  const file = new VFile();
-  file.value = note;
-
-  const mdast = processor.parse(file);
-  let hast: Nodes = processor.runSync(mdast, file);
-
-  // Wrap in `div` if there’s a class name.
-  if (className) {
-    hast = {
-      type: 'element',
-      tagName: 'div',
-      properties: { className },
+const transformUrls: Visitor<any> = (node, index, parent): VisitorResult => {
+  if (node.type === 'raw' && parent && typeof index === 'number') {
+    if (skipHtml) {
+      parent.children.splice(index, 1);
+    } else {
       // @ts-ignore
-      children: hast.type === 'root' ? hast.children : [hast],
-    };
-  }
-
-  const transform: Visitor<any> = (node, index, parent): VisitorResult => {
-    if (node.type === 'raw' && parent && typeof index === 'number') {
-      if (skipHtml) {
-        parent.children.splice(index, 1);
-      } else {
-        // @ts-ignore
-        parent.children[index] = { type: 'text', value: node.value };
-      }
-
-      return index;
+      parent.children[index] = { type: 'text', value: node.value };
     }
 
-    if (node.type === 'element') {
-      let key: string;
+    return index;
+  }
 
-      for (key in urlAttributes) {
-        if (
-          Object.hasOwn(urlAttributes, key) &&
-          Object.hasOwn(node.properties, key)
-        ) {
-          const value = node.properties[key];
-          const test = urlAttributes[key];
-          if (test === null || test.includes(node.tagName)) {
-            node.properties[key] = makeUrlSafe(String(value || ''));
-          }
+  if (node.type === 'element') {
+    let key: string;
+
+    for (key in urlAttributes) {
+      if (
+        Object.hasOwn(urlAttributes, key) &&
+        Object.hasOwn(node.properties, key)
+      ) {
+        const value = node.properties[key];
+        const test = urlAttributes[key];
+        if (test === null || test.includes(node.tagName)) {
+          node.properties[key] = makeUrlSafe(String(value || ''));
         }
       }
     }
-  };
+  }
+};
 
-  visit(hast as any, transform);
+const createUnifiedProcessor = () => {
+  return unified()
+    .use(remarkParse)
+    .use(defaultRemarkPlugins)
+    .use(remarkRehype, {
+      allowDangerousHtml: true,
+    })
+    .use(defaultRehypePlugins)
+    .use(unifiedPlugins);
+};
 
-  return { mdast, hast };
+const createVFile = (note: string) => {
+  const file = new VFile();
+  file.value = note;
+  return file;
+};
+
+/**
+ * Transform note to mdast and hast
+ */
+export const transformNoteToAst = (
+  options: Transformer.NoteToAstOptions,
+): Transformer.NoteToAstResults => {
+  const vFile = createVFile(options.note || '');
+
+  const processor = createUnifiedProcessor();
+
+  const mdast = processor.parse(vFile);
+  const hast: Nodes = processor.runSync(mdast, vFile);
+
+  visit(hast as any, transformUrls);
+
+  const { matter } = vFile.data as any;
+
+  return { mdast, hast, matter };
 };

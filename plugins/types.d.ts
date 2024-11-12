@@ -32,10 +32,6 @@ declare module 'mdast' {
     wikilink: Wikilink;
     embedFile: EmbedFile;
   }
-
-  interface FrontmatterContentMap {
-    yaml: Yaml;
-  }
 }
 
 declare module 'micromark-util-types' {

@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import { trimEnd } from 'lodash';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -8,6 +9,11 @@ export function cn(...inputs: ClassValue[]) {
 export function getFileExt(filename: string): string {
   return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
 }
+
+export const getFilenameWithoutExt = (filename: string): string => {
+  const ext = getFileExt(filename);
+  return trimEnd(filename, '.' + ext);
+};
 
 /**
  * JS Implementation of MurmurHash3 (r136) (as of May 20, 2011)

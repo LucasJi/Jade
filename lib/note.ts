@@ -1,16 +1,14 @@
 import { TreeViewNode } from '@/components/types';
 import { NoteObject } from '@/lib/types';
-import { trimEnd } from 'lodash';
 import { ListItem, Root } from 'mdast';
 import { toc } from 'mdast-util-toc';
 import { logger } from './logger';
-import { decimalToBase62, getFileExt, murmurhash } from './utils';
+import { decimalToBase62, getFilenameWithoutExt, murmurhash } from './utils';
 
 const log = logger.child({ module: 'lib:note' });
 
 export const getNoteNameWithoutExt = (name: string): string => {
-  const ext = getFileExt(name);
-  return trimEnd(name, '.' + ext);
+  return getFilenameWithoutExt(name);
 };
 
 /**
