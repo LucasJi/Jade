@@ -5,7 +5,7 @@ import { Root } from 'mdast';
 export type Components = Partial<JsxRuntimeComponents>;
 
 export declare namespace Transformer {
-  type Matter = Record<string, any>;
+  type FrontMatter = Record<string, any>;
   type NoteToAstOptions = {
     /**
      * Markdown.
@@ -15,7 +15,7 @@ export declare namespace Transformer {
   type NoteToAstResults = {
     mdast: Root;
     hast: Nodes;
-    matter: Matter;
+    frontmatter: FrontMatter;
   };
 }
 

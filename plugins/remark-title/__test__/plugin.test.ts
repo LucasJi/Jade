@@ -22,5 +22,7 @@ describe('remark-title', () => {
       .use(remarkFrontmatter)
       .use(remarkTitle)
       .process(md);
+
+    console.log(file.toString());
   });
 });

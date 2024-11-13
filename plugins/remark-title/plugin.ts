@@ -6,7 +6,7 @@ export const remarkTitle: Plugin<[{ filename: string }?], Root> = options => {
   const filename = options?.filename || '';
   return (tree, _) => {
     visit(tree as Node, (node, index) => {
-      console.log(node, index);
+      // console.log(node, index);
     });
   };
 };

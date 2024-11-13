@@ -1,44 +1,21 @@
-import { remarkCallout } from '@/plugins/remark-callout';
-import remarkHighlight from '@/plugins/remark-highlight';
-import { remarkTaskList } from '@/plugins/remark-task-list';
-import { remarkWikilink } from '@/plugins/remark-wikilink';
-import { frontYamlMatterHandler } from '@/plugins/unified-matter/plugin';
-import { Transformer } from '@/processor/types';
 import { Nodes } from 'hast';
 import { urlAttributes } from 'html-url-attributes';
+import { Root } from 'mdast';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import remarkBreaks from 'remark-breaks';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { PluggableList, unified } from 'unified';
 import { Visitor, VisitorResult, visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
-const defaultRemarkPlugins: PluggableList = [
-  remarkFrontmatter,
-  remarkGfm,
-  remarkBreaks,
-  remarkHighlight,
-  remarkTaskList,
-  remarkCallout,
-  remarkMath,
-  remarkWikilink,
-];
-const defaultRehypePlugins: PluggableList = [
+const rehypePlugins: PluggableList = [
   rehypeRaw as any,
   [rehypeKatex, { strict: false }],
   rehypeSlug,
 ];
 
-const unifiedPlugins: PluggableList = [frontYamlMatterHandler];
-
-const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
-
+const skipHtml = false;
 /**
  * Make a URL safe.
  *
@@ -68,9 +45,9 @@ const makeUrlSafe = (value: string): string => {
   return '';
 };
 
-const skipHtml = false;
+const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
 
-const transformUrls: Visitor<any> = (node, index, parent): VisitorResult => {
+const visitor: Visitor<any> = (node, index, parent): VisitorResult => {
   if (node.type === 'raw' && parent && typeof index === 'number') {
     if (skipHtml) {
       parent.children.splice(index, 1);
@@ -100,39 +77,19 @@ const transformUrls: Visitor<any> = (node, index, parent): VisitorResult => {
   }
 };
 
+export const transformUrls = (hast: Nodes) => {
+  visit(hast as any, visitor);
+};
+
 const createUnifiedProcessor = () => {
   return unified()
-    .use(remarkParse)
-    .use(defaultRemarkPlugins)
     .use(remarkRehype, {
       allowDangerousHtml: true,
     })
-    .use(defaultRehypePlugins)
-    .use(unifiedPlugins);
+    .use(rehypePlugins);
 };
 
-const createVFile = (note: string) => {
-  const file = new VFile();
-  file.value = note;
-  return file;
-};
-
-/**
- * Transform note to mdast and hast
- */
-export const transformNoteToAst = (
-  options: Transformer.NoteToAstOptions,
-): Transformer.NoteToAstResults => {
-  const vFile = createVFile(options.note || '');
-
+export const transformMdastToHast = (mdast: Root, vFile: VFile) => {
   const processor = createUnifiedProcessor();
-
-  const mdast = processor.parse(vFile);
-  const hast: Nodes = processor.runSync(mdast, vFile);
-
-  visit(hast as any, transformUrls);
-
-  const { matter } = vFile.data as any;
-
-  return { mdast, hast, matter };
+  return processor.runSync(mdast, vFile);
 };
