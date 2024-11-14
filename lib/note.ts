@@ -39,8 +39,7 @@ export const getNotePath = (name: string): string => encodeNoteName(name);
 
 export const getNoteSlugsFromPath = (path: string): string[] => path.split('/');
 
-export const getEncodedNoteNameFromURISlug = (slugs: string[]) =>
-  slugs.join('/');
+export const getEncodedNoteNameFromSlug = (slugs: string[]) => slugs.join('/');
 
 export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {

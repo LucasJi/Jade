@@ -6,11 +6,12 @@ import {
   decodeNoteName,
   decodeURISlug,
   encodeNoteName,
-  getEncodedNoteNameFromURISlug,
+  getEncodedNoteNameFromSlug,
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
-import { astTransformer } from '@/transformer/ast-transformer';
+import { getFilenameWithoutExt } from '@/lib/utils';
+import { parseNote } from '@/processor/parser';
 import { join } from 'lodash';
 import { notFound } from 'next/navigation';
 
@@ -42,14 +43,14 @@ export default async function Page(props: {
 }) {
   const params = await props.params;
 
-  const { slug } = params;
-  const decodedSlug = decodeURISlug(slug);
+  const { slug: uriSlug } = params;
+  const slug = decodeURISlug(uriSlug);
 
   try {
-    const encodedNoteName = getEncodedNoteNameFromURISlug(decodedSlug);
+    const encodedNoteName = getEncodedNoteNameFromSlug(slug);
     const noteName = decodeNoteName(encodedNoteName);
 
-    log.info({ decodedSlug, noteName: noteName }, 'Build note page');
+    log.info({ slug, noteName: noteName }, 'Build note page');
 
     const note = await getObject(s3Client)(config.s3.bucket, noteName);
 
@@ -57,7 +58,10 @@ export default async function Page(props: {
       notFound();
     }
 
-    const { hast, mdast } = astTransformer({ note });
+    const { hast, mdast, headings } = parseNote({
+      note,
+      noteFilename: getFilenameWithoutExt(noteName),
+    });
 
     return (
       <div className="flex h-full">
@@ -65,7 +69,7 @@ export default async function Page(props: {
           <Markdown hast={hast} className="max-h-[620px] px-4" />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
-          <Toc mdast={mdast} className="mt-4" />
+          <Toc headings={headings} className="mt-4" />
         </div>
       </div>
     );

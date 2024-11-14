@@ -36,7 +36,7 @@ const getHtml = (md: string) => {
 };
 
 describe('transformTitle', () => {
-  test('With frontmatter title prop, using it', async () => {
+  test('When frontmatter has title prop, using it as note title', async () => {
     const md = dedent`
     ---
     created: 1970/1/1
@@ -53,7 +53,7 @@ describe('transformTitle', () => {
     expect(html).toBe(`<h1>${titleInFrontmatter}</h1>`);
   });
 
-  test('With title heading and without frontmatter title prop, using title heading', async () => {
+  test('When frontmatter does not have title prop and there is a # heading, then use # heading as note title', async () => {
     const md = dedent`
     ---
     created: 1970/1/1
@@ -66,15 +66,27 @@ describe('transformTitle', () => {
     expect(html).toBe(`<h1>${titleInHeading}</h1>`);
   });
 
-  test('', async () => {
+  test('When there is not title prop in the frontmatter and # heading, then use filename as note title', async () => {
     const md = dedent`
     ---
     created: 1970/1/1
     ---
     
-    # ${titleInHeading}
     `;
+    const html = getHtml(md);
 
-    console.log(await processor.process(md));
+    expect(html).toBe(`<h1>${noteFilename}</h1>`);
+  });
+});
+
+describe('transformMdastToHeadings', () => {
+  test('', () => {
+    const md = dedent`
+    # Heading#1
+    
+    ## Heading#2
+    
+    ### Heading#3 
+    `;
   });
 });

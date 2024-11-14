@@ -3,7 +3,7 @@
 import { TreeViewNode, TreeViewProps } from '@/components/types';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getEncodedNoteNameFromURISlug } from '@/lib/note';
+import { getEncodedNoteNameFromSlug } from '@/lib/note';
 import { cn } from '@/lib/utils';
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
@@ -101,7 +101,7 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
   const { slug } = useParams<{ slug: string[] }>();
   const currentNotePath = slug
-    ? getEncodedNoteNameFromURISlug(slug.map(e => decodeURIComponent(e)))
+    ? getEncodedNoteNameFromSlug(slug.map(e => decodeURIComponent(e)))
     : '';
 
   const viewportRef = useRef<HTMLDivElement>(null);

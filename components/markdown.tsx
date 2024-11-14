@@ -10,15 +10,19 @@ import {
 } from '@/components/ui/table';
 import { TypographyCode } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
-import { Components } from '@/transformer/types';
 import clsx from 'clsx';
 import { Nodes } from 'hast';
-import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
+import {
+  Components as JsxRuntimeComponents,
+  toJsxRuntime,
+} from 'hast-util-to-jsx-runtime';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, cloneElement } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
+
+type Components = Partial<JsxRuntimeComponents>;
 
 const components = (): Components => ({
   a: props => {
