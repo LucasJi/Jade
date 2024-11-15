@@ -13,7 +13,7 @@ export const MD_EXT_REG = /\.md$/;
 
 export const MD_EXT = 'md';
 
-export const OB_COMMENT_REG = new RegExp(/%%[\s\S]*?%%/g);
+export const OB_COMMENT_REG = new RegExp(/[^`]?%%(.*?)%%[^`]?/g);
 
 // redis keys
 export const RK_IDS = 'jade:ids';

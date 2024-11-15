@@ -58,7 +58,7 @@ export default async function Page(props: {
       notFound();
     }
 
-    const { hast, mdast, headings } = parseNote({
+    const { hast, headings } = parseNote({
       note,
       noteFilename: getFilenameWithoutExt(noteName),
     });

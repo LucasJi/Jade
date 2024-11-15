@@ -21,6 +21,7 @@ import { Children, cloneElement } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
+import Wikilink from './wikilink';
 
 type Components = Partial<JsxRuntimeComponents>;
 
@@ -28,15 +29,7 @@ const components = (): Components => ({
   a: props => {
     const { node, className, href, children, ...rest } = props;
     if ('data-wikilink' in rest && href) {
-      // return renderWikilink ? (
-      //   <Wikilink wikilink={href} currentNote={currentNote}>
-      //     {children}
-      //   </Wikilink>
-      // ) : (
-      //   <span className="text-obsidian">{children}</span>
-      // );
-
-      return <span className="text-obsidian">{children}</span>;
+      return <Wikilink wikilink={href}>{children}</Wikilink>;
     }
 
     if ('data-footnote-ref' in rest) {
