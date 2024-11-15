@@ -10,25 +10,50 @@ import {
   transformVFileToFrontmatter,
 } from '@/processor/transformer/vFile';
 import { NoteParserOptions } from '@/processor/types';
+import { Root } from 'mdast';
+import { VFile } from 'vfile';
+
+const transformText = (note: string) => {
+  return transformObComment(note);
+};
+
+const transformVFile = (note: string) => {
+  const vFile = transformNoteToVFile(note);
+  const frontmatter = transformVFileToFrontmatter(vFile);
+
+  return {
+    vFile,
+    frontmatter,
+  };
+};
+
+const transformMdast = (
+  vFile: VFile,
+  frontmatter: Record<any, any>,
+  noteFilename: string,
+) => {
+  const mdast = transformVFileToMdast(vFile);
+  transformTitle(mdast, frontmatter, noteFilename);
+  const headings = transformMdastToHeadings(mdast);
+
+  return {
+    mdast,
+    headings,
+  };
+};
+
+const transformHast = (mdast: Root, vFile: VFile) => {
+  return transformMdastToHast(mdast, vFile);
+};
 
 export const parseNote = (options: NoteParserOptions) => {
   const { noteFilename = '' } = options;
   let { note } = options;
 
-  // text transformers
-  note = transformObComment(note);
-
-  // v-file transformers
-  const vFile = transformNoteToVFile(note);
-  const frontmatter = transformVFileToFrontmatter(vFile);
-
-  // mdast transformers
-  const mdast = transformVFileToMdast(vFile);
-  transformTitle(mdast, frontmatter, noteFilename);
-  const headings = transformMdastToHeadings(mdast);
-
-  // hast transformers
-  const hast = transformMdastToHast(mdast, vFile);
+  note = transformText(note);
+  const { vFile, frontmatter } = transformVFile(note);
+  const { mdast, headings } = transformMdast(vFile, frontmatter, noteFilename);
+  const hast = transformHast(mdast, vFile);
 
   return {
     mdast,
