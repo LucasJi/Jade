@@ -4,7 +4,6 @@ import {
   transformTitle,
   transformVFileToMdast,
 } from '@/processor/transformer/mdast';
-import { transformObComment } from '@/processor/transformer/text';
 import {
   transformNoteToVFile,
   transformVFileToFrontmatter,
@@ -14,7 +13,8 @@ import { Root } from 'mdast';
 import { VFile } from 'vfile';
 
 const transformText = (note: string) => {
-  return transformObComment(note);
+  // return transformObComment(note);
+  return note;
 };
 
 const transformVFile = (note: string) => {

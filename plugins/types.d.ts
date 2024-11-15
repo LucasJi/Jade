@@ -1,12 +1,12 @@
-import type { Literal } from 'mdast';
 import { Data, Node, Parent, PhrasingContent } from 'mdast';
-
-interface Yaml extends Literal {
-  type: 'yaml';
-}
 
 export interface InlineMark extends Parent {
   type: 'mark';
+  children: PhrasingContent[];
+}
+
+export interface Comment extends Parent {
+  type: 'comment';
   children: PhrasingContent[];
 }
 
@@ -29,6 +29,7 @@ export interface EmbedFile extends Node {
 declare module 'mdast' {
   interface RootContentMap {
     inlineMark: InlineMark;
+    comment: Comment;
     wikilink: Wikilink;
     embedFile: EmbedFile;
   }
