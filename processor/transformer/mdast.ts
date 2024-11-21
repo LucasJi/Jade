@@ -96,7 +96,7 @@ export const transformTitle = (
 };
 
 export const transformMdastToHeadings = (mdastTree: Root): ListItem[] => {
-  const result = toc(mdastTree);
+  const result = toc(mdastTree, { minDepth: 2 });
   const map = result.map;
   return map ? map.children : [];
 };
