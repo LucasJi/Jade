@@ -12,7 +12,7 @@ export const fromMarkdown = (): FromMarkdownExtension => {
         data: {
           hName: 'div',
           hProperties: {
-            className: 'hidden',
+            hidden: true,
           },
         },
       },

@@ -19,7 +19,7 @@ const tokenizeComment: Tokenizer = function (effects, ok, nok) {
 
   const start: State = function (code) {
     if (
-      previous === codes.equalsTo &&
+      previous === codes.percentSign &&
       events[events.length - 1][1].type !== types.characterEscape
     ) {
       return nok(code);
@@ -32,7 +32,7 @@ const tokenizeComment: Tokenizer = function (effects, ok, nok) {
   const more: State = function (code) {
     const before = classifyCharacter(previous);
 
-    if (code === codes.equalsTo) {
+    if (code === codes.percentSign) {
       // If this is the third marker, exit.
       if (size > 1) {
         return nok(code);

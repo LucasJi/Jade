@@ -146,6 +146,10 @@ const components = (): Components => ({
       return <CalloutBody>{props.children}</CalloutBody>;
     }
 
+    if ('hidden' in props) {
+      return <div className="hidden">{props.children}</div>;
+    }
+
     return <div>{props.children}</div>;
   },
   ul: props => {
