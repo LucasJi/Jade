@@ -13,30 +13,29 @@ import {
 export default function Wikilink({
   wikilink = '',
   children,
+  sourceNote,
 }: {
   wikilink: string;
   children: ReactNode;
+  sourceNote: string;
 }) {
   // const note = null;
 
-  const splits = wikilink.split('#');
-  const title = splits[0];
-  console.log(wikilink);
+  const [simpleNoteName, ...noteParts] = wikilink.split('#');
+  const source = simpleNoteName === '' ? sourceNote : simpleNoteName;
 
-  // if (title === '') {
-  //   note = currentNote;
-  // } else {
-  //   const matched = await redis.keys(`${RK_NOTE_PATH_ID}*${title}*`);
-  //   if (matched.length > 0) {
-  //     const path = matched[0];
-  //     const id = await redis.get(path);
-  //
-  //     if (id) {
-  //       const noteStr = await redis.get(`${RK_ID_NOTE}${id}`);
-  //       note = noteStr && (JSON.parse(noteStr) as Note);
-  //     }
-  //   }
-  // }
+  const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
+  url.search = new URLSearchParams({
+    name: source,
+  }).toString();
+  fetch(url, {
+    method: 'GET',
+    cache: 'force-cache',
+  }).then(resp =>
+    resp.json().then(data => console.log('wikilink note:', data)),
+  );
+
+  console.log(`source:${source}, wikilink:${wikilink}`, noteParts);
 
   return (
     <TooltipProvider>

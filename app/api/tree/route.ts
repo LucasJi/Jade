@@ -10,7 +10,7 @@ export async function GET() {
   const noteObjects = await listNoteObjects(s3Client);
   const noteTreeView = getNoteTreeView(noteObjects);
 
-  log.debug({ response: noteTreeView }, 'Get tree view route handler called');
+  // log.debug({ response: noteTreeView }, 'Get tree view route handler called');
 
   return Response.json(noteTreeView);
 }

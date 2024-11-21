@@ -12,7 +12,6 @@ import {
 import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
 import { getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
-import { join } from 'lodash';
 import { notFound } from 'next/navigation';
 
 const log = logger.child({ module: 'page:notes/[...slug]' });
@@ -27,13 +26,13 @@ export async function generateStaticParams() {
     slug: getNoteSlugsFromPath(encodeNoteName(noteObject.name)),
   }));
 
-  log.info(
-    {
-      paths: staticParams.map(param => join(param.slug, '/')),
-      notePageCount: staticParams.length,
-    },
-    'Generate static params',
-  );
+  // log.info(
+  //   {
+  //     paths: staticParams.map(param => join(param.slug, '/')),
+  //     notePageCount: staticParams.length,
+  //   },
+  //   'Generate static params',
+  // );
 
   return staticParams;
 }
@@ -50,7 +49,7 @@ export default async function Page(props: {
     const encodedNoteName = getEncodedNoteNameFromSlug(slug);
     const noteName = decodeNoteName(encodedNoteName);
 
-    log.info({ slug, noteName: noteName }, 'Build note page');
+    // log.info({ slug, noteName: noteName }, 'Build note page');
 
     const note = await getObject(s3Client)(config.s3.bucket, noteName);
 
@@ -66,7 +65,11 @@ export default async function Page(props: {
     return (
       <div className="flex h-full">
         <div className="min-h-[600px] w-2/3">
-          <Markdown hast={hast} className="max-h-[620px] px-4" />
+          <Markdown
+            hast={hast}
+            sourceNote={noteName}
+            className="max-h-[620px] px-4"
+          />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
           <Toc headings={headings} className="mt-4" />
@@ -74,7 +77,7 @@ export default async function Page(props: {
       </div>
     );
   } catch (error) {
-    log.error({ slug, error }, 'Error occurs when building note page');
+    // log.error({ slug, error }, 'Error occurs when building note page');
     notFound();
   }
 }
