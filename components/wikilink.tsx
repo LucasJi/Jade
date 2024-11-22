@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -19,21 +19,22 @@ export default function Wikilink({
   children: ReactNode;
   sourceNote: string;
 }) {
-  // const note = null;
-
+  const [note, setNote] = useState<string>('');
   const [simpleNoteName, ...noteParts] = wikilink.split('#');
   const source = simpleNoteName === '' ? sourceNote : simpleNoteName;
 
-  const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
-  url.search = new URLSearchParams({
-    name: source,
-  }).toString();
-  fetch(url, {
-    method: 'GET',
-    cache: 'force-cache',
-  }).then(resp =>
-    resp.json().then(data => console.log('wikilink note:', data)),
-  );
+  useEffect(() => {
+    const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
+    url.search = new URLSearchParams({
+      name: source,
+    }).toString();
+    fetch(url, {
+      method: 'GET',
+      cache: 'force-cache',
+    })
+      .then(resp => resp.json())
+      .then(data => setNote(data));
+  }, []);
 
   console.log(`source:${source}, wikilink:${wikilink}`, noteParts);
 
