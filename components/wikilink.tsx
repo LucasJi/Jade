@@ -1,7 +1,10 @@
 'use client';
 
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { encodeNoteName } from '@/lib/note';
+import { getFileExt } from '@/lib/utils';
 import Link from 'next/link';
-import { ReactNode, useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -11,54 +14,63 @@ import {
 } from './ui/tooltip';
 
 export default function Wikilink({
-  wikilink = '',
-  children,
-  sourceNote,
+  target,
+  displayName,
+  restWikilinkPart = [],
+  source,
 }: {
-  wikilink: string;
-  children: ReactNode;
-  sourceNote: string;
+  target: string;
+  displayName: string;
+  restWikilinkPart: string[];
+  source: string;
 }) {
+  const ext = getFileExt(source);
   const [note, setNote] = useState<string>('');
-  const [simpleNoteName, ...noteParts] = wikilink.split('#');
-  const source = simpleNoteName === '' ? sourceNote : simpleNoteName;
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
-    url.search = new URLSearchParams({
-      name: source,
-    }).toString();
-    fetch(url, {
-      method: 'GET',
-      cache: 'force-cache',
-    })
-      .then(resp => resp.json())
-      .then(data => setNote(data));
-  }, []);
-
-  console.log(`source:${source}, wikilink:${wikilink}`, noteParts);
+  const handleOpenChange = (open: boolean) => {
+    // TODO: Handle not markdown files
+    if (open && ext !== 'pdf') {
+      const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
+      url.search = new URLSearchParams({
+        name: source,
+      }).toString();
+      fetch(url, {
+        method: 'GET',
+        // cache: 'force-cache',
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          setNote(data);
+          setIsLoading(false);
+        });
+    }
+  };
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip onOpenChange={handleOpenChange}>
         <TooltipTrigger>
           <Link
             className="text-obsidian"
-            // href={`/notes/${encodeURIComponent(note!.id)}`}
-            href={`/notes/TODO`}
+            href={`/notes/${encodeNoteName(target)}`}
             color="foreground"
             prefetch={false}
           >
-            {children}
+            {displayName}
           </Link>
         </TooltipTrigger>
         <TooltipPortal>
-          <TooltipContent>
+          <TooltipContent className="flex h-72 w-96">
+            {isLoading ? (
+              <LoadingSpinner className="mx-auto self-center" />
+            ) : (
+              note
+            )}
             {/*<Markdown*/}
             {/*  className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"*/}
             {/*  hast={{}}*/}
             {/*/>*/}
-            {wikilink}
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

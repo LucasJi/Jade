@@ -23,14 +23,23 @@ import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
 import Wikilink from './wikilink';
 
-const components = (sourceNote: string): Partial<JsxRuntimeComponents> => ({
-  a: props => {
+const components = (
+  sourceNote: string,
+  noteNames: string[],
+): Partial<JsxRuntimeComponents> => ({
+  a: async props => {
     const { node, className, href, children, ...rest } = props;
     if ('data-wikilink' in rest && href) {
+      const [noteNameFromLink, ...restLinkPart] = href.split('#');
+      const noteName = noteNameFromLink === '' ? sourceNote : noteNameFromLink;
+      const found = noteNames.find(e => e.includes(noteName)) ?? '';
       return (
-        <Wikilink wikilink={href} sourceNote={sourceNote}>
-          {children}
-        </Wikilink>
+        <Wikilink
+          displayName={children}
+          restWikilinkPart={restLinkPart}
+          source={noteName}
+          target={found}
+        />
       );
     }
 
@@ -208,10 +217,12 @@ const Markdown = ({
   className,
   hast,
   sourceNote,
+  noteNames,
 }: {
   className?: string;
   hast: Nodes;
   sourceNote: string;
+  noteNames: string[];
 }) => {
   return (
     <ScrollArea className="overflow-x-auto">
@@ -239,7 +250,7 @@ const Markdown = ({
       >
         {toJsxRuntime(hast, {
           Fragment,
-          components: components(sourceNote),
+          components: components(sourceNote, noteNames),
           ignoreInvalidStyle: true,
           // @ts-ignore
           jsx,

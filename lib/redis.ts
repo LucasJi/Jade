@@ -1,20 +1,14 @@
 import { logger } from '@/lib/logger';
-import { Redis, RedisOptions } from 'ioredis';
+import { createClient } from 'redis';
 import config from './config';
 
 const log = logger.child({ module: 'lib:redis' });
 
-export const getRedisClient = () => {
-  const redisOptions: RedisOptions = {
-    host: config.redis.host,
-    port: config.redis.port,
-  };
-
-  if (config.redis.pass) {
-    redisOptions.password = config.redis.pass;
-  }
-
-  log.info('Create a redis client');
-
-  return new Redis(redisOptions);
+export const createRedisClient = async () => {
+  return await createClient({
+    url: `redis://:${config.redis.pass}@${config.redis.host}:${config.redis.port}`,
+  })
+    .on('error', err => log.error('Redis Client Error', err))
+    .on('ready', () => log.info('Redis Client Ready'))
+    .connect();
 };

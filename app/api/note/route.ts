@@ -19,6 +19,9 @@ export async function GET(req: NextRequest) {
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/note/names`,
     {
       cache: 'force-cache',
+      next: {
+        tags: ['api:note/names'],
+      },
     },
   ).then(resp => resp.json())) as string[];
 

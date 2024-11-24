@@ -1,19 +1,13 @@
 // /* eslint-disable no-console */
-// import config from '@/lib/config';
-// import { logger } from '@/lib/logger';
-// import { base64Decode } from '@/lib/server-utils';
-// import {
-//   fromWikilinkMarkdown,
-//   remarkWikilinkSyntax,
-// } from '@/plugins/remark-wikilink';
-// import { Note } from '@types';
-// import { fromMarkdown } from 'mdast-util-from-markdown';
-// import { Node, visit } from 'unist-util-visit';
-//
-// const log = logger.child({ module: 'bootstrap' });
-// const { dir, s3 } = config;
-// // const s3Client = getS3Client();
-// // const redis = getRedisClient();
+import config from '@/lib/config';
+import { logger } from '@/lib/logger';
+import { createRedisClient } from '@/lib/redis';
+import { getS3Client, listNoteObjects } from '@/lib/server/s3';
+
+const log = logger.child({ module: 'bootstrap' });
+const { dir, s3 } = config;
+const s3Client = getS3Client();
+const redis = await createRedisClient();
 //
 // // TODO: Refactor
 // // const loadLocalVaultFilePathItems = (
@@ -120,32 +114,27 @@
 //   }
 // };
 //
-// // const clearCache = async () => {
-// //   const keys = await redis.keys('jade:*');
-// //   keys.forEach(key => {
-// //     redis.del(key);
-// //   });
-// //
-// //   log.info({ keySize: keys.length }, 'Clear cache');
-// // };
-//
-// const loadVault = async () => {
-//   // await clearCache();
-//   // const notes: Note[] = [];
-//   // const noteObjects = await listNoteObjects(s3Client);
-//   // for (const noteObject of noteObjects) {
-//   // const { name, ext } = noteObject;
-//   // redis.set(`${RK_ID_PATH}${name}`, JSON.stringify(noteObject));
-//   // const note = await loadNote(name, '');
-//   // notes.push(note);
-//   // }
-//   // await resolveWikilinks(notes);
-// };
-//
-// const init = async () => {
-//   await loadVault();
-// };
-//
-// log.info('Jade bootstrap starts...');
-// await init();
-// log.info('Jade bootstrap ends');
+const clearCache = async () => {
+  const keys = await redis.keys('jade:*');
+  keys.forEach(key => {
+    redis.del(key);
+  });
+
+  log.info({ keySize: keys.length }, 'Clear all redis keys');
+};
+
+const cacheObjectNames = async () => {
+  const noteObjects = await listNoteObjects(s3Client);
+  const names = noteObjects.map(no => no.name);
+  await redis.set('jade:obj:names', JSON.stringify(names));
+  log.info({ objectSize: names.length }, 'Cache all object names');
+};
+
+const init = async () => {
+  log.info('Initializing Jade...');
+
+  await clearCache();
+  await cacheObjectNames();
+};
+
+await init();

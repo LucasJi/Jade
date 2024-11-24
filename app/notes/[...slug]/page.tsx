@@ -9,7 +9,8 @@ import {
   getEncodedNoteNameFromSlug,
   getNoteSlugsFromPath,
 } from '@/lib/note';
-import { getObject, getS3Client, listNoteObjects } from '@/lib/server/s3';
+import { createRedisClient } from '@/lib/redis';
+import { getObject, getS3Client } from '@/lib/server/s3';
 import { getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
 import { notFound } from 'next/navigation';
@@ -17,13 +18,19 @@ import { notFound } from 'next/navigation';
 const log = logger.child({ module: 'page:notes/[...slug]' });
 
 const s3Client = getS3Client();
+const redis = await createRedisClient();
+const noteObjectNames = JSON.parse(
+  (await redis.get('jade:obj:names')) ?? '[]',
+) as string[];
 
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const noteObjects = await listNoteObjects(s3Client);
-  const staticParams = noteObjects.map(noteObject => ({
-    slug: getNoteSlugsFromPath(encodeNoteName(noteObject.name)),
+  // const noteObjectNames = JSON.parse(
+  //   (await redis.get('jade:obj:names')) ?? '[]',
+  // ) as string[];
+  const staticParams = noteObjectNames.map(name => ({
+    slug: getNoteSlugsFromPath(encodeNoteName(name)),
   }));
 
   // log.info(
@@ -69,6 +76,7 @@ export default async function Page(props: {
             hast={hast}
             sourceNote={noteName}
             className="max-h-[620px] px-4"
+            noteNames={noteObjectNames}
           />
         </div>
         <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">

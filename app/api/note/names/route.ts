@@ -1,10 +1,13 @@
-import { getS3Client, listNoteObjects } from '@/lib/server/s3';
+import { createRedisClient } from '@/lib/redis';
 import { NextResponse } from 'next/server';
 
-const s3Client = getS3Client();
+const redis = await createRedisClient();
 
+/**
+ * Get objects names from redis
+ * tags: 'api:note/names'
+ */
 export async function GET() {
-  const noteObjects = await listNoteObjects(s3Client);
-  const names = noteObjects.map(no => no.name);
-  return NextResponse.json(names);
+  const names = await redis.get('jade:obj:names');
+  return NextResponse.json(names ? JSON.parse(names) : []);
 }
