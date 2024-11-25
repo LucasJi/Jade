@@ -1,8 +1,11 @@
 'use client';
 
+import Markdown from '@/components/markdown';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { encodeNoteName } from '@/lib/note';
-import { getFileExt } from '@/lib/utils';
+import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
+import { parseNote } from '@/processor/parser';
+import { Nodes } from 'hast';
 import Link from 'next/link';
 import { useState } from 'react';
 import {
@@ -14,26 +17,31 @@ import {
 } from './ui/tooltip';
 
 export default function Wikilink({
-  target,
   displayName,
-  restWikilinkPart = [],
-  source,
+  origin,
+  noteNames,
+  wikilink,
 }: {
-  target: string;
   displayName: string;
-  restWikilinkPart: string[];
-  source: string;
+  origin: string;
+  noteNames: string[];
+  wikilink: string;
 }) {
-  const ext = getFileExt(source);
+  const [noteNameFromWikilink, ...restWikilinkPart] = wikilink.split('#');
+  let noteName = noteNameFromWikilink === '' ? origin : noteNameFromWikilink;
+  noteName = noteNames.find(e => e.includes(noteName)) ?? '';
+
+  const ext = getFileExt(noteName);
   const [note, setNote] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [hast, setHast] = useState<Nodes>();
 
   const handleOpenChange = (open: boolean) => {
     // TODO: Handle not markdown files
     if (open && ext !== 'pdf') {
       const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
       url.search = new URLSearchParams({
-        name: source,
+        name: noteName,
       }).toString();
       fetch(url, {
         method: 'GET',
@@ -41,6 +49,11 @@ export default function Wikilink({
       })
         .then(resp => resp.json())
         .then(data => {
+          const { hast } = parseNote({
+            note: data as string,
+            plainNoteName: getFilenameWithoutExt(noteName),
+          });
+          setHast(hast);
           setNote(data);
           setIsLoading(false);
         });
@@ -53,7 +66,7 @@ export default function Wikilink({
         <TooltipTrigger>
           <Link
             className="text-obsidian"
-            href={`/notes/${encodeNoteName(target)}`}
+            href={`/notes/${encodeNoteName(noteName)}`}
             color="foreground"
             prefetch={false}
           >
@@ -65,12 +78,13 @@ export default function Wikilink({
             {isLoading ? (
               <LoadingSpinner className="mx-auto self-center" />
             ) : (
-              note
+              <Markdown
+                hast={hast!}
+                origin={noteName}
+                className="max-h-[620px] px-4"
+                noteNames={noteNames}
+              />
             )}
-            {/*<Markdown*/}
-            {/*  className="webkit-overflow-y-auto prose-sm h-[400px] w-[600px] p-4"*/}
-            {/*  hast={{}}*/}
-            {/*/>*/}
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

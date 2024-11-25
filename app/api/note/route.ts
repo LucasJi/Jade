@@ -1,3 +1,4 @@
+import { getNoteNames } from '@/app/api';
 import config from '@/lib/config';
 import { getObject, getS3Client } from '@/lib/server/s3';
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,19 +12,11 @@ export async function GET(req: NextRequest) {
   if (!name) {
     return new Response('', {
       status: 403,
-      statusText: 'Param name is required',
+      statusText: 'Note name is required',
     });
   }
 
-  const noteNames = (await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/note/names`,
-    {
-      cache: 'force-cache',
-      next: {
-        tags: ['api:note/names'],
-      },
-    },
-  ).then(resp => resp.json())) as string[];
+  const noteNames = await getNoteNames();
 
   const found = noteNames.find(e => e.includes(name));
 

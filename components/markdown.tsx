@@ -24,21 +24,18 @@ import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
 import Wikilink from './wikilink';
 
 const components = (
-  sourceNote: string,
+  origin: string,
   noteNames: string[],
 ): Partial<JsxRuntimeComponents> => ({
-  a: async props => {
+  a: props => {
     const { node, className, href, children, ...rest } = props;
     if ('data-wikilink' in rest && href) {
-      const [noteNameFromLink, ...restLinkPart] = href.split('#');
-      const noteName = noteNameFromLink === '' ? sourceNote : noteNameFromLink;
-      const found = noteNames.find(e => e.includes(noteName)) ?? '';
       return (
         <Wikilink
+          origin={origin}
           displayName={children}
-          restWikilinkPart={restLinkPart}
-          source={noteName}
-          target={found}
+          wikilink={href}
+          noteNames={noteNames}
         />
       );
     }
@@ -216,12 +213,12 @@ const components = (
 const Markdown = ({
   className,
   hast,
-  sourceNote,
+  origin,
   noteNames,
 }: {
   className?: string;
   hast: Nodes;
-  sourceNote: string;
+  origin: string;
   noteNames: string[];
 }) => {
   return (
@@ -250,7 +247,7 @@ const Markdown = ({
       >
         {toJsxRuntime(hast, {
           Fragment,
-          components: components(sourceNote, noteNames),
+          components: components(origin, noteNames),
           ignoreInvalidStyle: true,
           // @ts-ignore
           jsx,

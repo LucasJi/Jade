@@ -47,12 +47,12 @@ const transformHast = (mdast: Root, vFile: VFile) => {
 };
 
 export const parseNote = (options: NoteParserOptions) => {
-  const { noteFilename = '' } = options;
+  const { plainNoteName = '' } = options;
   let { note } = options;
 
   note = transformText(note);
   const { vFile, frontmatter } = transformVFile(note);
-  const { mdast, headings } = transformMdast(vFile, frontmatter, noteFilename);
+  const { mdast, headings } = transformMdast(vFile, frontmatter, plainNoteName);
   const hast = transformHast(mdast, vFile);
 
   return {

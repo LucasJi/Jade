@@ -66,7 +66,7 @@ export default async function Page(props: {
 
     const { hast, headings } = parseNote({
       note,
-      noteFilename: getFilenameWithoutExt(noteName),
+      plainNoteName: getFilenameWithoutExt(noteName),
     });
 
     return (
@@ -74,7 +74,7 @@ export default async function Page(props: {
         <div className="min-h-[600px] w-2/3">
           <Markdown
             hast={hast}
-            sourceNote={noteName}
+            origin={noteName}
             className="max-h-[620px] px-4"
             noteNames={noteObjectNames}
           />
