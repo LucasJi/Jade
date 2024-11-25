@@ -30,10 +30,15 @@ const components = (
   a: props => {
     const { node, className, href, children, ...rest } = props;
     if ('data-wikilink' in rest && href) {
+      const displayName = (children as string)
+        .trim()
+        .split('#')
+        .filter(e => e !== '')
+        .join(' > ');
       return (
         <Wikilink
           origin={origin}
-          displayName={children}
+          displayName={displayName}
           wikilink={href}
           noteNames={noteNames}
         />
