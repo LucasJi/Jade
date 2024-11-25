@@ -1,20 +1,19 @@
 'use client';
 
 import Markdown from '@/components/markdown';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { encodeNoteName } from '@/lib/note';
 import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
+import * as Portal from '@radix-ui/react-portal';
 import { Nodes } from 'hast';
 import Link from 'next/link';
 import { useState } from 'react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipProvider,
-  TooltipTrigger,
-} from './ui/tooltip';
 
 export default function Wikilink({
   displayName,
@@ -61,33 +60,31 @@ export default function Wikilink({
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip onOpenChange={handleOpenChange}>
-        <TooltipTrigger>
-          <Link
-            className="text-obsidian"
-            href={`/notes/${encodeNoteName(noteName)}`}
-            color="foreground"
-            prefetch={false}
-          >
-            {displayName}
-          </Link>
-        </TooltipTrigger>
-        <TooltipPortal>
-          <TooltipContent className="flex h-72 w-96">
-            {isLoading ? (
-              <LoadingSpinner className="mx-auto self-center" />
-            ) : (
-              <Markdown
-                hast={hast!}
-                origin={noteName}
-                className="max-h-[620px] px-4"
-                noteNames={noteNames}
-              />
-            )}
-          </TooltipContent>
-        </TooltipPortal>
-      </Tooltip>
-    </TooltipProvider>
+    <HoverCard onOpenChange={handleOpenChange}>
+      <HoverCardTrigger asChild>
+        <Link
+          className="text-obsidian"
+          href={`/notes/${encodeNoteName(noteName)}`}
+          color="foreground"
+          prefetch={false}
+        >
+          {displayName}
+        </Link>
+      </HoverCardTrigger>
+      <Portal.Root>
+        <HoverCardContent className="flex h-72 w-96">
+          {isLoading ? (
+            <LoadingSpinner className="mx-auto self-center" />
+          ) : (
+            <Markdown
+              hast={hast!}
+              origin={noteName}
+              className="max-h-[620px] px-4"
+              noteNames={noteNames}
+            />
+          )}
+        </HoverCardContent>
+      </Portal.Root>
+    </HoverCard>
   );
 }
