@@ -1,6 +1,7 @@
 import { transformMdastToHast } from '@/processor/transformer/hast';
 import {
   transformMdastToHeadings,
+  transformSubHeadings,
   transformTitle,
   transformVFileToMdast,
 } from '@/processor/transformer/mdast';
@@ -47,12 +48,18 @@ const transformHast = (mdast: Root, vFile: VFile) => {
 };
 
 export const parseNote = (options: NoteParserOptions) => {
-  const { plainNoteName = '' } = options;
+  const { plainNoteName = '', subHeadings } = options;
   let { note } = options;
 
   note = transformText(note);
+
   const { vFile, frontmatter } = transformVFile(note);
+
   const { mdast, headings } = transformMdast(vFile, frontmatter, plainNoteName);
+  if (subHeadings) {
+    transformSubHeadings(mdast, subHeadings);
+  }
+
   const hast = transformHast(mdast, vFile);
 
   return {

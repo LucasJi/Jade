@@ -10,7 +10,7 @@ import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
-import { transformTitle } from '../mdast';
+import { transformSubHeadings, transformTitle } from '../mdast';
 
 const noteFilename = 'Note File Name';
 const titleInFrontmatter = 'Frontmatter Title';
@@ -26,12 +26,16 @@ const processor = unified()
   })
   .use(rehypeStringify);
 
-const getHtml = (md: string) => {
+const getMdast = (md: string) => {
   const vFile = transformNoteToVFile(md);
   matter(vFile);
   const mdast = processor.parse(vFile);
   transformTitle(mdast, vFile.data.matter as any, noteFilename);
-  const hast = processor.runSync(mdast);
+  return mdast;
+};
+
+const getHtml = (md: string) => {
+  const hast = processor.runSync(getMdast(md));
   return toHtml(hast);
 };
 
@@ -79,14 +83,26 @@ describe('transformTitle', () => {
   });
 });
 
-describe('transformMdastToHeadings', () => {
+describe('transformParts', () => {
   test('', () => {
     const md = dedent`
-    # Heading#1
+    # Title
     
-    ## Heading#2
+    ## 1
     
-    ### Heading#3 
+    ### 1.1 
+    1.1 part
+    
+    ## 2
+    
+    ### 2.2
+    2.2 part
     `;
+    const mdast = getMdast(md);
+    const headings = ['1', '1.1'];
+    transformSubHeadings(mdast, headings);
+    const hast = processor.runSync(mdast);
+    const html = toHtml(hast);
+    console.log(html);
   });
 });

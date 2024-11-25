@@ -6,6 +6,7 @@ import remarkComment from '@/plugins/remark-comment';
 import remarkHighlight from '@/plugins/remark-highlight';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
+import { toString } from 'mdast-util-to-string';
 import { toc } from 'mdast-util-toc';
 import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -95,8 +96,37 @@ export const transformTitle = (
   }
 };
 
-export const transformMdastToHeadings = (mdastTree: Root): ListItem[] => {
-  const result = toc(mdastTree, { minDepth: 2 });
+export const transformMdastToHeadings = (mdast: Root): ListItem[] => {
+  const result = toc(mdast, { minDepth: 2 });
   const map = result.map;
   return map ? map.children : [];
+};
+
+export const transformSubHeadings = (mdast: Root, headings: string[]) => {
+  if (headings.length <= 0) {
+    return;
+  }
+
+  for (const heading of headings) {
+    const begin = mdast.children.findIndex(
+      child => child.type === 'heading' && toString(child) === heading,
+    );
+
+    if (begin == -1) {
+      return;
+    }
+
+    const startNode = mdast.children[begin] as Heading;
+    const end = mdast.children.findIndex(
+      (child, index) =>
+        child.type === 'heading' &&
+        child.depth === startNode.depth &&
+        index > begin,
+    );
+
+    mdast.children = mdast.children.slice(
+      begin,
+      end === -1 ? mdast.children.length : end,
+    );
+  }
 };

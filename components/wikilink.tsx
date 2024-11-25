@@ -1,5 +1,6 @@
 'use client';
 
+import { getNoteByName } from '@/app/api';
 import Markdown from '@/components/markdown';
 import {
   HoverCard,
@@ -26,7 +27,7 @@ export default function Wikilink({
   noteNames: string[];
   wikilink: string;
 }) {
-  const [noteNameFromWikilink, ...restWikilinkPart] = wikilink.split('#');
+  const [noteNameFromWikilink, ...subHeadings] = wikilink.split('#');
   let noteName = noteNameFromWikilink === '' ? origin : noteNameFromWikilink;
   noteName = noteNames.find(e => e.includes(noteName)) ?? '';
 
@@ -38,24 +39,16 @@ export default function Wikilink({
   const handleOpenChange = (open: boolean) => {
     // TODO: Handle not markdown files
     if (open && ext !== 'pdf') {
-      const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note`);
-      url.search = new URLSearchParams({
-        name: noteName,
-      }).toString();
-      fetch(url, {
-        method: 'GET',
-        // cache: 'force-cache',
-      })
-        .then(resp => resp.json())
-        .then(data => {
-          const { hast } = parseNote({
-            note: data as string,
-            plainNoteName: getFilenameWithoutExt(noteName),
-          });
-          setHast(hast);
-          setNote(data);
-          setIsLoading(false);
+      getNoteByName(noteName).then(data => {
+        const { hast } = parseNote({
+          note: data as string,
+          plainNoteName: getFilenameWithoutExt(noteName),
+          subHeadings,
         });
+        setHast(hast);
+        setNote(data);
+        setIsLoading(false);
+      });
     }
   };
 
