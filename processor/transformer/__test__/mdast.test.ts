@@ -83,7 +83,7 @@ describe('transformTitle', () => {
   });
 });
 
-describe('transformParts', () => {
+describe('transformSubHeadings', () => {
   test('', () => {
     const md = dedent`
     # Title
@@ -104,5 +104,6 @@ describe('transformParts', () => {
     const hast = processor.runSync(mdast);
     const html = toHtml(hast);
     console.log(html);
+    expect(html).toBe(`<h3>1.1</h3>\n<p>1.1 part</p>`);
   });
 });

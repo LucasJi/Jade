@@ -1,4 +1,5 @@
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
 export const getNoteNames = async (): Promise<string[]> => {
   return fetch(`${baseUrl}/api/note/names`, {
     cache: 'force-cache',

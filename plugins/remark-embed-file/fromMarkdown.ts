@@ -25,12 +25,12 @@ const exitEmbedFile: Handle = function (node) {
     return;
   }
 
-  // embedFile.data.hChildren = [
-  //   {
-  //     type: 'text',
-  //     value: embedFile.filename,
-  //   },
-  // ];
+  embedFile.data.hChildren = [
+    {
+      type: 'text',
+      value: embedFile.filename,
+    },
+  ];
 
   this.exit(node);
 };

@@ -30,15 +30,13 @@ export default function Wikilink({
   const [noteNameFromWikilink, ...subHeadings] = wikilink.split('#');
   let noteName = noteNameFromWikilink === '' ? origin : noteNameFromWikilink;
   noteName = noteNames.find(e => e.includes(noteName)) ?? '';
-
   const ext = getFileExt(noteName);
-  const [note, setNote] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [hast, setHast] = useState<Nodes>();
 
   const handleOpenChange = (open: boolean) => {
-    // TODO: Handle not markdown files
-    if (open && ext !== 'pdf') {
+    // TODO: Handle not markdown files and block wikilink
+    if (open && ext !== 'pdf' && !wikilink.includes('#^')) {
       getNoteByName(noteName).then(data => {
         const { hast } = parseNote({
           note: data as string,
@@ -46,9 +44,18 @@ export default function Wikilink({
           subHeadings,
         });
         setHast(hast);
-        setNote(data);
         setIsLoading(false);
       });
+    } else if (open) {
+      const { hast } = parseNote({
+        note: wikilink.includes('#^')
+          ? 'Block wikilink not supported yet'
+          : 'Jade currently only supports markdown file preview',
+        plainNoteName: getFilenameWithoutExt(noteName),
+        subHeadings,
+      });
+      setHast(hast);
+      setIsLoading(false);
     }
   };
 

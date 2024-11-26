@@ -27,6 +27,14 @@ describe('micromark', () => {
     assert.equal(result, '<p>![[a]</p>');
   });
 
+  test('invalid syntax - 3', () => {
+    const result = micromark('`![[a]`', {
+      extensions: [remarkEmbedFileSyntax()],
+    });
+
+    assert.equal(result, '<p><code>![[a]</code></p>');
+  });
+
   test('valid syntax - 1', () => {
     const result = micromark('![[a]]]', {
       extensions: [remarkEmbedFileSyntax()],

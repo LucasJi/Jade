@@ -3,6 +3,7 @@ import { Heading, ListItem, Root, RootContent } from 'mdast';
 
 import { remarkCallout } from '@/plugins/remark-callout';
 import remarkComment from '@/plugins/remark-comment';
+import { remarkEmbedFile } from '@/plugins/remark-embed-file';
 import remarkHighlight from '@/plugins/remark-highlight';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
@@ -26,6 +27,7 @@ const remarkPlugins: PluggableList = [
   remarkCallout,
   remarkMath,
   remarkWikilink,
+  remarkEmbedFile,
 ];
 
 const createUnifiedProcessor = () => {

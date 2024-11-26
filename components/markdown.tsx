@@ -1,4 +1,5 @@
 import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
+import EmbedFile from '@/components/embed-file';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
@@ -205,6 +206,17 @@ const components = (
           })}
         </section>
       );
+    }
+
+    if ('data-embed-file' in rest) {
+      const [filename, configuration] = (children as string).split('|');
+      let width, height;
+      if (configuration) {
+        const [w, h] = configuration.split('x');
+        width = w ? Number.parseInt(w) : undefined;
+        height = h ? Number.parseInt(h) : undefined;
+      }
+      return <EmbedFile filename={filename} width={width} height={height} />;
     }
 
     return (
