@@ -1,13 +1,11 @@
-// /* eslint-disable no-console */
-import config from '@/lib/config';
 import { logger } from '@/lib/logger';
+import { listExistedNoteNames } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
-import { getS3Client, listNoteObjects } from '@/lib/server/s3';
+import { S3 } from '@/lib/server/s3';
 
 const log = logger.child({ module: 'bootstrap' });
-const { dir, s3 } = config;
-const s3Client = getS3Client();
 const redis = await createRedisClient();
+const s3 = new S3();
 //
 // // TODO: Refactor
 // // const loadLocalVaultFilePathItems = (
@@ -124,8 +122,7 @@ const clearCache = async () => {
 };
 
 const cacheObjectNames = async () => {
-  const noteObjects = await listNoteObjects(s3Client);
-  const names = noteObjects.map(no => no.name);
+  const names = listExistedNoteNames(await s3.listObjects());
   await redis.set('jade:obj:names', JSON.stringify(names));
   log.info({ objectSize: names.length }, 'Cache all object names');
 };

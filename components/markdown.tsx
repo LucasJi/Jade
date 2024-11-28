@@ -209,14 +209,7 @@ const components = (
     }
 
     if ('data-embed-file' in rest) {
-      const [filename, configuration] = (children as string).split('|');
-      let width, height;
-      if (configuration) {
-        const [w, h] = configuration.split('x');
-        width = w ? Number.parseInt(w) : undefined;
-        height = h ? Number.parseInt(h) : undefined;
-      }
-      return <EmbedFile filename={filename} width={width} height={height} />;
+      return <EmbedFile filename={children} />;
     }
 
     return (

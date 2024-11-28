@@ -1,26 +1,138 @@
 'use client';
 
-import { FC } from 'react';
+import { getPreviewUrlByNameLike } from '@/app/api';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { IMAGE_EXTS, PDF_EXTS } from '@/lib/constants';
+import Image from 'next/image';
+import { FC, useEffect, useState } from 'react';
 
 interface EmbedFileProps {
   filename: string;
+}
+
+interface EmbedFileConfig {
+  page?: number;
   width?: number;
   height?: number;
 }
 
-const EmbedFile: FC<EmbedFileProps> = ({ filename, width, height }) => {
-  return (
-    <div>
-      {`filename: ${filename}, width: ${width}, height: ${height}`}
-      <br />
-      <img
-        width={width}
-        height={height}
-        src="http://139.224.248.149:9001/api/v1/download-shared-object/aHR0cDovLzEyNy4wLjAuMTo5MDAwL2phZGUtZG9jcy8lRTklOTklODQlRTQlQkIlQjYvRW5nZWxiYXJ0LmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPTcwOFYyV0EyVFFDV0VVTjVVNThHJTJGMjAyNDExMjYlMkZhcC1zaGFuZ2hhaSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNDExMjZUMDg0NjQyWiZYLUFtei1FeHBpcmVzPTQzMTk5JlgtQW16LVNlY3VyaXR5LVRva2VuPWV5SmhiR2NpT2lKSVV6VXhNaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoWTJObGMzTkxaWGtpT2lJM01EaFdNbGRCTWxSUlExZEZWVTQxVlRVNFJ5SXNJbVY0Y0NJNk1UY3pNalkxTXpNeE5Td2ljR0Z5Wlc1MElqb2liSFZqWVhOcWFTSjkuMXNqTU9teUJGNE5tY0llMHBGM2xUTk11a2hjZjZWdXJpRTdLOFM4OWZERjFRWWFYdVRidjBGSkRLdnAtWkhmSmFuSTB5cmhzZHlSRFFtLVF1NFhqUFEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnZlcnNpb25JZD1kZmE3ZDU4OS1jNjk1LTRhNzgtYWZkZS1hYzIyZDM5N2MxYmYmWC1BbXotU2lnbmF0dXJlPTg3NDkzYTk4MzE4NjliYzMwYWJlMzM2ODhiYzI4OWQxMjczMjVmNDI4NWQxOTFmNjliMGJjYTJhYWM1YjVkMmU"
-        alt="pic"
-      />
-    </div>
-  );
+const _width = 100;
+const _height = 100;
+
+const parseImg = (filename: string) => {
+  const [objName, config] = filename.split('|');
+  let width, height;
+  if (config) {
+    const [w, h] = config.split('x');
+    width = w ? Number.parseInt(w) : undefined;
+    height = h ? Number.parseInt(h) : undefined;
+  }
+
+  return {
+    objName,
+    width,
+    height,
+  };
+};
+
+const parsePdf = (filename: string) => {
+  const heightConfigStr = 'height=';
+  const pageConfigStr = 'page=';
+  const [objName, config] = filename.split('#');
+  let page, height;
+  if (config?.includes(pageConfigStr)) {
+    const _page = Number.parseInt(config.replace(pageConfigStr, ''));
+    if (!Number.isNaN(_page)) {
+      page = _page;
+    }
+  }
+  if (config?.includes(heightConfigStr)) {
+    const _height = Number.parseInt(config.replace(heightConfigStr, ''));
+    if (!Number.isNaN(_height)) {
+      height = _height;
+    }
+  }
+
+  return {
+    objName,
+    page,
+    height,
+  };
+};
+
+const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
+  const [url, setUrl] = useState('');
+  const [fileType, setFileType] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [config, setConfig] = useState<EmbedFileConfig>({
+    width: _width,
+    height: _height,
+  });
+
+  useEffect(() => {
+    let name;
+    if (PDF_EXTS.find(ext => filename.includes('.' + ext))) {
+      const { objName, page, height } = parsePdf(filename);
+      name = objName;
+      setFileType('PDF');
+      setConfig({
+        page,
+        height,
+      });
+    } else if (IMAGE_EXTS.find(ext => filename.includes('.' + ext))) {
+      const { objName, width, height } = parseImg(filename);
+      name = objName;
+      setFileType('IMG');
+      setConfig({
+        width: width ?? _width,
+        height: height ?? _height,
+      });
+    } else {
+      // TODO
+    }
+
+    if (name) {
+      getPreviewUrlByNameLike(name).then(url => {
+        setUrl(url);
+        setIsLoading(false);
+      });
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          width: `${config.width}px`,
+          height: `${config.height}px`,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  switch (fileType) {
+    case 'PDF': {
+      return <div>pdf</div>;
+    }
+    case 'IMG': {
+      return (
+        <Image
+          width={config.width}
+          height={config.height}
+          src={url}
+          alt="Picture"
+        />
+      );
+    }
+    default: {
+      return <div>not valid file</div>;
+    }
+  }
 };
 
 export default EmbedFile;

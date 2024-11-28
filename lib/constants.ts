@@ -1,8 +1,3 @@
-import { posix, sep } from 'path';
-import config from './config';
-
-export const SEP = config.dir.root ? sep : posix.sep;
-
 // "#"
 export const MD_TITLE_REG = /^#\s+.+/;
 
@@ -29,5 +24,5 @@ export const IMAGE_EXTS = [
 ];
 const AUDIO_EXTS = ['flac', 'm4a', 'mp3', 'ogg', 'wav', 'webm', '3gp'];
 const VIDEO_EXTS = ['mkv', 'mov', 'mp4', 'ogv', 'webm'];
-const PDF_EXTS = ['pdf'];
+export const PDF_EXTS = ['pdf'];
 export const ACCEPTED_FILE_FORMATS = [...MD_EXTS];

@@ -1,7 +1,13 @@
 import { TreeViewNode } from '@/components/types';
-import { NoteObject } from '@/lib/types';
+import config from '@/lib/config';
+import { BucketItem, NoteObject } from '@/lib/types';
 import { logger } from './logger';
-import { decimalToBase62, getFilenameWithoutExt, murmurhash } from './utils';
+import {
+  decimalToBase62,
+  getFileExt,
+  getFilenameWithoutExt,
+  murmurhash,
+} from './utils';
 
 const log = logger.child({ module: 'lib:note' });
 
@@ -128,3 +134,21 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
 
 export const decodeURISlug = (slug: string[]) =>
   slug.map(s => decodeURIComponent(s));
+
+export const listExistedNotes = (objs: BucketItem[]): NoteObject[] => {
+  return objs
+    .filter(obj => obj.isLatest && !obj.isDeleteMarker)
+    .filter(obj => !config.dir.excluded.includes(obj.name.split('/')[0]))
+    .map(obj => ({
+      name: obj.name,
+      ext: getFileExt(obj.name),
+      type: 'file',
+    }));
+};
+
+export const listExistedNoteNames = (objs: BucketItem[]): string[] => {
+  return objs
+    .filter(obj => obj.isLatest && !obj.isDeleteMarker)
+    .filter(obj => !config.dir.excluded.includes(obj.name.split('/')[0]))
+    .map(obj => obj.name);
+};

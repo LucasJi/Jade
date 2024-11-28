@@ -1,45 +1,44 @@
-import { BucketItem, NoteObject } from '@/lib/types';
-import { getFileExt } from '@/lib/utils';
+import { BucketItem } from '@/lib/types';
 import { Client } from 'minio';
 import config from '../config';
 
-export const getS3Client = () => new Client(config.s3.clientOptions);
+export class S3 {
+  _bucket: string;
 
-export const listObjects =
-  (s3Client: Client) =>
-  async (bucket: string): Promise<BucketItem[]> => {
+  constructor() {
+    this._client = new Client(config.s3.clientOptions);
+    this._bucket = config.s3.bucket;
+  }
+
+  _client: Client;
+
+  get client(): Client {
+    return this._client;
+  }
+
+  async listObjects(): Promise<BucketItem[]> {
     const data: BucketItem[] = [];
     // @ts-ignore: https://github.com/minio/minio-js/issues/1279
-    const stream = s3Client.listObjects(bucket, '', true, {
+    const stream = this._client.listObjects(this._bucket, '', true, {
       IncludeVersion: true,
     });
 
     return new Promise((resolve, reject) => {
-      stream.on('data', function (obj) {
+      stream.on('data', function (obj: BucketItem) {
         data.push(obj as BucketItem);
       });
       stream.on('end', function () {
         resolve(data);
       });
-      stream.on('error', function (err) {
+      stream.on('error', function (err: any) {
         reject(err);
       });
     });
-  };
+  }
 
-export const listLatestExistingObjects =
-  (s3Client: Client) =>
-  async (bucket: string): Promise<BucketItem[]> => {
-    return listObjects(s3Client)(bucket).then(objects =>
-      objects.filter(obj => obj.isLatest && !obj.isDeleteMarker),
-    );
-  };
-
-export const getObject =
-  (s3Client: Client) =>
-  async (bucket: string, objectName: string): Promise<string> => {
+  async getObject(objectName: string): Promise<string> {
     let data: string = '';
-    const stream = await s3Client.getObject(bucket, objectName);
+    const stream = await this._client.getObject(this._bucket, objectName);
 
     return new Promise((resolve, reject) => {
       stream.on('data', function (chunk) {
@@ -52,34 +51,16 @@ export const getObject =
         reject(err);
       });
     });
-  };
+  }
 
-const listNoteObjectsRemotely = async (
-  s3Client: Client,
-  excluded: string[],
-): Promise<NoteObject[]> => {
-  return listLatestExistingObjects(s3Client)(config.s3.bucket).then(objs =>
-    objs
-      .filter(obj => !excluded.includes(obj.name.split('/')[0]))
-      .map(obj => ({
-        name: obj.name,
-        ext: getFileExt(obj.name),
-        type: 'file',
-      })),
-  );
-};
-
-export const listNoteObjects = async (
-  s3Client: Client,
-): Promise<NoteObject[]> => {
-  // if (dir.root) {
-  //   log.info(
-  //     `Load vault from local dir: ${dir.root}. Those folders will be ignored: ${dir.excluded}`,
-  //   );
-  //   return loadLocalVaultFilePathItems(dir.root, dir.root, dir.excluded);
-  // }
-
-  return listNoteObjectsRemotely(s3Client, config.dir.excluded).then(objs => {
-    return objs;
-  });
-};
+  async presignedGetObject(
+    objectName: string,
+    expiry?: number,
+  ): Promise<string> {
+    return await this._client.presignedGetObject(
+      this._bucket,
+      objectName,
+      expiry ?? 24 * 60 * 60,
+    );
+  }
+}

@@ -1,9 +1,8 @@
 import { getNoteNames } from '@/app/api';
-import config from '@/lib/config';
-import { getObject, getS3Client } from '@/lib/server/s3';
+import { S3 } from '@/lib/server/s3';
 import { NextRequest, NextResponse } from 'next/server';
 
-const s3Client = getS3Client();
+const s3 = new S3();
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -27,7 +26,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const note = await getObject(s3Client)(config.s3.bucket, found);
+  const note = await s3.getObject(found);
 
   return NextResponse.json(note);
 }

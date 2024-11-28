@@ -1,6 +1,5 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
-import config from '@/lib/config';
 import { logger } from '@/lib/logger';
 import {
   decodeNoteName,
@@ -10,14 +9,14 @@ import {
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
-import { getObject, getS3Client } from '@/lib/server/s3';
+import { S3 } from '@/lib/server/s3';
 import { getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
 import { notFound } from 'next/navigation';
 
 const log = logger.child({ module: 'page:notes/[...slug]' });
 
-const s3Client = getS3Client();
+const s3 = new S3();
 const redis = await createRedisClient();
 const noteObjectNames = JSON.parse(
   (await redis.get('jade:obj:names')) ?? '[]',
@@ -57,7 +56,7 @@ export default async function Page(props: {
 
     // log.info({ slug, noteName: noteName }, 'Build note page');
 
-    const note = await getObject(s3Client)(config.s3.bucket, noteName);
+    const note = await s3.getObject(noteName);
 
     if (!note) {
       notFound();
