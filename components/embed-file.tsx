@@ -5,6 +5,35 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { IMAGE_EXTS, PDF_EXTS } from '@/lib/constants';
 import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+// @ts-ignore
+if (typeof Promise.withResolvers === 'undefined') {
+  if (typeof window !== 'undefined') {
+    // @ts-expect-error This does not exist outside of polyfill which this is doing
+    window.Promise.withResolvers = function () {
+      let resolve, reject;
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      return { promise, resolve, reject };
+    };
+  } else {
+    // @ts-expect-error This does not exist outside of polyfill which this is doing
+    global.Promise.withResolvers = function () {
+      let resolve, reject;
+      const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+      return { promise, resolve, reject };
+    };
+  }
+}
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface EmbedFileProps {
   filename: string;
@@ -68,6 +97,13 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
     width: _width,
     height: _height,
   });
+  const [numPages, setNumPages] = useState<number>();
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pdf, setPdf] = useState<Blob>();
+
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }): void => {
+    setNumPages(numPages);
+  };
 
   useEffect(() => {
     let name;
@@ -97,6 +133,26 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
         setIsLoading(false);
       });
     }
+
+    const fetchPDF = async () => {
+      try {
+        // 请求 PDF 文件
+        const response = await fetch('/example.pdf'); // 相对于 public 目录的路径
+        if (!response.ok) {
+          throw new Error(`Failed to fetch PDF: ${response.status}`);
+        }
+
+        // 将文件转换为 Blob 格式
+        const pdfBlob = await response.blob();
+
+        // 为 Blob 创建一个可访问的 URL
+        setPdf(pdfBlob);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchPDF();
   }, []);
 
   if (isLoading) {
@@ -117,7 +173,16 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
 
   switch (fileType) {
     case 'PDF': {
-      return <div>pdf</div>;
+      return (
+        <div>
+          <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
+            <Page pageNumber={pageNumber} width={300} />
+          </Document>
+          <p>
+            Page {pageNumber} of {numPages}
+          </p>
+        </div>
+      );
     }
     case 'IMG': {
       return (
