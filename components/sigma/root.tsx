@@ -5,7 +5,7 @@ import {
 } from '@react-sigma/core';
 import { createNodeImageProgram } from '@sigma/node-image';
 import { DirectedGraph } from 'graphology';
-import { constant, keyBy, mapValues, omit } from 'lodash';
+import { omit } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { BiBookContent, BiRadioCircleMarked } from 'react-icons/bi';
 import {
@@ -17,7 +17,6 @@ import {
 import { GrClose } from 'react-icons/gr';
 import { Settings } from 'sigma/settings';
 
-import data from 'public/dataset.json';
 import { drawHover, drawLabel } from './canvas-utils';
 import ClustersPanel from './clusters-panel';
 import DescriptionPanel from './description-panel';
@@ -61,11 +60,12 @@ const Root: FC = () => {
 
   // Load data on mount:
   useEffect(() => {
+    const data = {};
     setDataset(data as any);
-    setFiltersState({
-      clusters: mapValues(keyBy(data.clusters, 'key'), constant(true)),
-      tags: mapValues(keyBy(data.tags, 'key'), constant(true)),
-    });
+    // setFiltersState({
+    //   clusters: mapValues(keyBy(data.clusters, 'key'), constant(true)),
+    //   tags: mapValues(keyBy(data.tags, 'key'), constant(true)),
+    // });
     requestAnimationFrame(() => setDataReady(true));
   }, []);
 

@@ -2,7 +2,6 @@
 
 import config from '@/lib/config';
 import { MD_EXT } from '@/lib/constants';
-import { NoteObject } from '@types';
 import { revalidateTag } from 'next/cache';
 
 export const githubRequest = (url: string, tag: string = '') =>
@@ -33,7 +32,7 @@ export const githubRequest = (url: string, tag: string = '') =>
       revalidateTag(tag);
     });
 
-export const getGitTree = async (): Promise<NoteObject[]> => {
+export const getGitTree = async (): Promise<any[]> => {
   return githubRequest(`/git/trees/${config.repo.branch}?recursive=1`).then(
     data => {
       const { tree }: { tree: any[] } = data;

@@ -223,6 +223,7 @@ const Callout: FC<
   const childrenWithProps = Children.map(children, child => {
     if ((child as ReactElement).type === CalloutTitle) {
       return cloneElement(child as ReactElement, {
+        // @ts-ignore
         variant,
         isFoldable,
       });

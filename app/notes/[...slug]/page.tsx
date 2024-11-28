@@ -26,12 +26,11 @@ const noteObjectNames = JSON.parse(
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  // const noteObjectNames = JSON.parse(
-  //   (await redis.get('jade:obj:names')) ?? '[]',
-  // ) as string[];
-  const staticParams = noteObjectNames.map(name => ({
-    slug: getNoteSlugsFromPath(encodeNoteName(name)),
-  }));
+  const staticParams = noteObjectNames
+    .filter(name => name.includes('.md'))
+    .map(name => ({
+      slug: getNoteSlugsFromPath(encodeNoteName(name)),
+    }));
 
   // log.info(
   //   {

@@ -7,7 +7,7 @@ import type {
   Paragraph,
   Root,
 } from 'mdast';
-import * as os from 'node:os';
+import { EOL } from 'os';
 import type { Plugin } from 'unified';
 import { Node, visit } from 'unist-util-visit';
 
@@ -159,7 +159,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
       // Parse callout syntax
       // e.g. "[!note] title"
       const [calloutTypeText, ...calloutBodyText] =
-        calloutTypeTextNode.value.split(os.EOL);
+        calloutTypeTextNode.value.split(EOL);
       const calloutData = parseCallout(calloutTypeText);
       if (calloutData == null) {
         return;
@@ -190,7 +190,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
       if (calloutBodyText.length > 0) {
         bodyNode[0].children.push({
           type: 'text',
-          value: calloutBodyText.join(os.EOL),
+          value: calloutBodyText.join(EOL),
         });
       }
 
@@ -230,7 +230,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
           }
 
           // Add the part before the line break as callout title and the part after as callout body
-          const [titleText, ...bodyTextLines] = child.value.split(os.EOL);
+          const [titleText, ...bodyTextLines] = child.value.split(EOL);
           if (titleText) {
             // Add the part before the line break as callout title
             titleNode.children.push({
@@ -245,7 +245,7 @@ export const remarkCallout: Plugin<[Options?], Root> = _options => {
             }
             bodyNode[0].children.push({
               type: 'text',
-              value: bodyTextLines.join(os.EOL),
+              value: bodyTextLines.join(EOL),
             });
             // Add all nodes after the current node as callout body
             bodyNode[0].children.push(...paragraphNode.children.slice(i + 2));
