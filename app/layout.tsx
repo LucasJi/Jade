@@ -1,5 +1,5 @@
-// import WebVitals from '@/components/webVitals';
 import Footer from '@/components/footer';
+import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
 import { ReactNode } from 'react';
 import { Providers } from './providers';
@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
       <body className="min-h-screen bg-background antialiased">
-        {/*<WebVitals />*/}
+        <WebVitals />
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
           <div className="relative flex h-screen min-w-[1200px] flex-col">
             <main className="flex flex-1">{children}</main>
