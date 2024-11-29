@@ -3,7 +3,7 @@
 import { getPreviewUrlByNameLike } from '@/app/api';
 import Pdf from '@/components/pdf';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { IMAGE_EXTS, PDF_EXTS } from '@/lib/constants';
+import { AUDIO_EXTS, IMAGE_EXTS, PDF_EXTS } from '@/lib/constants';
 import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
 import { pdfjs } from 'react-pdf';
@@ -66,6 +66,9 @@ const parsePdf = (filename: string) => {
   };
 };
 
+const checkExt = (exts: string[], filename: string) =>
+  exts.find(ext => filename.includes('.' + ext));
+
 const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
   const [url, setUrl] = useState('');
   const [fileType, setFileType] = useState('');
@@ -77,7 +80,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
 
   useEffect(() => {
     let name;
-    if (PDF_EXTS.find(ext => filename.includes('.' + ext))) {
+    if (checkExt(PDF_EXTS, filename)) {
       const { objName, page, height } = parsePdf(filename);
       name = objName;
       setFileType('PDF');
@@ -85,7 +88,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
         page,
         height,
       });
-    } else if (IMAGE_EXTS.find(ext => filename.includes('.' + ext))) {
+    } else if (checkExt(IMAGE_EXTS, filename)) {
       const { objName, width, height } = parseImg(filename);
       name = objName;
       setFileType('IMG');
@@ -93,8 +96,9 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
         width: width ?? _width,
         height: height ?? _height,
       });
-    } else {
-      // TODO
+    } else if (checkExt(AUDIO_EXTS, filename)) {
+      setFileType('AUDIO');
+      name = filename;
     }
 
     if (name) {
@@ -133,6 +137,15 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
           src={url}
           alt="Picture"
         />
+      );
+    }
+    case 'AUDIO': {
+      return (
+        <div>
+          <audio controls>
+            <source src={url} />
+          </audio>
+        </div>
       );
     }
     default: {
