@@ -60,14 +60,14 @@ export default async function Page(props: {
 
     return (
       <div className="flex h-full w-full justify-center">
-        <TreeView className="fixed left-0 top-0" />
+        <TreeView className="fixed left-4 top-0" />
         <Markdown
           hast={hast}
           origin={noteName}
-          className="w-1/2 px-4"
+          className="w-[768px] px-4"
           noteNames={noteObjectNames}
         />
-        <Toc headings={headings} className="fixed right-0 top-0" />
+        <Toc headings={headings} className="fixed right-4 top-0" />
       </div>
     );
   } catch (error) {

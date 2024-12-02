@@ -14,7 +14,6 @@ import { Root } from 'mdast';
 import { VFile } from 'vfile';
 
 const transformText = (note: string) => {
-  // return transformObComment(note);
   return note;
 };
 

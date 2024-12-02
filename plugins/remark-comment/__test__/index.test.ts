@@ -24,7 +24,7 @@ const process = async (md: string) => {
 
 describe('remarkComment', () => {
   test('should ignore single equal sign', async () => {
-    await process('a %%b%%');
+    await process('a %%b %%');
     // expect().toMatchInlineSnapshot('"<p>a =b=</p>"');
   });
 });

@@ -1,8 +1,14 @@
 import Footer from '@/components/footer';
 import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
+import { Noto_Sans_SC } from 'next/font/google';
 import { ReactNode } from 'react';
 import { Providers } from './providers';
+
+// If loading a variable font, you don't need to specify the font weight
+const font = Noto_Sans_SC({
+  display: 'swap',
+});
 
 export const metadata = {
   title: process.env.NEXT_PUBLIC_SITE_TITLE,
@@ -11,7 +17,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="en" className={font.className}>
       <body className="min-h-screen bg-background antialiased">
         <WebVitals />
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>

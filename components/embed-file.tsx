@@ -130,13 +130,15 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
       return <Pdf />;
     }
     case 'IMG': {
-      return (
+      return url ? (
         <Image
           width={config.width}
           height={config.height}
           src={url}
           alt="Picture"
         />
+      ) : (
+        <span>Unknown image</span>
       );
     }
     case 'AUDIO': {
