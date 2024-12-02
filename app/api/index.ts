@@ -37,3 +37,9 @@ export const getPreviewUrlByNameLike = async (
     },
   }).then(resp => resp.json());
 };
+
+export const getFileTree = async () => {
+  return fetch(`${baseUrl}/api/tree`, {
+    next: { tags: ['note:updated'] },
+  }).then(res => res.json());
+};

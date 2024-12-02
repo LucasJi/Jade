@@ -1,5 +1,6 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
+import TreeView from '@/components/tree-view';
 import { logger } from '@/lib/logger';
 import {
   decodeNoteName,
@@ -25,21 +26,11 @@ const noteObjectNames = JSON.parse(
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const staticParams = noteObjectNames
+  return noteObjectNames
     .filter(name => name.includes('.md'))
     .map(name => ({
       slug: getNoteSlugsFromPath(encodeNoteName(name)),
     }));
-
-  // log.info(
-  //   {
-  //     paths: staticParams.map(param => join(param.slug, '/')),
-  //     notePageCount: staticParams.length,
-  //   },
-  //   'Generate static params',
-  // );
-
-  return staticParams;
 }
 
 export default async function Page(props: {
@@ -68,18 +59,15 @@ export default async function Page(props: {
     });
 
     return (
-      <div className="flex h-full">
-        <div className="min-h-[600px] w-2/3">
-          <Markdown
-            hast={hast}
-            origin={noteName}
-            className="max-h-[620px] px-4"
-            noteNames={noteObjectNames}
-          />
-        </div>
-        <div className="flex w-1/3 min-w-[332px] flex-col overflow-y-auto px-4">
-          <Toc headings={headings} className="mt-4" />
-        </div>
+      <div className="flex h-full w-full justify-center">
+        <TreeView className="fixed left-0 top-0" />
+        <Markdown
+          hast={hast}
+          origin={noteName}
+          className="w-1/2 px-4"
+          noteNames={noteObjectNames}
+        />
+        <Toc headings={headings} className="fixed right-0 top-0" />
       </div>
     );
   } catch (error) {

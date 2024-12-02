@@ -8,6 +8,7 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { encodeNoteName } from '@/lib/note';
 import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
@@ -72,16 +73,13 @@ export default function Wikilink({
         </Link>
       </HoverCardTrigger>
       <Portal.Root>
-        <HoverCardContent className="flex h-72 w-96">
+        <HoverCardContent className="flex h-[400px] w-[600px]">
           {isLoading ? (
             <LoadingSpinner className="mx-auto self-center" />
           ) : (
-            <Markdown
-              hast={hast!}
-              origin={noteName}
-              className="max-h-[620px] px-4"
-              noteNames={noteNames}
-            />
+            <ScrollArea>
+              <Markdown hast={hast!} origin={noteName} noteNames={noteNames} />
+            </ScrollArea>
           )}
         </HoverCardContent>
       </Portal.Root>

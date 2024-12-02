@@ -1,5 +1,6 @@
 'use client';
 
+import { getFileTree } from '@/app/api';
 import { TreeViewNode, TreeViewProps } from '@/components/types';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -160,13 +161,9 @@ const TreeView: React.FC<TreeViewProps> = ({ className }) => {
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/tree`, {
-      next: { tags: ['/api/tree'] },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setTreeNodes(data);
-      });
+    getFileTree().then(data => {
+      setTreeNodes(data);
+    });
   }, [currentNotePath]);
 
   useEffect(() => {

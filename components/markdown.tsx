@@ -1,6 +1,5 @@
 import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 import EmbedFile from '@/components/embed-file';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -232,42 +231,40 @@ const Markdown = ({
   noteNames: string[];
 }) => {
   return (
-    <ScrollArea className="overflow-x-auto">
-      <article
-        className={clsx(
-          'prose',
-          'prose-gray',
-          'prose-h1:mb-4',
-          'prose-h2:my-4',
-          'prose-h3:my-4',
-          'prose-h4:my-4',
-          'prose-h5:my-4',
-          'prose-h5:font-semibold',
-          'prose-h6:my-4',
-          'prose-h6:font-semibold',
-          'prose-a:my-0',
-          'prose-p:my-2',
-          'prose-p:before:content-none prose-p:after:content-none',
-          'prose-ul:my-2',
-          'prose-li:my-0',
-          'prose-hr:my-4',
-          'prose-blockquote:border-s-obsidian',
-          className,
-        )}
-      >
-        {toJsxRuntime(hast, {
-          Fragment,
-          components: components(origin, noteNames),
-          ignoreInvalidStyle: true,
-          // @ts-ignore
-          jsx,
-          // @ts-ignore
-          jsxs,
-          passKeys: true,
-          passNode: true,
-        })}
-      </article>
-    </ScrollArea>
+    <article
+      className={clsx(
+        'prose',
+        'prose-gray',
+        'prose-h1:mb-4',
+        'prose-h2:my-4',
+        'prose-h3:my-4',
+        'prose-h4:my-4',
+        'prose-h5:my-4',
+        'prose-h5:font-semibold',
+        'prose-h6:my-4',
+        'prose-h6:font-semibold',
+        'prose-a:my-0',
+        'prose-p:my-2',
+        'prose-p:before:content-none prose-p:after:content-none',
+        'prose-ul:my-2',
+        'prose-li:my-0',
+        'prose-hr:my-4',
+        'prose-blockquote:border-s-obsidian',
+        className,
+      )}
+    >
+      {toJsxRuntime(hast, {
+        Fragment,
+        components: components(origin, noteNames),
+        ignoreInvalidStyle: true,
+        // @ts-ignore
+        jsx,
+        // @ts-ignore
+        jsxs,
+        passKeys: true,
+        passNode: true,
+      })}
+    </article>
   );
 };
 
