@@ -1,6 +1,5 @@
 import Markdown from '@/components/markdown';
 import Toc from '@/components/toc';
-import TreeView from '@/components/tree-view';
 import { logger } from '@/lib/logger';
 import {
   decodeNoteName,
@@ -60,7 +59,6 @@ export default async function Page(props: {
 
     return (
       <div className="flex h-full w-full justify-center">
-        <TreeView className="fixed left-4 top-0" />
         <Markdown
           hast={hast}
           origin={noteName}
