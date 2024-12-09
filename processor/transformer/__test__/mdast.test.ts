@@ -1,6 +1,7 @@
 import { transformNoteToVFile } from '@/processor/transformer/vFile';
 import dedent from 'dedent';
 import { toHtml } from 'hast-util-to-html';
+import { Root } from 'mdast';
 import rehypeStringify from 'rehype-stringify';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
@@ -8,6 +9,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
+import { removePosition } from 'unist-util-remove-position';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
 import { transformSubHeadings, transformTitle } from '../mdast';
@@ -33,6 +35,8 @@ const getMdast = (md: string) => {
   transformTitle(mdast, vFile.data.matter as any, noteFilename);
   return mdast;
 };
+
+const getHast = (mdast: Root) => processor.runSync(mdast);
 
 const getHtml = (md: string) => {
   const hast = processor.runSync(getMdast(md));
@@ -105,5 +109,43 @@ describe('transformSubHeadings', () => {
     const html = toHtml(hast);
     console.log(html);
     expect(html).toBe(`<h3>1.1</h3>\n<p>1.1 part</p>`);
+  });
+});
+
+describe('', () => {
+  test('', () => {
+    const md = dedent`
+    # Title
+    
+    ## 1
+    
+    Heading 2 part  
+    
+    **The title is 1**
+    
+    ### 1.1
+    
+    Heading 3 part  
+    
+    **The title is 1.1**
+    
+    ## 2
+    
+    Heading 2 part  
+    
+    **The title is 2**
+    
+    ### 2.2
+    
+    Heading 3 part  
+    
+    **The title is 2.2**
+    `;
+    const mdast = getMdast(md);
+    const hast = processor.runSync(mdast);
+    removePosition(hast, { force: true });
+    const html = toHtml(hast);
+    console.log(html);
+    console.log(JSON.stringify(hast));
   });
 });

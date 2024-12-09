@@ -94,6 +94,7 @@
     "tailwindcss-animate": "^1.0.7",
     "to-vfile": "8.0.0",
     "unified": "^11.0.4",
+    "unist-util-remove-position": "^5.0.0",
     "unist-util-visit": "4.0.0",
     "uuid": "^10.0.0",
     "vaul": "^0.9.1",

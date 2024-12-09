@@ -50,15 +50,19 @@ export const parseNote = (options: NoteParserOptions) => {
   const { plainNoteName = '', subHeadings } = options;
   let { note } = options;
 
+  // text transformers
   note = transformText(note);
 
+  // v-file transformers
   const { vFile, frontmatter } = transformVFile(note);
 
+  // mdast transformers
   const { mdast, headings } = transformMdast(vFile, frontmatter, plainNoteName);
   if (subHeadings) {
     transformSubHeadings(mdast, subHeadings);
   }
 
+  // hast transformers
   const hast = transformHast(mdast, vFile);
 
   return {

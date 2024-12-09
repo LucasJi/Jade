@@ -243,6 +243,9 @@ importers:
       unified:
         specifier: ^11.0.4
         version: 11.0.4
+      unist-util-remove-position:
+        specifier: ^5.0.0
+        version: 5.0.0
       unist-util-visit:
         specifier: 4.0.0
         version: 4.0.0
