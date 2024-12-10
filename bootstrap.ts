@@ -140,12 +140,13 @@ const cacheHast = async (names: string[]) => {
     }
 
     const note = await s3.getObject(name);
-    const { hast } = parseNote({
+    const { hast, headings } = parseNote({
       note,
       plainNoteName: getFilenameWithoutExt(name),
     });
 
     await redis.json.set(`jade:hast:${name}`, '$', hast as any);
+    await redis.set(`jade:headings:${name}`, JSON.stringify(headings));
 
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
