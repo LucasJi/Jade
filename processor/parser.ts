@@ -11,6 +11,7 @@ import {
 } from '@/processor/transformer/vFile';
 import { NoteParserOptions } from '@/processor/types';
 import { Root } from 'mdast';
+import { removePosition } from 'unist-util-remove-position';
 import { VFile } from 'vfile';
 
 const transformText = (note: string) => {
@@ -64,6 +65,7 @@ export const parseNote = (options: NoteParserOptions) => {
 
   // hast transformers
   const hast = transformHast(mdast, vFile);
+  removePosition(hast, { force: true });
 
   return {
     mdast,

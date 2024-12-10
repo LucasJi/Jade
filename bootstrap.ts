@@ -2,6 +2,9 @@ import { logger } from '@/lib/logger';
 import { listExistedNoteNames } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
+import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
+import { parseNote } from '@/processor/parser';
+import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
 const redis = await createRedisClient();
@@ -125,13 +128,63 @@ const cacheObjectNames = async () => {
   const names = listExistedNoteNames(await s3.listObjects());
   await redis.set('jade:obj:names', JSON.stringify(names));
   log.info({ objectSize: names.length }, 'Cache all object names');
+  return names;
+};
+
+const cacheHast = async (names: string[]) => {
+  for (const name of names) {
+    const ext = getFileExt(name);
+
+    if (ext !== 'md') {
+      continue;
+    }
+
+    const note = await s3.getObject(name);
+    const { hast } = parseNote({
+      note,
+      plainNoteName: getFilenameWithoutExt(name),
+    });
+
+    await redis.json.set(`jade:hast:${name}`, '$', hast as any);
+
+    if (hast.children && hast.children.length > 0) {
+      for (let i = 0; i < hast.children.length; i++) {
+        await redis.json.set(
+          `jade:hChld:${name}:${i}`,
+          '$',
+          hast.children[i] as any,
+        );
+      }
+    }
+    log.info(`Cache hast of ${name}`);
+  }
+};
+
+const createSearchIndex = async () => {
+  log.info('Create search index');
+  await redis.ft.create(
+    'idx:hChld',
+    {
+      '$..value': {
+        type: SchemaFieldTypes.TEXT,
+        SORTABLE: 'UNF',
+      },
+    },
+    {
+      ON: 'JSON',
+      PREFIX: 'jade:hChld:',
+      LANGUAGE: RedisSearchLanguages.CHINESE,
+    },
+  );
 };
 
 const init = async () => {
   log.info('Initializing Jade...');
 
   await clearCache();
-  await cacheObjectNames();
+  const names = await cacheObjectNames();
+  await cacheHast(names);
+  await createSearchIndex();
 };
 
 await init();

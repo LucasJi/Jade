@@ -9,7 +9,6 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
-import { removePosition } from 'unist-util-remove-position';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
 import { transformSubHeadings, transformTitle } from '../mdast';
@@ -142,10 +141,13 @@ describe('', () => {
     **The title is 2.2**
     `;
     const mdast = getMdast(md);
-    const hast = processor.runSync(mdast);
-    removePosition(hast, { force: true });
+    // const hast = processor.runSync(mdast);
+    const hast = JSON.parse(
+      '{"type":"element","tagName":"p","properties":{},"children":[{"type":"text","value":"属性有自己的 "},{"type":"element","tagName":"a","properties":{"dataWikilink":"","href":"搜索"},"children":[{"type":"text","value":"搜索语法"}]},{"type":"text","value":"，你可以将其与其他搜索项和运算符一起使用。"},{"type":"element","tagName":"a","properties":{"dataWikilink":"","href":"搜索"},"children":[{"type":"text","value":"查看属性搜索语法"}]},{"type":"text","value":"。"}]}',
+    );
+    // removePosition(hast, { force: true });
     const html = toHtml(hast);
     console.log(html);
-    console.log(JSON.stringify(hast));
+    // console.log(JSON.stringify(hast));
   });
 });
