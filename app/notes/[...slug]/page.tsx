@@ -10,8 +10,8 @@ import {
 } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
-import { getFilenameWithoutExt } from '@/lib/utils';
-import { parseNote } from '@/processor/parser';
+import { Nodes } from 'hast';
+import { ListItem } from 'mdast';
 import { notFound } from 'next/navigation';
 
 const log = logger.child({ module: 'page:notes/[...slug]' });
@@ -44,18 +44,29 @@ export default async function Page(props: {
     const encodedNoteName = getEncodedNoteNameFromSlug(slug);
     const noteName = decodeNoteName(encodedNoteName);
 
-    // log.info({ slug, noteName: noteName }, 'Build note page');
+    const headingsStr = (await redis.get(`jade:headings:${noteName}`)) || '';
+    const headings = JSON.parse(headingsStr) as ListItem[];
 
-    const note = await s3.getObject(noteName);
+    const hast = (await redis.json.get(
+      `jade:hast:${noteName}`,
+    )) as unknown as Nodes;
 
-    if (!note) {
+    if (!hast) {
       notFound();
     }
 
-    const { hast, headings } = parseNote({
-      note,
-      plainNoteName: getFilenameWithoutExt(noteName),
-    });
+    // log.info({ slug, noteName: noteName }, 'Build note page');
+
+    // const note = await s3.getObject(noteName);
+    //
+    // if (!note) {
+    //   notFound();
+    // }
+    //
+    // const { hast, headings } = parseNote({
+    //   note,
+    //   plainNoteName: getFilenameWithoutExt(noteName),
+    // });
 
     return (
       <div className="flex h-full w-full justify-center">

@@ -43,3 +43,13 @@ export const getFileTree = async () => {
     next: { tags: ['note:updated'] },
   }).then(res => res.json());
 };
+
+export const search = async (content: string) => {
+  const url = new URL(`${baseUrl}/api/search`);
+  url.search = new URLSearchParams({
+    content,
+  }).toString();
+  return fetch(url, {
+    next: { tags: ['note:updated'] },
+  }).then(res => res.json());
+};

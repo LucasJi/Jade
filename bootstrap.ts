@@ -1,5 +1,5 @@
 import { logger } from '@/lib/logger';
-import { listExistedNoteNames } from '@/lib/note';
+import { listExistedNotes } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
 import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
@@ -121,13 +121,17 @@ const clearCache = async () => {
     redis.del(key);
   });
 
+  await redis.ft.dropIndex('jade:idx:hChld');
+
   log.info({ keySize: keys.length }, 'Clear all redis keys');
 };
 
-const cacheObjectNames = async () => {
-  const names = listExistedNoteNames(await s3.listObjects());
+const cacheObjects = async () => {
+  const objects = listExistedNotes(await s3.listObjects());
+  const names = objects.map(obj => obj.name);
   await redis.set('jade:obj:names', JSON.stringify(names));
-  log.info({ objectSize: names.length }, 'Cache all object names');
+  await redis.set('jade:objs', JSON.stringify(objects));
+  log.info({ objectSize: names.length }, 'Cache all object');
   return names;
 };
 
@@ -164,11 +168,11 @@ const cacheHast = async (names: string[]) => {
 const createSearchIndex = async () => {
   log.info('Create search index');
   await redis.ft.create(
-    'idx:hChld',
+    'jade:idx:hChld',
     {
       '$..value': {
         type: SchemaFieldTypes.TEXT,
-        SORTABLE: 'UNF',
+        SORTABLE: true,
       },
     },
     {
@@ -183,9 +187,13 @@ const init = async () => {
   log.info('Initializing Jade...');
 
   await clearCache();
-  const names = await cacheObjectNames();
+  const names = await cacheObjects();
   await cacheHast(names);
   await createSearchIndex();
 };
 
-await init();
+try {
+  await init();
+} catch (e) {
+  log.error(e);
+}

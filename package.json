@@ -32,6 +32,7 @@
     "chroma-js": "^2.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "2.1.1",
+    "cmdk": "^1.0.4",
     "defu": "^6.1.4",
     "devlop": "^1.1.0",
     "framer-motion": "~11.1.1",
