@@ -11,14 +11,14 @@ const log = logger.child({ module: 'lib:note' });
  *  1. Replacing all '+' by '%2B'
  *  2. Replacing all whitespaces by character '+'
  *
- * @param name note name. For example: '/some folder/some note+.md' will be encoded to '/some+folder/some+note%2B.md'.
+ * @param path note path. For example: '/some folder/some note+.md' will be encoded to '/some+folder/some+note%2B.md'.
  * @return encoded note name.
  */
-export const encodeNoteName = (name: string): string => {
-  return name.replaceAll('+', '%2B').replaceAll(' ', '+');
+export const encodeNotePath = (path: string): string => {
+  return path.replaceAll('+', '%2B').replaceAll(' ', '+');
 };
 
-export const decodeNoteName = (encoded: string): string => {
+export const decodeNotePath = (encoded: string): string => {
   return encoded.replaceAll('+', ' ').replaceAll('%2B', '+');
 };
 
@@ -137,11 +137,11 @@ export const base64Decode = (text: string) => {
 export const getNoteId = (name: string): string =>
   decimalToBase62(murmurhash(name));
 
-export const getNotePath = (name: string): string => encodeNoteName(name);
+export const getNotePath = (name: string): string => encodeNotePath(name);
 
 export const getNoteSlugsFromPath = (path: string): string[] => path.split('/');
 
-export const getEncodedNoteNameFromSlug = (slugs: string[]) => slugs.join('/');
+export const getEncodedNotePathFromSlug = (slugs: string[]) => slugs.join('/');
 
 export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {
@@ -210,7 +210,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
       const filename: string = splits[splits.length - 1];
       currentNode.children.push({
         name: getFilename(filename),
-        path: encodeNoteName(noteObject.name),
+        path: encodeNotePath(noteObject.name),
         children: [],
         isDir: false,
       });

@@ -21,6 +21,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
+import { decodeNotePath, getEncodedNotePathFromSlug } from '@/lib/note';
 import {
   ChevronRight,
   File,
@@ -31,7 +32,7 @@ import {
   FileVideo,
   Folder,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ComponentProps, useEffect, useState } from 'react';
 
 export function LeftSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
@@ -66,6 +67,12 @@ export function LeftSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
 
 function Tree({ item }: { item: TreeViewNode }) {
   const router = useRouter();
+  const { slug } = useParams<{ slug: string[] }>();
+  const currentNotePath = slug
+    ? getEncodedNotePathFromSlug(slug.map(e => decodeURIComponent(e)))
+    : '';
+  const decodedNotePath = decodeNotePath(currentNotePath);
+  const [_, ...folders] = decodedNotePath.split('/').reverse();
   if (!item.isDir) {
     let Icon;
     if (isMd(item.path)) {
@@ -84,8 +91,8 @@ function Tree({ item }: { item: TreeViewNode }) {
 
     return (
       <SidebarMenuButton
-        // isActive={name === 'button.tsx'}
-        className="data-[active=true]:bg-transparent"
+        isActive={item.path === currentNotePath}
+        className="data-[active=true]:bg-transparent data-[active=true]:text-black"
         onClick={() => router.push(`/notes/${item.path || ''}`)}
       >
         <Icon />
@@ -100,7 +107,7 @@ function Tree({ item }: { item: TreeViewNode }) {
     <SidebarMenuItem>
       <Collapsible
         className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        // defaultOpen={name === 'components' || name === 'ui'}
+        defaultOpen={folders.includes(item.name)}
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>

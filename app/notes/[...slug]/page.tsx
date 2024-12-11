@@ -1,10 +1,10 @@
 import Markdown from '@/components/markdown';
 import { logger } from '@/lib/logger';
 import {
-  decodeNoteName,
+  decodeNotePath,
   decodeURISlug,
-  encodeNoteName,
-  getEncodedNoteNameFromSlug,
+  encodeNotePath,
+  getEncodedNotePathFromSlug,
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
@@ -27,7 +27,7 @@ export async function generateStaticParams() {
   return noteObjectNames
     .filter(name => name.includes('.md'))
     .map(name => ({
-      slug: getNoteSlugsFromPath(encodeNoteName(name)),
+      slug: getNoteSlugsFromPath(encodeNotePath(name)),
     }));
 }
 
@@ -40,8 +40,8 @@ export default async function Page(props: {
   const slug = decodeURISlug(uriSlug);
 
   try {
-    const encodedNoteName = getEncodedNoteNameFromSlug(slug);
-    const noteName = decodeNoteName(encodedNoteName);
+    const encodedNoteName = getEncodedNotePathFromSlug(slug);
+    const noteName = decodeNotePath(encodedNoteName);
 
     const headingsStr = (await redis.get(`jade:headings:${noteName}`)) || '';
     const headings = JSON.parse(headingsStr) as ListItem[];

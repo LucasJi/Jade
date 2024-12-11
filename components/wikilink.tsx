@@ -10,7 +10,7 @@ import {
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getExt, getFilename } from '@/lib/file';
-import { encodeNoteName } from '@/lib/note';
+import { encodeNotePath } from '@/lib/note';
 import { parseNote } from '@/processor/parser';
 import * as Portal from '@radix-ui/react-portal';
 import { Nodes } from 'hast';
@@ -65,7 +65,7 @@ export default function Wikilink({
       <HoverCardTrigger asChild>
         <Link
           className="text-obsidian"
-          href={`/notes/${encodeNoteName(noteName)}`}
+          href={`/notes/${encodeNotePath(noteName)}`}
           color="foreground"
           prefetch={false}
         >
