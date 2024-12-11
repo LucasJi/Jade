@@ -186,10 +186,10 @@ const createSearchIndex = async () => {
 const init = async () => {
   log.info('Initializing Jade...');
 
-  await clearCache();
-  const names = await cacheObjects();
-  await cacheHast(names);
-  await createSearchIndex();
+  // await clearCache();
+  // const names = await cacheObjects();
+  // await cacheHast(names);
+  // await createSearchIndex();
 };
 
 try {
