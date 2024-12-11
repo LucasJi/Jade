@@ -1,4 +1,4 @@
-import { AppSidebar } from '@/components/app-sidebar';
+import { LeftSidebar } from '@/components/left-sidebar';
 import { SidebarRight } from '@/components/sidebar-right';
 import {
   Breadcrumb,
@@ -18,7 +18,7 @@ import {
 export default async function Home() {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <LeftSidebar />
       <SidebarInset>
         <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
           <div className="flex flex-1 items-center gap-2 px-3">
