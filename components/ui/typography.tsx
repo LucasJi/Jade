@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/components/utils';
 import { FC, type HTMLAttributes } from 'react';
 
 export const TypographyCode: FC<HTMLAttributes<HTMLElement>> = ({

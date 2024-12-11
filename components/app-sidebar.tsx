@@ -1,6 +1,6 @@
-import { ChevronRight, File, Folder } from 'lucide-react';
-import * as React from 'react';
-
+'use client';
+import { getFileTree } from '@/app/api';
+import { TreeViewNode } from '@/components/types';
 import {
   Collapsible,
   CollapsibleContent,
@@ -13,82 +13,40 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { getExt, isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
+import {
+  ChevronRight,
+  File,
+  FileAudio,
+  FileDown,
+  FileImage,
+  FileText,
+  FileVideo,
+  Folder,
+} from 'lucide-react';
+import { ComponentProps, useEffect, useState } from 'react';
 
-// This is sample data.
-const data = {
-  changes: [
-    {
-      file: 'README.md',
-      state: 'M',
-    },
-    {
-      file: 'api/hello/route.ts',
-      state: 'U',
-    },
-    {
-      file: 'app/layout.tsx',
-      state: 'M',
-    },
-  ],
-  tree: [
-    [
-      'app',
-      [
-        'api',
-        ['hello', ['route.ts']],
-        'page.tsx',
-        'layout.tsx',
-        ['blog', ['page.tsx']],
-      ],
-    ],
-    [
-      'components',
-      ['ui', 'button.tsx', 'card.tsx'],
-      'header.tsx',
-      'footer.tsx',
-    ],
-    ['lib', ['util.ts']],
-    ['public', 'favicon.ico', 'vercel.svg'],
-    '.eslintrc.json',
-    '.gitignore',
-    'next.config.js',
-    'tailwind.config.js',
-    'package.json',
-    'README.md',
-  ],
-};
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
+  const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
+  useEffect(() => {
+    getFileTree().then(data => {
+      console.log('Tree Data:', data);
+      setTreeNodes(data);
+    });
+  }, []);
   return (
     <Sidebar {...props}>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Changes</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.changes.map((item, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton>
-                    <File />
-                    {item.file}
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>{item.state}</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
           <SidebarGroupLabel>Files</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.tree.map((item, index) => (
+              {treeNodes.map((item, index) => (
                 <Tree key={index} item={item} />
               ))}
             </SidebarMenu>
@@ -100,17 +58,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   );
 }
 
-function Tree({ item }: { item: string | any[] }) {
-  const [name, ...items] = Array.isArray(item) ? item : [item];
+function Tree({ item }: { item: TreeViewNode }) {
+  if (!item.isDir) {
+    const ext = getExt(item.path);
+    let Icon;
 
-  if (!items.length) {
+    if (isMd(item.path)) {
+      Icon = () => <FileDown />;
+    } else if (isImg(item.path)) {
+      Icon = () => <FileImage />;
+    } else if (isAudio(item.path)) {
+      Icon = () => <FileAudio />;
+    } else if (isVideo(item.path)) {
+      Icon = () => <FileVideo />;
+    } else if (isPdf(item.path)) {
+      Icon = () => <FileText />;
+    } else {
+      Icon = () => <File />;
+    }
+
     return (
       <SidebarMenuButton
-        isActive={name === 'button.tsx'}
+        // isActive={name === 'button.tsx'}
         className="data-[active=true]:bg-transparent"
       >
-        <File />
-        {name}
+        <Icon />
+        <span className="truncate" title={item.path}>
+          {item.name}
+        </span>
       </SidebarMenuButton>
     );
   }
@@ -119,18 +94,20 @@ function Tree({ item }: { item: string | any[] }) {
     <SidebarMenuItem>
       <Collapsible
         className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        defaultOpen={name === 'components' || name === 'ui'}
+        // defaultOpen={name === 'components' || name === 'ui'}
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
             <ChevronRight className="transition-transform" />
             <Folder />
-            {name}
+            <span className="truncate" title={item.path}>
+              {item.name}
+            </span>
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {items.map((subItem, index) => (
+            {item.children.map((subItem, index) => (
               <Tree key={index} item={subItem} />
             ))}
           </SidebarMenuSub>

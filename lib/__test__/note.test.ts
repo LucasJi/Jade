@@ -1,11 +1,12 @@
 import { assert, describe, test } from 'vitest';
 import {
+  decimalToBase62,
   decodeNoteName,
   encodeNoteName,
   getNoteId,
   getNotePath,
+  murmurhash,
 } from '../note';
-import { decimalToBase62, murmurhash } from '../utils';
 
 describe('lib note', () => {
   test('encodeNoteName', () => {

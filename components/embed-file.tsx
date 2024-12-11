@@ -3,7 +3,7 @@
 import { getPreviewUrlByNameLike } from '@/app/api';
 import Pdf from '@/components/pdf';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { AUDIO_EXTS, IMAGE_EXTS, PDF_EXTS } from '@/lib/constants';
+import { isAudio, isImg, isPdf } from '@/lib/file';
 import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
 import { pdfjs } from 'react-pdf';
@@ -66,9 +66,6 @@ const parsePdf = (filename: string) => {
   };
 };
 
-const checkExt = (exts: string[], filename: string) =>
-  exts.find(ext => filename.includes('.' + ext));
-
 const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
   const [url, setUrl] = useState('');
   const [fileType, setFileType] = useState('');
@@ -80,7 +77,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
 
   useEffect(() => {
     let name;
-    if (checkExt(PDF_EXTS, filename)) {
+    if (isPdf(filename)) {
       const { objName, page, height } = parsePdf(filename);
       name = objName;
       setFileType('PDF');
@@ -88,7 +85,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
         page,
         height,
       });
-    } else if (checkExt(IMAGE_EXTS, filename)) {
+    } else if (isImg(filename)) {
       const { objName, width, height } = parseImg(filename);
       name = objName;
       setFileType('IMG');
@@ -96,7 +93,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
         width: width ?? _width,
         height: height ?? _height,
       });
-    } else if (checkExt(AUDIO_EXTS, filename)) {
+    } else if (isAudio(filename)) {
       setFileType('AUDIO');
       name = filename;
     }

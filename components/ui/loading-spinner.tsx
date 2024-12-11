@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/components/utils';
 import { forwardRef, HTMLAttributes } from 'react';
 
 const spinnerVariants =

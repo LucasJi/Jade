@@ -9,8 +9,8 @@ import {
 } from '@/components/ui/hover-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getExt, getFilename } from '@/lib/file';
 import { encodeNoteName } from '@/lib/note';
-import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
 import * as Portal from '@radix-ui/react-portal';
 import { Nodes } from 'hast';
@@ -31,7 +31,7 @@ export default function Wikilink({
   const [noteNameFromWikilink, ...subHeadings] = wikilink.split('#');
   let noteName = noteNameFromWikilink === '' ? origin : noteNameFromWikilink;
   noteName = noteNames.find(e => e.includes(noteName)) ?? '';
-  const ext = getFileExt(noteName);
+  const ext = getExt(noteName);
   const [isLoading, setIsLoading] = useState(true);
   const [hast, setHast] = useState<Nodes>();
 
@@ -41,7 +41,7 @@ export default function Wikilink({
       getNoteByName(noteName).then(data => {
         const { hast } = parseNote({
           note: data as string,
-          plainNoteName: getFilenameWithoutExt(noteName),
+          plainNoteName: getFilename(noteName),
           subHeadings,
         });
         setHast(hast);
@@ -52,7 +52,7 @@ export default function Wikilink({
         note: wikilink.includes('#^')
           ? 'Block wikilink not supported yet'
           : 'Jade currently only supports markdown file preview',
-        plainNoteName: getFilenameWithoutExt(noteName),
+        plainNoteName: getFilename(noteName),
         subHeadings,
       });
       setHast(hast);

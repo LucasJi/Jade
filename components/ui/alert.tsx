@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/components/utils';
 
 // const generateVariant = (variant: string) =>
 //   `border-${variant}/50 text-${variant} dark:border-${variant} [&>svg]:text-${variant}`;

@@ -1,3 +1,5 @@
+import { TreeViewNode } from '@/components/types';
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getNoteNames = async (): Promise<string[]> => {
@@ -38,7 +40,7 @@ export const getPreviewUrlByNameLike = async (
   }).then(resp => resp.json());
 };
 
-export const getFileTree = async () => {
+export const getFileTree = async (): Promise<TreeViewNode[]> => {
   return fetch(`${baseUrl}/api/tree`, {
     next: { tags: ['note:updated'] },
   }).then(res => res.json());

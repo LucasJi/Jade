@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TypographyCode } from '@/components/ui/typography';
-import { cn } from '@/lib/utils';
+import { cn } from '@/components/utils';
 import clsx from 'clsx';
 import { Nodes } from 'hast';
 import {

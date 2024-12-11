@@ -1,8 +1,8 @@
+import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { listExistedNotes } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
-import { getFileExt, getFilenameWithoutExt } from '@/lib/utils';
 import { parseNote } from '@/processor/parser';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
@@ -137,7 +137,7 @@ const cacheObjects = async () => {
 
 const cacheHast = async (names: string[]) => {
   for (const name of names) {
-    const ext = getFileExt(name);
+    const ext = getExt(name);
 
     if (ext !== 'md') {
       continue;
@@ -146,7 +146,7 @@ const cacheHast = async (names: string[]) => {
     const note = await s3.getObject(name);
     const { hast, headings } = parseNote({
       note,
-      plainNoteName: getFilenameWithoutExt(name),
+      plainNoteName: getFilename(name),
     });
 
     await redis.json.set(`jade:hast:${name}`, '$', hast as any);
