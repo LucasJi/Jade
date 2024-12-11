@@ -1,6 +1,23 @@
 import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
 // import { Noto_Sans_SC } from 'next/font/google';
+import { LeftSidebar } from '@/components/left-sidebar';
+import { SidebarRight } from '@/components/sidebar-right';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 import localFont from 'next/font/local';
 import { ReactNode } from 'react';
 import { Providers } from './providers';
@@ -21,10 +38,43 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen bg-background antialiased">
         <WebVitals />
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
-          <div className="relative flex h-screen min-w-[1200px] flex-col">
-            <main className="flex flex-1">{children}</main>
-            {/*<Footer />*/}
-          </div>
+          <main>
+            <SidebarProvider>
+              <LeftSidebar />
+              <SidebarInset>
+                <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
+                  <div className="flex flex-1 items-center gap-2 px-3">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Breadcrumb>
+                      <BreadcrumbList>
+                        <BreadcrumbItem className="hidden md:block">
+                          <BreadcrumbLink href="#">components</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator className="hidden md:block" />
+                        <BreadcrumbItem className="hidden md:block">
+                          <BreadcrumbLink href="#">ui</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator className="hidden md:block" />
+                        <BreadcrumbItem>
+                          <BreadcrumbPage>button.tsx</BreadcrumbPage>
+                        </BreadcrumbItem>
+                      </BreadcrumbList>
+                    </Breadcrumb>
+                  </div>
+                </header>
+                <div className="flex flex-1 flex-col gap-4 p-4">
+                  <div className="mx-auto h-24 w-full max-w-3xl rounded-xl bg-muted/50" />
+                  <div className="mx-auto flex h-[calc(100vh_-_5.5rem)]  w-full max-w-3xl flex-col rounded-xl">
+                    <ScrollArea className="w-full max-w-3xl flex-1">
+                      {children}
+                    </ScrollArea>
+                  </div>
+                </div>
+              </SidebarInset>
+              <SidebarRight />
+            </SidebarProvider>
+          </main>
         </Providers>
       </body>
     </html>

@@ -1,5 +1,4 @@
 import Markdown from '@/components/markdown';
-import Toc from '@/components/toc';
 import { logger } from '@/lib/logger';
 import {
   decodeNoteName,
@@ -55,29 +54,13 @@ export default async function Page(props: {
       notFound();
     }
 
-    // log.info({ slug, noteName: noteName }, 'Build note page');
-
-    // const note = await s3.getObject(noteName);
-    //
-    // if (!note) {
-    //   notFound();
-    // }
-    //
-    // const { hast, headings } = parseNote({
-    //   note,
-    //   plainNoteName: getFilenameWithoutExt(noteName),
-    // });
-
     return (
-      <div className="flex h-full w-full justify-center">
-        <Markdown
-          hast={hast}
-          origin={noteName}
-          className="w-[768px] px-4"
-          noteNames={noteObjectNames}
-        />
-        <Toc headings={headings} className="fixed right-4 top-0" />
-      </div>
+      <Markdown
+        hast={hast}
+        origin={noteName}
+        className="w-[768px] px-4"
+        noteNames={noteObjectNames}
+      />
     );
   } catch (error) {
     // log.error({ slug, error }, 'Error occurs when building note page');

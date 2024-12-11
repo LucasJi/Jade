@@ -23,6 +23,7 @@ const nextConfig = {
         canvas: './empty-module.ts',
       },
     },
+    swcMinify: false,
   },
 };
 
