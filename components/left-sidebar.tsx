@@ -20,7 +20,7 @@ import {
   SidebarMenuSub,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { getExt, isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
+import { isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
 import {
   ChevronRight,
   File,
@@ -31,6 +31,7 @@ import {
   FileVideo,
   Folder,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { ComponentProps, useEffect, useState } from 'react';
 
 export function LeftSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
@@ -64,10 +65,9 @@ export function LeftSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
 }
 
 function Tree({ item }: { item: TreeViewNode }) {
+  const router = useRouter();
   if (!item.isDir) {
-    const ext = getExt(item.path);
     let Icon;
-
     if (isMd(item.path)) {
       Icon = () => <FileDown />;
     } else if (isImg(item.path)) {
@@ -86,6 +86,7 @@ function Tree({ item }: { item: TreeViewNode }) {
       <SidebarMenuButton
         // isActive={name === 'button.tsx'}
         className="data-[active=true]:bg-transparent"
+        onClick={() => router.push(`/notes/${item.path || ''}`)}
       >
         <Icon />
         <span className="truncate" title={item.path}>
