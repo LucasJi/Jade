@@ -1,7 +1,5 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -10,6 +8,7 @@ import {
   SidebarInput,
 } from '@/components/ui/sidebar';
 import { cn } from '@/components/utils';
+import { Search, X } from 'lucide-react';
 import { ComponentProps } from 'react';
 
 export function SearchForm({ ...props }: ComponentProps<'form'>) {
