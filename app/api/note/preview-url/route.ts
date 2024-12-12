@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const s3 = new S3();
 const expiry = 24 * 60 * 60;
 
-export const revalidate = expiry;
+export const revalidate = 86400;
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
