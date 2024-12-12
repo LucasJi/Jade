@@ -1,19 +1,9 @@
+import unifiedProcessor from '@/processor/unified';
 import { Nodes } from 'hast';
 import { urlAttributes } from 'html-url-attributes';
 import { Root } from 'mdast';
-import rehypeKatex from 'rehype-katex';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkRehype from 'remark-rehype';
-import { PluggableList, unified } from 'unified';
-import { Visitor, VisitorResult, visit } from 'unist-util-visit';
+import { visit, Visitor, VisitorResult } from 'unist-util-visit';
 import { VFile } from 'vfile';
-
-const rehypePlugins: PluggableList = [
-  rehypeRaw as any,
-  [rehypeKatex, { strict: false }],
-  rehypeSlug,
-];
 
 const skipHtml = false;
 /**
@@ -81,15 +71,6 @@ export const transformUrls = (hast: Nodes) => {
   visit(hast as any, visitor);
 };
 
-const createUnifiedProcessor = () => {
-  return unified()
-    .use(remarkRehype, {
-      allowDangerousHtml: true,
-    })
-    .use(rehypePlugins);
-};
-
 export const transformMdastToHast = (mdast: Root, vFile: VFile) => {
-  const processor = createUnifiedProcessor();
-  return processor.runSync(mdast, vFile);
+  return unifiedProcessor.runSync(mdast, vFile);
 };
