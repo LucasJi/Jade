@@ -1,12 +1,11 @@
 import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
 // import { Noto_Sans_SC } from 'next/font/google';
-import { LeftSidebar } from '@/components/left-sidebar';
+import { SidebarLeft } from '@/components/sidebar-left';
 import { SidebarRight } from '@/components/sidebar-right';
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -40,7 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
           <main>
             <SidebarProvider>
-              <LeftSidebar />
+              <SidebarLeft />
               <SidebarInset>
                 <header className="sticky top-0 flex h-14 shrink-0 items-center gap-2 bg-background">
                   <div className="flex flex-1 items-center gap-2 px-3">
@@ -49,11 +48,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <Breadcrumb>
                       <BreadcrumbList>
                         <BreadcrumbItem className="hidden md:block">
-                          <BreadcrumbLink href="#">components</BreadcrumbLink>
+                          components
                         </BreadcrumbItem>
                         <BreadcrumbSeparator className="hidden md:block" />
                         <BreadcrumbItem className="hidden md:block">
-                          <BreadcrumbLink href="#">ui</BreadcrumbLink>
+                          ui
                         </BreadcrumbItem>
                         <BreadcrumbSeparator className="hidden md:block" />
                         <BreadcrumbItem>

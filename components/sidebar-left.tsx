@@ -35,7 +35,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { ComponentProps, useEffect, useState } from 'react';
 
-export function LeftSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
+export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
   useEffect(() => {
     getFileTree().then(data => {
