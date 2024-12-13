@@ -25,9 +25,9 @@ const Pdf: FC = () => {
   }, []);
 
   return isLoading ? (
-    <span>Loading pdf...</span>
+    <div>Loading pdf...</div>
   ) : (
-    <span className="flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
         <Outline onItemClick={onItemClick} />
         <Page pageNumber={pageNumber} width={720} />
@@ -63,7 +63,7 @@ const Pdf: FC = () => {
           <ChevronRight />
         </Button>
       </div>
-    </span>
+    </div>
   );
 };
 

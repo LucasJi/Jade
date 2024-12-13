@@ -38,7 +38,6 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
   useEffect(() => {
     getFileTree().then(data => {
-      console.log('Tree Data:', data);
       setTreeNodes(data);
     });
   }, []);

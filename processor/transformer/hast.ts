@@ -67,7 +67,7 @@ const visitor: Visitor<any> = (node, index, parent): VisitorResult => {
   }
 };
 
-export const transformUrls = (hast: Nodes) => {
+export const transformUnSafeUrls = (hast: Nodes) => {
   visit(hast as any, visitor);
 };
 

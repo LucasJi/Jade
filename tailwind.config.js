@@ -105,7 +105,7 @@ const config = {
       typography: theme => ({
         DEFAULT: {
           css: {
-            maxWidth: '80ch',
+            maxWidth: '85ch',
           },
         },
       }),

@@ -108,7 +108,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
 
   if (isLoading) {
     return (
-      <span
+      <div
         style={{
           width: `${config.width}px`,
           height: `${config.height}px`,
@@ -118,7 +118,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
         }}
       >
         <LoadingSpinner />
-      </span>
+      </div>
     );
   }
 
@@ -135,7 +135,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
           alt="Picture"
         />
       ) : (
-        <span>Unknown image</span>
+        <div>Unknown image</div>
       );
     }
     case 'AUDIO': {
@@ -146,7 +146,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
       );
     }
     default: {
-      return <span>not valid file</span>;
+      return <div>not valid file</div>;
     }
   }
 };

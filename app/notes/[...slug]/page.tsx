@@ -58,7 +58,7 @@ export default async function Page(props: {
       <Markdown
         hast={hast}
         origin={noteName}
-        className="w-[768px] px-4"
+        className="w-full"
         noteNames={noteObjectNames}
       />
     );

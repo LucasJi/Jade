@@ -217,6 +217,23 @@ const components = (
       </section>
     );
   },
+  p: props => {
+    const { node, children, className, ...rest } = props;
+    for (const child of node.children) {
+      if (child.properties && child.properties.dataEmbedFile) {
+        return (
+          <div className={cn('my-2', className)} {...rest}>
+            {children}
+          </div>
+        );
+      }
+    }
+    return (
+      <p className={className} {...rest}>
+        {children}
+      </p>
+    );
+  },
 });
 
 const Markdown = ({
