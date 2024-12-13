@@ -1,6 +1,5 @@
 'use client';
 import { getFileTree } from '@/app/api';
-import { SearchInput } from '@/components/search-input';
 import { TreeViewNode } from '@/components/types';
 import {
   Collapsible,
@@ -45,9 +44,7 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   }, []);
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
-        <SearchInput />
-      </SidebarHeader>
+      <SidebarHeader>Omni Note</SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Files</SidebarGroupLabel>

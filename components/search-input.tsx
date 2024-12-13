@@ -1,7 +1,6 @@
 'use client';
 
 import { search } from '@/app/api';
-import SimpleMarkdown from '@/components/simple-md';
 import { Button } from '@/components/ui/button';
 import {
   CommandDialog,
@@ -20,6 +19,7 @@ import {
 } from '@/components/ui/sidebar';
 import { cn } from '@/components/utils';
 import { Nodes } from 'hast';
+import { toText } from 'hast-util-to-text';
 import { Search, X } from 'lucide-react';
 import { ComponentProps, useState } from 'react';
 
@@ -41,12 +41,13 @@ export function SearchInput({ ...props }: ComponentProps<typeof SidebarGroup>) {
         </Label>
         <SidebarInput
           id="search"
-          placeholder="Press 'Enter' to search..."
-          className="pl-8"
+          placeholder="Search..."
+          className="px-8"
           value={searchContent}
           onChange={e => setSearchContent(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter' && searchContent) {
+              setSearching(true);
               setSearchDialogOpen(true);
               search(searchContent).then(data => {
                 setSearchResult(data.documents);
@@ -55,27 +56,43 @@ export function SearchInput({ ...props }: ComponentProps<typeof SidebarGroup>) {
             }
           }}
         />
+        {searchContent && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              'absolute right-2 top-1/2 size-4 -translate-y-1/2 cursor-pointer select-none',
+            )}
+            onClick={() => {
+              console.log('clear search searchContent');
+              setSearchContent('');
+            }}
+          >
+            <X />
+          </Button>
+        )}
         <Button
+          className="absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none"
           variant="ghost"
           size="icon"
-          className={cn(
-            'absolute right-2 top-1/2 size-4 -translate-y-1/2 cursor-pointer select-none opacity-50',
-          )}
+          disabled={!searchContent}
           onClick={() => {
-            console.log('clear search searchContent');
-            setSearchContent('');
+            setSearching(true);
+            setSearchDialogOpen(true);
+            search(searchContent).then(data => {
+              setSearchResult(data.documents);
+              setSearching(false);
+            });
           }}
         >
-          <X />
+          <Search />
         </Button>
-        <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
         <CommandDialog
           title="search-dialog"
           open={searchDialogOpen}
           onOpenChange={open => {
             setSearchDialogOpen(open);
             if (!open) {
-              setSearching(true);
               setSearchResult([]);
             }
           }}
@@ -87,14 +104,18 @@ export function SearchInput({ ...props }: ComponentProps<typeof SidebarGroup>) {
             </div>
           ) : (
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Notes">
-                {searchResult.map((result, idx) => (
-                  <CommandItem key={idx}>
-                    <SimpleMarkdown hast={result.value} />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+              {searchResult.length <= 0 ? (
+                <CommandEmpty>No results found.</CommandEmpty>
+              ) : (
+                <CommandGroup heading="Notes">
+                  {searchResult.map((result, idx) => (
+                    <CommandItem key={idx}>
+                      {/*<SimpleMarkdown hast={result.value} />*/}
+                      {toText(result.value)}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
             </CommandList>
           )}
         </CommandDialog>
