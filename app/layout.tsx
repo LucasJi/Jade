@@ -1,7 +1,7 @@
 import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
 // import { Noto_Sans_SC } from 'next/font/google';
-import { SearchInput } from '@/components/search-input';
+import { Search } from '@/components/search';
 import { SidebarLeft } from '@/components/sidebar-left';
 import { SidebarRight } from '@/components/sidebar-right';
 import {
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                         </BreadcrumbList>
                       </Breadcrumb>
                     </div>
-                    <SearchInput className="w-64" />
+                    <Search />
                   </div>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
