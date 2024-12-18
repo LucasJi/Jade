@@ -143,6 +143,9 @@ export const getNoteSlugsFromPath = (path: string): string[] => path.split('/');
 
 export const getEncodedNotePathFromSlug = (slugs: string[]) => slugs.join('/');
 
+export const getEncodedNotePathFromURIComponentSlug = (slug: string[]) =>
+  getEncodedNotePathFromSlug(slug.map(e => decodeURIComponent(e)));
+
 export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {
     name: 'root',

@@ -12,7 +12,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,7 +19,10 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
-import { decodeNotePath, getEncodedNotePathFromSlug } from '@/lib/note';
+import {
+  decodeNotePath,
+  getEncodedNotePathFromURIComponentSlug,
+} from '@/lib/note';
 import {
   ChevronRight,
   File,
@@ -43,7 +45,7 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   }, []);
   return (
     <Sidebar {...props}>
-      <SidebarHeader>Omni Note</SidebarHeader>
+      {/*<SidebarHeader>Omni Note</SidebarHeader>*/}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Files</SidebarGroupLabel>
@@ -65,7 +67,7 @@ function Tree({ item }: { item: TreeViewNode }) {
   const router = useRouter();
   const { slug } = useParams<{ slug: string[] }>();
   const currentNotePath = slug
-    ? getEncodedNotePathFromSlug(slug.map(e => decodeURIComponent(e)))
+    ? getEncodedNotePathFromURIComponentSlug(slug)
     : '';
   const decodedNotePath = decodeNotePath(currentNotePath);
   const [_, ...folders] = decodedNotePath.split('/').reverse();
