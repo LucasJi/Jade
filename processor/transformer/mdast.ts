@@ -1,6 +1,6 @@
 import { Transformer } from '@/processor/types';
 import unifiedProcessor from '@/processor/unified';
-import { Heading, ListItem, Root, RootContent } from 'mdast';
+import { Heading, ListItem, Parent, Root, RootContent } from 'mdast';
 import { toString } from 'mdast-util-to-string';
 import { toc } from 'mdast-util-toc';
 import { VFile } from 'vfile';
@@ -101,4 +101,30 @@ export const transformSubHeadings = (mdast: Root, headings: string[]) => {
       end === -1 ? mdast.children.length : end,
     );
   }
+};
+
+export const transformFrontmatterToSection = (
+  mdast: Root,
+  frontmatter: any,
+) => {
+  const idx = mdast.children.findIndex(child => child.type === 'yaml');
+
+  if (idx === -1 || idx > 0) {
+    return;
+  }
+
+  const frontmatterChild = mdast.children[idx] as Parent;
+  frontmatterChild.type = 'paragraph';
+  frontmatterChild.data = {
+    hName: 'section',
+    hProperties: {
+      dataFrontmatter: true,
+    },
+  };
+  frontmatterChild.children = [
+    {
+      type: 'text',
+      value: JSON.stringify(frontmatter),
+    },
+  ];
 };

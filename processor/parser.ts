@@ -1,5 +1,6 @@
 import { transformMdastToHast } from '@/processor/transformer/hast';
 import {
+  transformFrontmatterToSection,
   transformMdastToHeadings,
   transformSubHeadings,
   transformTitle,
@@ -62,6 +63,8 @@ export const parseNote = (options: NoteParserOptions) => {
   if (subHeadings) {
     transformSubHeadings(mdast, subHeadings);
   }
+
+  transformFrontmatterToSection(mdast, frontmatter);
 
   // hast transformers
   const hast = transformHast(mdast, vFile);

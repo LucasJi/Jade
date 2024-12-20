@@ -12,7 +12,11 @@ import { unified } from 'unified';
 import { removePosition } from 'unist-util-remove-position';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
-import { transformSubHeadings, transformTitle } from '../mdast';
+import {
+  transformFrontmatterToSection,
+  transformSubHeadings,
+  transformTitle,
+} from '../mdast';
 
 const noteFilename = 'Note File Name';
 const titleInFrontmatter = 'Frontmatter Title';
@@ -109,6 +113,22 @@ describe('transformSubHeadings', () => {
     const html = toHtml(hast);
     console.log(html);
     expect(html).toBe(`<h3>1.1</h3>\n<p>1.1 part</p>`);
+  });
+});
+
+describe('transformFrontmatterToSection', () => {
+  test('', () => {
+    const md = dedent`
+    ---
+    key: value
+    ---
+    # Frontmatter Example
+    `;
+    const mdast = getMdast(md);
+    transformFrontmatterToSection(mdast, '');
+    const hast = processor.runSync(mdast);
+    console.log(JSON.stringify(mdast));
+    console.log(JSON.stringify(hast));
   });
 });
 

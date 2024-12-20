@@ -1,5 +1,6 @@
 import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 import EmbedFile from '@/components/embed-file';
+import Frontmatter from '@/components/frontmatter';
 import {
   Table,
   TableBody,
@@ -207,8 +208,13 @@ const components = (
       );
     }
 
+    // embed file
     if ('data-embed-file' in rest) {
       return <EmbedFile filename={children} />;
+    }
+
+    if ('data-frontmatter' in rest) {
+      return <Frontmatter frontmatter={children} className="mb-4" />;
     }
 
     return (

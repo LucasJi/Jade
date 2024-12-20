@@ -49,7 +49,7 @@
     "hast-util-to-text": "^4.0.2",
     "html-url-attributes": "^3.0.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.429.0",
+    "lucide-react": "^0.468.0",
     "mdast-util-from-markdown": "2.0.1",
     "mdast-util-frontmatter": "^2.0.1",
     "mdast-util-to-markdown": "2.1.0",
