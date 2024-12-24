@@ -1,10 +1,14 @@
 import config from '@/lib/config';
+import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
+import { createRedisClient } from '@/lib/redis';
 
 const log = logger.child({
   module: 'api',
   route: 'api/webhooks/minio',
 });
+
+const redis = await createRedisClient();
 
 const DELETE_EVENT = 's3:ObjectRemoved:Delete';
 const CREATE_EVENT = 's3:ObjectCreated:Put';
@@ -63,9 +67,12 @@ const CREATE_EVENT = 's3:ObjectCreated:Put';
  * @constructor
  */
 export async function POST(req: Request) {
-  const body = await req.json();
+  const body: {
+    Key: string;
+    EventName: string;
+  } = await req.json();
   const { Key, EventName } = body;
-  const notePath = (Key as string).replace(config.s3.bucket + '/', '');
+  const notePath = Key.replace(config.s3.bucket + '/', '');
   log.info(
     {
       path: notePath,
@@ -73,6 +80,23 @@ export async function POST(req: Request) {
     },
     'Minio Event',
   );
+
+  if (EventName.includes(DELETE_EVENT)) {
+    await redis.sRem('jade:obj:paths', notePath);
+    await redis.hDel('jade:objs', notePath);
+  } else if (EventName.includes(CREATE_EVENT)) {
+    await redis.sAdd('jade:obj:paths', notePath);
+    await redis.hSet(
+      'jade:objs',
+      notePath,
+      JSON.stringify({
+        path: notePath,
+        type: 'file',
+        ext: getExt(notePath),
+      }),
+    );
+  }
+
   return new Response('success', {
     status: 200,
   });
