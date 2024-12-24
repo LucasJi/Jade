@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/components/utils';
 import { CalendarCheck, CalendarSync, Tags } from 'lucide-react';
 import { HTMLAttributes, forwardRef } from 'react';
@@ -13,23 +14,25 @@ const Frontmatter = forwardRef<HTMLDivElement, FrontmatterProps>(
     return (
       <div ref={ref} className={cn(className)} {...props}>
         {created && (
-          <div className="flex items-center justify-start">
+          <div className="flex items-center justify-start text-muted-foreground">
             <CalendarCheck size={fontSize} />
             <span className="ml-2">{created}</span>
           </div>
         )}
         {modified && (
-          <div className="flex items-center justify-start">
+          <div className="flex items-center justify-start text-muted-foreground">
             <CalendarSync size={fontSize} />
             <span className="ml-2">{modified}</span>
           </div>
         )}
         {tags && (
-          <div className="flex items-center justify-start">
+          <div className="flex items-center justify-start text-muted-foreground">
             <Tags size={fontSize} />
             <div className="ml-2">
               {tags.map((tag: string) => (
-                <span key={tag}>{tag}</span>
+                <Badge key={tag} variant="secondary">
+                  {tag}
+                </Badge>
               ))}
             </div>
           </div>
