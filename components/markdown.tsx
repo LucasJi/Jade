@@ -210,7 +210,7 @@ const components = (
 
     // embed file
     if ('data-embed-file' in rest) {
-      return <EmbedFile filename={children} />;
+      return <EmbedFile path={children} />;
     }
 
     if ('data-frontmatter' in rest) {

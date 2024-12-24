@@ -1,4 +1,6 @@
+import EmbedFile from '@/components/embed-file';
 import Markdown from '@/components/markdown';
+import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import {
   decodeNotePath,
@@ -8,27 +10,23 @@ import {
   getNoteSlugsFromPath,
 } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
-import { S3 } from '@/lib/server/s3';
 import { Nodes } from 'hast';
 import { ListItem } from 'mdast';
 import { notFound } from 'next/navigation';
 
 const log = logger.child({ module: 'page:notes/[...slug]' });
 
-const s3 = new S3();
 const redis = await createRedisClient();
-const noteObjectNames = JSON.parse(
-  (await redis.get('jade:obj:names')) ?? '[]',
+const objPaths = JSON.parse(
+  (await redis.get('jade:obj:paths')) ?? '[]',
 ) as string[];
 
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  return noteObjectNames
-    .filter(name => name.includes('.md'))
-    .map(name => ({
-      slug: getNoteSlugsFromPath(encodeNotePath(name)),
-    }));
+  return objPaths.map(path => ({
+    slug: getNoteSlugsFromPath(encodeNotePath(path)),
+  }));
 }
 
 export default async function Page(props: {
@@ -40,14 +38,24 @@ export default async function Page(props: {
   const slug = decodeURISlug(uriSlug);
 
   try {
-    const encodedNoteName = getEncodedNotePathFromSlug(slug);
-    const noteName = decodeNotePath(encodedNoteName);
+    const encodedNotePath = getEncodedNotePathFromSlug(slug);
+    const notePath = decodeNotePath(encodedNotePath);
+    const ext = getExt(notePath);
 
-    const headingsStr = (await redis.get(`jade:headings:${noteName}`)) || '';
+    // 附件
+    if (ext !== 'md') {
+      return (
+        <div className="flex w-full justify-center">
+          <EmbedFile path={notePath} />
+        </div>
+      );
+    }
+
+    const headingsStr = (await redis.get(`jade:headings:${notePath}`)) || '';
     const headings = JSON.parse(headingsStr) as ListItem[];
 
     const hast = (await redis.json.get(
-      `jade:hast:${noteName}`,
+      `jade:hast:${notePath}`,
     )) as unknown as Nodes;
 
     if (!hast) {
@@ -57,9 +65,9 @@ export default async function Page(props: {
     return (
       <Markdown
         hast={hast}
-        origin={noteName}
+        origin={notePath}
         className="w-full"
-        noteNames={noteObjectNames}
+        noteNames={objPaths}
       />
     );
   } catch (error) {

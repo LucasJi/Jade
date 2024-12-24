@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
 
 interface EmbedFileProps {
-  filename: string;
+  path: string;
 }
 
 interface EmbedFileConfig {
@@ -61,7 +61,7 @@ const parsePdf = (filename: string) => {
   };
 };
 
-const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
+const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
   const [url, setUrl] = useState('');
   const [fileType, setFileType] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -71,26 +71,26 @@ const EmbedFile: FC<EmbedFileProps> = ({ filename }) => {
   });
 
   useEffect(() => {
-    let name;
-    if (isPdf(filename)) {
-      const { objName, page, height } = parsePdf(filename);
+    let name = path;
+    if (isPdf(path)) {
+      const { objName, page, height } = parsePdf(path);
       name = objName;
       setFileType('PDF');
       setConfig({
         page,
         height,
       });
-    } else if (isImg(filename)) {
-      const { objName, width, height } = parseImg(filename);
+    } else if (isImg(path)) {
+      const { objName, width, height } = parseImg(path);
       name = objName;
       setFileType('IMG');
       setConfig({
         width: width ?? _width,
         height: height ?? _height,
       });
-    } else if (isAudio(filename)) {
+    } else if (isAudio(path)) {
       setFileType('AUDIO');
-      name = filename;
+      name = path;
     }
 
     if (name) {

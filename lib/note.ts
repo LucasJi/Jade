@@ -236,7 +236,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
 export const decodeURISlug = (slug: string[]) =>
   slug.map(s => decodeURIComponent(s));
 
-export const listExistedNotes = (objs: BucketItem[]): NoteObject[] => {
+export const listExistedObjs = (objs: BucketItem[]): NoteObject[] => {
   return objs
     .filter(obj => obj.isLatest && !obj.isDeleteMarker)
     .filter(obj => !config.dir.excluded.includes(obj.name.split('/')[0]))
@@ -247,9 +247,6 @@ export const listExistedNotes = (objs: BucketItem[]): NoteObject[] => {
     }));
 };
 
-export const listExistedNoteNames = (objs: BucketItem[]): string[] => {
-  return objs
-    .filter(obj => obj.isLatest && !obj.isDeleteMarker)
-    .filter(obj => !config.dir.excluded.includes(obj.name.split('/')[0]))
-    .map(obj => obj.name);
+export const listExistedNotes = (objs: BucketItem[]): NoteObject[] => {
+  return listExistedObjs(objs).filter(obj => obj.ext === 'md');
 };

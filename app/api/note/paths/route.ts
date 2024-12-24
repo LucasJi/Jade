@@ -4,10 +4,9 @@ import { NextResponse } from 'next/server';
 const redis = await createRedisClient();
 
 /**
- * Get objects names from redis
- * tags: 'api:note/names'
+ * Get objects paths from redis
  */
 export async function GET() {
-  const names = await redis.get('jade:obj:names');
-  return NextResponse.json(names ? JSON.parse(names) : []);
+  const paths = await redis.get('jade:obj:paths');
+  return NextResponse.json(paths ? JSON.parse(paths) : []);
 }
