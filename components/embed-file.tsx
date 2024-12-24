@@ -6,11 +6,6 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { isAudio, isImg, isPdf } from '@/lib/file';
 import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
-import { pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface EmbedFileProps {
   filename: string;
