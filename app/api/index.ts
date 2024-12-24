@@ -40,6 +40,16 @@ export const getPreviewUrlByNameLike = async (
   }).then(resp => resp.json());
 };
 
+export const revalidate = async (path: string) => {
+  const url = new URL(`${baseUrl}/api/revalidate`);
+  url.search = new URLSearchParams({
+    path: path,
+  }).toString();
+  return fetch(url, {
+    method: 'GET',
+  }).then(resp => resp.json());
+};
+
 export const getFileTree = async (): Promise<TreeViewNode[]> => {
   return fetch(`${baseUrl}/api/tree`, {
     next: { tags: ['note:updated'] },

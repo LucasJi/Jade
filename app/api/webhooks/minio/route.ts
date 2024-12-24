@@ -1,13 +1,18 @@
+import { revalidate } from '@/app/api';
 import config from '@/lib/config';
-import { getExt } from '@/lib/file';
+import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
+import { encodeNotePath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
+import { S3 } from '@/lib/server/s3';
+import { parseNote } from '@/processor/parser';
 
 const log = logger.child({
   module: 'api',
   route: 'api/webhooks/minio',
 });
 
+const s3 = new S3();
 const redis = await createRedisClient();
 
 const DELETE_EVENT = 's3:ObjectRemoved:Delete';
@@ -81,10 +86,34 @@ export async function POST(req: Request) {
     'Minio Event',
   );
 
+  const ext = getExt(notePath);
+
+  if (ext !== 'md') {
+    return new Response('success', {
+      status: 200,
+    });
+  }
+
   if (EventName.includes(DELETE_EVENT)) {
     await redis.sRem('jade:obj:paths', notePath);
     await redis.hDel('jade:objs', notePath);
+    await redis.json.del(`jade:hast:${notePath}`);
+    await redis.json.del(`jade:frontmatter:${notePath}`);
+    await redis.del(`jade:headings:${notePath}`);
+    const keys = await redis.keys(`jade:hChld:${notePath}:*`);
+    keys.forEach(key => {
+      redis.del(key);
+    });
   } else if (EventName.includes(CREATE_EVENT)) {
+    const note = await s3.getObject(notePath);
+    const { hast, headings, frontmatter } = parseNote({
+      note,
+      plainNoteName: getFilename(notePath),
+    });
+
+    await redis.json.set(`jade:hast:${notePath}`, '$', hast as any);
+    await redis.set(`jade:headings:${notePath}`, JSON.stringify(headings));
+    await redis.json.set(`jade:frontmatter:${notePath}`, '$', frontmatter);
     await redis.sAdd('jade:obj:paths', notePath);
     await redis.hSet(
       'jade:objs',
@@ -95,7 +124,18 @@ export async function POST(req: Request) {
         ext: getExt(notePath),
       }),
     );
+    if (hast.children && hast.children.length > 0) {
+      for (let i = 0; i < hast.children.length; i++) {
+        await redis.json.set(
+          `jade:hChld:${notePath}:${i}`,
+          '$',
+          hast.children[i] as any,
+        );
+      }
+    }
   }
+
+  await revalidate(`/notes/${encodeNotePath(notePath)}`);
 
   return new Response('success', {
     status: 200,
