@@ -121,8 +121,11 @@ const clearCache = async () => {
     redis.del(key);
   });
 
-  await redis.ft.dropIndex('jade:idx:hChld');
-
+  const ftIdxes = await redis.ft._list();
+  for (const idx of ftIdxes) {
+    log.info(`Clear ft idx: ${idx}`);
+    await redis.ft.dropIndex(idx);
+  }
   log.info({ keySize: keys.length }, 'Clear all redis keys');
 };
 
@@ -135,7 +138,7 @@ const cacheObjects = async () => {
   return names;
 };
 
-const cacheHast = async (names: string[]) => {
+const cacheNotes = async (names: string[]) => {
   for (const name of names) {
     const ext = getExt(name);
 
@@ -144,13 +147,14 @@ const cacheHast = async (names: string[]) => {
     }
 
     const note = await s3.getObject(name);
-    const { hast, headings } = parseNote({
+    const { hast, headings, frontmatter } = parseNote({
       note,
       plainNoteName: getFilename(name),
     });
 
     await redis.json.set(`jade:hast:${name}`, '$', hast as any);
     await redis.set(`jade:headings:${name}`, JSON.stringify(headings));
+    await redis.json.set(`jade:frontmatter:${name}`, '$', frontmatter);
 
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
@@ -165,8 +169,8 @@ const cacheHast = async (names: string[]) => {
   }
 };
 
-const createSearchIndex = async () => {
-  log.info('Create search index');
+const createSearchIndexes = async () => {
+  log.info('Create search index: jade:idx:hChld');
   await redis.ft.create(
     'jade:idx:hChld',
     {
@@ -181,6 +185,22 @@ const createSearchIndex = async () => {
       LANGUAGE: RedisSearchLanguages.CHINESE,
     },
   );
+
+  log.info('Create search index: jade:idx:frontmatter');
+  await redis.ft.create(
+    'jade:idx:frontmatter',
+    {
+      '$.tags.*': {
+        type: SchemaFieldTypes.TAG,
+        AS: 'tag',
+      },
+    },
+    {
+      ON: 'JSON',
+      PREFIX: 'jade:frontmatter:',
+      LANGUAGE: RedisSearchLanguages.CHINESE,
+    },
+  );
 };
 
 const init = async () => {
@@ -188,8 +208,8 @@ const init = async () => {
 
   await clearCache();
   const names = await cacheObjects();
-  await cacheHast(names);
-  await createSearchIndex();
+  await cacheNotes(names);
+  await createSearchIndexes();
 };
 
 try {

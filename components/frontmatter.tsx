@@ -28,9 +28,9 @@ const Frontmatter = forwardRef<HTMLDivElement, FrontmatterProps>(
         {tags && (
           <div className="flex items-center justify-start text-muted-foreground">
             <Tags size={fontSize} />
-            <div className="ml-2">
+            <div>
               {tags.map((tag: string) => (
-                <Badge key={tag} variant="secondary">
+                <Badge key={tag} variant="secondary" className="ml-2">
                   {tag}
                 </Badge>
               ))}
