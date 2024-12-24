@@ -10,11 +10,11 @@ const redis = await createRedisClient();
 
 export async function GET() {
   let noteObjects;
-  const cache = await redis.get('jade:objs');
+  const cache = await redis.hVals('jade:objs');
   if (cache === null) {
     noteObjects = listExistedObjs(await s3.listObjects());
   } else {
-    noteObjects = JSON.parse(cache);
+    noteObjects = cache.map(c => JSON.parse(c));
   }
   const noteTreeView = getNoteTreeView(noteObjects);
 

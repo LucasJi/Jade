@@ -1,3 +1,14 @@
+import config from '@/lib/config';
+import { logger } from '@/lib/logger';
+
+const log = logger.child({
+  module: 'api',
+  route: 'api/webhooks/minio',
+});
+
+const DELETE_EVENT = 's3:ObjectRemoved:Delete';
+const CREATE_EVENT = 's3:ObjectCreated:Put';
+
 /**
  * {
  *    "EventName":"s3:ObjectRemoved:DeleteMarkerCreated",
@@ -53,7 +64,15 @@
  */
 export async function POST(req: Request) {
   const body = await req.json();
-  console.log('Minio Event:', JSON.stringify(body));
+  const { Key, EventName } = body;
+  const notePath = (Key as string).replace(config.s3.bucket + '/', '');
+  log.info(
+    {
+      path: notePath,
+      event: EventName,
+    },
+    'Minio Event',
+  );
   return new Response('success', {
     status: 200,
   });

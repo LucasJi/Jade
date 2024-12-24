@@ -1,7 +1,7 @@
 export type NoteObjectType = 'file' | 'dir';
 
 export interface NoteObject {
-  name: string;
+  path: string;
   type: NoteObjectType;
   ext: string;
 }

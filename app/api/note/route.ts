@@ -1,4 +1,4 @@
-import { getNoteNames } from '@/app/api';
+import { getNotePaths } from '@/app/api';
 import { S3 } from '@/lib/server/s3';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const noteNames = await getNoteNames();
+  const noteNames = await getNotePaths();
 
   const found = noteNames.find(e => e.includes(name));
 

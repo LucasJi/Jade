@@ -7,6 +7,6 @@ const redis = await createRedisClient();
  * Get objects paths from redis
  */
 export async function GET() {
-  const paths = await redis.get('jade:obj:paths');
-  return NextResponse.json(paths ? JSON.parse(paths) : []);
+  const paths = await redis.sMembers('jade:obj:paths');
+  return NextResponse.json(paths);
 }

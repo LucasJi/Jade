@@ -26,11 +26,16 @@ const clearCache = async () => {
 
 const cacheObjects = async () => {
   const objects = listExistedObjs(await s3.listObjects());
-  const names = objects.map(obj => obj.name);
-  await redis.set('jade:obj:paths', JSON.stringify(names));
-  await redis.set('jade:objs', JSON.stringify(objects));
-  log.info({ objectSize: names.length }, 'Cache all object');
-  return names;
+  const paths = objects.map(obj => obj.path);
+
+  await redis.sAdd('jade:obj:paths', paths);
+
+  for (const obj of objects) {
+    await redis.hSet('jade:objs', obj.path, JSON.stringify(obj));
+  }
+
+  log.info({ objectSize: paths.length }, 'Cache all object');
+  return paths;
 };
 
 const cacheNotes = async (names: string[]) => {
@@ -102,8 +107,8 @@ const init = async () => {
   log.info('Initializing Jade...');
 
   await clearCache();
-  const names = await cacheObjects();
-  await cacheNotes(names);
+  const paths = await cacheObjects();
+  await cacheNotes(paths);
   await createSearchIndexes();
 };
 

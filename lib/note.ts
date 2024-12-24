@@ -156,7 +156,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
 
   noteObjects.forEach(noteObject => {
     // note: 'a/b/c.md' or directory: 'a/b/c' => ['a', 'b', 'c.md'] or 'a/b/c' => ['a', 'b', 'c']
-    const splits = noteObject.name.split('/');
+    const splits = noteObject.path.split('/');
     // ['a', 'b']
     const dirs: string[] = splits.slice(0, -1);
     let currentNode = _root;
@@ -213,7 +213,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
       const filename: string = splits[splits.length - 1];
       currentNode.children.push({
         name: getFilename(filename),
-        path: encodeNotePath(noteObject.name),
+        path: encodeNotePath(noteObject.path),
         children: [],
         isDir: false,
       });
@@ -241,7 +241,7 @@ export const listExistedObjs = (objs: BucketItem[]): NoteObject[] => {
     .filter(obj => obj.isLatest && !obj.isDeleteMarker)
     .filter(obj => !config.dir.excluded.includes(obj.name.split('/')[0]))
     .map(obj => ({
-      name: obj.name,
+      path: obj.name,
       ext: getExt(obj.name),
       type: 'file',
     }));

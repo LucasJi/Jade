@@ -2,8 +2,8 @@ import { TreeViewNode } from '@/components/types';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const getNoteNames = async (): Promise<string[]> => {
-  return fetch(`${baseUrl}/api/note/names`, {
+export const getNotePaths = async (): Promise<string[]> => {
+  return fetch(`${baseUrl}/api/note/paths`, {
     cache: 'force-cache',
     next: {
       tags: ['note:updated'],

@@ -17,9 +17,7 @@ import { notFound } from 'next/navigation';
 const log = logger.child({ module: 'page:notes/[...slug]' });
 
 const redis = await createRedisClient();
-const objPaths = JSON.parse(
-  (await redis.get('jade:obj:paths')) ?? '[]',
-) as string[];
+const objPaths = await redis.sMembers('jade:obj:paths');
 
 export const dynamicParams = true;
 
