@@ -1,5 +1,5 @@
 import { logger } from '@/lib/logger';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest } from 'next/server';
 
 const log = logger.child({
@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
   if (path) {
     log.info({ path }, 'Revalidate path success');
     revalidatePath(path);
+    revalidateTag('sync');
     return Response.json({ revalidated: true, now: Date.now() });
   }
 

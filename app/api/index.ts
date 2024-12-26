@@ -6,7 +6,7 @@ export const getNotePaths = async (): Promise<string[]> => {
   return fetch(`${baseUrl}/api/note/paths`, {
     cache: 'force-cache',
     next: {
-      tags: ['note:updated'],
+      tags: ['sync'],
     },
   }).then(resp => resp.json());
 };
@@ -20,7 +20,7 @@ export const getNoteByName = async (name: string): Promise<string> => {
     method: 'GET',
     cache: 'force-cache',
     next: {
-      tags: ['note:updated'],
+      tags: ['sync'],
     },
   }).then(resp => resp.json());
 };
@@ -35,7 +35,7 @@ export const getPreviewUrlByNameLike = async (
   return fetch(url, {
     method: 'GET',
     next: {
-      tags: ['note:updated'],
+      tags: ['sync'],
     },
   }).then(resp => resp.json());
 };
@@ -52,7 +52,8 @@ export const revalidate = async (path: string) => {
 
 export const getFileTree = async (): Promise<TreeViewNode[]> => {
   return fetch(`${baseUrl}/api/tree`, {
-    next: { tags: ['note:updated'] },
+    cache: 'force-cache',
+    next: { tags: ['sync'] },
   }).then(res => res.json());
 };
 
@@ -61,7 +62,5 @@ export const search = async (content: string) => {
   url.search = new URLSearchParams({
     content,
   }).toString();
-  return fetch(url, {
-    next: { tags: ['note:updated'] },
-  }).then(res => res.json());
+  return fetch(url).then(res => res.json());
 };
