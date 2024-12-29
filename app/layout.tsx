@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   </div>
                 </div>
               </SidebarInset>
-              <SidebarRight />
+              {/* <SidebarRight /> */}
             </SidebarProvider>
           </main>
         </Providers>
