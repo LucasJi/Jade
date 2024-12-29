@@ -72,25 +72,26 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
 
   useEffect(() => {
     let name = path;
-    if (isPdf(path)) {
-      const { objName, page, height } = parsePdf(path);
+    const escapedPath = path.replace(/\\\|/g, '|');
+    if (isPdf(escapedPath)) {
+      const { objName, page, height } = parsePdf(escapedPath);
       name = objName;
       setFileType('PDF');
       setConfig({
         page,
         height,
       });
-    } else if (isImg(path)) {
-      const { objName, width, height } = parseImg(path);
+    } else if (isImg(escapedPath)) {
+      const { objName, width, height } = parseImg(escapedPath);
       name = objName;
       setFileType('IMG');
       setConfig({
         width: width ?? _width,
         height: height ?? _height,
       });
-    } else if (isAudio(path)) {
+    } else if (isAudio(escapedPath)) {
       setFileType('AUDIO');
-      name = path;
+      name = escapedPath;
     }
 
     if (name) {

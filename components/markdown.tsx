@@ -122,17 +122,35 @@ const components = (
   table: props => <Table className="not-prose">{props.children}</Table>,
   thead: props => <TableHeader>{props.children}</TableHeader>,
   tr: props => <TableRow className="not-prose">{props.children}</TableRow>,
-  th: props => <TableHead>{props.children}</TableHead>,
+  th: props => {
+    const { node, className, href, children, style, ...rest } = props;
+    return <TableHead style={style}>{props.children}</TableHead>;
+  },
   tbody: props => <TableBody className="not-prose">{props.children}</TableBody>,
-  td: props => <TableCell className="not-prose">{props.children}</TableCell>,
+  td: props => {
+    const { node, className, href, children, style, ...rest } = props;
+
+    return (
+      <TableCell className="not-prose" style={style}>
+        {props.children}
+      </TableCell>
+    );
+  },
   code: props => (
     <TypographyCode className="not-prose">{props.children}</TypographyCode>
   ),
   div: props => {
     if ('data-callout' in props) {
       const type = (props as any)['data-callout-type'];
-      const isFoldable = (props as any)['data-is-foldable'] !== undefined;
-      const defaultFolded = (props as any)['data-default-folded'] !== undefined;
+      const isFoldable =
+        (props as any)['data-is-foldable'] === undefined
+          ? false
+          : props['data-is-foldable'];
+      const defaultFolded =
+        (props as any)['data-default-folded'] === undefined
+          ? false
+          : props['data-default-folded'];
+      console.log('data-callout', props);
       return (
         <Callout
           variant={type}
@@ -146,7 +164,10 @@ const components = (
 
     if ('data-callout-title' in props) {
       const type = (props as any)['data-callout-type'];
-      const isFoldable = (props as any)['data-is-foldable'] !== undefined;
+      const isFoldable =
+        (props as any)['data-is-foldable'] === undefined
+          ? false
+          : props['data-is-foldable'];
       return (
         <CalloutTitle
           title={props.children as string}
@@ -160,8 +181,9 @@ const components = (
       return <CalloutBody>{props.children}</CalloutBody>;
     }
 
+    // obsidian comment
     if ('hidden' in props) {
-      return <div className="hidden">{props.children}</div>;
+      return <span className="hidden">{props.children}</span>;
     }
 
     return <div>{props.children}</div>;

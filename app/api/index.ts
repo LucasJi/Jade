@@ -4,7 +4,6 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getNotePaths = async (): Promise<string[]> => {
   return fetch(`${baseUrl}/api/note/paths`, {
-    cache: 'force-cache',
     next: {
       tags: ['sync'],
     },
@@ -18,7 +17,6 @@ export const getNoteByName = async (name: string): Promise<string> => {
   }).toString();
   return fetch(url, {
     method: 'GET',
-    cache: 'force-cache',
     next: {
       tags: ['sync'],
     },
@@ -51,10 +49,7 @@ export const revalidate = async (path: string) => {
 };
 
 export const getFileTree = async (): Promise<TreeViewNode[]> => {
-  return fetch(`${baseUrl}/api/tree`, {
-    cache: 'force-cache',
-    next: { tags: ['sync'] },
-  }).then(res => res.json());
+  return fetch(`${baseUrl}/api/tree`).then(res => res.json());
 };
 
 export const search = async (content: string) => {
