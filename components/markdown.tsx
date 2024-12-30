@@ -123,7 +123,7 @@ const components = (
         const text = (code.children[0] as any).value;
         const id = count;
         count++;
-        return <Mermaid id={`m${id}`}>{text}</Mermaid>;
+        return <Mermaid id={`m${id}`} source={text} />;
       }
 
       return (
