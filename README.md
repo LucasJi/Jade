@@ -95,7 +95,7 @@ This project now supports three types of note title definitions:
 
 The first type(title defined in the front matter) takes highest precedence over others.
 
-### Wikilink
+### InternalLink
 
 Galaxy Blog supports displaying all kinds of Obsidian's wikilinks:
 

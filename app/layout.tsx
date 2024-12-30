@@ -1,9 +1,9 @@
 import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
 // import { Noto_Sans_SC } from 'next/font/google';
+import Footer from '@/components/footer';
 import { Search } from '@/components/search';
 import { SidebarLeft } from '@/components/sidebar-left';
-import { SidebarRight } from '@/components/sidebar-right';
 import SidebarRouter from '@/components/sidebar-router';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -45,13 +45,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   </div>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
-                  <div className="mx-auto flex h-[calc(100vh_-_5.5rem)]  w-full max-w-3xl flex-col rounded-xl">
+                  <div className="mx-auto flex h-[calc(100vh_-_5.5rem)] w-full max-w-3xl flex-col rounded-xl">
                     <ScrollArea
                       className="w-full max-w-3xl flex-1"
                       type="scroll"
                     >
                       {children}
                     </ScrollArea>
+                    <Footer />
                   </div>
                 </div>
               </SidebarInset>

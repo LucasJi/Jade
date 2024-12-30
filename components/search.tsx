@@ -1,5 +1,6 @@
 'use client';
 
+import { search } from '@/app/api';
 import { Button } from '@/components/ui/button';
 import {
   CommandDialog,
@@ -23,7 +24,7 @@ interface SearchResult {
 
 export function Search({ ...props }: ComponentProps<'div'>) {
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
-  const [searching, setSearching] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [searchContent, setSearchContent] = useState('');
 
@@ -38,6 +39,22 @@ export function Search({ ...props }: ComponentProps<'div'>) {
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
+
+  useEffect(() => {
+    if (!searchContent) {
+      setSearchResult([]);
+      return () => {};
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      // setSearching(true);
+      search(searchContent).then(data => {
+        console.log('search result:', data);
+        setSearchResult(data.documents);
+        // setSearching(false);
+      });
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchContent]);
 
   return (
     <div className="py-0" {...props}>
@@ -67,7 +84,10 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           }
         }}
       >
-        <CommandInput placeholder="Search..." />
+        <CommandInput
+          placeholder="Search..."
+          onValueChange={value => setSearchContent(value)}
+        />
         {searching ? (
           <div className="flex h-32 items-center justify-center">
             <Loader />

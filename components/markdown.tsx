@@ -23,7 +23,7 @@ import { Children, cloneElement } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
-import Wikilink from './wikilink';
+import InternalLink from './internal-link';
 
 const components = (
   origin: string,
@@ -40,10 +40,10 @@ const components = (
           .filter(e => e !== '')
           .join(' > ');
         return (
-          <Wikilink
+          <InternalLink
             origin={origin}
             displayName={displayName}
-            wikilink={href}
+            link={href}
             noteNames={noteNames}
           />
         );
