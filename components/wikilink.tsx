@@ -73,11 +73,11 @@ export default function Wikilink({
         </Link>
       </HoverCardTrigger>
       <Portal.Root>
-        <HoverCardContent className="flex h-[400px] w-[600px] px-4">
+        <HoverCardContent className="flex h-[400px] w-[768px] px-4">
           {isLoading ? (
             <LoadingSpinner className="mx-auto self-center" />
           ) : (
-            <ScrollArea>
+            <ScrollArea type="scroll">
               <Markdown hast={hast!} origin={noteName} noteNames={noteNames} />
             </ScrollArea>
           )}

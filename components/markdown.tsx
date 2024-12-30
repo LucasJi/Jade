@@ -1,6 +1,7 @@
 import { Callout, CalloutBody, CalloutTitle } from '@/components/callout';
 import EmbedFile from '@/components/embed-file';
 import Frontmatter from '@/components/frontmatter';
+import Mermaid from '@/components/mermaid';
 import {
   Table,
   TableBody,
@@ -27,242 +28,256 @@ import Wikilink from './wikilink';
 const components = (
   origin: string,
   noteNames: string[],
-): Partial<JsxRuntimeComponents> => ({
-  a: props => {
-    const { node, className, href, children, ...rest } = props;
-    if ('data-wikilink' in rest && href) {
-      const displayName = (children as string)
-        .trim()
-        .split('#')
-        .filter(e => e !== '')
-        .join(' > ');
-      return (
-        <Wikilink
-          origin={origin}
-          displayName={displayName}
-          wikilink={href}
-          noteNames={noteNames}
-        />
-      );
-    }
+): Partial<JsxRuntimeComponents> => {
+  let count = 0;
+  return {
+    a: props => {
+      const { node, className, href, children, ...rest } = props;
+      if ('data-wikilink' in rest && href) {
+        const displayName = (children as string)
+          .trim()
+          .split('#')
+          .filter(e => e !== '')
+          .join(' > ');
+        return (
+          <Wikilink
+            origin={origin}
+            displayName={displayName}
+            wikilink={href}
+            noteNames={noteNames}
+          />
+        );
+      }
 
-    if ('data-footnote-ref' in rest) {
+      if ('data-footnote-ref' in rest) {
+        return (
+          <a
+            href={href!}
+            title={href}
+            className={cn(className, 'text-obsidian no-underline')}
+            {...rest}
+          >
+            <span>
+              <span>[</span>
+              {children}
+              <span>]</span>
+            </span>
+          </a>
+        );
+      }
+
+      if ('data-footnote-backref' in rest) {
+        return (
+          <a
+            href={href!}
+            title={href}
+            className={cn(
+              className,
+              'inline-flex items-center text-obsidian no-underline',
+            )}
+            {...rest}
+          >
+            <CornerDownLeft size={12} />
+          </a>
+        );
+      }
+
       return (
         <a
           href={href!}
-          title={href}
-          className={cn(className, 'text-obsidian no-underline')}
-          {...rest}
-        >
-          <span>
-            <span>[</span>
-            {children}
-            <span>]</span>
-          </span>
-        </a>
-      );
-    }
-
-    if ('data-footnote-backref' in rest) {
-      return (
-        <a
-          href={href!}
+          target="_blank"
           title={href}
           className={cn(
             className,
-            'inline-flex items-center text-obsidian no-underline',
+            'inline-flex items-center px-1 text-obsidian',
           )}
           {...rest}
         >
-          <CornerDownLeft size={12} />
+          <span>{children}</span>
+          <ExternalLink size={12} />
         </a>
       );
-    }
+    },
+    pre: props => {
+      const { children, className, node } = props;
 
-    return (
-      <a
-        href={href!}
-        target="_blank"
-        title={href}
-        className={cn(className, 'inline-flex items-center px-1 text-obsidian')}
-        {...rest}
-      >
-        <span>{children}</span>
-        <ExternalLink size={12} />
-      </a>
-    );
-  },
-  pre: props => {
-    const { children, className, node } = props;
+      const code = node?.children.find(
+        (child: any) => child.tagName === 'code',
+      ) as any | undefined;
 
-    const code = node?.children.find(
-      (child: any) => child.tagName === 'code',
-    ) as any | undefined;
-
-    if (!code) {
-      return <pre className={className}>{children}</pre>;
-    }
-
-    const codeClassName = code.properties?.className as string[];
-    let language = codeClassName?.flatMap(cls => {
-      const match = /language-(\w+)/.exec(cls);
-      return match ? [match[1]] : [];
-    })[0];
-
-    if (language === 'md') {
-      language = 'text';
-    }
-
-    return (
-      <SyntaxHighlighter style={oneLight} language={language}>
-        {(code.children[0] as any).value.replace(/\n$/, '')}
-      </SyntaxHighlighter>
-    );
-  },
-  table: props => <Table className="not-prose">{props.children}</Table>,
-  thead: props => <TableHeader>{props.children}</TableHeader>,
-  tr: props => <TableRow className="not-prose">{props.children}</TableRow>,
-  th: props => {
-    const { node, className, href, children, style, ...rest } = props;
-    return <TableHead style={style}>{props.children}</TableHead>;
-  },
-  tbody: props => <TableBody className="not-prose">{props.children}</TableBody>,
-  td: props => {
-    const { node, className, href, children, style, ...rest } = props;
-
-    return (
-      <TableCell className="not-prose" style={style}>
-        {props.children}
-      </TableCell>
-    );
-  },
-  code: props => (
-    <TypographyCode className="not-prose">{props.children}</TypographyCode>
-  ),
-  div: props => {
-    if ('data-callout' in props) {
-      const type = (props as any)['data-callout-type'];
-      const isFoldable =
-        (props as any)['data-is-foldable'] === undefined
-          ? false
-          : props['data-is-foldable'];
-      const defaultFolded =
-        (props as any)['data-default-folded'] === undefined
-          ? false
-          : props['data-default-folded'];
-      console.log('data-callout', props);
-      return (
-        <Callout
-          variant={type}
-          isFoldable={isFoldable}
-          defaultFolded={defaultFolded}
-        >
-          {props.children}
-        </Callout>
-      );
-    }
-
-    if ('data-callout-title' in props) {
-      const type = (props as any)['data-callout-type'];
-      const isFoldable =
-        (props as any)['data-is-foldable'] === undefined
-          ? false
-          : props['data-is-foldable'];
-      return (
-        <CalloutTitle
-          title={props.children as string}
-          variant={type}
-          isFoldable={isFoldable}
-        />
-      );
-    }
-
-    if ('data-callout-body' in props) {
-      return <CalloutBody>{props.children}</CalloutBody>;
-    }
-
-    // obsidian comment
-    if ('hidden' in props) {
-      return <span className="hidden">{props.children}</span>;
-    }
-
-    return <div>{props.children}</div>;
-  },
-  ul: props => {
-    const { node, children, className, ...rest } = props;
-    const isTaskList = !!className?.includes('contains-task-list');
-    const customChildren = Children.map(children, child => {
-      if (isTaskList && child.type === 'li') {
-        return cloneElement(child, {
-          className: cn(child.props.className, 'ps-0', '[&_ul]:ps-4'),
-        });
+      if (!code) {
+        return <pre className={className}>{children}</pre>;
       }
 
-      return child;
-    });
-    return (
-      <ul
-        className={cn(className, {
-          'list-none ps-0': isTaskList,
-        })}
-        {...rest}
-      >
-        {customChildren}
-      </ul>
-    );
-  },
-  section: props => {
-    const { node, children, className, ...rest } = props;
+      const codeClassName = code.properties?.className as string[];
+      let language = codeClassName?.flatMap(cls => {
+        const match = /language-(\w+)/.exec(cls);
+        return match ? [match[1]] : [];
+      })[0];
 
-    // footnotes
-    if ('data-footnotes' in rest) {
+      if (language === 'md') {
+        language = 'text';
+      }
+
+      if (language === 'mermaid') {
+        const text = (code.children[0] as any).value;
+        const id = count;
+        count++;
+        return <Mermaid id={`m${id}`}>{text}</Mermaid>;
+      }
+
       return (
-        <section className={className} {...rest}>
-          <hr />
-          {Children.map(children, child => {
-            // TODO: Use 'ol' type to custom footnotes section
-            if (child.props?.node?.tagName !== 'h2') {
-              return child;
-            }
-            return <hr />;
-          })}
-        </section>
+        <SyntaxHighlighter style={oneLight} language={language}>
+          {(code.children[0] as any).value.replace(/\n$/, '')}
+        </SyntaxHighlighter>
       );
-    }
+    },
+    table: props => <Table className="not-prose">{props.children}</Table>,
+    thead: props => <TableHeader>{props.children}</TableHeader>,
+    tr: props => <TableRow className="not-prose">{props.children}</TableRow>,
+    th: props => {
+      const { node, className, href, children, style, ...rest } = props;
+      return <TableHead style={style}>{props.children}</TableHead>;
+    },
+    tbody: props => (
+      <TableBody className="not-prose">{props.children}</TableBody>
+    ),
+    td: props => {
+      const { node, className, href, children, style, ...rest } = props;
 
-    // embed file
-    if ('data-embed-file' in rest) {
-      return <EmbedFile path={children} />;
-    }
-
-    if ('data-frontmatter' in rest) {
-      return <Frontmatter frontmatter={children} className="mb-4" />;
-    }
-
-    return (
-      <section className={className} {...rest}>
-        {children}
-      </section>
-    );
-  },
-  p: props => {
-    const { node, children, className, ...rest } = props;
-    for (const child of node.children) {
-      if (child.properties && child.properties.dataEmbedFile) {
+      return (
+        <TableCell className="not-prose" style={style}>
+          {props.children}
+        </TableCell>
+      );
+    },
+    code: props => (
+      <TypographyCode className="not-prose">{props.children}</TypographyCode>
+    ),
+    div: props => {
+      if ('data-callout' in props) {
+        const type = (props as any)['data-callout-type'];
+        const isFoldable =
+          (props as any)['data-is-foldable'] === undefined
+            ? false
+            : props['data-is-foldable'];
+        const defaultFolded =
+          (props as any)['data-default-folded'] === undefined
+            ? false
+            : props['data-default-folded'];
         return (
-          <div className={cn('my-2', className)} {...rest}>
-            {children}
-          </div>
+          <Callout
+            variant={type}
+            isFoldable={isFoldable}
+            defaultFolded={defaultFolded}
+          >
+            {props.children}
+          </Callout>
         );
       }
-    }
-    return (
-      <p className={className} {...rest}>
-        {children}
-      </p>
-    );
-  },
-});
+
+      if ('data-callout-title' in props) {
+        const type = (props as any)['data-callout-type'];
+        const isFoldable =
+          (props as any)['data-is-foldable'] === undefined
+            ? false
+            : props['data-is-foldable'];
+        return (
+          <CalloutTitle
+            title={props.children as string}
+            variant={type}
+            isFoldable={isFoldable}
+          />
+        );
+      }
+
+      if ('data-callout-body' in props) {
+        return <CalloutBody>{props.children}</CalloutBody>;
+      }
+
+      // obsidian comment
+      if ('hidden' in props) {
+        return <span className="hidden">{props.children}</span>;
+      }
+
+      return <div>{props.children}</div>;
+    },
+    ul: props => {
+      const { node, children, className, ...rest } = props;
+      const isTaskList = !!className?.includes('contains-task-list');
+      const customChildren = Children.map(children, child => {
+        if (isTaskList && child.type === 'li') {
+          return cloneElement(child, {
+            className: cn(child.props.className, 'ps-0', '[&_ul]:ps-4'),
+          });
+        }
+
+        return child;
+      });
+      return (
+        <ul
+          className={cn(className, {
+            'list-none ps-0': isTaskList,
+          })}
+          {...rest}
+        >
+          {customChildren}
+        </ul>
+      );
+    },
+    section: props => {
+      const { node, children, className, ...rest } = props;
+
+      // footnotes
+      if ('data-footnotes' in rest) {
+        return (
+          <section className={className} {...rest}>
+            <hr />
+            {Children.map(children, child => {
+              // TODO: Use 'ol' type to custom footnotes section
+              if (child.props?.node?.tagName !== 'h2') {
+                return child;
+              }
+              return <hr />;
+            })}
+          </section>
+        );
+      }
+
+      // embed file
+      if ('data-embed-file' in rest) {
+        return <EmbedFile path={children} />;
+      }
+
+      if ('data-frontmatter' in rest) {
+        return <Frontmatter frontmatter={children} className="mb-4" />;
+      }
+
+      return (
+        <section className={className} {...rest}>
+          {children}
+        </section>
+      );
+    },
+    p: props => {
+      const { node, children, className, ...rest } = props;
+      for (const child of node.children) {
+        if (child.properties && child.properties.dataEmbedFile) {
+          return (
+            <div className={cn('my-2', className)} {...rest}>
+              {children}
+            </div>
+          );
+        }
+      }
+      return (
+        <p className={className} {...rest}>
+          {children}
+        </p>
+      );
+    },
+  };
+};
 
 const Markdown = ({
   className,
