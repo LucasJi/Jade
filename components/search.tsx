@@ -23,7 +23,7 @@ interface SearchResult {
 }
 
 export function Search({ ...props }: ComponentProps<'div'>) {
-  const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
+  const [searchResult, setSearchResult] = useState<any | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [searchContent, setSearchContent] = useState('');
@@ -42,13 +42,13 @@ export function Search({ ...props }: ComponentProps<'div'>) {
 
   useEffect(() => {
     if (!searchContent) {
-      setSearchResult([]);
+      setSearchResult(null);
       return () => {};
     }
     const delayDebounceFn = setTimeout(async () => {
       search(searchContent).then(data => {
         console.log('search result:', data);
-        setSearchResult(data.documents);
+        setSearchResult(data);
       });
     }, 200);
     return () => clearTimeout(delayDebounceFn);
@@ -78,7 +78,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
         onOpenChange={open => {
           setSearchDialogOpen(open);
           if (!open) {
-            setSearchResult([]);
+            setSearchResult(null);
           }
         }}
       >
@@ -92,16 +92,23 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           </div>
         ) : (
           <CommandList>
-            {searchResult.length <= 0 ? (
+            {searchResult === null ? (
               <CommandEmpty>No results found.</CommandEmpty>
             ) : (
               <CommandGroup heading="Notes">
-                {searchResult.map((result, idx) => (
-                  <CommandItem key={idx}>
-                    {/*<SimpleMarkdown hast={result.value} />*/}
-                    {toText(result.value)}
-                  </CommandItem>
-                ))}
+                {Object.keys(searchResult).map((key, idx) => {
+                  const results = searchResult[key];
+                  return results.map((r: Nodes, idx: number) => (
+                    <CommandItem key={`${key}-${idx}`}>
+                      <div className="flex flex-col gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          {key}
+                        </span>
+                        <span className="font-medium">{toText(r)}</span>
+                      </div>
+                    </CommandItem>
+                  ));
+                })}
               </CommandGroup>
             )}
           </CommandList>

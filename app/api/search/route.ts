@@ -1,6 +1,6 @@
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
-import { trim } from 'lodash';
+import { sortBy, trim, trimStart } from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
 import { RedisSearchLanguages } from 'redis';
 
@@ -13,24 +13,42 @@ const redis = await createRedisClient();
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  let content = searchParams.get('content') || '';
-  content = trim(content)
+  const content = searchParams.get('content') || '';
+  const query = trim(content)
     .split(' ')
     .map(c => `${c}|*${c}*|%${c}%`)
     .join('|');
 
-  log.info({ content }, 'Searching with content...');
+  log.info({ query }, 'Searching with content...');
 
   try {
-    const result = await redis.ft.search('jade:idx:hChld', `${content}`, {
+    const rsResult = await redis.ft.search('jade:idx:hChld', `${query}`, {
       LANGUAGE: RedisSearchLanguages.CHINESE,
     });
+
+    const result: Record<string, any[]> = {};
+    const { documents } = rsResult;
+
+    if (documents.length <= 0) {
+      return NextResponse.json(null);
+    }
+
+    const sortedDocs = sortBy(documents, ['id']);
+    for (const doc of sortedDocs) {
+      const { id, value } = doc;
+      const path = trimStart(id, 'jade:hChld:').split(':')[0];
+
+      if (path in result) {
+        const results = result[path];
+        results?.push({ ...value });
+      } else {
+        result[path] = [{ ...value }];
+      }
+    }
+
     return NextResponse.json(result);
   } catch (e) {
     log.error('Error occurs when searching...', e);
-    return NextResponse.json({
-      total: 0,
-      documents: [],
-    });
+    return NextResponse.json(null);
   }
 }
