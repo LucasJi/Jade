@@ -18,6 +18,7 @@ import {
   Components as JsxRuntimeComponents,
   toJsxRuntime,
 } from 'hast-util-to-jsx-runtime';
+import { endsWith, trimEnd } from 'lodash';
 import { CornerDownLeft, ExternalLink } from 'lucide-react';
 import { Children, cloneElement } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -39,11 +40,15 @@ const components = (
           .split('#')
           .filter(e => e !== '')
           .join(' > ');
+        let trimmedHref = href;
+        if (endsWith(href, '\\')) {
+          trimmedHref = trimEnd(href, '\\');
+        }
         return (
           <InternalLink
             origin={origin}
             displayName={displayName}
-            link={href}
+            link={trimmedHref}
             noteNames={noteNames}
           />
         );

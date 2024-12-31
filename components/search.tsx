@@ -46,13 +46,11 @@ export function Search({ ...props }: ComponentProps<'div'>) {
       return () => {};
     }
     const delayDebounceFn = setTimeout(async () => {
-      // setSearching(true);
       search(searchContent).then(data => {
         console.log('search result:', data);
         setSearchResult(data.documents);
-        // setSearching(false);
       });
-    }, 500);
+    }, 200);
     return () => clearTimeout(delayDebounceFn);
   }, [searchContent]);
 

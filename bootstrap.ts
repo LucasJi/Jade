@@ -77,6 +77,7 @@ const createSearchIndexes = async () => {
       '$..value': {
         type: SchemaFieldTypes.TEXT,
         SORTABLE: true,
+        AS: 'value',
       },
     },
     {
