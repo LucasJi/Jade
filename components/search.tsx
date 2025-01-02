@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import Loader from '@/components/ui/loader';
 import { Nodes } from 'hast';
 import { toText } from 'hast-util-to-text';
+import { trim } from 'lodash';
 import { CommandIcon } from 'lucide-react';
 import { ComponentProps, useEffect, useState } from 'react';
 
@@ -22,6 +23,26 @@ const NoResultFound = () => (
     No Result found.
   </CommandEmpty>
 );
+
+const highlight = (text: string, searchContent: string) => {
+  const keywords = trim(searchContent).split(' ');
+  let splits: any[] = [trim(text)];
+  for (const keyword of keywords) {
+    splits = splits
+      .map(s =>
+        typeof s === 'string'
+          ? s
+              .split(new RegExp(`(${keyword})`, 'gi'))
+              .map((c, i) =>
+                c === keyword ? <mark key={`${keyword}-${i}`}>{c}</mark> : c,
+              )
+          : [s],
+      )
+      .flatMap(s => s);
+  }
+  console.log(splits);
+  return splits;
+};
 
 export function Search({ ...props }: ComponentProps<'div'>) {
   const [searchResult, setSearchResult] = useState<any | null>(null);
@@ -103,7 +124,9 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                         <span className="text-xs text-muted-foreground">
                           {key}
                         </span>
-                        <span className="font-medium">{toText(r)}</span>
+                        <span className="font-medium">
+                          {highlight(toText(r), searchContent)}
+                        </span>
                       </div>
                     </CommandItem>
                   ));
