@@ -17,7 +17,11 @@ import { toText } from 'hast-util-to-text';
 import { CommandIcon } from 'lucide-react';
 import { ComponentProps, useEffect, useState } from 'react';
 
-const NoResultFound = () => <CommandEmpty>No Result found.</CommandEmpty>;
+const NoResultFound = () => (
+  <CommandEmpty className="py-6 text-center text-xs">
+    No Result found.
+  </CommandEmpty>
+);
 
 export function Search({ ...props }: ComponentProps<'div'>) {
   const [searchResult, setSearchResult] = useState<any | null>(null);

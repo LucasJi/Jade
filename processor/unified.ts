@@ -6,6 +6,7 @@ import { remarkTag } from '@/plugins/remark-tag';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -30,6 +31,7 @@ const remarkPlugins: PluggableList = [
 ];
 
 const rehypePlugins: PluggableList = [
+  rehypeRaw,
   [rehypeKatex, { strict: false }],
   rehypeSlug,
 ];

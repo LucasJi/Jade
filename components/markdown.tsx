@@ -259,8 +259,6 @@ const components = (
         return <Frontmatter frontmatter={children} className="mb-4" />;
       }
 
-      // tag
-
       return (
         <section className={className} {...rest}>
           {children}
@@ -286,6 +284,15 @@ const components = (
           {children}
         </p>
       );
+    },
+    span: props => {
+      const { node, children, className, ...rest } = props;
+
+      if ('data-tag' in rest) {
+        return <span className="text-obsidian">{`#${rest['data-tag']}`}</span>;
+      }
+
+      return <span>{children}</span>;
     },
   };
 };
