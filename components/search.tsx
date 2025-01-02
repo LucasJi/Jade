@@ -29,12 +29,16 @@ const highlight = (text: string, searchContent: string) => {
   let splits: any[] = [trim(text)];
   for (const keyword of keywords) {
     splits = splits
-      .map(s =>
+      .map((s, idx) =>
         typeof s === 'string'
           ? s
               .split(new RegExp(`(${keyword})`, 'gi'))
               .map((c, i) =>
-                c === keyword ? <mark key={`${keyword}-${i}`}>{c}</mark> : c,
+                c === keyword ? (
+                  <mark key={`${keyword}-${idx}-${i}`}>{c}</mark>
+                ) : (
+                  c
+                ),
               )
           : [s],
       )
