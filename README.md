@@ -1,8 +1,8 @@
 # Jade
 
-This project is designed to enable the publication of my blogs, authored
-in [Obsidian](https://obsidian.md/), to a blog website. The website will strive to support various
-wonderful features of Obsidian, such as wikilinks, graph view, and more, as much as possible.
+Jade is a kind of [Obsidian](https://obsidian.md/) publishing solution. It publishes your Obsidian
+vault to a public website which strives to support various wonderful features of Obsidian, such as
+Obsidian flavored markdown, wiki-links, graph view, and more, as much as possible.
 
 ## Getting Started
 
@@ -65,6 +65,8 @@ wonderful features of Obsidian, such as wikilinks, graph view, and more, as much
 
 ## Features
 
+> Please visit jade documentation(published by Jade written in Obsidian) for more details.
+
 ### Note tile
 
 This project now supports three types of note title definitions:
@@ -97,7 +99,7 @@ The first type(title defined in the front matter) takes highest precedence over 
 
 ### InternalLink
 
-Galaxy Blog supports displaying all kinds of Obsidian's wikilinks:
+Jade supports displaying all kinds of Obsidian's wiki-links:
 
 - [Link to a file](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link+to+a+file)
 - [Link to a heading in a note](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link+to+a+heading+in+a+note)
@@ -109,28 +111,25 @@ Galaxy Blog supports displaying all kinds of Obsidian's wikilinks:
 
 ### Graph View
 
-Galaxy Note generates a graph view just like what Obsidian does.
-
-The only difference is the nodes in Galaxy Note's graph view are clickable. You will navigate the
-specific note page after clicking the note node in the graph view.
+Jade generates a graph view just like what Obsidian does.
 
 ### File explorer
 
-Galaxy Note shows the directory structure of your notes.
+Jade shows the directory structure of your notes on the left side of the page.
 
 ### Table of Content
 
-Galaxy Note generates a table of content for each note. It will be displayed at the right-bottom
-side of the note page.
+Jade generates a table of content for each note. It will be displayed on the right side of the note
+page.
 
 ### Frontmatter
 
-Galaxy Note only supports `yaml` style frontmatter now. For example:
+Jade only supports `yaml` style frontmatter now. For example:
 
 ```yaml
 ---
 title: Note Title
-aliases: 2023-01-01
+created: 2023-01-01
 tags:
   - tag1
   - tag2
@@ -146,6 +145,3 @@ resolved and friendly displayed in the note page.
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [remarkjs](https://github.com/remarkjs)
-- [D3](https://d3js.org/)
-- [pixi.js](https://pixijs.com/)
-- [React Icons](https://react-icons.github.io/react-icons/)
