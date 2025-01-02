@@ -2,6 +2,7 @@ import unifiedProcessor from '@/processor/unified';
 import { Nodes } from 'hast';
 import { urlAttributes } from 'html-url-attributes';
 import { Root } from 'mdast';
+import { removePosition } from 'unist-util-remove-position';
 import { visit, Visitor, VisitorResult } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
@@ -67,10 +68,19 @@ const visitor: Visitor<any> = (node, index, parent): VisitorResult => {
   }
 };
 
-export const transformUnSafeUrls = (hast: Nodes) => {
+const convertUnSafeUrls = (hast: Nodes) => {
   visit(hast as any, visitor);
 };
 
-export const transformMdastToHast = (mdast: Root, vFile: VFile) => {
-  return unifiedProcessor.runSync(mdast, vFile);
+const convertMdastToHast = (mdast: Root, vFile: VFile) => {
+  const hast = unifiedProcessor.runSync(mdast, vFile);
+  convertUnSafeUrls(hast);
+  removePosition(hast, { force: true });
+  return hast;
 };
+
+const hastTransformer = (mdast: Root, vFile: VFile) => {
+  return convertMdastToHast(mdast, vFile);
+};
+
+export default hastTransformer;

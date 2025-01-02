@@ -11,7 +11,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getExt, getFilename } from '@/lib/file';
 import { encodeNotePath } from '@/lib/note';
-import { parseNote } from '@/processor/parser';
+import { noteParser } from '@/processor/parser';
 import * as Portal from '@radix-ui/react-portal';
 import { Nodes } from 'hast';
 import Link from 'next/link';
@@ -39,7 +39,7 @@ export default function InternalLink({
     // TODO: Handle not markdown files and block link
     if (open && ext !== 'pdf' && !link.includes('#^')) {
       getNoteByName(noteName).then(data => {
-        const { hast } = parseNote({
+        const { hast } = noteParser({
           note: data as string,
           plainNoteName: getFilename(noteName),
           subHeadings,
@@ -48,7 +48,7 @@ export default function InternalLink({
         setIsLoading(false);
       });
     } else if (open) {
-      const { hast } = parseNote({
+      const { hast } = noteParser({
         note: link.includes('#^')
           ? 'Block wikilink not supported yet'
           : 'Jade currently only supports markdown file preview',

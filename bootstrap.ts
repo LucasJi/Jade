@@ -3,7 +3,7 @@ import { logger } from '@/lib/logger';
 import { listExistedObjs } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
-import { parseNote } from '@/processor/parser';
+import { noteParser } from '@/processor/parser';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
@@ -47,7 +47,7 @@ const cacheNotes = async (names: string[]) => {
     }
 
     const note = await s3.getObject(name);
-    const { hast, headings, frontmatter } = parseNote({
+    const { hast, headings, frontmatter } = noteParser({
       note,
       plainNoteName: getFilename(name),
     });

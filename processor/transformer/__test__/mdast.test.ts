@@ -1,4 +1,4 @@
-import { transformNoteToVFile } from '@/processor/transformer/vFile';
+import { convertNoteToVFile } from '@/processor/transformer/vFile';
 import dedent from 'dedent';
 import { toHtml } from 'hast-util-to-html';
 import { Root } from 'mdast';
@@ -13,9 +13,9 @@ import { removePosition } from 'unist-util-remove-position';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
 import {
-  transformFrontmatterToSection,
-  transformSubHeadings,
-  transformTitle,
+  convertFrontmatterToSection,
+  determineFinalTitle,
+  truncate,
 } from '../mdast';
 
 const noteFilename = 'Note File Name';
@@ -33,10 +33,10 @@ const processor = unified()
   .use(rehypeStringify);
 
 const getMdast = (md: string) => {
-  const vFile = transformNoteToVFile(md);
+  const vFile = convertNoteToVFile(md);
   matter(vFile);
   const mdast = processor.parse(vFile);
-  transformTitle(mdast, vFile.data.matter as any, noteFilename);
+  determineFinalTitle(mdast, vFile.data.matter as any, noteFilename);
   return mdast;
 };
 
@@ -108,7 +108,7 @@ describe('transformSubHeadings', () => {
     `;
     const mdast = getMdast(md);
     const headings = ['1', '1.1'];
-    transformSubHeadings(mdast, headings);
+    truncate(mdast, headings);
     const hast = processor.runSync(mdast);
     const html = toHtml(hast);
     console.log(html);
@@ -125,7 +125,7 @@ describe('transformFrontmatterToSection', () => {
     # Frontmatter Example
     `;
     const mdast = getMdast(md);
-    transformFrontmatterToSection(mdast, '');
+    convertFrontmatterToSection(mdast, '');
     const hast = processor.runSync(mdast);
     console.log(JSON.stringify(mdast));
     console.log(JSON.stringify(hast));

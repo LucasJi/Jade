@@ -5,10 +5,6 @@ import { toString } from 'mdast-util-to-string';
 import { toc } from 'mdast-util-toc';
 import { VFile } from 'vfile';
 
-export const transformVFileToMdast = (vFile: VFile): Root => {
-  return unifiedProcessor.parse(vFile);
-};
-
 /**
  * The title of note has three sources:
  * 1. The 'title' prop in the frontmatter
@@ -17,7 +13,7 @@ export const transformVFileToMdast = (vFile: VFile): Root => {
  *
  * The priority: 1 > 2 > 3
  */
-export const transformTitle = (
+export const determineFinalTitle = (
   mdast: Root,
   frontMatter: Transformer.FrontMatter,
   noteFilename: string,
@@ -65,13 +61,13 @@ export const transformTitle = (
   }
 };
 
-export const transformMdastToHeadings = (mdast: Root): ListItem[] => {
+export const generateHeadingsFromMdast = (mdast: Root): ListItem[] => {
   const result = toc(mdast, { minDepth: 2 });
   const map = result.map;
   return map ? map.children : [];
 };
 
-export const transformSubHeadings = (mdast: Root, headings: string[]) => {
+export const truncate = (mdast: Root, headings: string[]) => {
   if (headings.length <= 0) {
     return;
   }
@@ -100,10 +96,7 @@ export const transformSubHeadings = (mdast: Root, headings: string[]) => {
   }
 };
 
-export const transformFrontmatterToSection = (
-  mdast: Root,
-  frontmatter: any,
-) => {
+export const convertFrontmatterToSection = (mdast: Root, frontmatter: any) => {
   const idx = mdast.children.findIndex(child => child.type === 'yaml');
 
   if (idx === -1 || idx > 0) {
@@ -125,3 +118,27 @@ export const transformFrontmatterToSection = (
     },
   ];
 };
+
+const mdastTransformer = (
+  vFile: VFile,
+  frontmatter: Record<any, any>,
+  plainNoteName: string,
+  subHeadings?: string[],
+) => {
+  const mdast = unifiedProcessor.parse(vFile);
+  determineFinalTitle(mdast, frontmatter, plainNoteName);
+  const headings = generateHeadingsFromMdast(mdast);
+
+  if (subHeadings) {
+    truncate(mdast, subHeadings);
+  }
+
+  convertFrontmatterToSection(mdast, frontmatter);
+
+  return {
+    mdast,
+    headings,
+  };
+};
+
+export default mdastTransformer;

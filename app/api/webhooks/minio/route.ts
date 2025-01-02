@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger';
 import { encodeNotePath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
-import { parseNote } from '@/processor/parser';
+import { noteParser } from '@/processor/parser';
 
 const log = logger.child({
   module: 'api',
@@ -106,7 +106,7 @@ export async function POST(req: Request) {
     });
   } else if (EventName.includes(CREATE_EVENT)) {
     const note = await s3.getObject(notePath);
-    const { hast, headings, frontmatter } = parseNote({
+    const { hast, headings, frontmatter } = noteParser({
       note,
       plainNoteName: getFilename(notePath),
     });
