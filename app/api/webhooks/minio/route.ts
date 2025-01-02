@@ -1,5 +1,6 @@
 import { revalidate } from '@/app/api';
 import config from '@/lib/config';
+import { RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { encodeNotePath } from '@/lib/note';
@@ -95,12 +96,12 @@ export async function POST(req: Request) {
   }
 
   if (EventName.includes(DELETE_EVENT)) {
-    await redis.sRem('jade:obj:paths', notePath);
-    await redis.hDel('jade:objs', notePath);
-    await redis.json.del(`jade:hast:${notePath}`);
-    await redis.json.del(`jade:frontmatter:${notePath}`);
-    await redis.del(`jade:headings:${notePath}`);
-    const keys = await redis.keys(`jade:hChld:${notePath}:*`);
+    await redis.sRem(RK.PATHS, notePath);
+    await redis.hDel(RK.OBJS, notePath);
+    await redis.json.del(`${RK.HAST}${notePath}`);
+    await redis.json.del(`${RK.FRONT_MATTER}${notePath}`);
+    await redis.del(`${RK.HEADING}${notePath}`);
+    const keys = await redis.keys(`${RK.HAST_CHILD}${notePath}:*`);
     keys.forEach(key => {
       redis.del(key);
     });
@@ -111,12 +112,12 @@ export async function POST(req: Request) {
       plainNoteName: getFilename(notePath),
     });
 
-    await redis.json.set(`jade:hast:${notePath}`, '$', hast as any);
-    await redis.set(`jade:headings:${notePath}`, JSON.stringify(headings));
-    await redis.json.set(`jade:frontmatter:${notePath}`, '$', frontmatter);
-    await redis.sAdd('jade:obj:paths', notePath);
+    await redis.json.set(`${RK.HAST}${notePath}`, '$', hast as any);
+    await redis.set(`${RK.HEADING}${notePath}`, JSON.stringify(headings));
+    await redis.json.set(`${RK.FRONT_MATTER}${notePath}`, '$', frontmatter);
+    await redis.sAdd(RK.PATHS, notePath);
     await redis.hSet(
-      'jade:objs',
+      RK.OBJS,
       notePath,
       JSON.stringify({
         path: notePath,
@@ -127,7 +128,7 @@ export async function POST(req: Request) {
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
         await redis.json.set(
-          `jade:hChld:${notePath}:${i}`,
+          `${RK.HAST_CHILD}${notePath}:${i}`,
           '$',
           hast.children[i] as any,
         );

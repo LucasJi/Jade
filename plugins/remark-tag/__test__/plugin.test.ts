@@ -47,7 +47,7 @@ describe('remarkTag', () => {
       type: 'tag',
       value: 'tag',
       data: {
-        hName: 'section',
+        hName: 'span',
         hProperties: {
           'data-tag': 'tag',
         },
@@ -82,7 +82,7 @@ describe('remarkTag', () => {
   test('不应解析行内代码中的标签', async () => {
     const input = 'This is `#not-a-tag` inline code';
     const { html } = await process(input);
-    expect(html).not.contain('<section data-tag="not-a-tag"></section>');
+    expect(html).not.contain('<span data-tag="not-a-tag"></span>');
   });
 
   // 测试复杂标签格式

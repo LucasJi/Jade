@@ -2,6 +2,7 @@ import { remarkCallout } from '@/plugins/remark-callout';
 import remarkComment from '@/plugins/remark-comment';
 import { remarkEmbedFile } from '@/plugins/remark-embed-file';
 import remarkHighlight from '@/plugins/remark-highlight';
+import { remarkTag } from '@/plugins/remark-tag';
 import { remarkTaskList } from '@/plugins/remark-task-list';
 import { remarkWikilink } from '@/plugins/remark-wikilink';
 import rehypeKatex from 'rehype-katex';
@@ -25,6 +26,7 @@ const remarkPlugins: PluggableList = [
   remarkMath,
   remarkWikilink,
   remarkEmbedFile,
+  remarkTag,
 ];
 
 const rehypePlugins: PluggableList = [

@@ -1,3 +1,4 @@
+import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { sortBy, trim, trimStart } from 'lodash';
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
   log.info({ query }, 'Searching with content...');
 
   try {
-    const rsResult = await redis.ft.search('jade:idx:hChld', `${query}`, {
+    const rsResult = await redis.ft.search(RK.IDX_HAST_CHILD, `${query}`, {
       LANGUAGE: RedisSearchLanguages.CHINESE,
     });
 
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
     const sortedDocs = sortBy(documents, ['id']);
     for (const doc of sortedDocs) {
       const { id, value } = doc;
-      const path = trimStart(id, 'jade:hChld:').split(':')[0];
+      const path = trimStart(id, RK.HAST_CHILD).split(':')[0];
 
       if (path in result) {
         const results = result[path];

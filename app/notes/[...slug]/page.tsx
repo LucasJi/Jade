@@ -1,5 +1,6 @@
 import EmbedFile from '@/components/embed-file';
 import Markdown from '@/components/markdown';
+import { RK } from '@/lib/constants';
 import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import {
@@ -17,7 +18,7 @@ import { notFound } from 'next/navigation';
 const log = logger.child({ module: 'page:notes/[...slug]' });
 
 const redis = await createRedisClient();
-const objPaths = await redis.sMembers('jade:obj:paths');
+const objPaths = await redis.sMembers(RK.PATHS);
 
 export const dynamicParams = true;
 
@@ -49,11 +50,11 @@ export default async function Page(props: {
       );
     }
 
-    const headingsStr = (await redis.get(`jade:headings:${notePath}`)) || '';
+    const headingsStr = (await redis.get(`${RK.HEADING}${notePath}`)) || '';
     const headings = JSON.parse(headingsStr) as ListItem[];
 
     const hast = (await redis.json.get(
-      `jade:hast:${notePath}`,
+      `${RK.HAST}${notePath}`,
     )) as unknown as Nodes;
 
     if (!hast) {

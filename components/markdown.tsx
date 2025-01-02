@@ -254,9 +254,12 @@ const components = (
         return <EmbedFile path={children} />;
       }
 
+      // frontmatter
       if ('data-frontmatter' in rest) {
         return <Frontmatter frontmatter={children} className="mb-4" />;
       }
+
+      // tag
 
       return (
         <section className={className} {...rest}>
@@ -267,12 +270,15 @@ const components = (
     p: props => {
       const { node, children, className, ...rest } = props;
       for (const child of node.children) {
-        if (child.properties && child.properties.dataEmbedFile) {
-          return (
-            <div className={cn('my-2', className)} {...rest}>
-              {children}
-            </div>
-          );
+        if (child.properties) {
+          const { dataEmbedFile } = child.properties;
+          if (dataEmbedFile) {
+            return (
+              <div className={cn('my-2', className)} {...rest}>
+                {children}
+              </div>
+            );
+          }
         }
       }
       return (

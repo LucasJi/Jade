@@ -10,6 +10,18 @@ export const MD_EXT = 'md';
 
 export const OB_COMMENT_REG = new RegExp(/[^`]?%%(.*?)%%[^`]?/g);
 
+// Redis keys
+export enum RK {
+  PATHS = 'jade:paths:',
+  OBJS = 'jade:objs',
+  HEADING = 'jade:heading:',
+  FRONT_MATTER = 'jade:frontmatter:',
+  HAST = 'jade:hast:',
+  HAST_CHILD = 'jade:hChld:',
+  IDX_HAST_CHILD = 'jade:idx:hChld',
+  IDX_FRONT_MATTER = 'jade:idx:frontmatter',
+}
+
 // accepted file formats
 export const MD_EXTS = [MD_EXT];
 export const IMAGE_EXTS = [

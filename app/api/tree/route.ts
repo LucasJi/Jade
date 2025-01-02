@@ -1,3 +1,4 @@
+import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { getNoteTreeView, listExistedObjs } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
@@ -10,7 +11,7 @@ const redis = await createRedisClient();
 
 export async function GET() {
   let noteObjects;
-  const cache = await redis.hVals('jade:objs');
+  const cache = await redis.hVals(RK.OBJS);
   if (cache === null) {
     noteObjects = listExistedObjs(await s3.listObjects());
   } else {

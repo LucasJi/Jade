@@ -1,3 +1,4 @@
+import { RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { listExistedObjs } from '@/lib/note';
@@ -28,10 +29,10 @@ const cacheObjects = async () => {
   const objects = listExistedObjs(await s3.listObjects());
   const paths = objects.map(obj => obj.path);
 
-  await redis.sAdd('jade:obj:paths', paths);
+  await redis.sAdd(RK.PATHS, paths);
 
   for (const obj of objects) {
-    await redis.hSet('jade:objs', obj.path, JSON.stringify(obj));
+    await redis.hSet(RK.OBJS, obj.path, JSON.stringify(obj));
   }
 
   log.info({ objectSize: paths.length }, 'Cache all object');
@@ -52,14 +53,14 @@ const cacheNotes = async (names: string[]) => {
       plainNoteName: getFilename(name),
     });
 
-    await redis.json.set(`jade:hast:${name}`, '$', hast as any);
-    await redis.set(`jade:headings:${name}`, JSON.stringify(headings));
-    await redis.json.set(`jade:frontmatter:${name}`, '$', frontmatter);
+    await redis.json.set(`${RK.HAST}${name}`, '$', hast as any);
+    await redis.set(`${RK.HEADING}${name}`, JSON.stringify(headings));
+    await redis.json.set(`${RK.FRONT_MATTER}${name}`, '$', frontmatter);
 
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
         await redis.json.set(
-          `jade:hChld:${name}:${i}`,
+          `${RK.HAST_CHILD}${name}:${i}`,
           '$',
           hast.children[i] as any,
         );
@@ -70,9 +71,9 @@ const cacheNotes = async (names: string[]) => {
 };
 
 const createSearchIndexes = async () => {
-  log.info('Create search index: jade:idx:hChld');
+  log.info(`Create search index: ${RK.IDX_HAST_CHILD}`);
   await redis.ft.create(
-    'jade:idx:hChld',
+    RK.IDX_HAST_CHILD,
     {
       '$..value': {
         type: SchemaFieldTypes.TEXT,
@@ -82,14 +83,14 @@ const createSearchIndexes = async () => {
     },
     {
       ON: 'JSON',
-      PREFIX: 'jade:hChld:',
+      PREFIX: RK.HAST_CHILD,
       LANGUAGE: RedisSearchLanguages.CHINESE,
     },
   );
 
-  log.info('Create search index: jade:idx:frontmatter');
+  log.info(`Create search index: ${RK.IDX_FRONT_MATTER}`);
   await redis.ft.create(
-    'jade:idx:frontmatter',
+    RK.IDX_FRONT_MATTER,
     {
       '$.tags.*': {
         type: SchemaFieldTypes.TAG,
@@ -98,7 +99,7 @@ const createSearchIndexes = async () => {
     },
     {
       ON: 'JSON',
-      PREFIX: 'jade:frontmatter:',
+      PREFIX: RK.FRONT_MATTER,
       LANGUAGE: RedisSearchLanguages.CHINESE,
     },
   );
