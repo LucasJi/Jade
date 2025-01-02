@@ -36,7 +36,7 @@ export const remarkTag: Plugin<[], Root> = () => {
           type: 'tag',
           value: match[1],
           data: {
-            hName: 'span',
+            hName: 'section',
             hProperties: {
               'data-tag': match[1],
             },
