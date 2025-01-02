@@ -15,39 +15,60 @@ const redis = await createRedisClient();
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const content = searchParams.get('content') || '';
-  const query = trim(content)
+  const contentQuery = trim(content)
     .split(' ')
     .map(c => `${c}|*${c}*|%${c}%`)
     .join('|');
 
-  log.info({ query }, 'Searching with content...');
+  let tagQuery = trim(content)
+    .split(' ')
+    .map(c => `${c}|*${c}*`)
+    .join('|');
+  tagQuery = `@tag:{${tagQuery}}`;
+
+  log.info({ contentQuery, tagQuery }, 'Searching with content...');
 
   try {
-    const rsResult = await redis.ft.search(RK.IDX_HAST_CHILD, `${query}`, {
-      LANGUAGE: RedisSearchLanguages.CHINESE,
-    });
+    const contentSearchResult = await redis.ft.search(
+      RK.IDX_HAST_CHILD,
+      `${contentQuery}`,
+      {
+        LANGUAGE: RedisSearchLanguages.CHINESE,
+      },
+    );
 
-    const result: Record<string, any[]> = {};
-    const { documents } = rsResult;
+    let noteResult: Record<any, any> | null = null;
+    if (contentSearchResult.documents.length > 0) {
+      noteResult = {};
+      const sortedDocs = sortBy(contentSearchResult.documents, ['id']);
+      for (const doc of sortedDocs) {
+        const { id, value } = doc;
+        const path = trimStart(id, RK.HAST_CHILD).split(':')[0];
 
-    if (documents.length <= 0) {
-      return NextResponse.json(null);
-    }
-
-    const sortedDocs = sortBy(documents, ['id']);
-    for (const doc of sortedDocs) {
-      const { id, value } = doc;
-      const path = trimStart(id, RK.HAST_CHILD).split(':')[0];
-
-      if (path in result) {
-        const results = result[path];
-        results?.push({ ...value });
-      } else {
-        result[path] = [{ ...value }];
+        if (path in noteResult) {
+          const results = noteResult[path];
+          results?.push({ ...value });
+        } else {
+          noteResult[path] = [{ ...value }];
+        }
       }
     }
 
-    return NextResponse.json(result);
+    const tagSearchResult = await redis.ft.search(
+      RK.IDX_FRONT_MATTER,
+      `${tagQuery}`,
+      {
+        LANGUAGE: RedisSearchLanguages.CHINESE,
+      },
+    );
+    const tagResult = tagSearchResult.documents.map(d =>
+      trimStart(d.id, RK.FRONT_MATTER),
+    );
+
+    return NextResponse.json({
+      noteResult,
+      tagResult,
+    });
   } catch (e) {
     log.error('Error occurs when searching...', e);
     return NextResponse.json(null);

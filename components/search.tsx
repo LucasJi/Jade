@@ -17,10 +17,7 @@ import { toText } from 'hast-util-to-text';
 import { CommandIcon } from 'lucide-react';
 import { ComponentProps, useEffect, useState } from 'react';
 
-interface SearchResult {
-  id: string;
-  value: Nodes;
-}
+const NoResultFound = () => <CommandEmpty>No Result found.</CommandEmpty>;
 
 export function Search({ ...props }: ComponentProps<'div'>) {
   const [searchResult, setSearchResult] = useState<any | null>(null);
@@ -92,12 +89,10 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           </div>
         ) : (
           <CommandList>
-            {searchResult === null ? (
-              <CommandEmpty>No results found.</CommandEmpty>
-            ) : (
-              <CommandGroup heading="Notes">
-                {Object.keys(searchResult).map((key, idx) => {
-                  const results = searchResult[key];
+            <CommandGroup heading="Notes">
+              {searchResult?.noteResult ? (
+                Object.keys(searchResult.noteResult).map((key, idx) => {
+                  const results = searchResult.noteResult[key];
                   return results.map((r: Nodes, idx: number) => (
                     <CommandItem key={`${key}-${idx}`}>
                       <div className="flex flex-col gap-2">
@@ -108,9 +103,22 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                       </div>
                     </CommandItem>
                   ));
-                })}
-              </CommandGroup>
-            )}
+                })
+              ) : (
+                <NoResultFound />
+              )}
+            </CommandGroup>
+            <CommandGroup heading="Tags">
+              {searchResult?.tagResult.length > 0 ? (
+                searchResult?.tagResult.map((e: string, idx: number) => (
+                  <CommandItem key={`tag-${e}-${idx}`}>
+                    <span>{e}</span>
+                  </CommandItem>
+                ))
+              ) : (
+                <NoResultFound />
+              )}
+            </CommandGroup>
           </CommandList>
         )}
       </CommandDialog>
