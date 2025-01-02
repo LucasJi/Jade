@@ -28,7 +28,6 @@ const remarkPlugins: PluggableList = [
 ];
 
 const rehypePlugins: PluggableList = [
-  // rehypeRaw as any,
   [rehypeKatex, { strict: false }],
   rehypeSlug,
 ];

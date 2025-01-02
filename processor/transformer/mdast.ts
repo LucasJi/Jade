@@ -5,9 +5,6 @@ import { toString } from 'mdast-util-to-string';
 import { toc } from 'mdast-util-toc';
 import { VFile } from 'vfile';
 
-/**
- * Transform note to mdast
- */
 export const transformVFileToMdast = (vFile: VFile): Root => {
   return unifiedProcessor.parse(vFile);
 };

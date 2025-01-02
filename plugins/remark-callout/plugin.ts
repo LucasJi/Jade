@@ -7,9 +7,11 @@ import type {
   Paragraph,
   Root,
 } from 'mdast';
-import { EOL } from 'os';
+// import { EOL } from 'os';
 import type { Plugin } from 'unified';
 import { Node, visit } from 'unist-util-visit';
+
+const EOL = '\n';
 
 export type Options = {
   /**

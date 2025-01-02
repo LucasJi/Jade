@@ -2,7 +2,6 @@ import dedent from 'dedent';
 import type * as hast from 'hast';
 import { JSDOM } from 'jsdom';
 import type * as mdast from 'mdast';
-import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -18,15 +17,14 @@ const process = async (md: string, options?: Options) => {
   const html = (
     await unified()
       .use(remarkParse)
-      .use(remarkGfm)
       .use(remarkMath)
+      .use(remarkGfm)
       .use(remarkCallout, options)
       .use(() => (tree: mdast.Root) => {
         mdast = tree;
         return mdast;
       })
       .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
       .use(() => (tree: hast.Node) => {
         hast = tree;
         return hast;

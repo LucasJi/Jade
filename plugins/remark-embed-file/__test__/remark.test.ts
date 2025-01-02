@@ -12,7 +12,6 @@ const process = async (md: string) => {
       .use(remarkParse)
       .use(remarkEmbedFile)
       .use(remarkRehype, { allowDangerousHtml: true })
-      // .use(rehypeRaw)
       .use(rehypeStringify)
       .process(md)
   ).toString();

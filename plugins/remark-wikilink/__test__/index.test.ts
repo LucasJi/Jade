@@ -1,6 +1,5 @@
 import { JSDOM } from 'jsdom';
 import { micromark } from 'micromark';
-import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
@@ -14,7 +13,6 @@ const process = async (md: string) => {
       .use(remarkParse)
       .use(remarkWikilink)
       .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
       .use(rehypeStringify)
       .process(md)
   ).toString();
