@@ -114,9 +114,9 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           onValueChange={value => setSearchContent(value)}
         />
         <CommandList>
-          {(searchResult === null ||
-            (!searchResult.noteResult &&
-              searchResult.tagResult.length <= 0)) && <NoResultFound />}
+          {!searchResult?.noteResult && searchResult?.tagResult.length <= 0 && (
+            <NoResultFound />
+          )}
           {searchResult?.noteResult && (
             <CommandGroup heading="Notes">
               {Object.keys(searchResult.noteResult).map((key, noteIdx) => {
