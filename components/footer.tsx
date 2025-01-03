@@ -19,7 +19,7 @@ const Footer = () => {
       <Separator className="my-4" />
       <div className="flex h-16 w-full justify-between">
         <div className="flex flex-col font-extralight">
-          <span className="font-bold">{"Lucas Ji's Blog"}</span>
+          <span className="font-bold">Jade Docs</span>
           <span className="text-xs">
             ©2024 Powered by{' '}
             <a
@@ -27,7 +27,7 @@ const Footer = () => {
               href="https://github.com/LucasJi/Jade"
               target="_blank"
             >
-              <span className="text-jade">Jade</span>
+              <span className="text-obsidian">Jade</span>
             </a>
           </span>
           <a

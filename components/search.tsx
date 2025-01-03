@@ -9,13 +9,16 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
 import Loader from '@/components/ui/loader';
+import { encodeNotePath } from '@/lib/note';
 import { Nodes } from 'hast';
 import { toText } from 'hast-util-to-text';
 import { trim } from 'lodash';
 import { CommandIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { ComponentProps, useEffect, useState } from 'react';
 
 const NoResultFound = () => (
@@ -44,7 +47,6 @@ const highlight = (text: string, searchContent: string) => {
       )
       .flatMap(s => s);
   }
-  console.log(splits);
   return splits;
 };
 
@@ -53,6 +55,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
   const [searching, setSearching] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [searchContent, setSearchContent] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -120,10 +123,15 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           <CommandList>
             <CommandGroup heading="Notes">
               {searchResult?.noteResult ? (
-                Object.keys(searchResult.noteResult).map((key, idx) => {
+                Object.keys(searchResult.noteResult).map((key, noteIdx) => {
                   const results = searchResult.noteResult[key];
                   return results.map((r: Nodes, idx: number) => (
-                    <CommandItem key={`${key}-${idx}`}>
+                    <CommandItem
+                      key={`${noteIdx}-${key}-${idx}`}
+                      onSelect={() =>
+                        router.push(`/notes/${encodeNotePath(key)}`)
+                      }
+                    >
                       <div className="flex flex-col gap-2">
                         <span className="text-xs text-muted-foreground">
                           {key}
@@ -139,10 +147,14 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                 <NoResultFound />
               )}
             </CommandGroup>
+            <CommandSeparator />
             <CommandGroup heading="Tags">
               {searchResult?.tagResult.length > 0 ? (
                 searchResult?.tagResult.map((e: string, idx: number) => (
-                  <CommandItem key={`tag-${e}-${idx}`}>
+                  <CommandItem
+                    key={`tag-${e}-${idx}`}
+                    onSelect={() => router.push(`/notes/${encodeNotePath(e)}`)}
+                  >
                     <span>{e}</span>
                   </CommandItem>
                 ))
