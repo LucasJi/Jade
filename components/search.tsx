@@ -12,7 +12,6 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
-import Loader from '@/components/ui/loader';
 import { encodeNotePath } from '@/lib/note';
 import { Nodes } from 'hast';
 import { toText } from 'hast-util-to-text';
@@ -52,7 +51,6 @@ const highlight = (text: string, searchContent: string) => {
 
 export function Search({ ...props }: ComponentProps<'div'>) {
   const [searchResult, setSearchResult] = useState<any | null>(null);
-  const [searching, setSearching] = useState(false);
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [searchContent, setSearchContent] = useState('');
   const router = useRouter();
@@ -115,55 +113,48 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           placeholder="Search..."
           onValueChange={value => setSearchContent(value)}
         />
-        {searching ? (
-          <div className="flex h-32 items-center justify-center">
-            <Loader />
-          </div>
-        ) : (
-          <CommandList>
+        <CommandList>
+          {(searchResult === null ||
+            (!searchResult.noteResult &&
+              searchResult.tagResult.length <= 0)) && <NoResultFound />}
+          {searchResult?.noteResult && (
             <CommandGroup heading="Notes">
-              {searchResult?.noteResult ? (
-                Object.keys(searchResult.noteResult).map((key, noteIdx) => {
-                  const results = searchResult.noteResult[key];
-                  return results.map((r: Nodes, idx: number) => (
-                    <CommandItem
-                      key={`${noteIdx}-${key}-${idx}`}
-                      onSelect={() =>
-                        router.push(`/notes/${encodeNotePath(key)}`)
-                      }
-                    >
-                      <div className="flex flex-col gap-2">
-                        <span className="text-xs text-muted-foreground">
-                          {key}
-                        </span>
-                        <span className="font-medium">
-                          {highlight(toText(r), searchContent)}
-                        </span>
-                      </div>
-                    </CommandItem>
-                  ));
-                })
-              ) : (
-                <NoResultFound />
-              )}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Tags">
-              {searchResult?.tagResult.length > 0 ? (
-                searchResult?.tagResult.map((e: string, idx: number) => (
+              {Object.keys(searchResult.noteResult).map((key, noteIdx) => {
+                const results = searchResult.noteResult[key];
+                return results.map((r: Nodes, idx: number) => (
                   <CommandItem
-                    key={`tag-${e}-${idx}`}
-                    onSelect={() => router.push(`/notes/${encodeNotePath(e)}`)}
+                    key={`${noteIdx}-${key}-${idx}`}
+                    onSelect={() =>
+                      router.push(`/notes/${encodeNotePath(key)}`)
+                    }
                   >
-                    <span>{e}</span>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {key}
+                      </span>
+                      <span className="font-medium">
+                        {highlight(toText(r), searchContent)}
+                      </span>
+                    </div>
                   </CommandItem>
-                ))
-              ) : (
-                <NoResultFound />
-              )}
+                ));
+              })}
             </CommandGroup>
-          </CommandList>
-        )}
+          )}
+          <CommandSeparator />
+          {searchResult?.tagResult.length > 0 && (
+            <CommandGroup heading="Tags">
+              {searchResult?.tagResult.map((e: string, idx: number) => (
+                <CommandItem
+                  key={`tag-${e}-${idx}`}
+                  onSelect={() => router.push(`/notes/${encodeNotePath(e)}`)}
+                >
+                  <span>{e}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+        </CommandList>
       </CommandDialog>
     </div>
   );
