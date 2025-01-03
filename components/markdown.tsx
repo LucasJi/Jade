@@ -292,7 +292,11 @@ const components = (
         return <span className="text-obsidian">{`#${rest['data-tag']}`}</span>;
       }
 
-      return <span>{children}</span>;
+      return (
+        <span className={className} {...rest}>
+          {children}
+        </span>
+      );
     },
   };
 };
