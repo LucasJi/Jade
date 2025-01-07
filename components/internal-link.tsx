@@ -39,12 +39,12 @@ export default function InternalLink({
     // TODO: Handle not markdown files and block link
     if (open && ext !== 'pdf' && !link.includes('#^')) {
       getNoteByName(noteName).then(data => {
-        const { hast } = noteParser({
-          note: data as string,
-          plainNoteName: getFilename(noteName),
-          subHeadings,
-        });
-        setHast(hast);
+        // const { hast } = noteParser({
+        //   note: data as string,
+        //   plainNoteName: getFilename(noteName),
+        //   subHeadings,
+        // });
+        setHast(data);
         setIsLoading(false);
       });
     } else if (open) {

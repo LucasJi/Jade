@@ -1,10 +1,15 @@
 import { getNotePaths } from '@/app/api';
-import { S3 } from '@/lib/server/s3';
+import { RK } from '@/lib/constants';
+import { logger } from '@/lib/logger';
+import { createRedisClient } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
-const s3 = new S3();
+const log = logger.child({ module: 'api', url: '/api/note', method: 'GET' });
+
+const redis = await createRedisClient();
 
 export async function GET(req: NextRequest) {
+  const start = Date.now();
   const searchParams = req.nextUrl.searchParams;
   const name = searchParams.get('name');
 
@@ -16,6 +21,7 @@ export async function GET(req: NextRequest) {
   }
 
   const noteNames = await getNotePaths();
+  log.info('Get note paths costs ' + (Date.now() - start) + ' ms');
 
   const found = noteNames.find(e => e.includes(name));
 
@@ -26,7 +32,8 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const note = await s3.getObject(found);
+  const note = await redis.json.get(`${RK.HAST}${name}`);
+  log.info('Get hast from redis costs ' + (Date.now() - start) + ' ms');
 
   return NextResponse.json(note);
 }
