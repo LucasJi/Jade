@@ -1,4 +1,5 @@
 import { TreeViewNode } from '@/components/types';
+import { ListItem } from 'mdast';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -14,6 +15,21 @@ export const getNoteByName = async (name: string): Promise<string> => {
   const url = new URL(`${baseUrl}/api/note`);
   url.search = new URLSearchParams({
     name: name,
+  }).toString();
+  return fetch(url, {
+    method: 'GET',
+    next: {
+      tags: ['sync'],
+    },
+  }).then(resp => resp.json());
+};
+
+export const getNoteHeadingByPath = async (
+  path: string,
+): Promise<ListItem[]> => {
+  const url = new URL(`${baseUrl}/api/note/heading`);
+  url.search = new URLSearchParams({
+    path: path,
   }).toString();
   return fetch(url, {
     method: 'GET',
