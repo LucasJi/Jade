@@ -1,14 +1,13 @@
+import Footer from '@/components/footer';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { Plus } from 'lucide-react';
 import * as React from 'react';
 
 export function SidebarRight({
@@ -31,10 +30,7 @@ export function SidebarRight({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Plus />
-              <span>New Calendar</span>
-            </SidebarMenuButton>
+            <Footer />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

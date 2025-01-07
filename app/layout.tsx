@@ -1,9 +1,6 @@
-import WebVitals from '@/components/webVitals';
-import '@/styles/globals.css';
-// import { Noto_Sans_SC } from 'next/font/google';
-import Footer from '@/components/footer';
 import { Search } from '@/components/search';
 import { SidebarLeft } from '@/components/sidebar-left';
+import { SidebarRight } from '@/components/sidebar-right';
 import SidebarRouter from '@/components/sidebar-router';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -11,6 +8,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import WebVitals from '@/components/webVitals';
+import '@/styles/globals.css';
 import localFont from 'next/font/local';
 import { ReactNode } from 'react';
 import { Providers } from './providers';
@@ -52,11 +51,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     >
                       {children}
                     </ScrollArea>
-                    <Footer />
                   </div>
                 </div>
               </SidebarInset>
-              {/* <SidebarRight /> */}
+              <SidebarRight />
             </SidebarProvider>
           </main>
         </Providers>

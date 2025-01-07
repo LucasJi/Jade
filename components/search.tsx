@@ -20,11 +20,17 @@ import { CommandIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ComponentProps, useEffect, useState } from 'react';
 
-const NoResultFound = () => (
-  <CommandEmpty className="py-6 text-center text-xs">
-    No Result found.
+const Empty = ({ w }: { w: string }) => (
+  <CommandEmpty className="flex h-[280px] items-center justify-center">
+    <span className="text-sm">{w}</span>
   </CommandEmpty>
 );
+
+const NoResultFound = () => (
+  <Empty w="No results. Try different keywords or check your spelling." />
+);
+
+const TypeToSearch = () => <Empty w="Type to find answers..." />;
 
 const highlight = (text: string, searchContent: string) => {
   const keywords = trim(searchContent).split(' ');
@@ -74,7 +80,6 @@ export function Search({ ...props }: ComponentProps<'div'>) {
     }
     const delayDebounceFn = setTimeout(async () => {
       search(searchContent).then(data => {
-        console.log('search result:', data);
         setSearchResult(data);
       });
     }, 200);
@@ -114,6 +119,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           onValueChange={value => setSearchContent(value)}
         />
         <CommandList>
+          {searchResult === null && <TypeToSearch />}
           {!searchResult?.noteResult && searchResult?.tagResult.length <= 0 && (
             <NoResultFound />
           )}
@@ -141,18 +147,20 @@ export function Search({ ...props }: ComponentProps<'div'>) {
               })}
             </CommandGroup>
           )}
-          <CommandSeparator />
           {searchResult?.tagResult.length > 0 && (
-            <CommandGroup heading="Tags">
-              {searchResult?.tagResult.map((e: string, idx: number) => (
-                <CommandItem
-                  key={`tag-${e}-${idx}`}
-                  onSelect={() => router.push(`/notes/${encodeNotePath(e)}`)}
-                >
-                  <span>{e}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            <>
+              <CommandSeparator />
+              <CommandGroup heading="Tags">
+                {searchResult?.tagResult.map((e: string, idx: number) => (
+                  <CommandItem
+                    key={`tag-${e}-${idx}`}
+                    onSelect={() => router.push(`/notes/${encodeNotePath(e)}`)}
+                  >
+                    <span>{e}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </>
           )}
         </CommandList>
       </CommandDialog>
