@@ -9,7 +9,7 @@ const log = logger.child({ module: 'api', url: '/api/note', method: 'GET' });
 const redis = await createRedisClient();
 
 export async function GET(req: NextRequest) {
-  const start = Date.now();
+  log.info('Api /api/note called');
   const searchParams = req.nextUrl.searchParams;
   const name = searchParams.get('name');
 
@@ -21,7 +21,6 @@ export async function GET(req: NextRequest) {
   }
 
   const noteNames = await getNotePaths();
-  log.info('Get note paths costs ' + (Date.now() - start) + ' ms');
 
   const found = noteNames.find(e => e.includes(name));
 
@@ -33,7 +32,7 @@ export async function GET(req: NextRequest) {
   }
 
   const note = await redis.json.get(`${RK.HAST}${name}`);
-  log.info('Get hast from redis costs ' + (Date.now() - start) + ' ms');
+  log.info('Get hast from redis');
 
   return NextResponse.json(note);
 }
