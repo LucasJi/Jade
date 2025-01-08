@@ -17,7 +17,6 @@ export async function GET() {
   } else {
     noteObjects = cache.map(c => JSON.parse(c));
   }
-  log.info({ noteObjects }, 'Get note objects');
   const noteTreeView = getNoteTreeView(noteObjects);
   return Response.json(noteTreeView);
 }

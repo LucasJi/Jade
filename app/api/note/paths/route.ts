@@ -14,7 +14,7 @@ const log = logger.child({
  * Get objects paths from redis
  */
 export async function GET() {
-  log.info('Api /api/note/paths called');
+  log.debug('Api /api/note/paths called');
   const paths = await redis.sMembers(RK.PATHS);
   return NextResponse.json(paths);
 }
