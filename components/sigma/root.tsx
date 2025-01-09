@@ -10,6 +10,8 @@ import { Settings } from 'sigma/settings';
 import { drawHover, drawLabel } from './canvas-utils';
 import ClustersPanel from './clusters-panel';
 import GraphDataController from './graph-data-controller';
+import GraphEventsController from './graph-events-controller';
+import GraphSettingsController from './graph-settings-controller';
 import SearchField from './search-field';
 import './style.css';
 import TagsPanel from './tags-panel';
@@ -19,6 +21,7 @@ const Root: FC = () => {
   const graph = useMemo(() => new DirectedGraph(), []);
   const [dataReady, setDataReady] = useState(false);
   const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [filtersState, setFiltersState] = useState<FiltersState>({
     clusters: {},
     tags: {},
@@ -101,8 +104,8 @@ const Root: FC = () => {
         settings={sigmaSettings}
         className="react-sigma"
       >
-        {/*<GraphSettingsController hoveredNode={hoveredNode} />*/}
-        {/*<GraphEventsController setHoveredNode={setHoveredNode} />*/}
+        <GraphSettingsController hoveredNode={hoveredNode} />
+        <GraphEventsController setHoveredNode={setHoveredNode} />
         <GraphDataController dataset={dataset} filters={filtersState} />
 
         {dataReady && (
