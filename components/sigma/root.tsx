@@ -123,7 +123,6 @@ const Root: FC = () => {
               {/*</ZoomControl>*/}
             </div>
             <div className="contents">
-              {/*<GraphTitle filters={filtersState} />*/}
               <div className="panels">
                 <SearchField filters={filtersState} />
                 <ClustersPanel
