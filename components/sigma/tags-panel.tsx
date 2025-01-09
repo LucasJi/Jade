@@ -2,9 +2,8 @@
 
 import { useSigma } from '@react-sigma/core';
 import { keyBy, mapValues, sortBy, values } from 'lodash';
+import { CircleCheck, CircleX, Shapes } from 'lucide-react';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
-import { MdCategory } from 'react-icons/md';
 
 import Panel from './panel';
 import { FiltersState, Tag } from './types';
@@ -61,7 +60,7 @@ const TagsPanel: FC<{
     <Panel
       title={
         <>
-          <MdCategory className="text-muted" /> Categories
+          <Shapes className="text-muted" /> Categories
           {visibleTagsCount < tags.length ? (
             <span className="text-small text-muted">
               {' '}
@@ -83,10 +82,10 @@ const TagsPanel: FC<{
           className="btn"
           onClick={() => setTags(mapValues(keyBy(tags, 'key'), () => true))}
         >
-          <AiOutlineCheckCircle /> Check all
+          <CircleCheck /> Check all
         </button>{' '}
         <button className="btn" onClick={() => setTags({})}>
-          <AiOutlineCloseCircle /> Uncheck all
+          <CircleX /> Uncheck all
         </button>
       </p>
       <ul>

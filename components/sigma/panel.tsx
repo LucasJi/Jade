@@ -1,5 +1,6 @@
 'use client';
 
+import { Expand, Shrink } from 'lucide-react';
 import {
   FC,
   PropsWithChildren,
@@ -9,7 +10,6 @@ import {
   useState,
 } from 'react';
 import AnimateHeight from 'react-animate-height';
-import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 const DURATION = 300;
 
@@ -37,7 +37,7 @@ const Panel: FC<
       <h2>
         {title}{' '}
         <button type="button" onClick={() => setIsDeployed(v => !v)}>
-          {isDeployed ? <MdExpandLess /> : <MdExpandMore />}
+          {isDeployed ? <Shrink /> : <Expand />}
         </button>
       </h2>
       <AnimateHeight duration={DURATION} height={isDeployed ? 'auto' : 0}>

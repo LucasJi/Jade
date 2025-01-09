@@ -3,8 +3,8 @@
 import { useSigma } from '@react-sigma/core';
 import { Attributes } from 'graphology-types';
 import { ChangeEvent, FC, KeyboardEvent, useEffect, useState } from 'react';
-import { BsSearch } from 'react-icons/bs';
 
+import { Search } from 'lucide-react';
 import { FiltersState } from './types';
 
 /**
@@ -101,7 +101,7 @@ const SearchField: FC<{ filters: FiltersState }> = ({ filters }) => {
         onChange={onInputChange}
         onKeyPress={onKeyPress}
       />
-      <BsSearch className="icon" />
+      <Search className="icon" />
       <datalist id="nodes">
         {values.map((value: { id: string; label: string }) => (
           <option key={value.id} value={value.label}>

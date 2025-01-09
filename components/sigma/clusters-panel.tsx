@@ -2,9 +2,8 @@
 import { useSigma } from '@react-sigma/core';
 import { keyBy, mapValues, sortBy, values } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
-import { MdGroupWork } from 'react-icons/md';
 
+import { CircleCheck, CircleX, Group } from 'lucide-react';
 import Panel from './panel';
 import { Cluster, FiltersState } from './types';
 
@@ -59,7 +58,7 @@ const ClustersPanel: FC<{
     <Panel
       title={
         <>
-          <MdGroupWork className="text-muted" /> Clusters
+          <Group className="text-muted" /> Clusters
           {visibleClustersCount < clusters.length ? (
             <span className="text-small text-muted">
               {' '}
@@ -83,10 +82,10 @@ const ClustersPanel: FC<{
             setClusters(mapValues(keyBy(clusters, 'key'), () => true))
           }
         >
-          <AiOutlineCheckCircle /> Check all
+          <CircleCheck /> Check all
         </button>{' '}
         <button className="btn" onClick={() => setClusters({})}>
-          <AiOutlineCloseCircle /> Uncheck all
+          <CircleX /> Uncheck all
         </button>
       </p>
       <ul>
