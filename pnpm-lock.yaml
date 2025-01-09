@@ -48,8 +48,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))
       '@sigma/node-image':
-        specifier: 3.0.0-beta.12
-        version: 3.0.0-beta.12(sigma@3.0.0-beta.26(graphology-types@0.24.7))
+        specifier: 3.0.0
+        version: 3.0.0(sigma@3.0.0-beta.26(graphology-types@0.24.7))
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4
@@ -179,9 +179,6 @@ importers:
       react-dom:
         specifier: 19.0.0
         version: 19.0.0(react@19.0.0)
-      react-icons:
-        specifier: 4.11.0
-        version: 4.11.0(react@19.0.0)
       react-syntax-highlighter:
         specifier: 15.5.0
         version: 15.5.0(react@19.0.0)
@@ -1008,7 +1005,7 @@ packages:
   '@radix-ui/react-context@1.1.1':
     resolution: {integrity: sha512-UASk9zi+crv9WteK/NU4PLvOoL3OuE6BWVKNF6hPRBtYBDXQ2u5iu3O59zUlJiTVvkyuycnqrztsHVJwcK9K+Q==}
     peerDependencies:
-      '@types/react': npm:types-react@19.0.0-rc.1
+      '@types/react': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -1550,8 +1547,8 @@ packages:
   '@rushstack/eslint-patch@1.10.4':
     resolution: {integrity: sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA==}
 
-  '@sigma/node-image@3.0.0-beta.12':
-    resolution: {integrity: sha512-l7Qe6qylooj6eLKmFQB9NzYe1t7WRrfinK9kvYHc41xmQNorJJqrWQFIltUDUaBPdE68u6mrVa5kK3LNa6iGcA==}
+  '@sigma/node-image@3.0.0':
+    resolution: {integrity: sha512-i4WLNPugDY4jgQEZtNSiSVj4HHXOraciXLtlgdygeUxMVEhH8PJ/+Q1vQ9f/SlKFnZQ+7vH3HnsSDW6FD9aP+g==}
     peerDependencies:
       sigma: '>=3.0.0-beta.10'
 
@@ -4211,11 +4208,6 @@ packages:
     peerDependencies:
       react: ^19.0.0
 
-  react-icons@4.11.0:
-    resolution: {integrity: sha512-V+4khzYcE5EBk/BvcuYRq6V/osf11ODUM2J8hg2FDSswRrGvqiYUYPRy4OdrWaQOBj4NcpJfmHZLNaD+VH0TyA==}
-    peerDependencies:
-      react: '*'
-
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -6184,7 +6176,7 @@ snapshots:
 
   '@rushstack/eslint-patch@1.10.4': {}
 
-  '@sigma/node-image@3.0.0-beta.12(sigma@3.0.0-beta.26(graphology-types@0.24.7))':
+  '@sigma/node-image@3.0.0(sigma@3.0.0-beta.26(graphology-types@0.24.7))':
     dependencies:
       sigma: 3.0.0-beta.26(graphology-types@0.24.7)
 
@@ -9442,10 +9434,6 @@ snapshots:
     dependencies:
       react: 19.0.0
       scheduler: 0.25.0
-
-  react-icons@4.11.0(react@19.0.0):
-    dependencies:
-      react: 19.0.0
 
   react-is@16.13.1: {}
 
