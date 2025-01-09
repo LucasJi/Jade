@@ -1,6 +1,7 @@
 'use client';
 
 import { SigmaContainer } from '@react-sigma/core';
+import { useWorkerLayoutForceAtlas2 } from '@react-sigma/layout-forceatlas2';
 import { createNodeImageProgram } from '@sigma/node-image';
 import { DirectedGraph } from 'graphology';
 import { constant, keyBy, mapValues, omit } from 'lodash';
@@ -15,6 +16,24 @@ import SearchField from './search-field';
 import './style.css';
 import TagsPanel from './tags-panel';
 import { Dataset, FiltersState } from './types';
+
+const Fa2: FC = () => {
+  const { start, kill } = useWorkerLayoutForceAtlas2({
+    settings: { slowDown: 3 },
+  });
+
+  useEffect(() => {
+    // start FA2
+    start();
+
+    // Kill FA2 on unmount
+    return () => {
+      kill();
+    };
+  }, [start, kill]);
+
+  return null;
+};
 
 const Root: FC = () => {
   const graph = useMemo(() => new DirectedGraph(), []);
@@ -59,7 +78,7 @@ const Root: FC = () => {
             graph.addNode(node.key, {
               ...node,
               ...omit(clusters[node.cluster], 'key'),
-              image: `./images/${tags[node.tag].image}`,
+              // image: `./images/${tags[node.tag].image}`,
             });
           }
         });
@@ -108,7 +127,7 @@ const Root: FC = () => {
       <SigmaContainer
         graph={DirectedGraph}
         settings={sigmaSettings}
-        className="react-sigma"
+        className=""
       >
         <GraphSettingsController hoveredNode={hoveredNode} />
         <GraphEventsController setHoveredNode={setHoveredNode} />
@@ -171,6 +190,8 @@ const Root: FC = () => {
             </div>
           </>
         )}
+
+        <Fa2 />
       </SigmaContainer>
     </div>
   );

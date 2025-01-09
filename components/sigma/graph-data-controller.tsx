@@ -1,9 +1,8 @@
 'use client';
+
 import { useSigma } from '@react-sigma/core';
 import { keyBy, omit } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';
-
-import { random } from 'graphology-layout';
 import { Dataset, FiltersState } from './types';
 
 const GraphDataController: FC<
@@ -27,7 +26,7 @@ const GraphDataController: FC<
       graph.addNode(node.key, {
         ...node,
         ...omit(clusters[node.cluster], 'key'),
-        image: `./images/${tags[node.tag].image}`,
+        // image: `./images/${tags[node.tag].image}`,
       }),
     );
     dataset.edges.forEach(([source, target]) =>
@@ -53,8 +52,14 @@ const GraphDataController: FC<
       ),
     );
 
-    random.assign(graph);
-
+    // forceAtlas2.assign(graph, {
+    //   iterations: 1,
+    //   settings: {
+    //     gravity: 10,
+    //     linLogMode: true,
+    //   },
+    // });
+    //
     return () => graph.clear();
   }, [graph, dataset]);
 
