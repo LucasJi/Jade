@@ -6,7 +6,6 @@ import { DirectedGraph } from 'graphology';
 import { constant, keyBy, mapValues, omit } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Settings } from 'sigma/settings';
-
 import { drawHover, drawLabel } from './canvas-utils';
 import ClustersPanel from './clusters-panel';
 import GraphDataController from './graph-data-controller';
@@ -51,19 +50,25 @@ const Root: FC = () => {
     fetch('./dataset.json')
       .then(res => res.json())
       .then((dataset: Dataset) => {
-        const clusters = keyBy(dataset.clusters, 'key');
+        graph.clear();
         const tags = keyBy(dataset.tags, 'key');
+        const clusters = keyBy(dataset.clusters, 'key');
 
-        dataset.nodes.forEach(node =>
-          graph.addNode(node.key, {
-            ...node,
-            ...omit(clusters[node.cluster], 'key'),
-            image: `./images/${tags[node.tag].image}`,
-          }),
-        );
+        dataset.nodes.forEach(node => {
+          if (!graph.hasNode(node.key)) {
+            graph.addNode(node.key, {
+              ...node,
+              ...omit(clusters[node.cluster], 'key'),
+              image: `./images/${tags[node.tag].image}`,
+            });
+          }
+        });
         dataset.edges.forEach(([source, target]) =>
           graph.addEdge(source, target, { size: 1 }),
         );
+
+        // layout
+        // random.assign(graph);
 
         // Use degrees as node sizes:
         const scores = graph
@@ -89,6 +94,7 @@ const Root: FC = () => {
           tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
         });
         setDataset(dataset);
+
         requestAnimationFrame(() => setDataReady(true));
       });
   }, []);

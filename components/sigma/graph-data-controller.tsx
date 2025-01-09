@@ -3,6 +3,7 @@ import { useSigma } from '@react-sigma/core';
 import { keyBy, omit } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';
 
+import { random } from 'graphology-layout';
 import { Dataset, FiltersState } from './types';
 
 const GraphDataController: FC<
@@ -51,6 +52,8 @@ const GraphDataController: FC<
           MIN_NODE_SIZE,
       ),
     );
+
+    random.assign(graph);
 
     return () => graph.clear();
   }, [graph, dataset]);
