@@ -1,3 +1,5 @@
+'use client';
+
 import { useRegisterEvents, useSigma } from '@react-sigma/core';
 import { FC, PropsWithChildren, useEffect } from 'react';
 

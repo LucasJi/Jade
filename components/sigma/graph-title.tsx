@@ -1,3 +1,5 @@
+'use client';
+
 import { useSigma } from '@react-sigma/core';
 import { FC, useEffect, useState } from 'react';
 

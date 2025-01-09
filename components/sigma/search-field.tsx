@@ -1,3 +1,5 @@
+'use client';
+
 import { useSigma } from '@react-sigma/core';
 import { Attributes } from 'graphology-types';
 import { ChangeEvent, FC, KeyboardEvent, useEffect, useState } from 'react';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useSigma } from '@react-sigma/core';
 import { keyBy, mapValues, sortBy, values } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -33,6 +35,7 @@ const TagsPanel: FC<{
 
   const [visibleNodesPerTag, setVisibleNodesPerTag] =
     useState<Record<string, number>>(nodesPerTag);
+
   useEffect(() => {
     // To ensure the graphology instance has up to date "hidden" values for
     // nodes, we wait for next frame before reindexing. This won't matter in the

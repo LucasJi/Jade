@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable react/no-unescaped-entities */
 import { FC } from 'react';
 import { BsInfoCircle } from 'react-icons/bs';

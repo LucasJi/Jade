@@ -1,3 +1,4 @@
+'use client';
 import { useSigma } from '@react-sigma/core';
 import { keyBy, omit } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';

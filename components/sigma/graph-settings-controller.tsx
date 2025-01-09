@@ -1,3 +1,5 @@
+'use client';
+
 import { useSetSettings, useSigma } from '@react-sigma/core';
 import { Attributes } from 'graphology-types';
 import { FC, PropsWithChildren, useEffect } from 'react';

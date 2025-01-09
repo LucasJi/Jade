@@ -1,3 +1,4 @@
+'use client';
 import { useSigma } from '@react-sigma/core';
 import { keyBy, mapValues, sortBy, values } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
