@@ -94,7 +94,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
       <Button
         id="search"
         variant="secondary"
-        className="w-56 justify-between text-muted-foreground [&_svg]:size-2.5"
+        className="justify-between text-muted-foreground [&_svg]:size-2.5"
         size="sm"
         onClick={() => setSearchDialogOpen(true)}
       >

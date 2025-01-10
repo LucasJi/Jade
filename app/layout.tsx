@@ -2,6 +2,7 @@ import { Search } from '@/components/search';
 import { SidebarLeft } from '@/components/sidebar-left';
 import { SidebarRight } from '@/components/sidebar-right';
 import SidebarRouter from '@/components/sidebar-router';
+import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   SidebarInset,
@@ -10,7 +11,9 @@ import {
 } from '@/components/ui/sidebar';
 import WebVitals from '@/components/webVitals';
 import '@/styles/globals.css';
+import { Share2 } from 'lucide-react';
 import localFont from 'next/font/local';
+import * as React from 'react';
 import { ReactNode } from 'react';
 import { Providers } from './providers';
 
@@ -40,7 +43,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                       <SidebarTrigger className="-ml-1" />
                       <SidebarRouter />
                     </div>
-                    <Search />
+                    <div className="flex items-center gap-2">
+                      <Button
+                        className="h-7 w-7"
+                        variant="ghost"
+                        size="icon"
+                        title="View Graph"
+                      >
+                        <Share2 size={16} />
+                        <span className="sr-only">View Graph</span>
+                      </Button>
+                      <Search />
+                    </div>
                   </div>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
