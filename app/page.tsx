@@ -1,14 +1,21 @@
-import { LayoutFA2 } from '@/components/sigma/layout-fa2';
+'use client';
 
-export default async function Home() {
+import dynamic from 'next/dynamic';
+
+const LayoutFA2 = dynamic(
+  () => import('@/components/sigma/layout-fa2').then(mod => mod.LayoutFA2),
+  {
+    ssr: false,
+  },
+);
+
+export default function Home() {
   return (
-    <div>
-      <LayoutFA2
-        style={{
-          width: '600px',
-          height: '600px',
-        }}
-      />
-    </div>
+    <LayoutFA2
+      style={{
+        width: '600px',
+        height: '600px',
+      }}
+    />
   );
 }

@@ -1,36 +1,29 @@
 'use client';
+import {
+  ControlsContainer,
+  FullScreenControl,
+  SearchControl,
+  SigmaContainer,
+  ZoomControl,
+} from '@react-sigma/core';
 
-import { CSSProperties, FC, useEffect } from 'react';
-
-import { SigmaContainer } from '@react-sigma/core';
 import '@react-sigma/core/lib/react-sigma.min.css';
-import { useWorkerLayoutForceAtlas2 } from '@react-sigma/layout-forceatlas2';
-
+import { CSSProperties, FC } from 'react';
+import { LayoutsControl } from './layouts-control';
 import { SampleGraph } from './sample-graph';
-
-const Fa2: FC = () => {
-  const { start, kill } = useWorkerLayoutForceAtlas2({
-    settings: { slowDown: 10 },
-  });
-
-  useEffect(() => {
-    // start FA2
-    start();
-
-    // Kill FA2 on unmount
-    return () => {
-      kill();
-    };
-  }, [start, kill]);
-
-  return null;
-};
 
 export const LayoutFA2: FC<{ style: CSSProperties }> = ({ style }) => {
   return (
-    <SigmaContainer style={style} settings={{ allowInvalidContainer: true }}>
+    <SigmaContainer settings={{ allowInvalidContainer: true }} style={style}>
       <SampleGraph />
-      <Fa2 />
+      <ControlsContainer position={'bottom-right'}>
+        <ZoomControl />
+        <FullScreenControl />
+        <LayoutsControl />
+      </ControlsContainer>
+      <ControlsContainer position={'top-right'}>
+        <SearchControl style={{ width: '200px' }} />
+      </ControlsContainer>
     </SigmaContainer>
   );
 };
