@@ -1,5 +1,5 @@
 import { Faker, en, faker as fak } from '@faker-js/faker';
-import Graph, { UndirectedGraph } from 'graphology';
+import Graph, { DirectedGraph } from 'graphology';
 import erdosRenyi from 'graphology-generators/random/erdos-renyi';
 import { useCallback, useEffect, useState } from 'react';
 import seedrandom from 'seedrandom';
@@ -50,7 +50,7 @@ export const useRandom = () => {
 
   const randomGraph = useCallback(() => {
     // Create the graph
-    const graph = erdosRenyi(UndirectedGraph, { order: 100, probability: 0.1 });
+    const graph = erdosRenyi(DirectedGraph, { order: 100, probability: 0.1 });
     graph.nodes().forEach((node: string) => {
       graph.mergeNodeAttributes(node, {
         label: faker.person.fullName(),

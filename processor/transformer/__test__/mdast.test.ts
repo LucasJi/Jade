@@ -1,15 +1,11 @@
+import { Wikilink } from '@/plugins/types';
 import { convertNoteToVFile } from '@/processor/transformer/vFile';
+import unifiedProcessor from '@/processor/unified';
 import dedent from 'dedent';
 import { toHtml } from 'hast-util-to-html';
 import { Root } from 'mdast';
-import rehypeStringify from 'rehype-stringify';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import remarkStringify from 'remark-stringify';
-import { unified } from 'unified';
 import { removePosition } from 'unist-util-remove-position';
+import { Node, visit } from 'unist-util-visit';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
 import {
@@ -22,15 +18,7 @@ const noteFilename = 'Note File Name';
 const titleInFrontmatter = 'Frontmatter Title';
 const titleInHeading = 'Heading Title';
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkFrontmatter, ['yaml'])
-  .use(remarkGfm)
-  .use(remarkStringify)
-  .use(remarkRehype, {
-    allowDangerousHtml: false,
-  })
-  .use(rehypeStringify);
+const processor = unifiedProcessor;
 
 const getMdast = (md: string) => {
   const vFile = convertNoteToVFile(md);
@@ -62,7 +50,7 @@ describe('transformTitle', () => {
 
     console.log(html);
 
-    expect(html).toBe(`<h1>${titleInFrontmatter}</h1>`);
+    expect(html).toBe(`<h1 id="frontmatter-title">${titleInFrontmatter}</h1>`);
   });
 
   test('When frontmatter does not have title prop and there is a # heading, then use # heading as note title', async () => {
@@ -75,7 +63,7 @@ describe('transformTitle', () => {
     `;
     const html = getHtml(md);
 
-    expect(html).toBe(`<h1>${titleInHeading}</h1>`);
+    expect(html).toBe(`<h1 id="heading-title">${titleInHeading}</h1>`);
   });
 
   test('When there is not title prop in the frontmatter and # heading, then use filename as note title', async () => {
@@ -87,7 +75,7 @@ describe('transformTitle', () => {
     `;
     const html = getHtml(md);
 
-    expect(html).toBe(`<h1>${noteFilename}</h1>`);
+    expect(html).toBe(`<h1 id="note-file-name">${noteFilename}</h1>`);
   });
 });
 
@@ -112,7 +100,7 @@ describe('transformSubHeadings', () => {
     const hast = processor.runSync(mdast);
     const html = toHtml(hast);
     console.log(html);
-    expect(html).toBe(`<h3>1.1</h3>\n<p>1.1 part</p>`);
+    expect(html).toBe(`<h3 id="11">1.1</h3>\n<p>1.1 part</p>`);
   });
 });
 
@@ -132,8 +120,8 @@ describe('transformFrontmatterToSection', () => {
   });
 });
 
-describe('', () => {
-  test('', () => {
+describe('tests', () => {
+  test('remove position test', () => {
     const md = dedent`
     # Title
     
@@ -167,5 +155,25 @@ describe('', () => {
     removePosition(hast, { force: true });
     // console.log(JSON.stringify(mdast));
     console.log(JSON.stringify(hast));
+  });
+
+  test('wikilink collection test', () => {
+    const md = dedent`
+    # Wikilink Collection
+    
+    [[a]]
+    
+    [[b|alias-b]]
+    
+    [[c]]
+    `;
+    const mdast = getMdast(md);
+    visit(
+      mdast as Node,
+      'wikilink',
+      (node: Wikilink, index: number | null, parent) => {
+        console.log(node.value, node.data.alias);
+      },
+    );
   });
 });

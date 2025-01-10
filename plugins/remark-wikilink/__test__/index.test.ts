@@ -91,8 +91,6 @@ describe('micromark', () => {
     const result = micromark('[[wikilink]]', {
       extensions: [remarkWikilinkSyntax()],
     });
-
-    console.log(result);
-    // assert.equal(result, '<p></p>');
+    expect(result).toBe('<p></p>');
   });
 });

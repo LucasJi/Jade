@@ -12,7 +12,7 @@ const redis = await createRedisClient();
 const s3 = new S3();
 
 const clearCache = async () => {
-  const keys = await redis.keys('jade:*');
+  const keys = await redis.keys(RK.ALL);
   keys.forEach(key => {
     redis.del(key);
   });
