@@ -12,7 +12,7 @@ import { CSSProperties, FC } from 'react';
 import { LayoutsControl } from './layouts-control';
 import { SampleGraph } from './sample-graph';
 
-export const LayoutFA2: FC<{ style: CSSProperties }> = ({ style }) => {
+export const LayoutFA2: FC<{ style?: CSSProperties }> = ({ style }) => {
   return (
     <SigmaContainer settings={{ allowInvalidContainer: true }} style={style}>
       <SampleGraph />

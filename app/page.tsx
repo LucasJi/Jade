@@ -11,11 +11,8 @@ const LayoutFA2 = dynamic(
 
 export default function Home() {
   return (
-    <LayoutFA2
-      style={{
-        width: '600px',
-        height: '600px',
-      }}
-    />
+    <div className="h-screen w-full">
+      <LayoutFA2 />
+    </div>
   );
 }
