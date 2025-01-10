@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@faker-js/faker':
+        specifier: ^9.3.0
+        version: 9.3.0
       '@radix-ui/react-accordion':
         specifier: ^1.2.2
         version: 1.2.2(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -47,6 +50,9 @@ importers:
       '@react-sigma/core':
         specifier: ^4.0.3
         version: 4.0.3(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))
+      '@react-sigma/layout-circular':
+        specifier: ^4.0.3
+        version: 4.0.3(graphology-layout@0.6.1(graphology-types@0.24.7))(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))
       '@react-sigma/layout-forceatlas2':
         specifier: ^4.0.3
         version: 4.0.3(graphology-layout-forceatlas2@0.10.1(graphology-types@0.24.7))(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))
@@ -83,6 +89,9 @@ importers:
       graphology:
         specifier: ^0.25.4
         version: 0.25.4(graphology-types@0.24.7)
+      graphology-generators:
+        specifier: ^0.11.2
+        version: 0.11.2(graphology-types@0.24.7)
       graphology-layout:
         specifier: ^0.6.1
         version: 0.6.1(graphology-types@0.24.7)
@@ -236,6 +245,9 @@ importers:
       remark-toc:
         specifier: 9.0.0
         version: 9.0.0
+      seedrandom:
+        specifier: ^3.0.5
+        version: 3.0.5
       server-only:
         specifier: 0.0.1
         version: 0.0.1
@@ -303,6 +315,9 @@ importers:
       '@types/react-syntax-highlighter':
         specifier: 15.5.7
         version: 15.5.7
+      '@types/seedrandom':
+        specifier: ^3.0.8
+        version: 3.0.8
       '@typescript-eslint/eslint-plugin':
         specifier: 8.4.0
         version: 8.4.0(@typescript-eslint/parser@8.4.0(eslint@8.57.0)(typescript@5.2.2))(eslint@8.57.0)(typescript@5.2.2)
@@ -644,6 +659,10 @@ packages:
   '@eslint/js@8.57.0':
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@faker-js/faker@9.3.0':
+    resolution: {integrity: sha512-r0tJ3ZOkMd9xsu3VRfqlFR6cz0V/jFYRswAIpC+m/DIfAUXq7g8N7wTAlhSANySXYGKzGryfDXwtwsY8TxEIDw==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@floating-ui/core@1.6.9':
     resolution: {integrity: sha512-uMXCuQ3BItDUbAMhIXw7UPXRfAlOAvZzdK9BWpE60MCn+Svt3aLn9jsPTi/WNGlRUu2uI0v5S7JiIUsbsvh3fw==}
@@ -1306,6 +1325,11 @@ packages:
       react: ^18.0.0
       sigma: ^3.0.0-beta.24
 
+  '@react-sigma/layout-circular@4.0.3':
+    resolution: {integrity: sha512-YqMGXsl6omVDX0GNEwgGxd2j36VPJskzQoZkbwpO1t1AX4v2+ANLKSVZRZJRuh4qQ1J4hS52/yffGFaJWTQZwQ==}
+    peerDependencies:
+      graphology-layout: 0.6.1
+
   '@react-sigma/layout-core@4.0.3':
     resolution: {integrity: sha512-0zt2JJw2Hjp/I8kn3RJgLR9M9u4SRSSlmp7XNuMqG4FLrHrL5MZ8nFhUMzMgNuxUn0rLtpdh7NDd8wgdhKeQjA==}
 
@@ -1623,6 +1647,9 @@ packages:
   '@types/react@19.0.0':
     resolution: {integrity: sha512-MY3oPudxvMYyesqs/kW1Bh8y9VqSmf+tzqw3ae8a9DZW68pUe3zAdHeI1jc6iAysuRdACnVknHP8AhwD4/dxtg==}
 
+  '@types/seedrandom@3.0.8':
+    resolution: {integrity: sha512-TY1eezMU2zH2ozQoAFAQFOPpvP15g+ZgSfTZt31AUUH/Rxtnz3H+A/Sv1Snw2/amp//omibc+AEkTaA8KUeOLQ==}
+
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
 
@@ -1721,6 +1748,9 @@ packages:
 
   '@vitest/utils@2.0.5':
     resolution: {integrity: sha512-d8HKbqIcya+GR67mkZbrzhS5kKhtp8dQLcmRZLGTscGVg7yImT82cIrhtn2L8+VujWcy6KZweApgNmPsTAO/UQ==}
+
+  '@yomguithereal/helpers@1.1.1':
+    resolution: {integrity: sha512-UYvAq/XCA7xoh1juWDYsq3W0WywOB+pz8cgVnE1b45ZfdMhBvHDrgmSFG3jXeZSr2tMTYLGHFHON+ekG05Jebg==}
 
   '@zxing/text-encoding@0.9.0':
     resolution: {integrity: sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==}
@@ -2872,6 +2902,16 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
+  graphology-generators@0.11.2:
+    resolution: {integrity: sha512-hx+F0OZRkVdoQ0B1tWrpxoakmHZNex0c6RAoR0PrqJ+6fz/gz6CQ88Qlw78C6yD9nlZVRgepIoDYhRTFV+bEHg==}
+    peerDependencies:
+      graphology-types: '>=0.19.0'
+
+  graphology-indices@0.17.0:
+    resolution: {integrity: sha512-A7RXuKQvdqSWOpn7ZVQo4S33O0vCfPBnUSf7FwE0zNCasqwZVUaCXePuWo5HBpWw68KJcwObZDHpFk6HKH6MYQ==}
+    peerDependencies:
+      graphology-types: '>=0.20.0'
+
   graphology-layout-force@0.2.4:
     resolution: {integrity: sha512-NYZz0YAnDkn5pkm30cvB0IScFoWGtbzJMrqaiH070dYlYJiag12Oc89dbVfaMaVR/w8DMIKxn/ix9Bqj+Umm9Q==}
     peerDependencies:
@@ -2886,6 +2926,16 @@ packages:
     resolution: {integrity: sha512-m9aMvbd0uDPffUCFPng5ibRkb2pmfNvdKjQWeZrf71RS1aOoat5874+DcyNfMeCT4aQguKC7Lj9eCbqZj/h8Ag==}
     peerDependencies:
       graphology-types: '>=0.19.0'
+
+  graphology-metrics@2.3.1:
+    resolution: {integrity: sha512-131GRSKUR8DrGkLZSYKM3cwxEg+jqXvv1yLh/KgO0My7BOiuo80r0Qrsnv2N3ZjcOlh8namUS4sSk+cCVnTgKA==}
+    peerDependencies:
+      graphology-types: '>=0.20.0'
+
+  graphology-shortest-path@2.1.0:
+    resolution: {integrity: sha512-KbT9CTkP/u72vGEJzyRr24xFC7usI9Es3LMmCPHGwQ1KTsoZjxwA9lMKxfU0syvT/w+7fZUdB/Hu2wWYcJBm6Q==}
+    peerDependencies:
+      graphology-types: '>=0.20.0'
 
   graphology-types@0.24.7:
     resolution: {integrity: sha512-tdcqOOpwArNjEr0gNQKCXwaNCWnQJrog14nJNQPeemcLnXQUUGrsCWpWkVKt46zLjcS6/KGoayeJfHHyPDlvwA==}
@@ -4321,6 +4371,9 @@ packages:
   secure-json-parse@2.7.0:
     resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}
 
+  seedrandom@3.0.5:
+    resolution: {integrity: sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==}
+
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
@@ -5253,6 +5306,8 @@ snapshots:
 
   '@eslint/js@8.57.0': {}
 
+  '@faker-js/faker@9.3.0': {}
+
   '@floating-ui/core@1.6.9':
     dependencies:
       '@floating-ui/utils': 0.2.9
@@ -5863,6 +5918,15 @@ snapshots:
       react: 19.0.0
       sigma: 3.0.0-beta.26(graphology-types@0.24.7)
 
+  '@react-sigma/layout-circular@4.0.3(graphology-layout@0.6.1(graphology-types@0.24.7))(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))':
+    dependencies:
+      '@react-sigma/layout-core': 4.0.3(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))
+      graphology-layout: 0.6.1(graphology-types@0.24.7)
+    transitivePeerDependencies:
+      - graphology
+      - react
+      - sigma
+
   '@react-sigma/layout-core@4.0.3(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))':
     dependencies:
       '@react-sigma/core': 4.0.3(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))
@@ -6191,6 +6255,8 @@ snapshots:
     dependencies:
       csstype: 3.1.3
 
+  '@types/seedrandom@3.0.8': {}
+
   '@types/tough-cookie@4.0.5': {}
 
   '@types/trusted-types@2.0.7':
@@ -6328,6 +6394,8 @@ snapshots:
       estree-walker: 3.0.3
       loupe: 3.1.1
       tinyrainbow: 1.2.0
+
+  '@yomguithereal/helpers@1.1.1': {}
 
   '@zxing/text-encoding@0.9.0':
     optional: true
@@ -7673,6 +7741,18 @@ snapshots:
 
   graphemer@1.4.0: {}
 
+  graphology-generators@0.11.2(graphology-types@0.24.7):
+    dependencies:
+      graphology-metrics: 2.3.1(graphology-types@0.24.7)
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+
+  graphology-indices@0.17.0(graphology-types@0.24.7):
+    dependencies:
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+      mnemonist: 0.39.8
+
   graphology-layout-force@0.2.4(graphology-types@0.24.7):
     dependencies:
       graphology-types: 0.24.7
@@ -7688,6 +7768,22 @@ snapshots:
       graphology-types: 0.24.7
       graphology-utils: 2.5.2(graphology-types@0.24.7)
       pandemonium: 2.4.1
+
+  graphology-metrics@2.3.1(graphology-types@0.24.7):
+    dependencies:
+      graphology-indices: 0.17.0(graphology-types@0.24.7)
+      graphology-shortest-path: 2.1.0(graphology-types@0.24.7)
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+      mnemonist: 0.39.8
+
+  graphology-shortest-path@2.1.0(graphology-types@0.24.7):
+    dependencies:
+      '@yomguithereal/helpers': 1.1.1
+      graphology-indices: 0.17.0(graphology-types@0.24.7)
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+      mnemonist: 0.39.8
 
   graphology-types@0.24.7: {}
 
@@ -9562,6 +9658,8 @@ snapshots:
   scheduler@0.25.0: {}
 
   secure-json-parse@2.7.0: {}
+
+  seedrandom@3.0.5: {}
 
   semver@6.3.1: {}
 
