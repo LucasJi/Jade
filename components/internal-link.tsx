@@ -1,6 +1,6 @@
 'use client';
 
-import { getNoteByName } from '@/app/api';
+import { getHastByPath } from '@/app/api';
 import Markdown from '@/components/markdown';
 import {
   HoverCard,
@@ -12,8 +12,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { getExt, getFilename } from '@/lib/file';
 import { encodeNotePath } from '@/lib/note';
 import { noteParser } from '@/processor/parser';
+import { truncateHast } from '@/processor/transformer/hast';
 import * as Portal from '@radix-ui/react-portal';
-import { Nodes } from 'hast';
+import { Root } from 'hast';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -28,22 +29,18 @@ export default function InternalLink({
   noteNames: string[];
   link: string;
 }) {
-  const [noteNameFromLink, ...subHeadings] = link.split('#');
-  let noteName = noteNameFromLink === '' ? origin : noteNameFromLink;
-  noteName = noteNames.find(e => e.includes(noteName)) ?? '';
-  const ext = getExt(noteName);
+  const [notePathFromLink, ...subHeadings] = link.split('#');
+  let notePath = notePathFromLink === '' ? origin : notePathFromLink;
+  notePath = noteNames.find(e => e.includes(notePath)) ?? '';
+  const ext = getExt(notePath);
   const [isLoading, setIsLoading] = useState(true);
-  const [hast, setHast] = useState<Nodes>();
+  const [hast, setHast] = useState<Root>();
 
   const handleOpenChange = (open: boolean) => {
     // TODO: Handle not markdown files and block link
     if (open && ext !== 'pdf' && !link.includes('#^')) {
-      getNoteByName(noteName).then(data => {
-        // const { hast } = noteParser({
-        //   note: data as string,
-        //   plainNoteName: getFilename(noteName),
-        //   subHeadings,
-        // });
+      getHastByPath(notePath).then(data => {
+        truncateHast(data, subHeadings);
         setHast(data);
         setIsLoading(false);
       });
@@ -52,8 +49,7 @@ export default function InternalLink({
         note: link.includes('#^')
           ? 'Block wikilink not supported yet'
           : 'Jade currently only supports markdown file preview',
-        plainNoteName: getFilename(noteName),
-        subHeadings,
+        plainNoteName: getFilename(notePath),
       });
       setHast(hast);
       setIsLoading(false);
@@ -65,7 +61,7 @@ export default function InternalLink({
       <HoverCardTrigger asChild>
         <Link
           className="text-obsidian"
-          href={`/notes/${encodeNotePath(noteName)}`}
+          href={`/notes/${encodeNotePath(notePath)}`}
           color="foreground"
           prefetch={false}
         >
@@ -78,7 +74,7 @@ export default function InternalLink({
             <LoadingSpinner className="mx-auto self-center" />
           ) : (
             <ScrollArea type="scroll">
-              <Markdown hast={hast!} origin={noteName} noteNames={noteNames} />
+              <Markdown hast={hast!} origin={notePath} noteNames={noteNames} />
             </ScrollArea>
           )}
         </HoverCardContent>

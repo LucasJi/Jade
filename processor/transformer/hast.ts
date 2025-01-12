@@ -1,9 +1,10 @@
 import unifiedProcessor from '@/processor/unified';
-import { Nodes } from 'hast';
+import { Root as HastRoot, Nodes } from 'hast';
+import { toText } from 'hast-util-to-text';
 import { urlAttributes } from 'html-url-attributes';
 import { Root } from 'mdast';
 import { removePosition } from 'unist-util-remove-position';
-import { visit, Visitor, VisitorResult } from 'unist-util-visit';
+import { Visitor, VisitorResult, visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
 const skipHtml = false;
@@ -37,6 +38,38 @@ const makeUrlSafe = (value: string): string => {
 };
 
 const safeProtocol = /^(https?|ircs?|mailto|xmpp)$/i;
+
+export const truncateHast = (hast: HastRoot, headings: string[]) => {
+  if (headings.length <= 0) {
+    return;
+  }
+
+  for (let i = 0; i < headings.length; i++) {
+    const heading = headings[i];
+    const begin = hast.children.findIndex(
+      child =>
+        child.type === 'element' &&
+        child.tagName === `h${i + 1}` &&
+        toText(child) === heading,
+    );
+
+    if (begin == -1) {
+      return;
+    }
+
+    const end = hast.children.findIndex(
+      (child, index) =>
+        child.type === 'element' &&
+        child.tagName === `h${i + 1}` &&
+        index > begin,
+    );
+
+    hast.children = hast.children.slice(
+      begin,
+      end === -1 ? hast.children.length : end,
+    );
+  }
+};
 
 const visitor: Visitor<any> = (node, index, parent): VisitorResult => {
   if (node.type === 'raw' && parent && typeof index === 'number') {

@@ -67,7 +67,7 @@ export const generateHeadingsFromMdast = (mdast: Root): ListItem[] => {
   return map ? map.children : [];
 };
 
-export const truncate = (mdast: Root, headings: string[]) => {
+export const truncateMdast = (mdast: Root, headings: string[]) => {
   if (headings.length <= 0) {
     return;
   }
@@ -123,16 +123,10 @@ const mdastTransformer = (
   vFile: VFile,
   frontmatter: Record<any, any>,
   plainNoteName: string,
-  subHeadings?: string[],
 ) => {
   const mdast = unifiedProcessor.parse(vFile);
   determineFinalTitle(mdast, frontmatter, plainNoteName);
   const headings = generateHeadingsFromMdast(mdast);
-
-  if (subHeadings) {
-    truncate(mdast, subHeadings);
-  }
-
   convertFrontmatterToSection(mdast, frontmatter);
 
   return {

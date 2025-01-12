@@ -5,7 +5,7 @@ import vFileTransformer from '@/processor/transformer/vFile';
 import { NoteParserOptions } from '@/processor/types';
 
 export const noteParser = (options: NoteParserOptions) => {
-  const { plainNoteName = '', subHeadings } = options;
+  const { plainNoteName = '' } = options;
   let { note } = options;
 
   note = textTransformer(note);
@@ -16,7 +16,6 @@ export const noteParser = (options: NoteParserOptions) => {
     vFile,
     frontmatter,
     plainNoteName,
-    subHeadings,
   );
 
   const hast = hastTransformer(mdast, vFile);

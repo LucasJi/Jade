@@ -19,5 +19,4 @@ export declare namespace Transformer {
 export type NoteParserOptions = {
   plainNoteName?: string;
   note: string;
-  subHeadings?: string[];
 };

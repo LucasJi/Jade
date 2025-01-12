@@ -11,7 +11,7 @@ import { describe, expect, test } from 'vitest';
 import {
   convertFrontmatterToSection,
   determineFinalTitle,
-  truncate,
+  truncateMdast,
 } from '../mdast';
 
 const noteFilename = 'Note File Name';
@@ -96,7 +96,7 @@ describe('transformSubHeadings', () => {
     `;
     const mdast = getMdast(md);
     const headings = ['1', '1.1'];
-    truncate(mdast, headings);
+    truncateMdast(mdast, headings);
     const hast = processor.runSync(mdast);
     const html = toHtml(hast);
     console.log(html);

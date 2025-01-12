@@ -1,5 +1,5 @@
 import { TreeViewNode } from '@/components/types';
-import { Nodes } from 'hast';
+import { Root } from 'hast';
 import { ListItem } from 'mdast';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -12,16 +12,13 @@ export const getNotePaths = async (): Promise<string[]> => {
   }).then(resp => resp.json());
 };
 
-export const getNoteByName = async (name: string): Promise<Nodes> => {
+export const getHastByPath = async (path: string): Promise<Root> => {
   const url = new URL(`${baseUrl}/api/note`);
   url.search = new URLSearchParams({
-    name: name,
+    path: path,
   }).toString();
   return fetch(url, {
     method: 'GET',
-    next: {
-      tags: ['sync'],
-    },
   }).then(resp => resp.json());
 };
 
