@@ -11,6 +11,7 @@ import {
 } from '@react-sigma/core';
 import { useLayoutCircular } from '@react-sigma/layout-circular';
 import { DirectedGraph } from 'graphology';
+import { max, min } from 'lodash';
 import { EdgeType, NodeType, useRandom } from './use-random';
 
 export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
@@ -40,11 +41,23 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
   useEffect(() => {
     getGraph().then(data => {
       const graph = new DirectedGraph();
+      const targetCount: Record<string, number> = {};
+
+      data.forEach((d: any) => {
+        d.targets.forEach((target: string) => {
+          if (target in targetCount) {
+            targetCount[target] = targetCount[target] + 1;
+          } else {
+            targetCount[target] = 1;
+          }
+        });
+      });
 
       data.forEach((d: any) => {
         graph.addNode(d.node, {
           label: d.node,
-          size: 4,
+          // 4<=size<=20
+          size: min([20, max([4, targetCount[d.node]])]),
           color: randomColor(),
           x: Math.random(),
           y: Math.random(),
