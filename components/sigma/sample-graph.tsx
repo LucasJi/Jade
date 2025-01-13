@@ -1,8 +1,9 @@
 'use client';
 
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { getGraph } from '@/app/api';
+import { getSimpleFilename, mapPathsToColors } from '@/lib/file';
 import {
   useLoadGraph,
   useRegisterEvents,
@@ -10,6 +11,7 @@ import {
   useSigma,
 } from '@react-sigma/core';
 import { useLayoutCircular } from '@react-sigma/layout-circular';
+import { useLayoutForceAtlas2 } from '@react-sigma/layout-forceatlas2';
 import { DirectedGraph } from 'graphology';
 import { max, min } from 'lodash';
 import { EdgeType, NodeType, useRandom } from './use-random';
@@ -22,17 +24,9 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
   const registerEvents = useRegisterEvents<NodeType, EdgeType>();
   const setSettings = useSetSettings<NodeType, EdgeType>();
   const loadGraph = useLoadGraph();
+  const { assign: assignForceAtlas2 } = useLayoutForceAtlas2();
   const { assign: assignCircular } = useLayoutCircular();
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-
-  const randomColor = useCallback(() => {
-    const digits = '0123456789abcdef';
-    let code = '#';
-    for (let i = 0; i < 6; i++) {
-      code += digits.charAt(Math.floor(Math.random() * 16));
-    }
-    return code;
-  }, []);
 
   /**
    * When component mount
@@ -42,6 +36,7 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
     getGraph().then(data => {
       const graph = new DirectedGraph();
       const targetCount: Record<string, number> = {};
+      const paths: string[] = [];
 
       data.forEach((d: any) => {
         d.targets.forEach((target: string) => {
@@ -51,14 +46,18 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
             targetCount[target] = 1;
           }
         });
+
+        paths.push(d.node);
       });
+
+      const colorMap = mapPathsToColors(paths);
 
       data.forEach((d: any) => {
         graph.addNode(d.node, {
-          label: d.node,
-          // 4<=size<=20
-          size: min([20, max([4, targetCount[d.node]])]),
-          color: randomColor(),
+          label: getSimpleFilename(d.node),
+          // [4,20]
+          size: min([20, max([4, targetCount[d.node] * 1.5])]),
+          color: colorMap[d.node],
           x: Math.random(),
           y: Math.random(),
         });
@@ -74,6 +73,7 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
       console.log('Graph is ', graph.toJSON());
       loadGraph(graph);
       assignCircular();
+      assignForceAtlas2();
 
       // Register the events
       registerEvents({
