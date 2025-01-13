@@ -12,7 +12,7 @@ export const noteParser = (options: NoteParserOptions) => {
 
   const { vFile, frontmatter } = vFileTransformer(note);
 
-  const { mdast, headings } = mdastTransformer(
+  const { mdast, headings, targets } = mdastTransformer(
     vFile,
     frontmatter,
     plainNoteName,
@@ -25,5 +25,6 @@ export const noteParser = (options: NoteParserOptions) => {
     hast,
     frontmatter,
     headings,
+    targets,
   };
 };

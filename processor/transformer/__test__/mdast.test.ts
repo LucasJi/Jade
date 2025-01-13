@@ -4,11 +4,11 @@ import unifiedProcessor from '@/processor/unified';
 import dedent from 'dedent';
 import { toHtml } from 'hast-util-to-html';
 import { Root } from 'mdast';
-import { removePosition } from 'unist-util-remove-position';
 import { Node, visit } from 'unist-util-visit';
 import { matter } from 'vfile-matter';
 import { describe, expect, test } from 'vitest';
 import {
+  collectInternalLinkTargets,
   convertFrontmatterToSection,
   determineFinalTitle,
   truncateMdast,
@@ -99,7 +99,6 @@ describe('transformSubHeadings', () => {
     truncateMdast(mdast, headings);
     const hast = processor.runSync(mdast);
     const html = toHtml(hast);
-    console.log(html);
     expect(html).toBe(`<h3 id="11">1.1</h3>\n<p>1.1 part</p>`);
   });
 });
@@ -115,48 +114,36 @@ describe('transformFrontmatterToSection', () => {
     const mdast = getMdast(md);
     convertFrontmatterToSection(mdast, '');
     const hast = processor.runSync(mdast);
-    console.log(JSON.stringify(mdast));
-    console.log(JSON.stringify(hast));
+  });
+});
+
+describe('collectInternalLinkTargets', () => {
+  const md = dedent`
+    # Some Markdown
+    
+    ## Heading 1
+    
+    random content
+    
+    [[a]]
+    
+    ## Heading 2
+    
+    [[b|alias-b]]
+    
+    - [[c]]
+    - [[d]]
+    - [[e]]
+    `;
+  const mdast = getMdast(md);
+
+  test('When given md, then should return targets found in the md', () => {
+    const targets = collectInternalLinkTargets(mdast);
+    expect(targets).toStrictEqual(['a', 'b', 'c', 'd', 'e']);
   });
 });
 
 describe('tests', () => {
-  test('remove position test', () => {
-    const md = dedent`
-    # Title
-    
-    ## 1
-    
-    Heading 2 part  
-    
-    **The title is 1**
-    
-    ### 1.1
-    
-    Heading 3 part  
-    
-    **The title is 1.1**
-    
-    ## 2
-    
-    Heading 2 part  
-    
-    **The title is 2**
-    
-    ### 2.2
-    
-    Heading 3 part  
-    
-    **The title is 2.2**
-    `;
-    const mdast = getMdast(md);
-    const hast = processor.runSync(mdast);
-    // const html = toHtml(hast);
-    removePosition(hast, { force: true });
-    // console.log(JSON.stringify(mdast));
-    console.log(JSON.stringify(hast));
-  });
-
   test('wikilink collection test', () => {
     const md = dedent`
     # Wikilink Collection

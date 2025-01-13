@@ -5,11 +5,7 @@ import { ListItem } from 'mdast';
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getNotePaths = async (): Promise<string[]> => {
-  return fetch(`${baseUrl}/api/note/paths`, {
-    next: {
-      tags: ['sync'],
-    },
-  }).then(resp => resp.json());
+  return fetch(`${baseUrl}/api/note/paths`).then(resp => resp.json());
 };
 
 export const getHastByPath = async (path: string): Promise<Root> => {
@@ -72,4 +68,8 @@ export const search = async (content: string) => {
     content,
   }).toString();
   return fetch(url).then(res => res.json());
+};
+
+export const getGraph = async () => {
+  return fetch(`${baseUrl}/api/graph`).then(res => res.json());
 };

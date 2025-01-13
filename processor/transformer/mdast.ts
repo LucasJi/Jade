@@ -1,8 +1,11 @@
+import { Wikilink } from '@/plugins/types';
 import { Transformer } from '@/processor/types';
 import unifiedProcessor from '@/processor/unified';
+import { endsWith, trimEnd } from 'lodash';
 import { Heading, ListItem, Parent, Root, RootContent } from 'mdast';
 import { toString } from 'mdast-util-to-string';
 import { toc } from 'mdast-util-toc';
+import { Node, visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
 /**
@@ -119,6 +122,20 @@ export const convertFrontmatterToSection = (mdast: Root, frontmatter: any) => {
   ];
 };
 
+export const collectInternalLinkTargets = (mdast: Root): string[] => {
+  const targets: string[] = [];
+  visit(mdast as Node, 'wikilink', (node: Wikilink) => {
+    if (node.value) {
+      if (endsWith(node.value, '\\')) {
+        targets.push(trimEnd(node.value, '\\'));
+      } else {
+        targets.push(node.value);
+      }
+    }
+  });
+  return targets;
+};
+
 const mdastTransformer = (
   vFile: VFile,
   frontmatter: Record<any, any>,
@@ -128,10 +145,12 @@ const mdastTransformer = (
   determineFinalTitle(mdast, frontmatter, plainNoteName);
   const headings = generateHeadingsFromMdast(mdast);
   convertFrontmatterToSection(mdast, frontmatter);
+  const targets = collectInternalLinkTargets(mdast);
 
   return {
     mdast,
     headings,
+    targets,
   };
 };
 

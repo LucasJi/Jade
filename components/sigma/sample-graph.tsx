@@ -1,7 +1,8 @@
 'use client';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
+import { getGraph } from '@/app/api';
 import {
   useLoadGraph,
   useRegisterEvents,
@@ -9,6 +10,7 @@ import {
   useSigma,
 } from '@react-sigma/core';
 import { useLayoutCircular } from '@react-sigma/layout-circular';
+import { DirectedGraph } from 'graphology';
 import { EdgeType, NodeType, useRandom } from './use-random';
 
 export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
@@ -18,25 +20,53 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
   const sigma = useSigma<NodeType, EdgeType>();
   const registerEvents = useRegisterEvents<NodeType, EdgeType>();
   const setSettings = useSetSettings<NodeType, EdgeType>();
-  const loadGraph = useLoadGraph<NodeType, EdgeType>();
+  const loadGraph = useLoadGraph();
   const { assign: assignCircular } = useLayoutCircular();
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+
+  const randomColor = useCallback(() => {
+    const digits = '0123456789abcdef';
+    let code = '#';
+    for (let i = 0; i < 6; i++) {
+      code += digits.charAt(Math.floor(Math.random() * 16));
+    }
+    return code;
+  }, []);
 
   /**
    * When component mount
    * => load the graph
    */
   useEffect(() => {
-    // Create & load the graph
-    const graph = randomGraph();
-    console.log('Graph is ', graph.toJSON());
-    loadGraph(graph);
-    assignCircular();
+    getGraph().then(data => {
+      const graph = new DirectedGraph();
 
-    // Register the events
-    registerEvents({
-      enterNode: event => setHoveredNode(event.node),
-      leaveNode: () => setHoveredNode(null),
+      data.forEach((d: any) => {
+        graph.addNode(d.node, {
+          label: d.node,
+          size: 4,
+          color: randomColor(),
+          x: Math.random(),
+          y: Math.random(),
+        });
+      });
+
+      data.forEach((d: any) => {
+        d.targets.forEach((target: string) => {
+          graph.addEdge(d.node, target);
+        });
+      });
+
+      // Create & load the graph
+      console.log('Graph is ', graph.toJSON());
+      loadGraph(graph);
+      assignCircular();
+
+      // Register the events
+      registerEvents({
+        enterNode: event => setHoveredNode(event.node),
+        leaveNode: () => setHoveredNode(null),
+      });
     });
   }, [assignCircular, loadGraph, registerEvents, randomGraph]);
 

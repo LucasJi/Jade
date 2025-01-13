@@ -21,6 +21,7 @@ export enum RK {
   HAST_CHILD = 'jade:hChld:',
   IDX_HAST_CHILD = 'jade:idx:hChld',
   IDX_FRONT_MATTER = 'jade:idx:frontmatter',
+  GRAPH = 'jade:graph',
 }
 
 // accepted file formats

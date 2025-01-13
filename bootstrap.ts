@@ -5,6 +5,7 @@ import { listExistedObjs } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
 import { noteParser } from '@/processor/parser';
+import { filter, union } from 'lodash';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
@@ -39,34 +40,53 @@ const cacheObjects = async () => {
   return paths;
 };
 
-const cacheNotes = async (names: string[]) => {
-  for (const name of names) {
-    const ext = getExt(name);
+const cacheNotes = async (paths: string[]) => {
+  for (const path of paths) {
+    const ext = getExt(path);
 
     if (ext !== 'md') {
       continue;
     }
 
-    const note = await s3.getObject(name);
-    const { hast, headings, frontmatter } = noteParser({
+    const note = await s3.getObject(path);
+    const { hast, headings, frontmatter, targets } = noteParser({
       note,
-      plainNoteName: getFilename(name),
+      plainNoteName: getFilename(path),
     });
 
-    await redis.json.set(`${RK.HAST}${name}`, '$', hast as any);
-    await redis.set(`${RK.HEADING}${name}`, JSON.stringify(headings));
-    await redis.json.set(`${RK.FRONT_MATTER}${name}`, '$', frontmatter);
+    const targetPaths = targets.map(target => {
+      const [notePathFromTarget, ..._] = target.split('#');
+      let notePath = notePathFromTarget === '' ? path : notePathFromTarget;
+      notePath = paths.find(e => e.includes(notePath)) ?? '';
+      return notePath;
+    });
+
+    // TODO: allow not md files
+    await redis.hSet(
+      RK.GRAPH,
+      path,
+      JSON.stringify({
+        node: path,
+        targets: filter(
+          union(targetPaths),
+          o => o !== '' && getExt(o) === 'md',
+        ),
+      }),
+    );
+    await redis.json.set(`${RK.HAST}${path}`, '$', hast as any);
+    await redis.set(`${RK.HEADING}${path}`, JSON.stringify(headings));
+    await redis.json.set(`${RK.FRONT_MATTER}${path}`, '$', frontmatter);
 
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
         await redis.json.set(
-          `${RK.HAST_CHILD}${name}:${i}`,
+          `${RK.HAST_CHILD}${path}:${i}`,
           '$',
           hast.children[i] as any,
         );
       }
     }
-    log.info(`Cache hast of ${name}`);
+    log.info(`Cache hast of ${path}`);
   }
 };
 
