@@ -1,10 +1,9 @@
 'use client';
 
 import { SigmaContainer } from '@react-sigma/core';
-import { useWorkerLayoutForceAtlas2 } from '@react-sigma/layout-forceatlas2';
 import { createNodeImageProgram } from '@sigma/node-image';
 import { DirectedGraph } from 'graphology';
-import { constant, keyBy, mapValues, omit } from 'lodash';
+import { omit } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Settings } from 'sigma/settings';
 import { drawHover, drawLabel } from './canvas-utils';
@@ -17,23 +16,23 @@ import './style.css';
 import TagsPanel from './tags-panel';
 import { Dataset, FiltersState } from './types';
 
-const Fa2: FC = () => {
-  const { start, kill } = useWorkerLayoutForceAtlas2({
-    settings: { slowDown: 3 },
-  });
-
-  useEffect(() => {
-    // start FA2
-    start();
-
-    // Kill FA2 on unmount
-    return () => {
-      kill();
-    };
-  }, [start, kill]);
-
-  return null;
-};
+// const Fa2: FC = () => {
+//   const { start, kill } = useWorkerLayoutForceAtlas2({
+//     settings: { slowDown: 3 },
+//   });
+//
+//   useEffect(() => {
+//     // start FA2
+//     start();
+//
+//     // Kill FA2 on unmount
+//     return () => {
+//       kill();
+//     };
+//   }, [start, kill]);
+//
+//   return null;
+// };
 
 const Root: FC = () => {
   const graph = useMemo(() => new DirectedGraph(), []);
@@ -44,6 +43,7 @@ const Root: FC = () => {
     clusters: {},
     tags: {},
   });
+
   const sigmaSettings: Partial<Settings> = useMemo(
     () => ({
       nodeProgramClasses: {
@@ -69,51 +69,45 @@ const Root: FC = () => {
     fetch('./dataset.json')
       .then(res => res.json())
       .then((dataset: Dataset) => {
-        graph.clear();
-        const tags = keyBy(dataset.tags, 'key');
-        const clusters = keyBy(dataset.clusters, 'key');
-
-        dataset.nodes.forEach(node => {
-          if (!graph.hasNode(node.key)) {
-            graph.addNode(node.key, {
-              ...node,
-              ...omit(clusters[node.cluster], 'key'),
-              // image: `./images/${tags[node.tag].image}`,
-            });
-          }
-        });
-        dataset.edges.forEach(([source, target]) =>
-          graph.addEdge(source, target, { size: 1 }),
-        );
-
-        // layout
-        // random.assign(graph);
-
-        // Use degrees as node sizes:
-        const scores = graph
-          .nodes()
-          .map(node => graph.getNodeAttribute(node, 'score'));
-        const minDegree = Math.min(...scores);
-        const maxDegree = Math.max(...scores);
-        const MIN_NODE_SIZE = 3;
-        const MAX_NODE_SIZE = 30;
-        graph.forEachNode(node =>
-          graph.setNodeAttribute(
-            node,
-            'size',
-            ((graph.getNodeAttribute(node, 'score') - minDegree) /
-              (maxDegree - minDegree)) *
-              (MAX_NODE_SIZE - MIN_NODE_SIZE) +
-              MIN_NODE_SIZE,
-          ),
-        );
-
-        setFiltersState({
-          clusters: mapValues(keyBy(dataset.clusters, 'key'), constant(true)),
-          tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
-        });
+        // graph.clear();
+        // const tags = keyBy(dataset.tags, 'key');
+        // const clusters = keyBy(dataset.clusters, 'key');
+        //
+        // dataset.nodes.forEach(node => {
+        //   graph.addNode(node.key, {
+        //     ...node,
+        //     ...omit(clusters[node.cluster], 'key'),
+        //     // image: `./images/${tags[node.tag].image}`,
+        //   });
+        // });
+        // dataset.edges.forEach(([source, target]) =>
+        //   graph.addEdge(source, target, { size: 1 }),
+        // );
+        //
+        // // Use degrees as node sizes:
+        // const scores = graph
+        //   .nodes()
+        //   .map(node => graph.getNodeAttribute(node, 'score'));
+        // const minDegree = Math.min(...scores);
+        // const maxDegree = Math.max(...scores);
+        // const MIN_NODE_SIZE = 3;
+        // const MAX_NODE_SIZE = 30;
+        // graph.forEachNode(node =>
+        //   graph.setNodeAttribute(
+        //     node,
+        //     'size',
+        //     ((graph.getNodeAttribute(node, 'score') - minDegree) /
+        //       (maxDegree - minDegree)) *
+        //       (MAX_NODE_SIZE - MIN_NODE_SIZE) +
+        //       MIN_NODE_SIZE,
+        //   ),
+        // );
+        //
+        // setFiltersState({
+        //   clusters: mapValues(keyBy(dataset.clusters, 'key'), constant(true)),
+        //   tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
+        // });
         setDataset(dataset);
-
         requestAnimationFrame(() => setDataReady(true));
       });
   }, []);
@@ -125,7 +119,7 @@ const Root: FC = () => {
   return (
     <div id="app-root" className={'show-contents'}>
       <SigmaContainer
-        graph={DirectedGraph}
+        // graph={DirectedGraph}
         settings={sigmaSettings}
         className=""
       >
@@ -191,7 +185,7 @@ const Root: FC = () => {
           </>
         )}
 
-        <Fa2 />
+        {/*<Fa2 />*/}
       </SigmaContainer>
     </div>
   );

@@ -99,7 +99,7 @@ const SearchField: FC<{ filters: FiltersState }> = ({ filters }) => {
         list="nodes"
         value={search}
         onChange={onInputChange}
-        onKeyPress={onKeyPress}
+        onKeyDown={onKeyPress}
       />
       <Search className="icon" />
       <datalist id="nodes">

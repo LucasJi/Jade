@@ -1,6 +1,8 @@
 'use client';
 
-import { useSigma } from '@react-sigma/core';
+import { useLoadGraph, useSigma } from '@react-sigma/core';
+import { useLayoutForceAtlas2 } from '@react-sigma/layout-forceatlas2';
+import { DirectedGraph } from 'graphology';
 import { keyBy, omit } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';
 import { Dataset, FiltersState } from './types';
@@ -9,15 +11,17 @@ const GraphDataController: FC<
   PropsWithChildren<{ dataset: Dataset; filters: FiltersState }>
 > = ({ dataset, filters, children }) => {
   const sigma = useSigma();
-  const graph = sigma.getGraph();
+  const graph = new DirectedGraph();
+  const { assign: assignForceAtlas2 } = useLayoutForceAtlas2();
+  const loadGraph = useLoadGraph();
 
   /**
    * Feed graphology with the new dataset:
    */
   useEffect(() => {
-    if (!graph || !dataset) {
-      return;
-    }
+    // if (!graph || !dataset) {
+    //   return;
+    // }
 
     const clusters = keyBy(dataset.clusters, 'key');
     const tags = keyBy(dataset.tags, 'key');
@@ -52,15 +56,9 @@ const GraphDataController: FC<
       ),
     );
 
-    // forceAtlas2.assign(graph, {
-    //   iterations: 1,
-    //   settings: {
-    //     gravity: 10,
-    //     linLogMode: true,
-    //   },
-    // });
-    //
-    return () => graph.clear();
+    assignForceAtlas2();
+    loadGraph(graph);
+    // return () => graph.clear();
   }, [graph, dataset]);
 
   /**

@@ -9,11 +9,16 @@ const Graph = dynamic(
   },
 );
 
+const Root = dynamic(() =>
+  import('@/components/sigma/root').then(mod => mod.default),
+);
+
 export default function Home() {
   return (
     <div className="h-screen w-full">
       <div className="h-[750px] w-full">
-        <Graph />
+        {/*<Graph />*/}
+        <Root />
       </div>
     </div>
   );
