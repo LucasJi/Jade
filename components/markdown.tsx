@@ -49,7 +49,7 @@ const components = (
             origin={origin}
             displayName={displayName}
             link={trimmedHref}
-            noteNames={noteNames}
+            notePaths={noteNames}
           />
         );
       }
@@ -305,12 +305,12 @@ const Markdown = ({
   className,
   hast,
   origin,
-  noteNames,
+  notePaths,
 }: {
   className?: string;
   hast: Nodes;
   origin: string;
-  noteNames: string[];
+  notePaths: string[];
 }) => {
   return (
     <article
@@ -337,7 +337,7 @@ const Markdown = ({
     >
       {toJsxRuntime(hast, {
         Fragment,
-        components: components(origin, noteNames),
+        components: components(origin, notePaths),
         ignoreInvalidStyle: true,
         // @ts-ignore
         jsx,

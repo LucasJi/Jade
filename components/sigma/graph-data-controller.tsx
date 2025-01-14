@@ -5,7 +5,7 @@ import { circular } from 'graphology-layout';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
 import { keyBy } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';
-import { Dataset, FiltersState, Tag } from './types';
+import { Dataset, FiltersState } from './types';
 
 const GraphDataController: FC<
   PropsWithChildren<{ dataset: Dataset; filters: FiltersState }>
@@ -27,7 +27,6 @@ const GraphDataController: FC<
     dataset.nodes.forEach(node =>
       graph.addNode(node.key, {
         ...node,
-        size: 6,
       }),
     );
     dataset.edges.forEach(([source, target]) =>
@@ -52,11 +51,12 @@ const GraphDataController: FC<
   useEffect(() => {
     const { tags } = filters;
     graph.forEachNode((node, { tags: nodeTags }) => {
+      // TODO: control whether to enable tag filter function
       if (nodeTags) {
         graph.setNodeAttribute(
           node,
           'hidden',
-          (nodeTags as Tag[]).findIndex(nt => tags[nt.key]) !== -1,
+          (nodeTags as string[]).findIndex(t => tags[t]) === -1,
         );
       }
     });

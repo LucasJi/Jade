@@ -1,11 +1,18 @@
 import { RK } from '@/lib/constants';
-import { getExt, getFilename, getSimpleFilename } from '@/lib/file';
+import {
+  getExt,
+  getFilename,
+  getSimpleFilename,
+  mapInternalLinkToPath,
+  mapPathsToColors,
+} from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { listExistedObjs } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
 import { noteParser } from '@/processor/parser';
-import { filter, uniq } from 'lodash';
+import { NoteParserResult } from '@/processor/types';
+import { filter, max, min, uniq } from 'lodash';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
@@ -41,6 +48,8 @@ const cacheObjects = async () => {
 };
 
 const cacheNotes = async (paths: string[]) => {
+  const noteParserResults = new Map<string, NoteParserResult>();
+
   for (const path of paths) {
     const ext = getExt(path);
 
@@ -49,30 +58,13 @@ const cacheNotes = async (paths: string[]) => {
     }
 
     const note = await s3.getObject(path);
-    const { hast, headings, frontmatter, targets } = noteParser({
+    const noteParserResult = noteParser({
       note,
       plainNoteName: getFilename(path),
     });
+    const { hast, headings, frontmatter } = noteParserResult;
+    noteParserResults.set(path, noteParserResult);
 
-    // build graph dataset
-    const targetPaths = targets.map(target => {
-      const [notePathFromTarget, ..._] = target.split('#');
-      let notePath = notePathFromTarget === '' ? path : notePathFromTarget;
-      notePath = paths.find(e => e.includes(notePath)) ?? '';
-      return notePath;
-    });
-
-    // TODO: allow not md files
-    await redis.hSet(
-      RK.GRAPH,
-      path,
-      JSON.stringify({
-        key: path,
-        label: getSimpleFilename(path),
-        tags: frontmatter.tags,
-        targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
-      }),
-    );
     await redis.json.set(`${RK.HAST}${path}`, '$', hast as any);
     await redis.set(`${RK.HEADING}${path}`, JSON.stringify(headings));
     await redis.json.set(`${RK.FRONT_MATTER}${path}`, '$', frontmatter);
@@ -87,6 +79,73 @@ const cacheNotes = async (paths: string[]) => {
       }
     }
     log.info(`Cache hast of ${path}`);
+  }
+
+  return noteParserResults;
+};
+
+const buildGraphDataset = async (
+  paths: string[],
+  noteParserResults: Map<string, NoteParserResult>,
+) => {
+  const mdFilePaths = paths.filter(p => getExt(p) === 'md');
+  const MIN_SIZE = 4;
+  const MAX_SIZE = 20;
+  const pathColorMap = mapPathsToColors(paths);
+  const referenceCount: Record<string, number> = {};
+
+  for (const path of mdFilePaths) {
+    const noteParserResult = noteParserResults.get(path);
+
+    if (!noteParserResult) {
+      continue;
+    }
+
+    const { internalLinkTargets } = noteParserResult;
+
+    for (const target of internalLinkTargets) {
+      const notePath = mapInternalLinkToPath(target, path, paths).notePath;
+      if (notePath in referenceCount) {
+        referenceCount[notePath] = referenceCount[notePath] + 1;
+      } else {
+        referenceCount[notePath] = 1;
+      }
+    }
+  }
+
+  for (const path of mdFilePaths) {
+    const noteParserResult = noteParserResults.get(path);
+
+    if (!noteParserResult) {
+      continue;
+    }
+
+    const { frontmatter, internalLinkTargets } = noteParserResult;
+
+    const targetPaths = internalLinkTargets.map(
+      target => mapInternalLinkToPath(target, path, paths).notePath,
+    );
+
+    let size = min([MAX_SIZE, max([MIN_SIZE, referenceCount[path] * 1.5])]);
+    if (size === undefined) {
+      size = MIN_SIZE;
+    }
+
+    await redis.hSet(
+      RK.GRAPH,
+      path,
+      JSON.stringify({
+        key: path,
+        label: getSimpleFilename(path),
+        tags: frontmatter.tags,
+        // TODO: allow other file types
+        targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
+        color: pathColorMap[path],
+        size: size,
+        x: Math.random(),
+        y: Math.random(),
+      }),
+    );
   }
 };
 
@@ -130,7 +189,8 @@ const init = async () => {
 
   await clearCache();
   const paths = await cacheObjects();
-  await cacheNotes(paths);
+  const noteParserResults = await cacheNotes(paths);
+  await buildGraphDataset(paths, noteParserResults);
   await createSearchIndexes();
 };
 

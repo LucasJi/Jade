@@ -3,7 +3,7 @@
 import { getGraphDataset } from '@/app/api';
 import { SigmaContainer } from '@react-sigma/core';
 import { DirectedGraph } from 'graphology';
-import { constant, keyBy, mapValues } from 'lodash';
+import { constant, keyBy, mapValues, omit } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Settings } from 'sigma/settings';
 import { drawHover, drawLabel } from './canvas-utils';
@@ -12,6 +12,7 @@ import GraphEventsController from './graph-events-controller';
 import GraphSettingsController from './graph-settings-controller';
 import SearchField from './search-field';
 import './style.css';
+import TagsPanel from './tags-panel';
 import { Dataset, FiltersState } from './types';
 
 const Root: FC = () => {
@@ -44,9 +45,6 @@ const Root: FC = () => {
   );
 
   useEffect(() => {
-    // fetch('./dataset.json')
-    //   .then(res => res.json())
-    //   .then((dataset: Dataset) => {
     getGraphDataset().then(dataset => {
       graph.clear();
 
@@ -55,7 +53,6 @@ const Root: FC = () => {
       dataset.nodes.forEach(node =>
         graph.addNode(node.key, {
           ...node,
-          size: 6,
         }),
       );
       dataset.edges.forEach(([source, target]) =>
@@ -98,23 +95,23 @@ const Root: FC = () => {
             <div className="contents">
               <div className="panels">
                 <SearchField filters={filtersState} />
-                {/*<TagsPanel*/}
-                {/*  tags={dataset.tags}*/}
-                {/*  filters={filtersState}*/}
-                {/*  setTags={tags =>*/}
-                {/*    setFiltersState(() => ({*/}
-                {/*      tags,*/}
-                {/*    }))*/}
-                {/*  }*/}
-                {/*  toggleTag={tag => {*/}
-                {/*    setFiltersState(filters => ({*/}
-                {/*      ...filters,*/}
-                {/*      tags: filters.tags[tag]*/}
-                {/*        ? omit(filters.tags, tag)*/}
-                {/*        : { ...filters.tags, [tag]: true },*/}
-                {/*    }));*/}
-                {/*  }}*/}
-                {/*/>*/}
+                <TagsPanel
+                  tags={dataset.tags}
+                  filters={filtersState}
+                  setTags={tags =>
+                    setFiltersState(() => ({
+                      tags,
+                    }))
+                  }
+                  toggleTag={tag => {
+                    setFiltersState(filters => ({
+                      ...filters,
+                      tags: filters.tags[tag]
+                        ? omit(filters.tags, tag)
+                        : { ...filters.tags, [tag]: true },
+                    }));
+                  }}
+                />
               </div>
             </div>
           </>

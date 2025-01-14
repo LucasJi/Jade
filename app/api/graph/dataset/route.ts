@@ -8,14 +8,7 @@ const redis = await createRedisClient();
 
 export async function GET() {
   const rData = await redis.hVals(RK.GRAPH);
-  const nodeDataList: NodeData[] = rData.map(data => {
-    const nodeData: NodeData = JSON.parse(data);
-    return {
-      ...nodeData,
-      x: Math.random(),
-      y: Math.random(),
-    };
-  });
+  const nodeDataList: NodeData[] = rData.map(data => JSON.parse(data));
   const edges: [string, string][] = [];
   const tags: Tag[] = [];
 

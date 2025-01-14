@@ -1,5 +1,5 @@
-import { Nodes } from 'hast';
-import { Root } from 'mdast';
+import { Root as HastRoot, Nodes } from 'hast';
+import { ListItem, Root } from 'mdast';
 
 export declare namespace Transformer {
   type FrontMatter = Record<string, any>;
@@ -20,3 +20,11 @@ export type NoteParserOptions = {
   plainNoteName?: string;
   note: string;
 };
+
+export interface NoteParserResult {
+  mdast: Root;
+  hast: HastRoot;
+  frontmatter: Transformer.FrontMatter;
+  headings: ListItem[];
+  internalLinkTargets: string[];
+}

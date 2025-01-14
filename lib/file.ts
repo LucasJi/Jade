@@ -86,3 +86,15 @@ export const mapPathsToColors = (paths: string[]): Record<string, string> => {
     {} as Record<string, string>,
   );
 };
+
+export const mapInternalLinkToPath = (
+  internalLink: string,
+  selfPath: string,
+  paths: string[],
+) => {
+  const [notePathFromLink, ...subHeadings] = internalLink.split('#');
+  // the internal link links to the note itself
+  let notePath = notePathFromLink === '' ? selfPath : notePathFromLink;
+  notePath = paths.find(e => e.includes(notePath)) ?? '';
+  return { notePath, subHeadings };
+};

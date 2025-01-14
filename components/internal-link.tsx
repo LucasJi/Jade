@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/hover-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getExt, getFilename } from '@/lib/file';
+import { getExt, getFilename, mapInternalLinkToPath } from '@/lib/file';
 import { encodeNotePath } from '@/lib/note';
 import { noteParser } from '@/processor/parser';
 import { truncateHast } from '@/processor/transformer/hast';
@@ -21,17 +21,19 @@ import { useState } from 'react';
 export default function InternalLink({
   displayName,
   origin,
-  noteNames,
+  notePaths,
   link,
 }: {
   displayName: string;
   origin: string;
-  noteNames: string[];
+  notePaths: string[];
   link: string;
 }) {
-  const [notePathFromLink, ...subHeadings] = link.split('#');
-  let notePath = notePathFromLink === '' ? origin : notePathFromLink;
-  notePath = noteNames.find(e => e.includes(notePath)) ?? '';
+  const { notePath, subHeadings } = mapInternalLinkToPath(
+    link,
+    origin,
+    notePaths,
+  );
   const ext = getExt(notePath);
   const [isLoading, setIsLoading] = useState(true);
   const [hast, setHast] = useState<Root>();
@@ -74,7 +76,7 @@ export default function InternalLink({
             <LoadingSpinner className="mx-auto self-center" />
           ) : (
             <ScrollArea type="scroll">
-              <Markdown hast={hast!} origin={notePath} noteNames={noteNames} />
+              <Markdown hast={hast!} origin={notePath} notePaths={notePaths} />
             </ScrollArea>
           )}
         </HoverCardContent>

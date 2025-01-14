@@ -66,7 +66,7 @@ export default async function Page(props: {
         hast={hast}
         origin={notePath}
         className="w-full"
-        noteNames={objPaths}
+        notePaths={objPaths}
       />
     );
   } catch (error) {

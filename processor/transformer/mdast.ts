@@ -145,12 +145,12 @@ const mdastTransformer = (
   determineFinalTitle(mdast, frontmatter, plainNoteName);
   const headings = generateHeadingsFromMdast(mdast);
   convertFrontmatterToSection(mdast, frontmatter);
-  const targets = collectInternalLinkTargets(mdast);
+  const internalLinkTargets = collectInternalLinkTargets(mdast);
 
   return {
     mdast,
     headings,
-    targets,
+    internalLinkTargets,
   };
 };
 

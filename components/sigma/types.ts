@@ -5,6 +5,7 @@ export interface NodeData {
   targets: string[];
   x: number;
   y: number;
+  size: number;
 }
 
 export interface Tag {
