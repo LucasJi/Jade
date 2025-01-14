@@ -4,65 +4,39 @@ import {
   FullScreenControl,
   SearchControl,
   SigmaContainer,
-  useRegisterEvents,
-  useSigma,
   ZoomControl,
 } from '@react-sigma/core';
 
+import { drawHover, drawLabel } from '@/components/sigma/canvas-utils';
 import '@react-sigma/core/lib/react-sigma.min.css';
-import { CSSProperties, FC, useEffect, useState } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
+import { Settings } from 'sigma/settings';
 import { LayoutsControl } from './layouts-control';
 import { SampleGraph } from './sample-graph';
+import './style.css';
 
 export const Graph: FC<{ style?: CSSProperties }> = ({ style }) => {
-  const GraphEvents: FC = () => {
-    const registerEvents = useRegisterEvents();
-    const sigma = useSigma();
-    const [draggedNode, setDraggedNode] = useState<string | null>(null);
-
-    useEffect(() => {
-      // Register the events
-      registerEvents({
-        downNode: e => {
-          setDraggedNode(e.node);
-          sigma.getGraph().setNodeAttribute(e.node, 'highlighted', true);
-        },
-        // On mouse move, if the drag mode is enabled, we change the position of the draggedNode
-        mousemovebody: e => {
-          if (!draggedNode) {
-            return;
-          }
-          // Get new position of node
-          const pos = sigma.viewportToGraph(e);
-          sigma.getGraph().setNodeAttribute(draggedNode, 'x', pos.x);
-          sigma.getGraph().setNodeAttribute(draggedNode, 'y', pos.y);
-
-          // Prevent sigma to move camera:
-          e.preventSigmaDefault();
-          e.original.preventDefault();
-          e.original.stopPropagation();
-        },
-        // On mouse up, we reset the autoscale and the dragging mode
-        mouseup: () => {
-          if (draggedNode) {
-            setDraggedNode(null);
-            sigma.getGraph().removeNodeAttribute(draggedNode, 'highlighted');
-          }
-        },
-        // Disable to autoscale at the first down interaction
-        mousedown: () => {
-          if (!sigma.getCustomBBox()) {
-            sigma.setCustomBBox(sigma.getBBox());
-          }
-        },
-      });
-    }, [registerEvents, sigma, draggedNode]);
-
-    return null;
-  };
-
+  const sigmaSettings: Partial<Settings> = useMemo(
+    () => ({
+      // nodeProgramClasses: {
+      //   image: createNodeImageProgram({
+      //     size: { mode: 'force', value: 256 },
+      //   }),
+      // },
+      defaultDrawNodeLabel: drawLabel,
+      defaultDrawNodeHover: drawHover,
+      // defaultNodeType: 'image',
+      defaultEdgeType: 'arrow',
+      labelDensity: 0.07,
+      labelGridCellSize: 60,
+      labelRenderedSizeThreshold: 15,
+      labelFont: 'Lato, sans-serif',
+      zIndex: true,
+    }),
+    [],
+  );
   return (
-    <SigmaContainer settings={{ allowInvalidContainer: true }} style={style}>
+    <SigmaContainer settings={sigmaSettings} style={style}>
       <SampleGraph />
       <ControlsContainer position={'bottom-right'}>
         <ZoomControl />
