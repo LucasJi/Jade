@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  seaweedfs-s3:
+    image: chrislusf/seaweedfs
+    container_name: seaweedfs-s3
+    ports:
+      - "8333:8333"
+    entrypoint: /bin/sh -c
+    command: |
+      "echo '{
+        \"identities\": [
+          {
+            \"name\": \"anonymous\",
+            \"actions\": [
+              \"Read\"
+            ]
+          },
+          {
+            \"name\": \"test\",
+            \"credentials\": [
+              {
+                \"accessKey\": \"123456\",
+                \"secretKey\": \"abcdef\"
+              }
+            ],
+            \"actions\": [
+              \"Admin\",
+              \"Read\",
+              \"List\",
+              \"Tagging\",
+              \"Write\"
+            ]
+          }
+        ]
+      }' > /etc/seaweedfs/config.json && \
+      weed server -s3 -s3.config /etc/seaweedfs/config.json"
+    restart: unless-stopped
