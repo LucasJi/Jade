@@ -1,7 +1,8 @@
 import { Settings } from 'sigma/settings';
 import { NodeDisplayData, PartialButFor, PlainObject } from 'sigma/types';
 
-const TEXT_COLOR = '#000000';
+// Obsidian purple
+const TEXT_COLOR = '#7852ee';
 
 /**
  * This function draw in the input canvas 2D context a rectangle.
@@ -36,6 +37,7 @@ export function drawHover(
   data: PlainObject,
   settings: PlainObject,
 ) {
+  console.log(data);
   const size = settings.labelSize;
   const font = settings.labelFont;
   const weight = settings.labelWeight;

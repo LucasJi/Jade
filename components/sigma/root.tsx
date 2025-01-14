@@ -1,7 +1,6 @@
 'use client';
 
 import { SigmaContainer } from '@react-sigma/core';
-import { createNodeImageProgram } from '@sigma/node-image';
 import { DirectedGraph } from 'graphology';
 import { constant, keyBy, mapValues, omit } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -21,17 +20,16 @@ const Root: FC = () => {
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [filtersState, setFiltersState] = useState<FiltersState>({
-    clusters: {},
     tags: {},
   });
 
   const sigmaSettings: Partial<Settings> = useMemo(
     () => ({
-      nodeProgramClasses: {
-        image: createNodeImageProgram({
-          size: { mode: 'force', value: 256 },
-        }),
-      },
+      // nodeProgramClasses: {
+      //   image: createNodeImageProgram({
+      //     size: { mode: 'force', value: 256 },
+      //   }),
+      // },
       defaultDrawNodeLabel: drawLabel,
       defaultDrawNodeHover: drawHover,
       // defaultNodeType: 'image',
@@ -52,13 +50,10 @@ const Root: FC = () => {
       .then((dataset: Dataset) => {
         graph.clear();
         const tags = keyBy(dataset.tags, 'key');
-        const clusters = keyBy(dataset.clusters, 'key');
 
         dataset.nodes.forEach(node => {
           graph.addNode(node.key, {
             ...node,
-            ...omit(clusters[node.cluster], 'key'),
-            // image: `./images/${tags[node.tag].image}`,
           });
         });
         dataset.edges.forEach(([source, target]) =>
@@ -85,7 +80,6 @@ const Root: FC = () => {
         );
 
         setFiltersState({
-          clusters: mapValues(keyBy(dataset.clusters, 'key'), constant(true)),
           tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
         });
         setDataset(dataset);
@@ -132,8 +126,7 @@ const Root: FC = () => {
                   tags={dataset.tags}
                   filters={filtersState}
                   setTags={tags =>
-                    setFiltersState(filters => ({
-                      ...filters,
+                    setFiltersState(() => ({
                       tags,
                     }))
                   }

@@ -2,7 +2,7 @@
 
 import { useSigma } from '@react-sigma/core';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
-import { keyBy, omit } from 'lodash';
+import { keyBy } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';
 import { Dataset, FiltersState } from './types';
 
@@ -20,13 +20,11 @@ const GraphDataController: FC<
       return;
     }
 
-    const clusters = keyBy(dataset.clusters, 'key');
     const tags = keyBy(dataset.tags, 'key');
 
     dataset.nodes.forEach(node =>
       graph.addNode(node.key, {
         ...node,
-        ...omit(clusters[node.cluster], 'key'),
         // image: `./images/${tags[node.tag].image}`,
       }),
     );
@@ -68,9 +66,9 @@ const GraphDataController: FC<
    * Apply filters to graphology:
    */
   useEffect(() => {
-    const { clusters, tags } = filters;
-    graph.forEachNode((node, { cluster, tag }) =>
-      graph.setNodeAttribute(node, 'hidden', !clusters[cluster] || !tags[tag]),
+    const { tags } = filters;
+    graph.forEachNode((node, { tag }) =>
+      graph.setNodeAttribute(node, 'hidden', !tags[tag]),
     );
   }, [graph, filters]);
 
