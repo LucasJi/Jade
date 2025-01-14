@@ -2,7 +2,10 @@
 
 import { getGraphDataset } from '@/app/api';
 import { SigmaContainer } from '@react-sigma/core';
+import { createNodeImageProgram } from '@sigma/node-image';
 import { DirectedGraph } from 'graphology';
+import { circular } from 'graphology-layout';
+import forceAtlas2 from 'graphology-layout-forceatlas2';
 import { constant, keyBy, mapValues, omit } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Settings } from 'sigma/settings';
@@ -15,7 +18,7 @@ import './style.css';
 import TagsPanel from './tags-panel';
 import { Dataset, FiltersState } from './types';
 
-const Root: FC = () => {
+const Graph: FC = () => {
   const graph = useMemo(() => new DirectedGraph(), []);
   const [dataReady, setDataReady] = useState(false);
   const [dataset, setDataset] = useState<Dataset | null>(null);
@@ -26,11 +29,11 @@ const Root: FC = () => {
 
   const sigmaSettings: Partial<Settings> = useMemo(
     () => ({
-      // nodeProgramClasses: {
-      //   image: createNodeImageProgram({
-      //     size: { mode: 'force', value: 256 },
-      //   }),
-      // },
+      nodeProgramClasses: {
+        image: createNodeImageProgram({
+          size: { mode: 'force', value: 256 },
+        }),
+      },
       defaultDrawNodeLabel: drawLabel,
       defaultDrawNodeHover: drawHover,
       // defaultNodeType: 'image',
@@ -59,6 +62,33 @@ const Root: FC = () => {
         graph.addEdge(source, target, { size: 1 }),
       );
 
+      const scores = graph
+        .nodes()
+        .map(node => graph.getNodeAttribute(node, 'score'));
+      const minDegree = Math.min(...scores);
+      const maxDegree = Math.max(...scores);
+      const MIN_NODE_SIZE = 3;
+      const MAX_NODE_SIZE = 30;
+      graph.forEachNode(node =>
+        graph.setNodeAttribute(
+          node,
+          'size',
+          ((graph.getNodeAttribute(node, 'score') - minDegree) /
+            (maxDegree - minDegree)) *
+            (MAX_NODE_SIZE - MIN_NODE_SIZE) +
+            MIN_NODE_SIZE,
+        ),
+      );
+
+      circular.assign(graph);
+      forceAtlas2.assign(graph, {
+        iterations: 5,
+        settings: {
+          gravity: 0.5,
+          linLogMode: true,
+        },
+      });
+
       setFiltersState({
         tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
       });
@@ -73,10 +103,10 @@ const Root: FC = () => {
 
   return (
     <div id="app-root" className={'show-contents'}>
-      <SigmaContainer graph={DirectedGraph} settings={sigmaSettings}>
+      <SigmaContainer graph={graph} settings={sigmaSettings}>
         <GraphSettingsController hoveredNode={hoveredNode} />
         <GraphEventsController setHoveredNode={setHoveredNode} />
-        <GraphDataController dataset={dataset} filters={filtersState} />
+        <GraphDataController filters={filtersState} />
 
         {dataReady && (
           <>
@@ -121,4 +151,4 @@ const Root: FC = () => {
   );
 };
 
-export default Root;
+export default Graph;

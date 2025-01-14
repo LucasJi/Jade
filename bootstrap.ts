@@ -89,11 +89,11 @@ const buildGraphDataset = async (
   noteParserResults: Map<string, NoteParserResult>,
 ) => {
   const mdFilePaths = paths.filter(p => getExt(p) === 'md');
-  const MIN_SIZE = 4;
-  const MAX_SIZE = 20;
+  const MIN_SIZE = 3;
+  const MAX_SIZE = 30;
   const pathColorMap = mapPathsToColors(paths);
-  const referenceCount: Record<string, number> = {};
 
+  const referenceCount = new Map<string, number>();
   for (const path of mdFilePaths) {
     const noteParserResult = noteParserResults.get(path);
 
@@ -105,13 +105,17 @@ const buildGraphDataset = async (
 
     for (const target of internalLinkTargets) {
       const notePath = mapInternalLinkToPath(target, path, paths).notePath;
-      if (notePath in referenceCount) {
-        referenceCount[notePath] = referenceCount[notePath] + 1;
+      if (referenceCount.has(notePath)) {
+        referenceCount.set(notePath, referenceCount.get(notePath)! + 1);
       } else {
-        referenceCount[notePath] = 1;
+        referenceCount.set(notePath, 1);
       }
     }
   }
+
+  const counts = Array.from(referenceCount.values());
+  const maxCount = max(counts) ?? 1;
+  const minCount = min(counts) ?? 0;
 
   for (const path of mdFilePaths) {
     const noteParserResult = noteParserResults.get(path);
@@ -126,11 +130,6 @@ const buildGraphDataset = async (
       target => mapInternalLinkToPath(target, path, paths).notePath,
     );
 
-    let size = min([MAX_SIZE, max([MIN_SIZE, referenceCount[path] * 1.5])]);
-    if (size === undefined) {
-      size = MIN_SIZE;
-    }
-
     await redis.hSet(
       RK.GRAPH,
       path,
@@ -141,7 +140,12 @@ const buildGraphDataset = async (
         // TODO: allow other file types
         targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
         color: pathColorMap[path],
-        size: size,
+        // size:
+        //   ((referenceCount.get(path) ?? 0 - minCount) / (maxCount - minCount)) *
+        //     (MAX_SIZE - MIN_SIZE) +
+        //   MIN_SIZE,
+        score:
+          (referenceCount.get(path) ?? 0 - minCount) / (maxCount - minCount),
         x: Math.random(),
         y: Math.random(),
       }),

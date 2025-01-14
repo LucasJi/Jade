@@ -6,6 +6,7 @@ export interface NodeData {
   x: number;
   y: number;
   size: number;
+  score: number;
 }
 
 export interface Tag {
