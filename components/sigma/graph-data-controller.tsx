@@ -1,16 +1,18 @@
 'use client';
 
 import { useSigma } from '@react-sigma/core';
+import { circular } from 'graphology-layout';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
 import { keyBy } from 'lodash';
 import { FC, PropsWithChildren, useEffect } from 'react';
-import { Dataset, FiltersState } from './types';
+import { Dataset, FiltersState, Tag } from './types';
 
 const GraphDataController: FC<
   PropsWithChildren<{ dataset: Dataset; filters: FiltersState }>
 > = ({ dataset, filters, children }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
+  console.log(filters);
 
   /**
    * Feed graphology with the new dataset:
@@ -25,32 +27,14 @@ const GraphDataController: FC<
     dataset.nodes.forEach(node =>
       graph.addNode(node.key, {
         ...node,
-        // image: `./images/${tags[node.tag].image}`,
+        size: 6,
       }),
     );
     dataset.edges.forEach(([source, target]) =>
       graph.addEdge(source, target, { size: 1 }),
     );
 
-    // Use degrees as node sizes:
-    const scores = graph
-      .nodes()
-      .map(node => graph.getNodeAttribute(node, 'score'));
-    const minDegree = Math.min(...scores);
-    const maxDegree = Math.max(...scores);
-    const MIN_NODE_SIZE = 3;
-    const MAX_NODE_SIZE = 30;
-    graph.forEachNode(node =>
-      graph.setNodeAttribute(
-        node,
-        'size',
-        ((graph.getNodeAttribute(node, 'score') - minDegree) /
-          (maxDegree - minDegree)) *
-          (MAX_NODE_SIZE - MIN_NODE_SIZE) +
-          MIN_NODE_SIZE,
-      ),
-    );
-
+    circular.assign(graph);
     forceAtlas2.assign(graph, {
       iterations: 5,
       settings: {
@@ -67,9 +51,15 @@ const GraphDataController: FC<
    */
   useEffect(() => {
     const { tags } = filters;
-    graph.forEachNode((node, { tag }) =>
-      graph.setNodeAttribute(node, 'hidden', !tags[tag]),
-    );
+    graph.forEachNode((node, { tags: nodeTags }) => {
+      if (nodeTags) {
+        graph.setNodeAttribute(
+          node,
+          'hidden',
+          (nodeTags as Tag[]).findIndex(nt => tags[nt.key]) !== -1,
+        );
+      }
+    });
   }, [graph, filters]);
 
   return <>{children}</>;

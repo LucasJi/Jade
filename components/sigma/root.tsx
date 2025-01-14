@@ -1,8 +1,9 @@
 'use client';
 
+import { getGraphDataset } from '@/app/api';
 import { SigmaContainer } from '@react-sigma/core';
 import { DirectedGraph } from 'graphology';
-import { constant, keyBy, mapValues, omit } from 'lodash';
+import { constant, keyBy, mapValues } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Settings } from 'sigma/settings';
 import { drawHover, drawLabel } from './canvas-utils';
@@ -11,7 +12,6 @@ import GraphEventsController from './graph-events-controller';
 import GraphSettingsController from './graph-settings-controller';
 import SearchField from './search-field';
 import './style.css';
-import TagsPanel from './tags-panel';
 import { Dataset, FiltersState } from './types';
 
 const Root: FC = () => {
@@ -43,50 +43,31 @@ const Root: FC = () => {
     [],
   );
 
-  // Load data on mount:
   useEffect(() => {
-    fetch('./dataset.json')
-      .then(res => res.json())
-      .then((dataset: Dataset) => {
-        graph.clear();
-        const tags = keyBy(dataset.tags, 'key');
+    // fetch('./dataset.json')
+    //   .then(res => res.json())
+    //   .then((dataset: Dataset) => {
+    getGraphDataset().then(dataset => {
+      graph.clear();
 
-        dataset.nodes.forEach(node => {
-          graph.addNode(node.key, {
-            ...node,
-          });
-        });
-        dataset.edges.forEach(([source, target]) =>
-          graph.addEdge(source, target, { size: 1 }),
-        );
+      const tags = keyBy(dataset.tags, 'key');
 
-        // Use degrees as node sizes:
-        const scores = graph
-          .nodes()
-          .map(node => graph.getNodeAttribute(node, 'score'));
-        const minDegree = Math.min(...scores);
-        const maxDegree = Math.max(...scores);
-        const MIN_NODE_SIZE = 3;
-        const MAX_NODE_SIZE = 30;
-        graph.forEachNode(node =>
-          graph.setNodeAttribute(
-            node,
-            'size',
-            ((graph.getNodeAttribute(node, 'score') - minDegree) /
-              (maxDegree - minDegree)) *
-              (MAX_NODE_SIZE - MIN_NODE_SIZE) +
-              MIN_NODE_SIZE,
-          ),
-        );
+      dataset.nodes.forEach(node =>
+        graph.addNode(node.key, {
+          ...node,
+          size: 6,
+        }),
+      );
+      dataset.edges.forEach(([source, target]) =>
+        graph.addEdge(source, target, { size: 1 }),
+      );
 
-        setFiltersState({
-          tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
-        });
-        setDataset(dataset);
-
-        console.log(graph.toJSON());
-        requestAnimationFrame(() => setDataReady(true));
+      setFiltersState({
+        tags: mapValues(keyBy(dataset.tags, 'key'), constant(true)),
       });
+      setDataset(dataset);
+      requestAnimationFrame(() => setDataReady(true));
+    });
   }, []);
 
   if (!dataset) {
@@ -95,12 +76,7 @@ const Root: FC = () => {
 
   return (
     <div id="app-root" className={'show-contents'}>
-      <SigmaContainer
-        graph={DirectedGraph}
-        settings={sigmaSettings}
-        className=""
-      >
-        {/*<Fa2 />*/}
+      <SigmaContainer graph={DirectedGraph} settings={sigmaSettings}>
         <GraphSettingsController hoveredNode={hoveredNode} />
         <GraphEventsController setHoveredNode={setHoveredNode} />
         <GraphDataController dataset={dataset} filters={filtersState} />
@@ -122,23 +98,23 @@ const Root: FC = () => {
             <div className="contents">
               <div className="panels">
                 <SearchField filters={filtersState} />
-                <TagsPanel
-                  tags={dataset.tags}
-                  filters={filtersState}
-                  setTags={tags =>
-                    setFiltersState(() => ({
-                      tags,
-                    }))
-                  }
-                  toggleTag={tag => {
-                    setFiltersState(filters => ({
-                      ...filters,
-                      tags: filters.tags[tag]
-                        ? omit(filters.tags, tag)
-                        : { ...filters.tags, [tag]: true },
-                    }));
-                  }}
-                />
+                {/*<TagsPanel*/}
+                {/*  tags={dataset.tags}*/}
+                {/*  filters={filtersState}*/}
+                {/*  setTags={tags =>*/}
+                {/*    setFiltersState(() => ({*/}
+                {/*      tags,*/}
+                {/*    }))*/}
+                {/*  }*/}
+                {/*  toggleTag={tag => {*/}
+                {/*    setFiltersState(filters => ({*/}
+                {/*      ...filters,*/}
+                {/*      tags: filters.tags[tag]*/}
+                {/*        ? omit(filters.tags, tag)*/}
+                {/*        : { ...filters.tags, [tag]: true },*/}
+                {/*    }));*/}
+                {/*  }}*/}
+                {/*/>*/}
               </div>
             </div>
           </>

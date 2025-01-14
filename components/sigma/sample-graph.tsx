@@ -2,7 +2,7 @@
 
 import { FC, useEffect, useState } from 'react';
 
-import { getGraph } from '@/app/api';
+import { getGraphDataset } from '@/app/api';
 import { getSimpleFilename, mapPathsToColors } from '@/lib/file';
 import {
   useLoadGraph,
@@ -33,7 +33,7 @@ export const SampleGraph: FC<{ disableHoverEffect?: boolean }> = ({
    * => load the graph
    */
   useEffect(() => {
-    getGraph().then(data => {
+    getGraphDataset().then(data => {
       const graph = new DirectedGraph();
       const targetCount: Record<string, number> = {};
       const paths: string[] = [];

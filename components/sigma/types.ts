@@ -1,15 +1,14 @@
 export interface NodeData {
   key: string;
   label: string;
-  tag: string;
-  URL: string;
+  tags: string[];
+  targets: string[];
   x: number;
   y: number;
 }
 
 export interface Tag {
   key: string;
-  image: string;
 }
 
 export interface Dataset {

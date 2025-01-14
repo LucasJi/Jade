@@ -1,11 +1,11 @@
 import { RK } from '@/lib/constants';
-import { getExt, getFilename } from '@/lib/file';
+import { getExt, getFilename, getSimpleFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { listExistedObjs } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
 import { noteParser } from '@/processor/parser';
-import { filter, union } from 'lodash';
+import { filter, uniq } from 'lodash';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
@@ -54,6 +54,7 @@ const cacheNotes = async (paths: string[]) => {
       plainNoteName: getFilename(path),
     });
 
+    // build graph dataset
     const targetPaths = targets.map(target => {
       const [notePathFromTarget, ..._] = target.split('#');
       let notePath = notePathFromTarget === '' ? path : notePathFromTarget;
@@ -66,11 +67,10 @@ const cacheNotes = async (paths: string[]) => {
       RK.GRAPH,
       path,
       JSON.stringify({
-        node: path,
-        targets: filter(
-          union(targetPaths),
-          o => o !== '' && getExt(o) === 'md',
-        ),
+        key: path,
+        label: getSimpleFilename(path),
+        tags: frontmatter.tags,
+        targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
       }),
     );
     await redis.json.set(`${RK.HAST}${path}`, '$', hast as any);
