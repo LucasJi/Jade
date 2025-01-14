@@ -1,3 +1,4 @@
+import { join } from 'lodash';
 import { Settings } from 'sigma/settings';
 import { NodeDisplayData, PartialButFor, PlainObject } from 'sigma/types';
 
@@ -44,8 +45,10 @@ export function drawHover(
   const subLabelSize = size - 2;
 
   const label = data.label;
-  const subLabel = data.tag !== 'unknown' ? data.tag : '';
-  const clusterLabel = data.clusterLabel;
+  const subLabel =
+    data.tags && data.tags.length > 0 ? join(data.tags, ', ') : 'UNKNOWN';
+  // TODO: Refactor
+  const clusterLabel = data.key;
 
   // Then we draw the label background
   context.beginPath();
