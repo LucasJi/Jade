@@ -2,6 +2,7 @@ import EmbedFile from '@/components/embed-file';
 import Markdown from '@/components/markdown';
 import { RK } from '@/lib/constants';
 import { getExt } from '@/lib/file';
+import { logger } from '@/lib/logger';
 import {
   decodeNotePath,
   decodeURISlug,
@@ -16,6 +17,10 @@ import { notFound } from 'next/navigation';
 const redis = await createRedisClient();
 
 export const dynamicParams = true;
+
+const log = logger.child({
+  module: 'app/notes/[...slug]',
+});
 
 export async function generateStaticParams() {
   const objPaths = await redis.sMembers(RK.PATHS);
@@ -37,6 +42,13 @@ export default async function Page(props: {
     const notePath = decodeNotePath(encodedNotePath);
     const ext = getExt(notePath);
 
+    log.info(
+      {
+        path: notePath,
+      },
+      `Rendering page...`,
+    );
+
     // 附件
     if (ext !== 'md') {
       return (
@@ -50,7 +62,21 @@ export default async function Page(props: {
       `${RK.HAST}${notePath}`,
     )) as unknown as Nodes;
 
+    log.info(
+      {
+        path: notePath,
+        hast,
+      },
+      'Get hast of page',
+    );
+
     if (!hast) {
+      log.info(
+        {
+          path: notePath,
+        },
+        'Page hast not found',
+      );
       notFound();
     }
 
