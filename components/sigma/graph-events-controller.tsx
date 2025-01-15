@@ -1,6 +1,7 @@
 'use client';
 
 import { useRegisterEvents, useSigma } from '@react-sigma/core';
+import { useRouter } from 'next/navigation';
 import { FC, PropsWithChildren, useEffect } from 'react';
 
 function getMouseLayer() {
@@ -13,6 +14,7 @@ const GraphEventsController: FC<
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const registerEvents = useRegisterEvents();
+  const router = useRouter();
 
   /**
    * Initialize here settings that require to know the graph and/or the sigma
@@ -22,7 +24,7 @@ const GraphEventsController: FC<
     registerEvents({
       clickNode({ node }) {
         if (!graph.getNodeAttribute(node, 'hidden')) {
-          window.open(graph.getNodeAttribute(node, 'URL'), '_blank');
+          router.push(`/notes/${graph.getNodeAttribute(node, 'key')}`);
         }
       },
       enterNode({ node }) {

@@ -50,6 +50,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.6
         version: 1.1.6(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-visually-hidden':
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-sigma/core':
         specifier: ^4.0.3
         version: 4.0.3(graphology@0.25.4(graphology-types@0.24.7))(react@19.0.0)(sigma@3.0.0-beta.26(graphology-types@0.24.7))

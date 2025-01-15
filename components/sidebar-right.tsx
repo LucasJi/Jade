@@ -118,7 +118,6 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
 
   useEffect(() => {
     getNoteHeadingByPath(decodedNotePath).then(data => {
-      console.log(decodedNotePath, 'heading', data);
       setHeading(data);
     });
   }, [decodedNotePath]);
