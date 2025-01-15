@@ -49,7 +49,6 @@ export default async function Page(props: {
       `Rendering page...`,
     );
 
-    // 附件
     if (ext !== 'md') {
       return (
         <div className="flex w-full justify-center">
