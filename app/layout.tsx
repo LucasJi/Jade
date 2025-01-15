@@ -10,7 +10,9 @@ import {
 } from '@/components/ui/sidebar';
 import ViewGraphButton from '@/components/view-graph-button';
 import WebVitals from '@/components/webVitals';
+import { siteConfig } from '@/config/site';
 import '@/styles/globals.css';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import localFont from 'next/font/local';
 import * as React from 'react';
 import { ReactNode } from 'react';
@@ -22,13 +24,18 @@ const font = localFont({
 });
 
 export const metadata = {
-  title: process.env.NEXT_PUBLIC_SITE_TITLE,
-  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
+  title: siteConfig.name,
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: siteConfig.authors,
+  creator: siteConfig.creator,
+  openGraph: siteConfig.openGraph,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en" className={font.className}>
+      <GoogleAnalytics gaId={`${process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}`} />
       <body className="min-h-screen bg-background antialiased">
         <WebVitals />
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
