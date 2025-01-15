@@ -65,7 +65,6 @@ export default async function Page(props: {
     log.info(
       {
         path: notePath,
-        hast,
       },
       'Get hast of page',
     );
@@ -91,6 +90,7 @@ export default async function Page(props: {
       />
     );
   } catch (error) {
+    log.error({ slug }, 'error occurs when rendering page', error);
     notFound();
   }
 }
