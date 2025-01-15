@@ -16,7 +16,7 @@ import { notFound } from 'next/navigation';
 
 const redis = await createRedisClient();
 
-export const dynamicParams = true;
+export const dynamicParams = false;
 export const dynamic = 'force-static';
 
 const log = logger.child({

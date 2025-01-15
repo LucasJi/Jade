@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   if (path) {
     log.info({ path }, 'Revalidate path success');
-    revalidatePath(path, 'page');
+    revalidatePath(path);
     return Response.json({ revalidated: true, now: Date.now() });
   }
 
