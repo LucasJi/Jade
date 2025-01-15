@@ -6,16 +6,14 @@ import { createNodeImageProgram } from '@sigma/node-image';
 import { DirectedGraph } from 'graphology';
 import { circular } from 'graphology-layout';
 import forceAtlas2 from 'graphology-layout-forceatlas2';
-import { constant, keyBy, mapValues, omit } from 'lodash';
+import { constant, keyBy, mapValues } from 'lodash';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Settings } from 'sigma/settings';
 import { drawHover, drawLabel } from './canvas-utils';
 import GraphDataController from './graph-data-controller';
 import GraphEventsController from './graph-events-controller';
 import GraphSettingsController from './graph-settings-controller';
-import SearchField from './search-field';
 import './style.css';
-import TagsPanel from './tags-panel';
 import { Dataset, FiltersState } from './types';
 
 const Graph: FC = () => {
@@ -69,7 +67,7 @@ const Graph: FC = () => {
       const maxDegree = Math.max(...scores);
       const MIN_NODE_SIZE = 3;
       const MAX_NODE_SIZE = 30;
-      graph.forEachNode(node =>
+      graph.forEachNode(node => {
         graph.setNodeAttribute(
           node,
           'size',
@@ -77,12 +75,12 @@ const Graph: FC = () => {
             (maxDegree - minDegree)) *
             (MAX_NODE_SIZE - MIN_NODE_SIZE) +
             MIN_NODE_SIZE,
-        ),
-      );
+        );
+      });
 
       circular.assign(graph);
       forceAtlas2.assign(graph, {
-        iterations: 5,
+        iterations: 10,
         settings: {
           gravity: 0.5,
           linLogMode: true,
@@ -122,28 +120,28 @@ const Graph: FC = () => {
               {/*  <BiRadioCircleMarked />*/}
               {/*</ZoomControl>*/}
             </div>
-            <div className="contents">
-              <div className="panels">
-                <SearchField filters={filtersState} />
-                <TagsPanel
-                  tags={dataset.tags}
-                  filters={filtersState}
-                  setTags={tags =>
-                    setFiltersState(() => ({
-                      tags,
-                    }))
-                  }
-                  toggleTag={tag => {
-                    setFiltersState(filters => ({
-                      ...filters,
-                      tags: filters.tags[tag]
-                        ? omit(filters.tags, tag)
-                        : { ...filters.tags, [tag]: true },
-                    }));
-                  }}
-                />
-              </div>
-            </div>
+            {/*<div className="contents">*/}
+            {/*  <div className="panels">*/}
+            {/*<SearchField filters={filtersState} />*/}
+            {/*<TagsPanel*/}
+            {/*  tags={dataset.tags}*/}
+            {/*  filters={filtersState}*/}
+            {/*  setTags={tags =>*/}
+            {/*    setFiltersState(() => ({*/}
+            {/*      tags,*/}
+            {/*    }))*/}
+            {/*  }*/}
+            {/*  toggleTag={tag => {*/}
+            {/*    setFiltersState(filters => ({*/}
+            {/*      ...filters,*/}
+            {/*      tags: filters.tags[tag]*/}
+            {/*        ? omit(filters.tags, tag)*/}
+            {/*        : { ...filters.tags, [tag]: true },*/}
+            {/*    }));*/}
+            {/*  }}*/}
+            {/*/>*/}
+            {/*</div>*/}
+            {/*</div>*/}
           </>
         )}
       </SigmaContainer>

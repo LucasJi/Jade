@@ -4,7 +4,6 @@ import {
   getFilename,
   getSimpleFilename,
   mapInternalLinkToPath,
-  mapPathsToColors,
 } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { listExistedObjs } from '@/lib/note';
@@ -95,9 +94,7 @@ const buildGraphDataset = async (
   noteParserResults: Map<string, NoteParserResult>,
 ) => {
   const mdFilePaths = paths.filter(p => getExt(p) === 'md');
-  const MIN_SIZE = 3;
-  const MAX_SIZE = 30;
-  const pathColorMap = mapPathsToColors(paths);
+  // const pathColorMap = mapPathsToColors(paths);
 
   const referenceCount = new Map<string, number>();
   for (const path of mdFilePaths) {
@@ -145,7 +142,8 @@ const buildGraphDataset = async (
         tags: frontmatter.tags,
         // TODO: allow other file types
         targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
-        color: pathColorMap[path],
+        // color: pathColorMap[path],
+        color: 'rgb(63, 63, 70)',
         score:
           (referenceCount.get(path) ?? 0 - minCount) / (maxCount - minCount),
         x: Math.random(),

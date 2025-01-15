@@ -1,9 +1,8 @@
-import { join } from 'lodash';
+import { join, slice } from 'lodash';
 import { Settings } from 'sigma/settings';
 import { NodeDisplayData, PartialButFor, PlainObject } from 'sigma/types';
 
-// Obsidian purple
-const TEXT_COLOR = '#7852ee';
+const TEXT_COLOR = '#000000';
 
 /**
  * This function draw in the input canvas 2D context a rectangle.
@@ -38,7 +37,6 @@ export function drawHover(
   data: PlainObject,
   settings: PlainObject,
 ) {
-  console.log(data);
   const size = settings.labelSize;
   const font = settings.labelFont;
   const weight = settings.labelWeight;
@@ -46,9 +44,12 @@ export function drawHover(
 
   const label = data.label;
   const subLabel =
-    data.tags && data.tags.length > 0 ? join(data.tags, ', ') : 'UNKNOWN';
-  // TODO: Refactor
-  const clusterLabel = data.key;
+    data.tags && data.tags.length > 0
+      ? `Tags: ${join(data.tags, ', ')}`
+      : 'Tags: --';
+  let folders = data.key.split('/');
+  folders = slice(folders, 0, folders.length - 1);
+  const clusterLabel = join(folders, '/');
 
   // Then we draw the label background
   context.beginPath();
