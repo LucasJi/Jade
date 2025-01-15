@@ -84,12 +84,16 @@ export async function POST(req: Request) {
       path: notePath,
       event: EventName,
     },
-    'Minio Event',
+    'Webhook - Minio Event',
   );
 
   const ext = getExt(notePath);
 
   if (ext !== 'md') {
+    log.info(
+      { path: notePath },
+      'Non markdown file updates, skip rebuilding redis cache',
+    );
     return new Response('success', {
       status: 200,
     });
@@ -105,11 +109,13 @@ export async function POST(req: Request) {
     keys.forEach(key => {
       redis.del(key);
     });
+    log.info('Object is deleted, rebuild caches');
   } else if (EventName.includes(CREATE_EVENT)) {
     const payloadOutput = await s3.getObject(notePath);
     const note = await payloadOutput?.transformToString();
 
     if (!note) {
+      log.info('Object is not found in S3, skip rebuilding caches');
       return new Response(`note ${notePath} not exists`, {
         status: 404,
       });
@@ -142,6 +148,8 @@ export async function POST(req: Request) {
         );
       }
     }
+
+    log.info('Object is added or updated, rebuild caches');
   }
 
   await revalidate(`/notes/${encodeNotePath(notePath)}`);
