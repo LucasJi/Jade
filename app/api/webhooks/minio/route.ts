@@ -1,4 +1,3 @@
-import { revalidate } from '@/app/api';
 import config from '@/lib/config';
 import { RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
@@ -7,6 +6,7 @@ import { encodeNotePath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
 import { noteParser } from '@/processor/parser';
+import { revalidatePath } from 'next/cache';
 
 const log = logger.child({
   module: 'api',
@@ -152,7 +152,8 @@ export async function POST(req: Request) {
     log.info('Object is added or updated, rebuild caches');
   }
 
-  await revalidate(`/notes/${encodeNotePath(notePath)}`);
+  revalidatePath(`/notes/${encodeNotePath(notePath)}`, 'page');
+  // await revalidate(`/notes/${encodeNotePath(notePath)}`);
 
   return new Response('success', {
     status: 200,
