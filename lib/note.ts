@@ -1,7 +1,8 @@
 import { TreeViewNode } from '@/components/types';
 import config from '@/lib/config';
 import { getExt, getFilename } from '@/lib/file';
-import { BucketItem, NoteObject } from '@/lib/types';
+import { NoteObject } from '@/lib/types';
+import { ListObjectVersionsCommandOutput } from '@aws-sdk/client-s3';
 import { logger } from './logger';
 
 const log = logger.child({ module: 'lib:note' });
@@ -236,17 +237,25 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
 export const decodeURISlug = (slug: string[]) =>
   slug.map(s => decodeURIComponent(s));
 
-export const listExistedObjs = (objs: BucketItem[]): NoteObject[] => {
-  return objs
-    .filter(obj => obj.isLatest && !obj.isDeleteMarker)
-    .filter(obj => !config.dir.excluded.includes(obj.name.split('/')[0]))
+export const listExistedObjs = (
+  output: ListObjectVersionsCommandOutput,
+): NoteObject[] => {
+  const { Versions } = output;
+  if (!Versions) {
+    return [];
+  }
+
+  return Versions.filter(obj => obj.IsLatest)
+    .filter(obj => !config.dir.excluded.includes(obj.Key!.split('/')[0]))
     .map(obj => ({
-      path: obj.name,
-      ext: getExt(obj.name),
+      path: obj.Key!,
+      ext: getExt(obj.Key!),
       type: 'file',
     }));
 };
 
-export const listExistedNotes = (objs: BucketItem[]): NoteObject[] => {
-  return listExistedObjs(objs).filter(obj => obj.ext === 'md');
+export const listExistedNotes = (
+  output: ListObjectVersionsCommandOutput,
+): NoteObject[] => {
+  return listExistedObjs(output).filter(obj => obj.ext === 'md');
 };

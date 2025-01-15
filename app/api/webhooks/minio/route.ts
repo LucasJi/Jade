@@ -106,7 +106,15 @@ export async function POST(req: Request) {
       redis.del(key);
     });
   } else if (EventName.includes(CREATE_EVENT)) {
-    const note = await s3.getObject(notePath);
+    const payloadOutput = await s3.getObject(notePath);
+    const note = await payloadOutput?.transformToString();
+
+    if (!note) {
+      return new Response(`note ${notePath} not exists`, {
+        status: 404,
+      });
+    }
+
     const { hast, headings, frontmatter } = noteParser({
       note,
       plainNoteName: getFilename(notePath),

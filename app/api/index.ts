@@ -28,24 +28,6 @@ export const getNoteHeadingByPath = async (
   }).toString();
   return fetch(url, {
     method: 'GET',
-    next: {
-      tags: ['sync'],
-    },
-  }).then(resp => resp.json());
-};
-
-export const getPreviewUrlByNameLike = async (
-  name: string,
-): Promise<string> => {
-  const url = new URL(`${baseUrl}/api/note/preview-url`);
-  url.search = new URLSearchParams({
-    name: name,
-  }).toString();
-  return fetch(url, {
-    method: 'GET',
-    next: {
-      tags: ['sync'],
-    },
   }).then(resp => resp.json());
 };
 

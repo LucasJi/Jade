@@ -1,5 +1,3 @@
-import type { ClientOptions } from 'minio';
-
 const dir = {
   included: process.env.DIRS_INCLUDED
     ? process.env.DIRS_INCLUDED.split(',')
@@ -24,18 +22,16 @@ const redis = {
 };
 
 interface S3 {
-  clientOptions: ClientOptions;
+  endpoint: string;
+  accessKey: string;
+  secretKey: string;
   bucket: string;
 }
 
 const s3: S3 = {
-  clientOptions: {
-    endPoint: process.env.S3_ENDPOINT || '',
-    port: 9000,
-    useSSL: false,
-    accessKey: process.env.S3_ACCESS_KEY || '',
-    secretKey: process.env.S3_SECRET_KEY || '',
-  },
+  endpoint: process.env.S3_ENDPOINT || '',
+  accessKey: process.env.S3_ACCESS_KEY || '',
+  secretKey: process.env.S3_SECRET_KEY || '',
   bucket: process.env.S3_BUCKET || '',
 };
 

@@ -3,6 +3,9 @@ import {
   BucketVersioningStatus,
   CreateBucketCommand,
   CreateBucketCommandInput,
+  GetObjectCommand,
+  GetObjectCommandInput,
+  GetObjectCommandOutput,
   ListBucketsCommand,
   ListObjectsV2Command,
   ListObjectsV2CommandInput,
@@ -17,6 +20,7 @@ import {
 import { describe, test } from 'vitest';
 
 const bucket = 'test';
+const key = 's3UploadTestFile.txt';
 
 describe('s3 apis', () => {
   const client = new S3Client({
@@ -61,9 +65,9 @@ describe('s3 apis', () => {
 
   test('PutObject', async () => {
     const input: PutObjectCommandInput = {
-      Body: 'filetoupload_1',
+      Body: 'filetoupload',
       Bucket: bucket,
-      Key: 's3UploadTestFile_1.txt',
+      Key: key,
     };
     const command = new PutObjectCommand(input);
     const response = await client.send(command);
@@ -88,5 +92,20 @@ describe('s3 apis', () => {
     const command = new ListObjectsV2Command(input);
     const response = await client.send(command);
     console.log(response);
+  });
+
+  test('GetObject', async () => {
+    const input: GetObjectCommandInput = {
+      Bucket: bucket,
+      Key: key,
+    };
+    const command = new GetObjectCommand(input);
+    try {
+      const response: GetObjectCommandOutput = await client.send(command);
+      const result = await response.Body?.transformToString();
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    }
   });
 });

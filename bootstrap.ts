@@ -34,7 +34,8 @@ const clearCache = async () => {
 };
 
 const cacheObjects = async () => {
-  const objects = listExistedObjs(await s3.listObjects());
+  log.info('Start to cache all objects');
+  const objects = listExistedObjs(await s3.listObjectVersions());
   const paths = objects.map(obj => obj.path);
 
   await redis.sAdd(RK.PATHS, paths);
@@ -43,7 +44,7 @@ const cacheObjects = async () => {
     await redis.hSet(RK.OBJS, obj.path, JSON.stringify(obj));
   }
 
-  log.info({ objectSize: paths.length }, 'Cache all object');
+  log.info({ objectSize: paths.length }, 'Objects are cached');
   return paths;
 };
 
@@ -57,7 +58,12 @@ const cacheNotes = async (paths: string[]) => {
       continue;
     }
 
-    const note = await s3.getObject(path);
+    const payloadOutput = await s3.getObject(path);
+    if (!payloadOutput) {
+      continue;
+    }
+
+    const note = await payloadOutput.transformToString();
     const noteParserResult = noteParser({
       note,
       plainNoteName: getFilename(path),
@@ -140,10 +146,6 @@ const buildGraphDataset = async (
         // TODO: allow other file types
         targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
         color: pathColorMap[path],
-        // size:
-        //   ((referenceCount.get(path) ?? 0 - minCount) / (maxCount - minCount)) *
-        //     (MAX_SIZE - MIN_SIZE) +
-        //   MIN_SIZE,
         score:
           (referenceCount.get(path) ?? 0 - minCount) / (maxCount - minCount),
         x: Math.random(),

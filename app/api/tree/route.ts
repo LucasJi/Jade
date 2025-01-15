@@ -13,7 +13,7 @@ export async function GET() {
   let noteObjects;
   const cache = await redis.hVals(RK.OBJS);
   if (cache === null) {
-    noteObjects = listExistedObjs(await s3.listObjects());
+    noteObjects = listExistedObjs(await s3.listObjectVersions());
   } else {
     noteObjects = cache.map(c => JSON.parse(c));
   }

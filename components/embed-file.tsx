@@ -1,6 +1,5 @@
 'use client';
 
-import { getPreviewUrlByNameLike } from '@/app/api';
 import Pdf from '@/components/pdf';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { isAudio, isImg, isPdf } from '@/lib/file';
@@ -95,10 +94,8 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
     }
 
     if (name) {
-      getPreviewUrlByNameLike(name).then(url => {
-        setUrl(url);
-        setIsLoading(false);
-      });
+      setUrl(`${process.env.NEXT_PUBLIC_BASE_URL}/api/obj?name=${name}`);
+      setIsLoading(false);
     }
   }, []);
 

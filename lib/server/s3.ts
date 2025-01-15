@@ -1,66 +1,56 @@
-import { BucketItem } from '@/lib/types';
-import { Client } from 'minio';
+import {
+  BucketLocationConstraint,
+  GetObjectCommand,
+  GetObjectCommandInput,
+  GetObjectCommandOutput,
+  ListObjectVersionsCommand,
+  ListObjectVersionsCommandInput,
+  ListObjectVersionsCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { StreamingBlobPayloadOutputTypes } from '@smithy/types';
 import config from '../config';
 
 export class S3 {
   _bucket: string;
 
   constructor() {
-    this._client = new Client(config.s3.clientOptions);
+    this._client = new S3Client({
+      endpoint: `${config.s3.endpoint}`,
+      region: BucketLocationConstraint.cn_north_1,
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: config.s3.accessKey,
+        secretAccessKey: config.s3.secretKey,
+      },
+    });
     this._bucket = config.s3.bucket;
   }
 
-  _client: Client;
+  _client: S3Client;
 
-  get client(): Client {
+  get client(): S3Client {
     return this._client;
   }
 
-  async listObjects(): Promise<BucketItem[]> {
-    const data: BucketItem[] = [];
-    // @ts-ignore: https://github.com/minio/minio-js/issues/1279
-    const stream = this._client.listObjects(this._bucket, '', true, {
-      IncludeVersion: true,
-    });
-
-    return new Promise((resolve, reject) => {
-      stream.on('data', function (obj: BucketItem) {
-        data.push(obj as BucketItem);
-      });
-      stream.on('end', function () {
-        resolve(data);
-      });
-      stream.on('error', function (err: any) {
-        reject(err);
-      });
-    });
+  async listObjectVersions(): Promise<ListObjectVersionsCommandOutput> {
+    const input: ListObjectVersionsCommandInput = {
+      Bucket: this._bucket,
+      Prefix: '',
+    };
+    const command = new ListObjectVersionsCommand(input);
+    return await this._client.send(command);
   }
 
-  async getObject(objectName: string): Promise<string> {
-    let data: string = '';
-    const stream = await this._client.getObject(this._bucket, objectName);
-
-    return new Promise((resolve, reject) => {
-      stream.on('data', function (chunk) {
-        data += chunk.toString();
-      });
-      stream.on('end', function () {
-        resolve(data);
-      });
-      stream.on('error', function (err) {
-        reject(err);
-      });
-    });
-  }
-
-  async presignedGetObject(
-    objectName: string,
-    expiry?: number,
-  ): Promise<string> {
-    return await this._client.presignedGetObject(
-      this._bucket,
-      objectName,
-      expiry ?? 24 * 60 * 60,
-    );
+  async getObject(
+    path: string,
+  ): Promise<StreamingBlobPayloadOutputTypes | undefined> {
+    const input: GetObjectCommandInput = {
+      Bucket: this._bucket,
+      Key: path,
+    };
+    const command = new GetObjectCommand(input);
+    const response: GetObjectCommandOutput = await this._client.send(command);
+    return response.Body;
   }
 }

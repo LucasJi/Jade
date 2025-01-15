@@ -16,6 +16,12 @@ const nextConfig = {
         port: '9000',
         pathname: '/jade-docs/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/obj/**',
+      },
     ],
   },
 };

@@ -77,6 +77,9 @@ importers:
       '@sigma/node-image':
         specifier: 3.0.0
         version: 3.0.0(sigma@3.0.0-beta.26(graphology-types@0.24.7))
+      '@smithy/types':
+        specifier: ^4.1.0
+        version: 4.1.0
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4

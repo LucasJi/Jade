@@ -13,15 +13,16 @@ export async function GET(req: NextRequest) {
   if (!name) {
     return NextResponse.json('');
   }
+  //
+  // const bucketItems = await s3.listObjectVersions();
+  // const itemNames = bucketItems.map(i => i.name);
+  // const found = itemNames.find(i => i.includes(name));
+  //
+  // if (!found) {
+  //   return NextResponse.json('');
+  // }
 
-  const bucketItems = await s3.listObjects();
-  const itemNames = bucketItems.map(i => i.name);
-  const found = itemNames.find(i => i.includes(name));
-
-  if (!found) {
-    return NextResponse.json('');
-  }
-
-  const presignedUrl = await s3.presignedGetObject(found, expiry);
+  // const presignedUrl = await s3.presignedGetObject(found, expiry);
+  const presignedUrl = '';
   return NextResponse.json(presignedUrl);
 }
