@@ -17,6 +17,7 @@ import { notFound } from 'next/navigation';
 const redis = await createRedisClient();
 
 export const dynamicParams = true;
+export const dynamic = 'force-static';
 
 const log = logger.child({
   module: 'app/notes/[...slug]',
