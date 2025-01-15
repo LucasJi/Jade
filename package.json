@@ -80,7 +80,7 @@
     "micromark-util-symbol": "^2.0.0",
     "micromark-util-types": "^2.0.0",
     "minio": "^8.0.1",
-    "next": "15.1.0",
+    "next": "15.0.0",
     "next-themes": "^0.2.1",
     "pino": "^9.5.0",
     "pino-pretty": "^11.3.0",
