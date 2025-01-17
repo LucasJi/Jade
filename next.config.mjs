@@ -13,8 +13,9 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'jade-doc.lucasji.cn',
-        port: '3000',
-        pathname: '/api/obj/**',
+        port: '',
+        pathname: '**',
+        search: '',
       },
     ],
   },
