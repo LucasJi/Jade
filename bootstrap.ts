@@ -74,6 +74,10 @@ const cacheNotes = async (paths: string[]) => {
     await redis.set(`${RK.HEADING}${path}`, JSON.stringify(headings));
     await redis.json.set(`${RK.FRONT_MATTER}${path}`, '$', frontmatter);
 
+    if (frontmatter.home === true) {
+      await redis.set(RK.HOME, path);
+    }
+
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
         await redis.json.set(
