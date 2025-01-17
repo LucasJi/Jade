@@ -129,7 +129,7 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
       {...props}
     >
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="px-0">
           <SidebarGroupLabel>Table of Contents</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

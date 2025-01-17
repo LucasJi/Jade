@@ -107,13 +107,14 @@ export async function POST(req: Request) {
     keys.forEach(key => {
       redis.del(key);
     });
-    log.info('Object is deleted, rebuild caches');
+    await redis.hDel(RK.GRAPH, notePath);
+    log.info(`Object ${notePath} is deleted, rebuild caches`);
   } else if (EventName.includes(CREATE_EVENT)) {
     const payloadOutput = await s3.getObject(notePath);
     const note = await payloadOutput?.transformToString();
 
     if (!note) {
-      log.info('Object is not found in S3, skip rebuilding caches');
+      log.info(`Object ${notePath} is not found in S3, skip rebuilding caches`);
       return new Response(`note ${notePath} not exists`, {
         status: 404,
       });
@@ -146,6 +147,8 @@ export async function POST(req: Request) {
         );
       }
     }
+
+    // TODO: rebuild graph
 
     log.info(`Object ${notePath} is added or updated, rebuild caches`);
   }

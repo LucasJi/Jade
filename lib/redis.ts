@@ -9,6 +9,6 @@ export const createRedisClient = async () => {
     url: `redis://:${config.redis.pass}@${config.redis.host}:${config.redis.port}`,
   })
     .on('error', err => log.error('Redis Client Error', err))
-    .on('ready', () => log.info('Redis Client Ready'))
+    .on('ready', () => log.debug('Redis Client Ready'))
     .connect();
 };

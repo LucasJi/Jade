@@ -13,6 +13,7 @@ import WebVitals from '@/components/webVitals';
 import { siteConfig } from '@/config/site';
 import '@/styles/globals.css';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { Viewport } from 'next';
 import localFont from 'next/font/local';
 import * as React from 'react';
 import { ReactNode } from 'react';
@@ -30,6 +31,11 @@ export const metadata = {
   authors: siteConfig.authors,
   creator: siteConfig.creator,
   openGraph: siteConfig.openGraph,
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -56,14 +62,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   </div>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
-                  <div className="mx-auto flex h-[calc(100vh_-_5.5rem)] w-full max-w-3xl flex-col rounded-xl">
-                    <ScrollArea
-                      className="w-full max-w-3xl flex-1"
-                      type="scroll"
-                    >
-                      {children}
-                    </ScrollArea>
-                  </div>
+                  <ScrollArea
+                    className="mx-auto flex h-[calc(100vh_-_5.5rem)] w-full max-w-3xl flex-col rounded-xl"
+                    type="scroll"
+                  >
+                    {children}
+                  </ScrollArea>
                 </div>
               </SidebarInset>
               <SidebarRight />
