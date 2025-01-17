@@ -1,12 +1,22 @@
 import Markdown from '@/components/markdown';
 import { RK } from '@/lib/constants';
+import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { Nodes } from 'hast';
 
 const redis = await createRedisClient();
 
+export const revalidate = 10;
+
 export default async function Home() {
   const home = await redis.get(RK.HOME);
+
+  logger.info(
+    {
+      home,
+    },
+    'Building home page...',
+  );
 
   if (home === null) {
     // TODO: Show all note when there is no home page note configured.
