@@ -1,20 +1,23 @@
-'use client';
+import { getHome, getNotePaths } from '@/app/api';
+import Markdown from '@/components/markdown';
 
-import dynamic from 'next/dynamic';
+export default async function Home() {
+  const home = await getHome();
 
-const Graph = dynamic(
-  () => import('@/components/sigma/graph').then(mod => mod.default),
-  {
-    ssr: false,
-  },
-);
+  if (home === null) {
+    // TODO: Show all note when there is no home page note configured.
+    return <div>Home page note is not configured</div>;
+  }
 
-export default function Home() {
+  const { hast, origin } = home;
+
+  const paths = await getNotePaths();
   return (
-    <div className="h-screen w-full">
-      <div className="h-[750px] w-full">
-        <Graph />
-      </div>
-    </div>
+    <Markdown
+      hast={hast}
+      origin={origin}
+      className="w-full"
+      notePaths={paths}
+    />
   );
 }
