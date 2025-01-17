@@ -13,7 +13,7 @@ const ViewGraphButton: FC = () => {
       variant="ghost"
       size="icon"
       title="View Graph"
-      onClick={() => router.push('/')}
+      onClick={() => router.push('/graph')}
     >
       <Share2 size={16} />
       <span className="sr-only">View Graph</span>
