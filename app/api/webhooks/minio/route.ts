@@ -149,11 +149,12 @@ export async function POST(req: Request) {
     }
 
     // TODO: rebuild graph
+    // TODO: update home page
 
     log.info(`Object ${notePath} is added or updated, rebuild caches`);
   }
 
-  // TODO: Use `revalidatePath` to make the revalidation more flexible once all bugs of such feature are fixed.
+  // TODO: Use `revalidatePath` to make the revalidation more flexible and stable once all bugs are fixed.
   // await revalidate(`/notes/${encodeNotePath(notePath)}`);
 
   return new Response('success', {
