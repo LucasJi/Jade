@@ -138,8 +138,6 @@ export const base64Decode = (text: string) => {
 export const getNoteId = (name: string): string =>
   decimalToBase62(murmurhash(name));
 
-export const getNotePath = (name: string): string => encodeNotePath(name);
-
 export const getNoteSlugsFromPath = (path: string): string[] => path.split('/');
 
 export const getEncodedNotePathFromSlug = (slugs: string[]) => slugs.join('/');

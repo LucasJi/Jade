@@ -5,7 +5,6 @@ import {
   decodeNotePath,
   encodeNotePath,
   getNoteId,
-  getNotePath,
   murmurhash,
 } from '../note';
 
@@ -39,14 +38,9 @@ describe('lib:note', () => {
     assert.equal(getNoteId(noteName), decimalToBase62(murmurhash(noteName)));
   });
 
-  test('getNotePath', () => {
-    const noteName = '/path a/some note.md';
-    assert.equal(getNotePath(noteName), '/path+a/some+note.md');
-  });
-
   test('map Chinese character to pinyin', () => {
     console.log(
-      pinyin('雨滴 落下来了- test', {
+      pinyin('/某个文件夹/某个文件.md', {
         heteronym: false,
         group: false,
         style: 0,
