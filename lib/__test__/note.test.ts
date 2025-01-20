@@ -1,3 +1,4 @@
+import pinyin from 'pinyin';
 import { assert, describe, test } from 'vitest';
 import {
   decimalToBase62,
@@ -8,7 +9,7 @@ import {
   murmurhash,
 } from '../note';
 
-describe('lib note', () => {
+describe('lib:note', () => {
   test('encodeNoteName', () => {
     assert.equal(
       encodeNotePath('/folder/some note.md'),
@@ -41,5 +42,15 @@ describe('lib note', () => {
   test('getNotePath', () => {
     const noteName = '/path a/some note.md';
     assert.equal(getNotePath(noteName), '/path+a/some+note.md');
+  });
+
+  test('map Chinese character to pinyin', () => {
+    console.log(
+      pinyin('雨滴 落下来了- test', {
+        heteronym: false,
+        group: false,
+        style: 0,
+      }),
+    );
   });
 });
