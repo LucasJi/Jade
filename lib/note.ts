@@ -251,6 +251,7 @@ export const listExistedObjs = (
       path: obj.Key!,
       ext: getExt(obj.Key!),
       type: 'file',
+      lastModified: obj.LastModified,
     }));
 };
 
