@@ -23,6 +23,8 @@ export enum RK {
   IDX_FRONT_MATTER = 'jade:idx:frontmatter',
   GRAPH = 'jade:graph',
   HOME = 'jade:home',
+  MD5 = 'jade:md5:',
+  FILES = 'jade:files',
 }
 
 // accepted file formats

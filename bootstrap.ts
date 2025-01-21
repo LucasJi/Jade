@@ -11,7 +11,9 @@ import { createRedisClient } from '@/lib/redis';
 import { S3 } from '@/lib/server/s3';
 import { noteParser } from '@/processor/parser';
 import { NoteParserResult } from '@/processor/types';
+import fs from 'fs';
 import { filter, max, min, uniq } from 'lodash';
+import path from 'path';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
@@ -200,6 +202,12 @@ const init = async () => {
   const noteParserResults = await cacheNotes(paths);
   await buildGraphDataset(paths, noteParserResults);
   await createSearchIndexes();
+
+  // create tmp folder
+  const tmpFolder = path.join(process.cwd(), 'tmp');
+  if (!fs.existsSync(tmpFolder)) {
+    fs.mkdirSync(tmpFolder); // 使用 recursive 选项来创建多级目录
+  }
 };
 
 try {
