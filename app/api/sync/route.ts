@@ -1,6 +1,7 @@
 import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
+import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs from 'fs';
 import { NextResponse } from 'next/server';
 import path from 'path';
@@ -24,26 +25,26 @@ export async function POST(request: Request) {
     });
   }
 
-  const vaultFilepath = formData.get('path') as string;
+  const filepathInVault = formData.get('path') as string;
 
-  if (behavior === 'created') {
+  if (behavior === 'created' || behavior === 'modified') {
     const md5 = formData.get('md5') as string;
     const extension = formData.get('extension') as string;
     const file = formData.get('file') as File;
     const exists = formData.get('exists') === 'true';
 
-    const diskFilepath = path.join(process.cwd(), 'tmp', `${md5}.${extension}`);
+    const filepathOnDisk = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
     if (!exists) {
       file.arrayBuffer().then(async arrayBuffer => {
         const buffer = Buffer.from(arrayBuffer);
-        fs.writeFileSync(diskFilepath, buffer, { encoding: 'utf-8' });
+        fs.writeFileSync(filepathOnDisk, buffer, { encoding: 'utf-8' });
 
         log.info(
           {
-            path: vaultFilepath,
+            path: filepathInVault,
             md5: md5,
-            filepath: diskFilepath,
+            filepath: filepathOnDisk,
           },
           'File created',
         );
@@ -51,9 +52,9 @@ export async function POST(request: Request) {
     } else {
       log.info(
         {
-          path: vaultFilepath,
+          path: filepathInVault,
           md5: md5,
-          filepath: diskFilepath,
+          filepath: filepathOnDisk,
         },
         'File already exists',
       );
@@ -61,26 +62,26 @@ export async function POST(request: Request) {
 
     await redis.hSet(
       RK.FILES,
-      vaultFilepath,
+      filepathInVault,
       JSON.stringify({
         md5,
         extension,
-        filepath: diskFilepath,
+        filepath: filepathOnDisk,
       }),
     );
-    await redis.sAdd(`${RK.MD5}${md5}`, vaultFilepath);
+    await redis.sAdd(`${RK.MD5}${md5}`, filepathInVault);
   } else if (behavior === 'deleted') {
-    const fileDetails = await redis.hGet(RK.FILES, vaultFilepath);
+    const fileDetails = await redis.hGet(RK.FILES, filepathInVault);
 
     if (fileDetails) {
       const { md5, filepath } = JSON.parse(fileDetails);
-      await redis.sRem(`${RK.MD5}${md5}`, vaultFilepath);
-      await redis.hDel(RK.FILES, vaultFilepath);
+      await redis.sRem(`${RK.MD5}${md5}`, filepathInVault);
+      await redis.hDel(RK.FILES, filepathInVault);
       fs.unlinkSync(filepath);
 
       log.info(
         {
-          path: vaultFilepath,
+          path: filepathInVault,
           md5: md5,
           filepath,
         },
@@ -96,14 +97,14 @@ export async function POST(request: Request) {
       if (fileDetails) {
         const { md5, filepath } = JSON.parse(fileDetails);
         await redis.sRem(`${RK.MD5}${md5}`, oldPath);
-        await redis.sAdd(`${RK.MD5}${md5}`, vaultFilepath);
+        await redis.sAdd(`${RK.MD5}${md5}`, filepathInVault);
         await redis.hDel(RK.FILES, oldPath);
-        await redis.hSet(RK.FILES, vaultFilepath, fileDetails);
+        await redis.hSet(RK.FILES, filepathInVault, fileDetails);
         fs.unlinkSync(filepath);
 
         log.info(
           {
-            path: vaultFilepath,
+            path: filepathInVault,
             oldPath,
           },
           'File renamed',

@@ -5,6 +5,7 @@ export const logger: Logger =
     ? // JSON in production
       pino({
         level: 'info',
+        timestamp: pino.stdTimeFunctions.isoTime,
       })
     : // Pretty print in development
       pino({
@@ -15,4 +16,5 @@ export const logger: Logger =
           },
         },
         level: 'debug',
+        timestamp: pino.stdTimeFunctions.isoTime,
       });

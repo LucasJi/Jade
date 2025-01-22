@@ -197,26 +197,24 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
     });
 
     // c is a directory
-    if (noteObject.type === 'dir') {
-      const childDir = splits[splits.length - 1];
-      currentNode.children.push({
-        name: childDir,
-        path: childDir,
-        children: [],
-        isDir: true,
-      });
-    }
+    // if (noteObject.type === 'dir') {
+    //   const childDir = splits[splits.length - 1];
+    //   currentNode.children.push({
+    //     name: childDir,
+    //     path: childDir,
+    //     children: [],
+    //     isDir: true,
+    //   });
+    // }
 
     // c is a file
-    if (noteObject.type === 'file') {
-      const filename: string = splits[splits.length - 1];
-      currentNode.children.push({
-        name: getFilename(filename),
-        path: encodeNotePath(noteObject.path),
-        children: [],
-        isDir: false,
-      });
-    }
+    const filename: string = splits[splits.length - 1];
+    currentNode.children.push({
+      name: getFilename(filename),
+      path: encodeNotePath(noteObject.path),
+      children: [],
+      isDir: false,
+    });
 
     // sort all nodes after any new node added
     currentNode.children.sort((a, b) => {
