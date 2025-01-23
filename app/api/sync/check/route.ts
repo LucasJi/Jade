@@ -14,21 +14,23 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const paths = await redis.exists(`${RK.MD5}${md5}`);
+  const filesCache = await redis.hVals(RK.FILES);
 
-  if (paths === 0) {
-    return Response.json({
-      data: {
-        exists: false,
-      },
-      msg: 'File not exists',
-    });
+  for (const cache of filesCache) {
+    if (cache.includes(md5)) {
+      return Response.json({
+        data: {
+          exists: true,
+        },
+        msg: 'File already exists',
+      });
+    }
   }
 
   return Response.json({
     data: {
-      exists: true,
+      exists: false,
     },
-    msg: 'File already exists',
+    msg: 'File not exists',
   });
 }

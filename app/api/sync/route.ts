@@ -25,26 +25,27 @@ export async function POST(request: Request) {
     });
   }
 
-  const filepathInVault = formData.get('path') as string;
+  const vaultPath = formData.get('path') as string;
 
   if (behavior === 'created' || behavior === 'modified') {
     const md5 = formData.get('md5') as string;
     const extension = formData.get('extension') as string;
     const file = formData.get('file') as File;
     const exists = formData.get('exists') === 'true';
+    const lastModified = formData.get('lastModified') as string;
 
-    const filepathOnDisk = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
+    const diskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
     if (!exists) {
       file.arrayBuffer().then(async arrayBuffer => {
         const buffer = Buffer.from(arrayBuffer);
-        fs.writeFileSync(filepathOnDisk, buffer, { encoding: 'utf-8' });
+        fs.writeFileSync(diskPath, buffer, { encoding: 'utf-8' });
 
         log.info(
           {
-            path: filepathInVault,
-            md5: md5,
-            filepath: filepathOnDisk,
+            vaultPath,
+            md5,
+            diskPath,
           },
           'File created',
         );
@@ -52,9 +53,9 @@ export async function POST(request: Request) {
     } else {
       log.info(
         {
-          path: filepathInVault,
-          md5: md5,
-          filepath: filepathOnDisk,
+          vaultPath,
+          md5,
+          diskPath,
         },
         'File already exists',
       );
@@ -62,60 +63,95 @@ export async function POST(request: Request) {
 
     await redis.hSet(
       RK.FILES,
-      filepathInVault,
+      vaultPath,
       JSON.stringify({
         md5,
         extension,
-        filepath: filepathOnDisk,
+        diskPath,
+        lastModified,
       }),
     );
-    await redis.sAdd(`${RK.MD5}${md5}`, filepathInVault);
   } else if (behavior === 'deleted') {
-    const fileDetails = await redis.hGet(RK.FILES, filepathInVault);
+    const fileStat = await redis.hGet(RK.FILES, vaultPath);
 
-    if (fileDetails) {
-      const { md5, filepath } = JSON.parse(fileDetails);
-      await redis.sRem(`${RK.MD5}${md5}`, filepathInVault);
-      await redis.hDel(RK.FILES, filepathInVault);
-      fs.unlinkSync(filepath);
+    if (fileStat) {
+      const { md5, diskPath } = JSON.parse(fileStat);
+      await redis.hDel(RK.FILES, vaultPath);
+      fs.unlinkSync(diskPath);
 
       log.info(
         {
-          path: filepathInVault,
+          vaultPath,
           md5: md5,
-          filepath,
+          diskPath,
         },
         'File deleted',
       );
     }
   } else if (behavior === 'renamed') {
     const oldPath = formData.get('oldPath') as string;
+    const file = formData.get('file') as File;
+    const exists = formData.get('exists') === 'true';
+    const lastModified = formData.get('lastModified') as string;
+    const extension = formData.get('extension') as string;
 
     if (oldPath) {
-      const fileDetails = await redis.hGet(RK.FILES, oldPath as string);
+      const fileStat = await redis.hGet(RK.FILES, oldPath);
 
-      if (fileDetails) {
-        const { md5, filepath } = JSON.parse(fileDetails);
-        await redis.sRem(`${RK.MD5}${md5}`, oldPath);
-        await redis.sAdd(`${RK.MD5}${md5}`, filepathInVault);
+      if (fileStat) {
+        const { md5, diskPath } = JSON.parse(fileStat);
+        const newDiskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
+        if (!exists) {
+          file.arrayBuffer().then(async arrayBuffer => {
+            const buffer = Buffer.from(arrayBuffer);
+            fs.writeFileSync(newDiskPath, buffer, { encoding: 'utf-8' });
+            log.info(
+              {
+                vaultPath,
+                md5,
+                diskPath,
+              },
+              'Renamed file created',
+            );
+          });
+        } else {
+          log.info(
+            {
+              vaultPath,
+              md5,
+              diskPath,
+            },
+            'Renamed file already exists',
+          );
+        }
+
+        fs.unlinkSync(diskPath);
         await redis.hDel(RK.FILES, oldPath);
-        await redis.hSet(RK.FILES, filepathInVault, fileDetails);
-        fs.unlinkSync(filepath);
+        await redis.hSet(
+          RK.FILES,
+          vaultPath,
+          JSON.stringify({
+            md5,
+            extension,
+            diskPath: newDiskPath,
+            lastModified,
+          }),
+        );
 
         log.info(
           {
-            path: filepathInVault,
+            vaultPath,
             oldPath,
           },
           'File renamed',
         );
       } else {
         log.warn(
-          'Failed to perform rename sync, file details of old path not exists',
+          'Failed to perform rename sync, file stat of old path not exists',
         );
       }
     } else {
-      log.warn('Failed to perform rename sync, oldPath not exists');
+      log.warn('Failed to perform rename sync, old path not exists');
     }
   } else {
     // do nothing
