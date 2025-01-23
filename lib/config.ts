@@ -21,25 +21,10 @@ const redis = {
   pass: process.env.REDIS_PASS,
 };
 
-interface S3 {
-  endpoint: string;
-  accessKey: string;
-  secretKey: string;
-  bucket: string;
-}
-
-const s3: S3 = {
-  endpoint: process.env.S3_ENDPOINT || '',
-  accessKey: process.env.S3_ACCESS_KEY || '',
-  secretKey: process.env.S3_SECRET_KEY || '',
-  bucket: process.env.S3_BUCKET || '',
-};
-
 const config = {
   repo,
   dir,
   redis,
-  s3,
 };
 
 export default config;
