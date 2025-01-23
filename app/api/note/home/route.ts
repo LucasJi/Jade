@@ -24,7 +24,7 @@ export async function GET() {
         path: ['.home'],
       });
     } catch (e) {
-      log.debug(e);
+      // do nothing
     }
     if (result === true) {
       homeNotePath = path;

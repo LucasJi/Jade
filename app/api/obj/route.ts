@@ -1,11 +1,38 @@
-import { listExistedObjs } from '@/lib/note';
-import { S3 } from '@/lib/server/s3';
+import { RK } from '@/lib/constants';
+import { createRedisClient } from '@/lib/redis';
+import { ASSETS_FOLDER } from '@/lib/server/server-constants';
+import fs, { ReadStream } from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
+import path from 'path';
 
-const s3 = new S3();
+const redis = await createRedisClient();
 
-// export const revalidate = 86400;
+// https://www.ericburel.tech/blog/nextjs-stream-files
+async function* nodeStreamToIterator(stream: ReadStream) {
+  for await (const chunk of stream) {
+    yield new Uint8Array(chunk);
+  }
+}
 
+function iteratorToStream(iterator: AsyncIterator<Uint8Array>) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+  });
+}
+
+function streamFile(path: string): ReadableStream {
+  const nodeStream = fs.createReadStream(path);
+  return iteratorToStream(nodeStreamToIterator(nodeStream));
+}
+
+// read file from disk
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const name = searchParams.get('name');
@@ -14,13 +41,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.json('');
   }
 
-  const objs = listExistedObjs(await s3.listObjectVersions());
-  const found = objs.find(o => o.path.includes(name));
+  const fileKeys = await redis.hKeys(RK.FILES);
+  const found = fileKeys.find(key => key.includes(name));
 
   if (!found) {
     return NextResponse.json('');
   }
 
-  const payload = await s3.getObject(found.path);
-  return new Response(payload?.transformToWebStream());
+  const fileStat = await redis.hGet(RK.FILES, found);
+
+  if (!fileStat) {
+    return NextResponse.json('');
+  }
+
+  const { md5, extension } = JSON.parse(fileStat);
+
+  return new NextResponse(
+    streamFile(path.join(ASSETS_FOLDER, `${md5}.${extension}`)),
+  );
 }

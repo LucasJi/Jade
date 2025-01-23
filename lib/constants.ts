@@ -35,6 +35,8 @@ export enum RK {
   GRAPH = 'jade-test:graph',
   // string
   HOME = 'jade-test:home',
+  // json
+  TREE_VIEW = 'jade-test:tree-view',
 }
 
 // accepted file formats

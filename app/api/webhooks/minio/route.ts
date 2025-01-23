@@ -3,7 +3,7 @@ import { RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
-import { S3 } from '@/lib/server/s3';
+// import { S3 } from '@/lib/server/s3';
 import { noteParser } from '@/processor/parser';
 
 const log = logger.child({
@@ -11,7 +11,7 @@ const log = logger.child({
   route: 'api/webhooks/minio',
 });
 
-const s3 = new S3();
+// const s3 = new S3();
 const redis = await createRedisClient();
 
 const DELETE_EVENT = 's3:ObjectRemoved:Delete';
@@ -110,8 +110,9 @@ export async function POST(req: Request) {
     await redis.hDel(RK.GRAPH, notePath);
     log.info(`Object ${notePath} is deleted, rebuild caches`);
   } else if (EventName.includes(CREATE_EVENT)) {
-    const payloadOutput = await s3.getObject(notePath);
-    const note = await payloadOutput?.transformToString();
+    // const payloadOutput = await s3.getObject(notePath);
+    // const note = await payloadOutput?.transformToString();
+    const note = '';
 
     if (!note) {
       log.info(`Object ${notePath} is not found in S3, skip rebuilding caches`);
