@@ -1,4 +1,5 @@
 import { RK } from '@/lib/constants';
+import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { getNoteTreeView } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
@@ -153,12 +154,15 @@ export async function POST(req: NextRequest) {
     log.info('Rebuilding specific files...');
     await cacheNotes(files);
     log.info('Rebuilding tree view...');
+    const allFiles = await redis.hKeys(RK.FILES);
     const treeView = getNoteTreeView(
-      files.map(file => ({
-        path: file.path,
-        ext: file.extension,
-        lastModified: undefined,
-      })),
+      allFiles.map(file => {
+        return {
+          path: file,
+          ext: getExt(file),
+          lastModified: undefined,
+        };
+      }),
     );
     await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
     log.info('Rebuilding finished');

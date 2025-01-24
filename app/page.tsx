@@ -6,8 +6,6 @@ import { Nodes } from 'hast';
 
 const redis = await createRedisClient();
 
-export const revalidate = 10;
-
 export default async function Home() {
   const home = await redis.get(RK.HOME);
 

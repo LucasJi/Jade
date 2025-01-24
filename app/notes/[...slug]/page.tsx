@@ -12,7 +12,7 @@ const redis = await createRedisClient();
 
 // The page will rerender every 10 seconds.
 // TODO: Use `revalidatePath` to make the revalidation more flexible once all bugs of such feature are fixed.
-export const revalidate = 10;
+// export const revalidate = 10;
 export const dynamicParams = true;
 export const dynamic = 'force-static';
 

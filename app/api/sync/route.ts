@@ -1,9 +1,11 @@
 import { RK } from '@/lib/constants';
+import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import { encodeNotePath } from '@/lib/note';
+import { encodeNotePath, getNoteTreeView } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs from 'fs';
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
@@ -169,6 +171,21 @@ export async function POST(request: Request) {
   } else {
     // do nothing
   }
+
+  // rebuild tree view
+  const allFiles = await redis.hKeys(RK.FILES);
+  const treeView = getNoteTreeView(
+    allFiles.map(file => {
+      return {
+        path: file,
+        ext: getExt(file),
+        lastModified: undefined,
+      };
+    }),
+  );
+  await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
+
+  revalidatePath(`/notes/${encodeNotePath(vaultPath)}`);
 
   return NextResponse.json({
     data: null,
