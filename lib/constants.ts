@@ -37,6 +37,8 @@ export enum RK {
   HOME = 'jade-test:home',
   // json
   TREE_VIEW = 'jade-test:tree-view',
+  // string
+  PATH_MAPPING = 'jade-test:path-mapping:',
 }
 
 // accepted file formats

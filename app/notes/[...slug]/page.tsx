@@ -3,11 +3,7 @@ import Markdown from '@/components/markdown';
 import { RK } from '@/lib/constants';
 import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import {
-  decodeNotePath,
-  decodeURISlug,
-  getEncodedNotePathFromSlug,
-} from '@/lib/note';
+import { decodeURISlug, getEncodedNotePathFromSlug } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { Nodes } from 'hast';
 import { notFound } from 'next/navigation';
@@ -45,7 +41,13 @@ export default async function Page(props: {
 
   try {
     const encodedNotePath = getEncodedNotePathFromSlug(slug);
-    const notePath = decodeNotePath(encodedNotePath);
+    const notePath = await redis.get(`${RK.PATH_MAPPING}${encodedNotePath}`);
+
+    if (!notePath) {
+      notFound();
+    }
+
+    // const notePath = decodeNotePath(encodedNotePath);
     const ext = getExt(notePath);
 
     log.info(

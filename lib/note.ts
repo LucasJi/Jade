@@ -1,20 +1,40 @@
 import { TreeViewNode } from '@/components/types';
-import { getFilename } from '@/lib/file';
+import { getExt, getFilename } from '@/lib/file';
 import { NoteObject } from '@/lib/types';
+import { endsWith, startsWith } from 'lodash';
+import { pinyin } from 'pinyin-pro';
 import { logger } from './logger';
 
 const log = logger.child({ module: 'lib:note' });
 
-/**
- * Encode note name by
- *  1. Replacing all '+' by '%2B'
- *  2. Replacing all whitespaces by character '+'
- *
- * @param path note path. For example: '/some folder/some note+.md' will be encoded to '/some+folder/some+note%2B.md'.
- * @return encoded note name.
- */
 export const encodeNotePath = (path: string): string => {
-  return path.replaceAll('+', '%2B').replaceAll(' ', '+');
+  const notePath = path
+    .replaceAll('+', '%2B')
+    .replaceAll('-', '%2D')
+    .replaceAll(' ', '+');
+
+  const filename = getFilename(notePath);
+  const ext = getExt(notePath);
+
+  const segments = pinyin(filename, {
+    toneType: 'none',
+    type: 'array',
+    nonZh: 'consecutive',
+  });
+
+  return (
+    segments.reduce((pre, cur) => {
+      if (startsWith(cur, '/')) {
+        return `${pre}${cur}`;
+      }
+
+      if (endsWith(pre, '/') || endsWith(pre, '+')) {
+        return `${pre}${cur}`;
+      }
+
+      return `${pre}-${cur}`;
+    }) + `.${ext}`
+  );
 };
 
 export const decodeNotePath = (encoded: string): string => {
@@ -30,6 +50,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {
     name: 'root',
     path: '',
+    vaultPath: '',
     children: [],
     isDir: true,
   };
@@ -58,6 +79,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
         dirNode = {
           name: dir,
           path: dir,
+          vaultPath: '',
           children: [],
           isDir: true,
         };
@@ -93,6 +115,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
     currentNode.children.push({
       name: getFilename(filename),
       path: encodeNotePath(noteObject.path),
+      vaultPath: noteObject.path,
       children: [],
       isDir: false,
     });

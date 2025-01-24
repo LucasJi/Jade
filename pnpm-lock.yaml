@@ -206,9 +206,9 @@ importers:
       pino-pretty:
         specifier: ^11.3.0
         version: 11.3.0
-      pinyin:
-        specifier: 4.0.0-alpha.2
-        version: 4.0.0-alpha.2
+      pinyin-pro:
+        specifier: ^3.26.0
+        version: 3.26.0
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -2172,10 +2172,6 @@ packages:
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
 
-  commander@1.1.1:
-    resolution: {integrity: sha512-71Rod2AhcH3JhkBikVpNd0pA+fWsmAaVoti6OR38T76chA7vE3pSerS0Jor4wDw+tOueD2zLVvFOw5H0Rcj7rA==}
-    engines: {node: '>= 0.6.x'}
-
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
@@ -3409,9 +3405,6 @@ packages:
     resolution: {integrity: sha512-RQrI8rlHY92OLf3rho/Ts8i/XvjgguEjOkO1BEXcU3N8BqPpSzBNwV/G0Ukr+P/l3ivvJUE/Fa/CwbS6HesGNQ==}
     hasBin: true
 
-  keypress@0.1.0:
-    resolution: {integrity: sha512-x0yf9PL/nx9Nw9oLL8ZVErFAk85/lslwEP7Vz7s5SI1ODXZIgit3C5qyWjw4DxOuO/3Hb4866SQh28a1V1d+WA==}
-
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -3980,21 +3973,8 @@ packages:
     resolution: {integrity: sha512-xSEmD4pLnV54t0NOUN16yCl7RIB1c5UUOse5HSyEXtBp+FgFQyPeDutc+Q2ZO7/22vImV7VfEjH/1zV2QuqvYw==}
     hasBin: true
 
-  pinyin@4.0.0-alpha.2:
-    resolution: {integrity: sha512-SED2wWr1X0QwH6rXIDgg20zS1mAk0AVMO8eM3KomUlOYzC8mNMWZnspZWhhI0M8MBIbF2xwa+5r30jTSjAqNsg==}
-    engines: {install-node: ^18.0.0}
-    hasBin: true
-    peerDependencies:
-      '@node-rs/jieba': ^1.6.0
-      nodejieba: 2.5.2
-      segmentit: ^2.0.3
-    peerDependenciesMeta:
-      '@node-rs/jieba':
-        optional: true
-      nodejieba:
-        optional: true
-      segmentit:
-        optional: true
+  pinyin-pro@3.26.0:
+    resolution: {integrity: sha512-HcBZZb0pvm0/JkPhZHWA5Hqp2cWHXrrW/WrV+OtaYYM+kf35ffvZppIUuGmyuQ7gDr1JDJKMkbEE+GN0wfMoGg==}
 
   pirates@4.0.6:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
@@ -5211,7 +5191,7 @@ snapshots:
       '@babel/parser': 7.25.4
       '@babel/template': 7.25.0
       '@babel/types': 7.25.4
-      debug: 4.3.6
+      debug: 4.4.0
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -6501,7 +6481,7 @@ snapshots:
 
   agent-base@7.1.1:
     dependencies:
-      debug: 4.3.6
+      debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
 
@@ -6844,10 +6824,6 @@ snapshots:
   comma-separated-tokens@1.0.8: {}
 
   comma-separated-tokens@2.0.3: {}
-
-  commander@1.1.1:
-    dependencies:
-      keypress: 0.1.0
 
   commander@4.1.1: {}
 
@@ -8358,8 +8334,6 @@ snapshots:
     dependencies:
       commander: 8.3.0
 
-  keypress@0.1.0: {}
-
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -9209,9 +9183,7 @@ snapshots:
       sonic-boom: 4.2.0
       thread-stream: 3.1.0
 
-  pinyin@4.0.0-alpha.2:
-    dependencies:
-      commander: 1.1.1
+  pinyin-pro@3.26.0: {}
 
   pirates@4.0.6: {}
 

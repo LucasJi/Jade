@@ -1,5 +1,6 @@
 import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
+import { encodeNotePath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs from 'fs';
@@ -71,6 +72,11 @@ export async function POST(request: Request) {
         lastModified,
       }),
     );
+
+    await redis.set(
+      `${RK.PATH_MAPPING}${encodeNotePath(vaultPath)}`,
+      vaultPath,
+    );
   } else if (behavior === 'deleted') {
     const fileStat = await redis.hGet(RK.FILES, vaultPath);
 
@@ -88,6 +94,8 @@ export async function POST(request: Request) {
         'File deleted',
       );
     }
+
+    await redis.del(`${RK.PATH_MAPPING}${encodeNotePath(vaultPath)}`);
   } else if (behavior === 'renamed') {
     const oldPath = formData.get('oldPath') as string;
     const file = formData.get('file') as File;
@@ -127,6 +135,7 @@ export async function POST(request: Request) {
 
         fs.unlinkSync(diskPath);
         await redis.hDel(RK.FILES, oldPath);
+        await redis.del(`${RK.PATH_MAPPING}${encodeNotePath(oldPath)}`);
         await redis.hSet(
           RK.FILES,
           vaultPath,
@@ -136,6 +145,10 @@ export async function POST(request: Request) {
             diskPath: newDiskPath,
             lastModified,
           }),
+        );
+        await redis.set(
+          `${RK.PATH_MAPPING}${encodeNotePath(vaultPath)}`,
+          vaultPath,
         );
 
         log.info(

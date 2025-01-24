@@ -83,7 +83,7 @@
     "next-themes": "^0.2.1",
     "pino": "^9.5.0",
     "pino-pretty": "^11.3.0",
-    "pinyin": "4.0.0-alpha.2",
+    "pinyin-pro": "^3.26.0",
     "react": "19.0.0",
     "react-animate-height": "^3.2.3",
     "react-dom": "19.0.0",

@@ -1,4 +1,3 @@
-import pinyin from 'pinyin';
 import { assert, describe, test } from 'vitest';
 import { decodeNotePath, encodeNotePath } from '../note';
 
@@ -28,12 +27,7 @@ describe('lib:note', () => {
   });
 
   test('map Chinese character to pinyin', () => {
-    console.log(
-      pinyin('/某个文件夹/某个文件.md', {
-        heteronym: false,
-        group: false,
-        style: 0,
-      }),
-    );
+    const result = encodeNotePath('测试/some 标注.md');
+    console.log(result);
   });
 });

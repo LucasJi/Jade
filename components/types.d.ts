@@ -1,6 +1,7 @@
 export interface TreeViewNode {
   name: string;
   path: string;
+  vaultPath: string;
   children: TreeViewNode[];
   isDir: boolean;
 }
