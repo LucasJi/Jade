@@ -198,8 +198,10 @@ const createAssetsFolder = () => {
   const folder = path.join(process.cwd(), 'jade-assets');
   if (!fs.existsSync(folder)) {
     fs.mkdirSync(folder);
+    log.info(`Assets folder(${folder}) created`);
+  } else {
+    log.info(`Assets folder(${folder}) already exists`);
   }
-  log.info(`Folder assets(${folder}) created`);
 };
 
 const init = async () => {

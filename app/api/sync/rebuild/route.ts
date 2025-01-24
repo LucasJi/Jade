@@ -5,7 +5,7 @@ import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { cacheNotes } from '@/lib/server/server-notes';
 import fs from 'fs';
-import { difference, startsWith, trimStart } from 'lodash';
+import { difference, startsWith } from 'lodash';
 import { NextRequest } from 'next/server';
 import path from 'path';
 
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   if (clearOthers) {
     log.info('Rebuilding entire vault...');
 
-    log.info('Processing paths cache...');
+    log.info('Validating paths cache...');
     const pathsInCache = await redis.sMembers(RK.PATHS);
     const pathsOnlyInCache = difference(pathsInCache, pathsInVault);
     const pathsOnlyInVault = difference(pathsInVault, pathsInCache);
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       await redis.sAdd(RK.PATHS, pathsOnlyInVault);
     }
 
-    log.info('Processing files cache...');
+    log.info('Validating files cache...');
     const fileKeysInCache = await redis.hKeys(RK.FILES);
     const fileKeysOnlyInCache = difference(fileKeysInCache, pathsInVault);
     const fileKeysOnlyInVault = difference(pathsInVault, fileKeysInCache);
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
         fileKeysOnlyInCache,
         fileKeysOnlyInVault,
       },
-      'Files cache keys differences',
+      'File cache differences',
     );
     if (fileKeysOnlyInCache.length > 0) {
       log.info('Remove file caches only in cache');
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (fileKeysOnlyInVault.length > 0) {
-      log.info('Add file caches');
+      log.info('Add file caches only in vault');
       for (const key of fileKeysOnlyInVault) {
         const file = files.find(f => f.path === key);
         await redis.hSet(
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    log.info('Try to delete useless files on disk');
+    log.info('Try to delete useless files on disk...');
     const filesOnDisk = fs.readdirSync(ASSETS_FOLDER);
     for (const fileOnDisk of filesOnDisk) {
       if (!filenames.includes(fileOnDisk)) {
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
     }
 
     const noteParserResults = await cacheNotes(files);
-    log.info('Caching tree view...');
+    log.info('Rebuilding tree view...');
     const treeView = getNoteTreeView(
       files.map(file => ({
         path: file.path,
@@ -150,23 +150,21 @@ export async function POST(req: NextRequest) {
 
     log.info('Rebuilding finished');
   } else {
-    log.info('Rebuild specific files');
-
-    // Cache all files
-    log.info('Caching all files...');
-    const filePaths: string[] = [];
-    traverseDirectory(ASSETS_FOLDER, filePaths);
-    const relativeFilePaths = filePaths.map(fp => trimStart(fp, ASSETS_FOLDER));
-    await redis.sAdd(RK.PATHS, relativeFilePaths);
-    log.info(
-      {
-        paths: relativeFilePaths,
-      },
-      'File paths are cached.',
+    log.info('Rebuilding specific files...');
+    await cacheNotes(files);
+    log.info('Rebuilding tree view...');
+    const treeView = getNoteTreeView(
+      files.map(file => ({
+        path: file.path,
+        ext: file.extension,
+        lastModified: undefined,
+      })),
     );
+    await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
+    log.info('Rebuilding finished');
   }
 
   return Response.json({
-    msg: 'Jade notes initialized successfully',
+    msg: 'Your notes rebuild successfully',
   });
 }
