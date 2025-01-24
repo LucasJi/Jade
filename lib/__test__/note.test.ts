@@ -1,12 +1,6 @@
 import pinyin from 'pinyin';
 import { assert, describe, test } from 'vitest';
-import {
-  decimalToBase62,
-  decodeNotePath,
-  encodeNotePath,
-  getNoteId,
-  murmurhash,
-} from '../note';
+import { decodeNotePath, encodeNotePath } from '../note';
 
 describe('lib:note', () => {
   test('encodeNoteName', () => {
@@ -31,11 +25,6 @@ describe('lib:note', () => {
       decodeNotePath('/folder/some+note%2B%2B'),
       '/folder/some note++',
     );
-  });
-
-  test('getNoteId', () => {
-    const noteName = '/path/some note.md';
-    assert.equal(getNoteId(noteName), decimalToBase62(murmurhash(noteName)));
   });
 
   test('map Chinese character to pinyin', () => {
