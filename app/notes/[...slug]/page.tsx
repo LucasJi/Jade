@@ -10,22 +10,12 @@ import { notFound } from 'next/navigation';
 
 const redis = await createRedisClient();
 
-// The page will rerender every 10 seconds.
-// TODO: Use `revalidatePath` to make the revalidation more flexible once all bugs of such feature are fixed.
-// export const revalidate = 10;
 export const dynamicParams = true;
 export const dynamic = 'force-static';
 
 const log = logger.child({
   module: 'app/notes/[...slug]',
 });
-
-// export async function generateStaticParams() {
-//   const objPaths = await redis.sMembers(RK.PATHS);
-//   return objPaths.map(path => ({
-//     slug: getNoteSlugsFromPath(encodeNotePath(path)),
-//   }));
-// }
 
 export async function generateStaticParams() {
   return [];

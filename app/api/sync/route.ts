@@ -23,8 +23,7 @@ export async function POST(request: Request) {
 
   if (!behavior) {
     return NextResponse.json({
-      data: null,
-      msg: 'behavior is null, do nothing',
+      msg: 'Behavior is null, do nothing',
     });
   }
 
@@ -161,18 +160,27 @@ export async function POST(request: Request) {
           'File renamed',
         );
       } else {
-        log.warn(
-          'Failed to perform rename sync, file stat of old path not exists',
-        );
+        const msg =
+          'Failed to perform rename sync, file stat of old path not exists';
+        log.error(msg);
+        return NextResponse.json({
+          msg: msg,
+        });
       }
     } else {
-      log.warn('Failed to perform rename sync, old path not exists');
+      const msg = 'Failed to perform rename sync, old path not exists';
+      log.error(msg);
+      return NextResponse.json({
+        msg: msg,
+      });
     }
   } else {
-    // do nothing
+    return NextResponse.json({
+      msg: 'Unknown behavior',
+    });
   }
 
-  // rebuild tree view
+  log.info('Rebuild tree view');
   const allFiles = await redis.hKeys(RK.FILES);
   const treeView = getNoteTreeView(
     allFiles.map(file => {
@@ -185,10 +193,11 @@ export async function POST(request: Request) {
   );
   await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
 
-  revalidatePath(`/notes/${encodeNotePath(vaultPath)}`);
+  const notePath = `/notes/${encodeNotePath(vaultPath)}`;
+  log.info(`Revalidate path: ${notePath}`);
+  revalidatePath(notePath);
 
   return NextResponse.json({
-    data: null,
-    msg: 'success',
+    msg: 'Sync successfully',
   });
 }
