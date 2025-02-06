@@ -3,18 +3,15 @@ import { getExt, getFilename } from '@/lib/file';
 import { NoteObject } from '@/lib/types';
 import { endsWith, startsWith } from 'lodash';
 import { pinyin } from 'pinyin-pro';
-import { logger } from './logger';
 
-const log = logger.child({ module: 'lib:note' });
-
-export const encodeNotePath = (path: string): string => {
-  const notePath = path
+export const getRoutePathFromVaultPath = (path: string): string => {
+  const _path = path
     .replaceAll('+', '%2B')
     .replaceAll('-', '%2D')
     .replaceAll(' ', '+');
 
-  const filename = getFilename(notePath);
-  const ext = getExt(notePath);
+  const filename = getFilename(_path);
+  const ext = getExt(_path);
 
   const segments = pinyin(filename, {
     toneType: 'none',
@@ -41,10 +38,10 @@ export const decodeNotePath = (encoded: string): string => {
   return encoded.replaceAll('+', ' ').replaceAll('%2B', '+');
 };
 
-export const getEncodedNotePathFromSlug = (slugs: string[]) => slugs.join('/');
+export const getRoutePathFromSlug = (slugs: string[]) => slugs.join('/');
 
-export const getEncodedNotePathFromURIComponentSlug = (slug: string[]) =>
-  getEncodedNotePathFromSlug(slug.map(e => decodeURIComponent(e)));
+export const getRoutePathFromURIComponentSlug = (slug: string[]) =>
+  getRoutePathFromSlug(slug.map(e => decodeURIComponent(e)));
 
 export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
   const _root: TreeViewNode = {
@@ -114,7 +111,7 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
     const filename: string = splits[splits.length - 1];
     currentNode.children.push({
       name: getFilename(filename),
-      path: encodeNotePath(noteObject.path),
+      path: getRoutePathFromVaultPath(noteObject.path),
       vaultPath: noteObject.path,
       children: [],
       isDir: false,

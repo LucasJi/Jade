@@ -1,7 +1,7 @@
 import { RK } from '@/lib/constants';
 import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import { encodeNotePath, getNoteTreeView } from '@/lib/note';
+import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs from 'fs';
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     );
 
     await redis.set(
-      `${RK.PATH_MAPPING}${encodeNotePath(vaultPath)}`,
+      `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
       vaultPath,
     );
   } else if (behavior === 'deleted') {
@@ -83,7 +83,9 @@ export async function POST(request: Request) {
       );
     }
 
-    await redis.del(`${RK.PATH_MAPPING}${encodeNotePath(vaultPath)}`);
+    await redis.del(
+      `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
+    );
   } else if (behavior === 'renamed') {
     const oldPath = formData.get('oldPath') as string;
     const file = formData.get('file') as File;
@@ -111,7 +113,9 @@ export async function POST(request: Request) {
 
         fs.unlinkSync(diskPath);
         await redis.hDel(RK.FILES, oldPath);
-        await redis.del(`${RK.PATH_MAPPING}${encodeNotePath(oldPath)}`);
+        await redis.del(
+          `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(oldPath)}`,
+        );
         await redis.hSet(
           RK.FILES,
           vaultPath,
@@ -123,7 +127,7 @@ export async function POST(request: Request) {
           }),
         );
         await redis.set(
-          `${RK.PATH_MAPPING}${encodeNotePath(vaultPath)}`,
+          `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
           vaultPath,
         );
 
@@ -168,7 +172,7 @@ export async function POST(request: Request) {
   );
   await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
 
-  const notePath = `/notes/${encodeNotePath(vaultPath)}`;
+  const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
   log.info(`Revalidate path: ${notePath}`);
   revalidatePath(notePath);
 

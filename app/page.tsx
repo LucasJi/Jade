@@ -25,6 +25,6 @@ export default async function Home() {
   const hast = (await redis.json.get(`${RK.HAST}${home}`)) as unknown as Nodes;
 
   return (
-    <Markdown hast={hast} origin={home} className="w-full" notePaths={paths} />
+    <Markdown hast={hast} origin={home} className="w-full" vaultPaths={paths} />
   );
 }

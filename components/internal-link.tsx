@@ -19,8 +19,8 @@ import {
 } from '@/components/ui/hover-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getExt, getFilename, mapInternalLinkToPath } from '@/lib/file';
-import { encodeNotePath } from '@/lib/note';
+import { getExt, getFilename, mapInternalLinkToVaultPath } from '@/lib/file';
+import { getRoutePathFromVaultPath } from '@/lib/note';
 import { noteParser } from '@/processor/parser';
 import { truncateHast } from '@/processor/transformer/hast';
 import * as Portal from '@radix-ui/react-portal';
@@ -32,20 +32,20 @@ import { useState } from 'react';
 export default function InternalLink({
   displayName,
   origin,
-  notePaths,
+  vaultPaths,
   link,
 }: {
   displayName: string;
   origin: string;
-  notePaths: string[];
+  vaultPaths: string[];
   link: string;
 }) {
-  const { notePath, subHeadings } = mapInternalLinkToPath(
+  const { vaultPath, subHeadings } = mapInternalLinkToVaultPath(
     link,
     origin,
-    notePaths,
+    vaultPaths,
   );
-  const ext = getExt(notePath);
+  const ext = getExt(vaultPath);
   const [isLoading, setIsLoading] = useState(true);
   const [hast, setHast] = useState<Root>();
   const isMobile = useIsMobile();
@@ -53,8 +53,9 @@ export default function InternalLink({
   const handleOpenChange = (open: boolean) => {
     // TODO: Handle not markdown files and block link
     if (open && ext !== 'pdf' && !link.includes('#^')) {
-      getHastByPath(notePath).then(data => {
+      getHastByPath(vaultPath).then(data => {
         truncateHast(data, subHeadings);
+        console.log(link, vaultPath, subHeadings, data);
         setHast(data);
         setIsLoading(false);
       });
@@ -63,7 +64,7 @@ export default function InternalLink({
         note: link.includes('#^')
           ? 'Block wikilink not supported yet'
           : 'Jade currently only supports markdown file preview',
-        plainNoteName: getFilename(notePath),
+        plainNoteName: getFilename(vaultPath),
       });
       setHast(hast);
       setIsLoading(false);
@@ -96,7 +97,7 @@ export default function InternalLink({
             <DialogDescription>
               <Link
                 className="flex items-center underline"
-                href={`/notes/${encodeNotePath(notePath)}`}
+                href={`/notes/${getRoutePathFromVaultPath(vaultPath)}`}
                 prefetch={false}
               >
                 <span className="text-sm">Navigate to this note</span>
@@ -107,7 +108,11 @@ export default function InternalLink({
             <LoadingSpinner className="mx-auto self-center" />
           ) : (
             <ScrollArea type="scroll">
-              <Markdown hast={hast!} origin={notePath} notePaths={notePaths} />
+              <Markdown
+                hast={hast!}
+                origin={vaultPath}
+                vaultPaths={vaultPaths}
+              />
             </ScrollArea>
           )}
         </DialogContent>
@@ -120,7 +125,7 @@ export default function InternalLink({
       <HoverCardTrigger asChild>
         <Link
           className="text-obsidian"
-          href={`/notes/${encodeNotePath(notePath)}`}
+          href={`/notes/${getRoutePathFromVaultPath(vaultPath)}`}
           color="foreground"
           prefetch={false}
         >
@@ -133,7 +138,11 @@ export default function InternalLink({
             <LoadingSpinner className="mx-auto self-center" />
           ) : (
             <ScrollArea type="scroll">
-              <Markdown hast={hast!} origin={notePath} notePaths={notePaths} />
+              <Markdown
+                hast={hast!}
+                origin={vaultPath}
+                vaultPaths={vaultPaths}
+              />
             </ScrollArea>
           )}
         </HoverCardContent>

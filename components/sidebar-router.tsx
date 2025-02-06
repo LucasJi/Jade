@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { getEncodedNotePathFromURIComponentSlug } from '@/lib/note';
+import { getRoutePathFromURIComponentSlug } from '@/lib/note';
 import { useParams } from 'next/navigation';
 import { FC, Fragment, useEffect, useState } from 'react';
 
@@ -17,9 +17,7 @@ const SidebarRouter: FC = () => {
   const [paths, setPaths] = useState<string[]>([]);
 
   useEffect(() => {
-    const noteRoutePath = slug
-      ? getEncodedNotePathFromURIComponentSlug(slug)
-      : '';
+    const noteRoutePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
     getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
       setPaths(resp.data.split('/'));
     });

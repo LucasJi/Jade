@@ -3,7 +3,7 @@ import Markdown from '@/components/markdown';
 import { RK } from '@/lib/constants';
 import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import { decodeURISlug, getEncodedNotePathFromSlug } from '@/lib/note';
+import { decodeURISlug, getRoutePathFromSlug } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { Nodes } from 'hast';
 import { notFound } from 'next/navigation';
@@ -30,19 +30,18 @@ export default async function Page(props: {
   const slug = decodeURISlug(uriSlug);
 
   try {
-    const encodedNotePath = getEncodedNotePathFromSlug(slug);
-    const notePath = await redis.get(`${RK.PATH_MAPPING}${encodedNotePath}`);
+    const routePath = getRoutePathFromSlug(slug);
+    const vaultPath = await redis.get(`${RK.PATH_MAPPING}${routePath}`);
 
-    if (!notePath) {
+    if (!vaultPath) {
       notFound();
     }
 
-    // const notePath = decodeNotePath(encodedNotePath);
-    const ext = getExt(notePath);
+    const ext = getExt(vaultPath);
 
     log.info(
       {
-        path: notePath,
+        vaultPath,
       },
       `Rendering page...`,
     );
@@ -50,18 +49,18 @@ export default async function Page(props: {
     if (ext !== 'md') {
       return (
         <div className="flex w-full justify-center">
-          <EmbedFile path={notePath} />
+          <EmbedFile path={vaultPath} />
         </div>
       );
     }
 
     const hast = (await redis.json.get(
-      `${RK.HAST}${notePath}`,
+      `${RK.HAST}${vaultPath}`,
     )) as unknown as Nodes;
 
     log.info(
       {
-        path: notePath,
+        vaultPath,
       },
       'Get hast of page',
     );
@@ -69,21 +68,21 @@ export default async function Page(props: {
     if (!hast) {
       log.info(
         {
-          path: notePath,
+          vaultPath,
         },
         'Page hast not found',
       );
       notFound();
     }
 
-    const objPaths = await redis.sMembers(RK.PATHS);
+    const vaultPaths = await redis.sMembers(RK.PATHS);
 
     return (
       <Markdown
         hast={hast}
-        origin={notePath}
+        origin={vaultPath}
         className="w-full"
-        notePaths={objPaths}
+        vaultPaths={vaultPaths}
       />
     );
   } catch (error) {

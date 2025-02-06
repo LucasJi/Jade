@@ -12,7 +12,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
-import { encodeNotePath } from '@/lib/note';
+import { getRoutePathFromVaultPath } from '@/lib/note';
 import { Nodes } from 'hast';
 import { toText } from 'hast-util-to-text';
 import { trim } from 'lodash';
@@ -131,7 +131,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                   <CommandItem
                     key={`${noteIdx}-${key}-${idx}`}
                     onSelect={() =>
-                      router.push(`/notes/${encodeNotePath(key)}`)
+                      router.push(`/notes/${getRoutePathFromVaultPath(key)}`)
                     }
                   >
                     <div className="flex flex-col gap-2">
@@ -154,7 +154,9 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                 {searchResult?.tagResult.map((e: string, idx: number) => (
                   <CommandItem
                     key={`tag-${e}-${idx}`}
-                    onSelect={() => router.push(`/notes/${encodeNotePath(e)}`)}
+                    onSelect={() =>
+                      router.push(`/notes/${getRoutePathFromVaultPath(e)}`)
+                    }
                   >
                     <span>{e}</span>
                   </CommandItem>

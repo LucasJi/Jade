@@ -1,18 +1,18 @@
 import { assert, describe, test } from 'vitest';
-import { decodeNotePath, encodeNotePath } from '../note';
+import { decodeNotePath, getRoutePathFromVaultPath } from '../note';
 
 describe('lib:note', () => {
   test('encodeNoteName', () => {
     assert.equal(
-      encodeNotePath('/folder/some note.md'),
+      getRoutePathFromVaultPath('/folder/some note.md'),
       '/folder/some+note.md',
     );
     assert.equal(
-      encodeNotePath('/folder/something.md'),
+      getRoutePathFromVaultPath('/folder/something.md'),
       '/folder/something.md',
     );
     assert.equal(
-      encodeNotePath('/folder/some note++.md'),
+      getRoutePathFromVaultPath('/folder/some note++.md'),
       '/folder/some+note%2B%2B.md',
     );
   });
@@ -27,7 +27,7 @@ describe('lib:note', () => {
   });
 
   test('map Chinese character to pinyin', () => {
-    const result = encodeNotePath('测试/some 标注.md');
+    const result = getRoutePathFromVaultPath('测试/some 标注.md');
     console.log(result);
   });
 });

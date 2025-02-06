@@ -1,5 +1,5 @@
 import unifiedProcessor from '@/processor/unified';
-import { Root as HastRoot, Nodes } from 'hast';
+import { Element, Root as HastRoot, Nodes } from 'hast';
 import { toText } from 'hast-util-to-text';
 import { urlAttributes } from 'html-url-attributes';
 import { Root } from 'mdast';
@@ -47,10 +47,7 @@ export const truncateHast = (hast: HastRoot, headings: string[]) => {
   for (let i = 0; i < headings.length; i++) {
     const heading = headings[i];
     const begin = hast.children.findIndex(
-      child =>
-        child.type === 'element' &&
-        child.tagName === `h${i + 1}` &&
-        toText(child) === heading,
+      child => child.type === 'element' && toText(child) === heading,
     );
 
     if (begin == -1) {
@@ -60,7 +57,7 @@ export const truncateHast = (hast: HastRoot, headings: string[]) => {
     const end = hast.children.findIndex(
       (child, index) =>
         child.type === 'element' &&
-        child.tagName === `h${i + 1}` &&
+        child.tagName === (hast.children[begin] as Element).tagName &&
         index > begin,
     );
 

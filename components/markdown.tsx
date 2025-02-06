@@ -28,7 +28,7 @@ import InternalLink from './internal-link';
 
 const components = (
   origin: string,
-  noteNames: string[],
+  vaultPaths: string[],
 ): Partial<JsxRuntimeComponents> => {
   let count = 0;
   return {
@@ -49,7 +49,7 @@ const components = (
             origin={origin}
             displayName={displayName}
             link={trimmedHref}
-            notePaths={noteNames}
+            vaultPaths={vaultPaths}
           />
         );
       }
@@ -305,12 +305,12 @@ const Markdown = ({
   className,
   hast,
   origin,
-  notePaths,
+  vaultPaths,
 }: {
   className?: string;
   hast: Nodes;
   origin: string;
-  notePaths: string[];
+  vaultPaths: string[];
 }) => {
   return (
     <article
@@ -338,7 +338,7 @@ const Markdown = ({
     >
       {toJsxRuntime(hast, {
         Fragment,
-        components: components(origin, notePaths),
+        components: components(origin, vaultPaths),
         ignoreInvalidStyle: true,
         // @ts-ignore
         jsx,

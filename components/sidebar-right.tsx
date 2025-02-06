@@ -16,10 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import {
-  decodeNotePath,
-  getEncodedNotePathFromURIComponentSlug,
-} from '@/lib/note';
+import { decodeNotePath, getRoutePathFromURIComponentSlug } from '@/lib/note';
 import {
   BlockContent,
   List,
@@ -111,9 +108,7 @@ function TocNode({
 export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
   const [heading, setHeading] = useState<ListItem[]>([]);
   const { slug } = useParams<{ slug: string[] }>();
-  const currentNotePath = slug
-    ? getEncodedNotePathFromURIComponentSlug(slug)
-    : '';
+  const currentNotePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
   const decodedNotePath = decodeNotePath(currentNotePath);
 
   useEffect(() => {
