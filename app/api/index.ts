@@ -65,3 +65,15 @@ export const getHome = async (): Promise<{
     res.json(),
   );
 };
+
+export const getNoteVaultPathByRoutePath = async (
+  routePath: string,
+): Promise<{
+  data: string;
+}> => {
+  const url = new URL(`${baseUrl}/api/note/vault-path`);
+  url.search = new URLSearchParams({
+    routePath,
+  }).toString();
+  return fetch(url).then(res => res.json());
+};

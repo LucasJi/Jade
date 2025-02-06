@@ -1,7 +1,5 @@
 import type { MetadataRoute } from 'next';
 
-// const s3 = new S3();
-
 export const revalidate = 30;
 export const dynamic = 'force-static';
 

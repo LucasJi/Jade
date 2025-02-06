@@ -34,7 +34,7 @@ const traverseDirectory = (dirPath: string, filePaths: string[]) => {
   }
 };
 
-interface RebuildBody {
+interface RebuildReqBody {
   files: {
     path: string;
     md5: string;
@@ -45,7 +45,7 @@ interface RebuildBody {
 }
 
 export async function POST(req: NextRequest) {
-  const body: RebuildBody = await req.json();
+  const body: RebuildReqBody = await req.json();
   const { files, clearOthers } = body;
   const pathsInVault = files.map(file => file.path);
   const filenames = files.map(file => `${file.md5}.${file.extension}`);
