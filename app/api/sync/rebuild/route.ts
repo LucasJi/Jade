@@ -6,7 +6,7 @@ import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { cacheNotes } from '@/lib/server/server-notes';
 import fs from 'fs';
-import { difference, startsWith } from 'lodash';
+import { difference } from 'lodash';
 import { NextRequest } from 'next/server';
 import path from 'path';
 
@@ -125,20 +125,8 @@ export async function POST(req: NextRequest) {
     }
 
     log.info('Parsing notes...');
-    log.info('Clear all note caches');
-    const keys = await redis.keys(RK.ALL);
-    for (const key of keys) {
-      if (
-        startsWith(key, RK.HAST) ||
-        startsWith(key, RK.HEADING) ||
-        startsWith(key, RK.FRONT_MATTER) ||
-        startsWith(key, RK.HAST_CHILD)
-      ) {
-        await redis.del(key);
-      }
-    }
+    await cacheNotes(files);
 
-    const noteParserResults = await cacheNotes(files);
     log.info('Rebuilding tree view...');
     const treeView = getNoteTreeView(
       files.map(file => ({

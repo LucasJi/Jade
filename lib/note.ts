@@ -19,6 +19,10 @@ export const getRoutePathFromVaultPath = (path: string): string => {
     nonZh: 'consecutive',
   });
 
+  if (segments.length <= 0) {
+    return '';
+  }
+
   return (
     segments.reduce((pre, cur) => {
       if (startsWith(cur, '/')) {

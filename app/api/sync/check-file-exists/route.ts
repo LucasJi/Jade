@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 
 const redis = await createRedisClient();
 
+// TODO: deprecated
 export async function GET(request: NextRequest) {
   const md5 = request.nextUrl.searchParams.get('md5');
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { getNoteHeadingByPath } from '@/app/api';
+import { getNoteHeadingByPath, getNoteVaultPathByRoutePath } from '@/app/api';
 import Footer from '@/components/footer';
 import {
   Sidebar,
@@ -16,7 +16,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { decodeNotePath, getRoutePathFromURIComponentSlug } from '@/lib/note';
+import { getRoutePathFromURIComponentSlug } from '@/lib/note';
 import {
   BlockContent,
   List,
@@ -108,14 +108,15 @@ function TocNode({
 export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
   const [heading, setHeading] = useState<ListItem[]>([]);
   const { slug } = useParams<{ slug: string[] }>();
-  const currentNotePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
-  const decodedNotePath = decodeNotePath(currentNotePath);
 
   useEffect(() => {
-    getNoteHeadingByPath(decodedNotePath).then(data => {
-      setHeading(data);
+    const routePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
+    getNoteVaultPathByRoutePath(routePath).then(resp => {
+      getNoteHeadingByPath(resp.data).then(data => {
+        setHeading(data);
+      });
     });
-  }, [decodedNotePath]);
+  }, [slug]);
 
   return (
     <Sidebar

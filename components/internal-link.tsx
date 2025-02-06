@@ -52,19 +52,20 @@ export default function InternalLink({
 
   const handleOpenChange = (open: boolean) => {
     // TODO: Handle not markdown files and block link
-    if (open && ext !== 'pdf' && !link.includes('#^')) {
+    if (open && vaultPath && ext !== 'pdf' && !link.includes('#^')) {
       getHastByPath(vaultPath).then(data => {
         truncateHast(data, subHeadings);
-        console.log(link, vaultPath, subHeadings, data);
         setHast(data);
         setIsLoading(false);
       });
     } else if (open) {
       const { hast } = noteParser({
-        note: link.includes('#^')
-          ? 'Block wikilink not supported yet'
-          : 'Jade currently only supports markdown file preview',
-        plainNoteName: getFilename(vaultPath),
+        note: vaultPath
+          ? link.includes('#^')
+            ? 'Block wikilink not supported yet'
+            : 'Non-markdown files preview not supported yet'
+          : 'Target note not exists',
+        plainNoteName: vaultPath ? getFilename(vaultPath) : 'Unknown Note',
       });
       setHast(hast);
       setIsLoading(false);
