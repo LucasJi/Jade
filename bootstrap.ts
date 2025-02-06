@@ -1,90 +1,12 @@
 import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
-// import { S3 } from '@/lib/server/s3';
 import fs from 'fs';
 import path from 'path';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
 const redis = await createRedisClient();
-// const s3 = new S3();
-
-// const clearCache = async () => {
-//   const keys = await redis.keys(RK.ALL);
-//   keys.forEach(key => {
-//     redis.del(key);
-//   });
-//
-//   const ftIdxes = await redis.ft._list();
-//   for (const idx of ftIdxes) {
-//     log.info(`Clear ft idx: ${idx}`);
-//     await redis.ft.dropIndex(idx);
-//   }
-//   log.info({ keySize: keys.length }, 'Clear all redis keys');
-// };
-
-// const cacheObjects = async () => {
-//   log.info('Start to cache all objects');
-//   const objects = listExistedObjs(await s3.listObjectVersions());
-//   const paths = objects.map(obj => obj.path);
-//
-//   await redis.sAdd(RK.PATHS, paths);
-//
-//   for (const obj of objects) {
-//     await redis.hSet(RK.OBJS, obj.path, JSON.stringify(obj));
-//   }
-//
-//   log.info({ objectSize: paths.length }, 'Objects are cached');
-//   return paths;
-// };
-
-// const cacheNotes = async (paths: string[]) => {
-//   const noteParserResults = new Map<string, NoteParserResult>();
-//
-//   for (const path of paths) {
-//     const ext = getExt(path);
-//
-//     if (ext !== 'md') {
-//       continue;
-//     }
-//
-//     const payloadOutput = await s3.getObject(path);
-//     if (!payloadOutput) {
-//       continue;
-//     }
-//
-//     const note = await payloadOutput.transformToString();
-//     const noteParserResult = noteParser({
-//       note,
-//       plainNoteName: getFilename(path),
-//     });
-//     const { hast, headings, frontmatter } = noteParserResult;
-//     noteParserResults.set(path, noteParserResult);
-//
-//     await redis.json.set(`${RK.HAST}${path}`, '$', hast as any);
-//     await redis.set(`${RK.HEADING}${path}`, JSON.stringify(headings));
-//     await redis.json.set(`${RK.FRONT_MATTER}${path}`, '$', frontmatter);
-//
-//     if (frontmatter.home === true) {
-//       await redis.set(RK.HOME, path);
-//     }
-//
-//     if (hast.children && hast.children.length > 0) {
-//       for (let i = 0; i < hast.children.length; i++) {
-//         await redis.json.set(
-//           `${RK.HAST_CHILD}${path}:${i}`,
-//           '$',
-//           hast.children[i] as any,
-//         );
-//       }
-//     }
-//     log.info(`Cache hast of ${path}`);
-//   }
-//
-//   return noteParserResults;
-// };
-
 // const buildGraphDataset = async (
 //   paths: string[],
 //   noteParserResults: Map<string, NoteParserResult>,
@@ -150,7 +72,9 @@ const redis = await createRedisClient();
 // };
 
 const createSearchIndexes = async () => {
+  log.info('Creating search indexes');
   const indexes = await redis.ft._list();
+  log.info(`Exists search indexes: ${indexes}`);
   if (!indexes.includes(RK.IDX_HAST_CHILD)) {
     log.info(`Create search index: ${RK.IDX_HAST_CHILD}`);
     await redis.ft.create(
@@ -169,7 +93,7 @@ const createSearchIndexes = async () => {
       },
     );
   } else {
-    log.info(`Search index: ${RK.IDX_HAST_CHILD} already exists`);
+    log.info(`Search index ${RK.IDX_HAST_CHILD} already exists`);
   }
 
   if (!indexes.includes(RK.IDX_FRONT_MATTER)) {
@@ -189,7 +113,7 @@ const createSearchIndexes = async () => {
       },
     );
   } else {
-    log.info(`Search index: ${RK.IDX_FRONT_MATTER} already exists`);
+    log.info(`Search index ${RK.IDX_FRONT_MATTER} already exists`);
   }
 };
 
@@ -198,24 +122,19 @@ const createAssetsFolder = () => {
   const folder = path.join(process.cwd(), 'jade-assets');
   if (!fs.existsSync(folder)) {
     fs.mkdirSync(folder);
-    log.info(`Assets folder(${folder}) created`);
+    log.info(`Assets folder ${folder} is created`);
   } else {
-    log.info(`Assets folder(${folder}) already exists`);
+    log.info(`Assets folder ${folder} already exists`);
   }
 };
 
 const init = async () => {
   log.info('Initializing Jade...');
 
-  // await clearCache();
-  // const paths = await cacheObjects();
-  // const noteParserResults = await cacheNotes(paths);
-  // await buildGraphDataset(paths, noteParserResults);
-
   await createSearchIndexes();
   createAssetsFolder();
 
-  log.info('Jade initialized');
+  log.info('Jade initialization completed');
 };
 
 try {

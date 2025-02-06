@@ -87,7 +87,7 @@ export default async function Page(props: {
       />
     );
   } catch (error) {
-    log.error({ slug }, 'error occurs when rendering page', error);
+    log.error({ error, slug }, 'Error occurs when rendering page');
     notFound();
   }
 }
