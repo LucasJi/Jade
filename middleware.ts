@@ -1,25 +1,29 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware() {
-  // retrieve the current response
-  const res = NextResponse.next();
+export default async function middleware(req: NextRequest) {
+  let res: NextResponse = NextResponse.next();
 
-  // add the CORS headers to the response
-  res.headers.append('Access-Control-Allow-Credentials', 'true');
-  res.headers.append('Access-Control-Allow-Origin', '*'); // replace this your actual origin
-  res.headers.append(
-    'Access-Control-Allow-Methods',
-    'GET,DELETE,PATCH,POST,PUT',
-  );
-  res.headers.append(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
-  );
+  if (req.method !== 'OPTIONS') {
+    const authentication = req.headers.get('authentication');
 
-  return res;
+    if (!authentication) {
+      res = NextResponse.json(null, { status: 401 });
+    }
+  }
+
+  return cors(res);
 }
 
-// specify the path regex to apply the middleware to
+const cors = (res: NextResponse) => {
+  res.headers.append('Access-Control-Allow-Origin', 'app://obsidian.md'); // replace this your actual origin
+  res.headers.append('Access-Control-Allow-Methods', 'GET,POST');
+  res.headers.append(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, Authentication',
+  );
+  return res;
+};
+
 export const config = {
-  matcher: '/api/:path*',
+  matcher: '/api/sync/:path*',
 };
