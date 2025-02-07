@@ -1,5 +1,5 @@
 'use client';
-import { getFileTree } from '@/app/api';
+import { getFileTree, getNoteVaultPathByRoutePath } from '@/app/api';
 import { TreeViewNode } from '@/components/types';
 import {
   Collapsible,
@@ -19,7 +19,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
-import { decodeNotePath, getRoutePathFromURIComponentSlug } from '@/lib/note';
+import { getRoutePathFromURIComponentSlug } from '@/lib/note';
 import {
   ChevronRight,
   File,
@@ -31,15 +31,41 @@ import {
   Folder,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { ComponentProps, useEffect, useState } from 'react';
+import {
+  ComponentProps,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+const TreeViewContext = createContext<{
+  noteRoutePath: string;
+  folders: string[];
+}>({
+  noteRoutePath: '',
+  folders: [],
+});
 
 export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
+  const { slug } = useParams<{ slug: string[] }>();
+  const [folders, setFolders] = useState<string[]>([]);
+  const noteRoutePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
+
   useEffect(() => {
     getFileTree().then(data => {
       setTreeNodes(data);
     });
   }, []);
+
+  useEffect(() => {
+    getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
+      const [_, ...folders] = resp.data.split('/').reverse();
+      setFolders([...folders]);
+    });
+  }, [noteRoutePath]);
+
   return (
     <Sidebar {...props}>
       {/*<SidebarHeader>Omni Note</SidebarHeader>*/}
@@ -48,9 +74,16 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Files</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {treeNodes.map((item, index) => (
-                <Tree key={index} item={item} />
-              ))}
+              <TreeViewContext.Provider
+                value={{
+                  noteRoutePath,
+                  folders,
+                }}
+              >
+                {treeNodes.map((item, index) => (
+                  <Tree key={index} item={item} />
+                ))}
+              </TreeViewContext.Provider>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -62,10 +95,7 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
 
 function Tree({ item }: { item: TreeViewNode }) {
   const router = useRouter();
-  const { slug } = useParams<{ slug: string[] }>();
-  const currentNotePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
-  const decodedNotePath = decodeNotePath(currentNotePath);
-  const [_, ...folders] = decodedNotePath.split('/').reverse();
+  const { folders, noteRoutePath } = useContext(TreeViewContext);
   if (!item.isDir) {
     let Icon;
     if (isMd(item.path)) {
@@ -84,7 +114,7 @@ function Tree({ item }: { item: TreeViewNode }) {
 
     return (
       <SidebarMenuButton
-        isActive={item.path === currentNotePath}
+        isActive={item.path === noteRoutePath}
         className="data-[active=true]:bg-transparent data-[active=true]:text-black"
         onClick={() => router.push(`/notes/${item.path || ''}`)}
       >
