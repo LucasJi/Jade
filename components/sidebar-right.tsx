@@ -111,11 +111,13 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
 
   useEffect(() => {
     const routePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
-    getNoteVaultPathByRoutePath(routePath).then(resp => {
-      getNoteHeadingByPath(resp.data).then(data => {
-        setHeading(data);
+    if (routePath) {
+      getNoteVaultPathByRoutePath(routePath).then(resp => {
+        getNoteHeadingByPath(resp.data).then(data => {
+          setHeading(data);
+        });
       });
-    });
+    }
   }, [slug]);
 
   return (

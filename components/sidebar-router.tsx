@@ -18,9 +18,11 @@ const SidebarRouter: FC = () => {
 
   useEffect(() => {
     const noteRoutePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
-    getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
-      setPaths(resp.data.split('/'));
-    });
+    if (noteRoutePath) {
+      getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
+        setPaths(resp.data.split('/'));
+      });
+    }
   }, [slug]);
 
   if (!slug) {

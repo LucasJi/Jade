@@ -5,7 +5,6 @@ import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs from 'fs';
-import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
@@ -171,10 +170,6 @@ export async function POST(request: Request) {
     }),
   );
   await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
-
-  const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
-  log.info(`Revalidate path: ${notePath}`);
-  revalidatePath(notePath);
 
   return NextResponse.json({
     msg: 'Sync successfully',

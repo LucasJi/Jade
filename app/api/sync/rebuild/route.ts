@@ -1,12 +1,13 @@
 import { RK } from '@/lib/constants';
 import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import { getNoteTreeView } from '@/lib/note';
+import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { cacheNotes } from '@/lib/server/server-notes';
 import fs from 'fs';
 import { difference } from 'lodash';
+import { revalidatePath } from 'next/cache';
 import { NextRequest } from 'next/server';
 import path from 'path';
 
@@ -154,6 +155,12 @@ export async function POST(req: NextRequest) {
     );
     await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
     log.info('Rebuilding finished');
+  }
+
+  for (const vaultPath of pathsInVault) {
+    const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
+    log.info(`Revalidate path: ${notePath}`);
+    revalidatePath(notePath);
   }
 
   return Response.json({

@@ -60,10 +60,12 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   }, []);
 
   useEffect(() => {
-    getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
-      const [_, ...folders] = resp.data.split('/').reverse();
-      setFolders([...folders]);
-    });
+    if (noteRoutePath) {
+      getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
+        const [_, ...folders] = resp.data.split('/').reverse();
+        setFolders([...folders]);
+      });
+    }
   }, [noteRoutePath]);
 
   return (

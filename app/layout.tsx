@@ -15,7 +15,6 @@ import '@/styles/globals.css';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Viewport } from 'next';
 import localFont from 'next/font/local';
-import * as React from 'react';
 import { ReactNode } from 'react';
 import { Providers } from './providers';
 
