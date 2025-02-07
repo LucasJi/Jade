@@ -57,15 +57,6 @@ export const getGraphDataset = async (): Promise<Dataset> => {
   return fetch(`${baseUrl}/api/graph/dataset`).then(res => res.json());
 };
 
-export const getHome = async (): Promise<{
-  origin: string;
-  hast: Root;
-} | null> => {
-  return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/note/home`).then(res =>
-    res.json(),
-  );
-};
-
 export const getNoteVaultPathByRoutePath = async (
   routePath: string,
 ): Promise<{

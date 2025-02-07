@@ -44,9 +44,6 @@ export const cacheNotes = async (
     await redis.set(`${RK.HEADING}${vaultPath}`, JSON.stringify(headings));
     await redis.json.set(`${RK.FRONT_MATTER}${vaultPath}`, '$', frontmatter);
 
-    if (frontmatter.home === true) {
-      await redis.set(RK.HOME, vaultPath);
-    }
     log.debug('Update redis');
 
     if (hast.children && hast.children.length > 0) {

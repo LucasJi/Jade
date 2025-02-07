@@ -157,13 +157,40 @@ export async function POST(req: NextRequest) {
     log.info('Rebuilding finished');
   }
 
+  log.info('Reset home page');
+  await resetHome();
+
   for (const vaultPath of pathsInVault) {
     const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
     log.info(`Revalidate path: ${notePath}`);
     revalidatePath(notePath);
   }
 
+  log.info('Revalidate path: /');
+  revalidatePath('/');
+
   return Response.json({
     msg: 'Your notes rebuild successfully',
   });
 }
+
+const resetHome = async () => {
+  const paths = await redis.sMembers(RK.PATHS);
+
+  for (const path of paths) {
+    let result = null;
+    try {
+      result = await redis.json.get(`${RK.FRONT_MATTER}${path}`, {
+        path: ['.home'],
+      });
+    } catch (e) {
+      // do nothing
+    }
+    if (result === true) {
+      await redis.set(RK.HOME, path);
+      return;
+    }
+  }
+
+  await redis.set(RK.HOME, '');
+};

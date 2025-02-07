@@ -16,7 +16,7 @@ export default async function Home() {
     'Building home page...',
   );
 
-  if (home === null) {
+  if (!home) {
     // TODO: Show all note when there is no home page note configured.
     return <div>Home page note is not configured</div>;
   }

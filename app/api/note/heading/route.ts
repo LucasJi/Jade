@@ -1,4 +1,3 @@
-import { getHome } from '@/app/api';
 import { RK } from '@/lib/constants';
 import { createRedisClient } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,15 +9,14 @@ export async function GET(req: NextRequest) {
   let path = searchParams.get('path');
 
   if (!path) {
-    // Try to get headings from home page
-    const homeDetails = await getHome();
+    // Get headings from home page
+    const home = await redis.get(RK.HOME);
 
-    if (homeDetails === null) {
+    if (home === null) {
       return NextResponse.json([]);
     }
 
-    const { origin } = homeDetails;
-    path = origin;
+    path = home;
   }
 
   const heading = await redis.get(`${RK.HEADING}${path}`);

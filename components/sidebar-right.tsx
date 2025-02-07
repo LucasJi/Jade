@@ -114,8 +114,13 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
     if (routePath) {
       getNoteVaultPathByRoutePath(routePath).then(resp => {
         getNoteHeadingByPath(resp.data).then(data => {
-          setHeading(data);
+          setHeading([...data]);
         });
+      });
+    } else {
+      // Get heading from home note if configured
+      getNoteHeadingByPath('').then(data => {
+        setHeading([...data]);
       });
     }
   }, [slug]);

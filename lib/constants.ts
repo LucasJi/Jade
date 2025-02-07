@@ -12,13 +12,10 @@ export const OB_COMMENT_REG = new RegExp(/[^`]?%%(.*?)%%[^`]?/g);
 
 // Redis keys
 export enum RK {
-  ALL = 'jade-test:*',
   // set
   PATHS = 'jade-test:paths',
   // hast
   FILES = 'jade-test:files',
-  // TODO: deprecated
-  OBJS = 'jade-test:objs',
   // string
   HEADING = 'jade-test:heading:',
   // set

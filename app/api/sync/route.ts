@@ -64,6 +64,8 @@ export async function POST(request: Request) {
       `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
       vaultPath,
     );
+
+    await redis.sAdd(RK.PATHS, vaultPath);
   } else if (behavior === 'deleted') {
     const fileStat = await redis.hGet(RK.FILES, vaultPath);
 
@@ -85,6 +87,8 @@ export async function POST(request: Request) {
     await redis.del(
       `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
     );
+
+    await redis.sRem(RK.PATHS, vaultPath);
   } else if (behavior === 'renamed') {
     const oldPath = formData.get('oldPath') as string;
     const file = formData.get('file') as File;
@@ -112,6 +116,7 @@ export async function POST(request: Request) {
 
         fs.unlinkSync(diskPath);
         await redis.hDel(RK.FILES, oldPath);
+        await redis.sRem(RK.PATHS, oldPath);
         await redis.del(
           `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(oldPath)}`,
         );
@@ -129,6 +134,7 @@ export async function POST(request: Request) {
           `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
           vaultPath,
         );
+        await redis.sAdd(RK.PATHS, vaultPath);
 
         log.info(
           {
