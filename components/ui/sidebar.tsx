@@ -50,6 +50,7 @@ type SidebarContext = {
   toggleSidebar: () => void;
   vaultPath: string;
   routePath: string;
+  parsingRoute: boolean;
 };
 
 const SidebarContext = createContext<SidebarContext | null>(null);
@@ -132,6 +133,7 @@ const SidebarProvider = forwardRef<
 
     const [vaultPath, setVaultPath] = useState('');
     const [routePath, setRoutePath] = useState('');
+    const [parsingRoute, setParsingRoute] = useState(true);
     const { slug } = useParams<{ slug: string[] }>();
     useEffect(() => {
       if (slug) {
@@ -141,8 +143,13 @@ const SidebarProvider = forwardRef<
         if (slug.length > 0) {
           getNoteVaultPathByRoutePath(_routePath).then(resp => {
             setVaultPath(resp.data);
+            setParsingRoute(false);
           });
+        } else {
+          setParsingRoute(false);
         }
+      } else {
+        setParsingRoute(false);
       }
     }, [slug]);
 
@@ -157,6 +164,7 @@ const SidebarProvider = forwardRef<
         toggleSidebar,
         vaultPath,
         routePath,
+        parsingRoute,
       }),
       [
         state,
@@ -168,6 +176,7 @@ const SidebarProvider = forwardRef<
         toggleSidebar,
         vaultPath,
         routePath,
+        parsingRoute,
       ],
     );
 

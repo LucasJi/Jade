@@ -49,22 +49,16 @@ const TreeViewContext = createContext<{
 
 export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
-  const { routePath, vaultPath } = useSidebar();
-  const [folders, setFolders] = useState<string[]>([]);
+  const { parsingRoute, routePath, vaultPath } = useSidebar();
+  const [_, ...folders] = vaultPath.split('/').reverse();
 
   useEffect(() => {
-    getFileTree().then(data => {
-      setTreeNodes(data);
-    });
-  }, []);
-
-  useEffect(() => {
-    console.log('tree-view:', vaultPath);
-    if (vaultPath) {
-      const [_, ...folders] = vaultPath.split('/').reverse();
-      setFolders([...folders]);
+    if (!parsingRoute) {
+      getFileTree().then(data => {
+        setTreeNodes(data);
+      });
     }
-  }, [vaultPath]);
+  }, [parsingRoute]);
 
   return (
     <Sidebar {...props}>

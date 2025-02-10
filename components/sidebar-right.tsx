@@ -106,9 +106,13 @@ function TocNode({
 
 export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
   const [heading, setHeading] = useState<ListItem[]>([]);
-  const { vaultPath } = useSidebar();
+  const { parsingRoute, vaultPath } = useSidebar();
 
   useEffect(() => {
+    if (parsingRoute) {
+      return;
+    }
+
     if (vaultPath) {
       getNoteHeadingByPath(vaultPath).then(data => {
         setHeading([...data]);
@@ -119,7 +123,7 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
         setHeading([...data]);
       });
     }
-  }, [vaultPath]);
+  }, [vaultPath, parsingRoute]);
 
   return (
     <Sidebar

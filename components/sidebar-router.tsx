@@ -14,8 +14,6 @@ const SidebarRouter: FC = () => {
   const [paths, setPaths] = useState<string[]>([]);
   const { vaultPath } = useSidebar();
 
-  console.log('router:', vaultPath);
-
   useEffect(() => {
     if (vaultPath) {
       setPaths(vaultPath.split('/'));
