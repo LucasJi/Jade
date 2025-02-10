@@ -18,17 +18,17 @@ const redis = await createRedisClient();
 export async function POST(request: Request) {
   const formData = await request.formData();
 
-  const behavior = formData.get('behavior');
+  const status = formData.get('status');
 
-  if (!behavior) {
+  if (!status) {
     return NextResponse.json({
-      msg: 'Behavior is null, do nothing',
+      msg: 'Status is null, do nothing',
     });
   }
 
   const vaultPath = formData.get('path') as string;
 
-  if (behavior === 'created' || behavior === 'modified') {
+  if (status === 'created' || status === 'modified') {
     const md5 = formData.get('md5') as string;
     const extension = formData.get('extension') as string;
     const file = formData.get('file') as File;
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     );
 
     await redis.sAdd(RK.PATHS, vaultPath);
-  } else if (behavior === 'deleted') {
+  } else if (status === 'deleted') {
     const fileStat = await redis.hGet(RK.FILES, vaultPath);
 
     if (fileStat) {
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
     );
 
     await redis.sRem(RK.PATHS, vaultPath);
-  } else if (behavior === 'renamed') {
+  } else if (status === 'renamed') {
     const oldPath = formData.get('oldPath') as string;
     const file = formData.get('file') as File;
     const lastModified = formData.get('lastModified') as string;
