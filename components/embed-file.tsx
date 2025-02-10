@@ -117,7 +117,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
 
   switch (fileType) {
     case 'PDF': {
-      return <Pdf />;
+      return <Pdf url={url} />;
     }
     case 'IMG': {
       return url ? (
