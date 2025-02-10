@@ -1,5 +1,5 @@
 'use client';
-import { getFileTree, getNoteVaultPathByRoutePath } from '@/app/api';
+import { getFileTree } from '@/app/api';
 import { TreeViewNode } from '@/components/types';
 import {
   Collapsible,
@@ -17,9 +17,9 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
-import { getRoutePathFromURIComponentSlug } from '@/lib/note';
 import {
   ChevronRight,
   File,
@@ -30,7 +30,7 @@ import {
   FileVideo,
   Folder,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   ComponentProps,
   createContext,
@@ -49,9 +49,8 @@ const TreeViewContext = createContext<{
 
 export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
-  const { slug } = useParams<{ slug: string[] }>();
+  const { routePath, vaultPath } = useSidebar();
   const [folders, setFolders] = useState<string[]>([]);
-  const noteRoutePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
 
   useEffect(() => {
     getFileTree().then(data => {
@@ -60,13 +59,12 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   }, []);
 
   useEffect(() => {
-    if (noteRoutePath) {
-      getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
-        const [_, ...folders] = resp.data.split('/').reverse();
-        setFolders([...folders]);
-      });
+    console.log('tree-view:', vaultPath);
+    if (vaultPath) {
+      const [_, ...folders] = vaultPath.split('/').reverse();
+      setFolders([...folders]);
     }
-  }, [noteRoutePath]);
+  }, [vaultPath]);
 
   return (
     <Sidebar {...props}>
@@ -78,7 +76,7 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               <TreeViewContext.Provider
                 value={{
-                  noteRoutePath,
+                  noteRoutePath: routePath,
                   folders,
                 }}
               >

@@ -1,6 +1,6 @@
 'use client';
 
-import { getNoteHeadingByPath, getNoteVaultPathByRoutePath } from '@/app/api';
+import { getNoteHeadingByPath } from '@/app/api';
 import Footer from '@/components/footer';
 import {
   Sidebar,
@@ -15,8 +15,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
-import { getRoutePathFromURIComponentSlug } from '@/lib/note';
 import {
   BlockContent,
   List,
@@ -24,7 +24,6 @@ import {
   Paragraph,
   PhrasingContent,
 } from 'mdast';
-import { useParams } from 'next/navigation';
 import { ComponentProps, useEffect, useState } from 'react';
 
 const findText = (heading: Paragraph): { text: string; url: string } => {
@@ -107,15 +106,12 @@ function TocNode({
 
 export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
   const [heading, setHeading] = useState<ListItem[]>([]);
-  const { slug } = useParams<{ slug: string[] }>();
+  const { vaultPath } = useSidebar();
 
   useEffect(() => {
-    const routePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
-    if (routePath) {
-      getNoteVaultPathByRoutePath(routePath).then(resp => {
-        getNoteHeadingByPath(resp.data).then(data => {
-          setHeading([...data]);
-        });
+    if (vaultPath) {
+      getNoteHeadingByPath(vaultPath).then(data => {
+        setHeading([...data]);
       });
     } else {
       // Get heading from home note if configured
@@ -123,7 +119,7 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
         setHeading([...data]);
       });
     }
-  }, [slug]);
+  }, [vaultPath]);
 
   return (
     <Sidebar
