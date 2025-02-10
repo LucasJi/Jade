@@ -112,12 +112,16 @@ export function Search({ ...props }: ComponentProps<'div'>) {
           // onClose
           if (!open) {
             setSearchResult(null);
+            setSearchContent('');
           }
         }}
       >
         <CommandInput
           placeholder="Search..."
-          onValueChange={value => setSearchContent(value)}
+          onValueChange={value => {
+            console.log(value);
+            setSearchContent(value);
+          }}
         />
         <CommandList>
           {searchResult === null && <TypeToSearch />}

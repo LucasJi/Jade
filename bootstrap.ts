@@ -77,6 +77,6 @@ const init = async () => {
 try {
   await init();
 } catch (e) {
-  log.error(e);
+  log.error({ error: e });
   throw e;
 }

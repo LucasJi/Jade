@@ -31,7 +31,7 @@ const traverseDirectory = (dirPath: string, filePaths: string[]) => {
       }
     });
   } catch (e) {
-    log.error('Failed to traverse assets directory', e);
+    log.error({ error: e }, 'Failed to traverse assets directory');
   }
 };
 
