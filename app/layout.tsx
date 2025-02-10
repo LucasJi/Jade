@@ -2,6 +2,7 @@ import { Search } from '@/components/search';
 import { SidebarLeft } from '@/components/sidebar-left';
 import { SidebarRight } from '@/components/sidebar-right';
 import SidebarRouter from '@/components/sidebar-router';
+import { ThemeProvider } from '@/components/theme-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   SidebarInset,
@@ -15,7 +16,6 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import { Viewport } from 'next';
 import localFont from 'next/font/local';
 import { ReactNode } from 'react';
-import { Providers } from './providers';
 
 const font = localFont({
   src: '../styles/fonts/NotoSansSC-Regular.ttf',
@@ -42,8 +42,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <GoogleAnalytics gaId={`${process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}`} />
       <body className="min-h-screen bg-background antialiased">
         <WebVitals />
-        <Providers themeProps={{ attribute: 'class', defaultTheme: 'light' }}>
-          <main>
+        <main>
+          <ThemeProvider
+            themeProps={{ attribute: 'class', defaultTheme: 'light' }}
+          >
             <SidebarProvider>
               <SidebarLeft />
               <SidebarInset>
@@ -69,8 +71,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </SidebarInset>
               <SidebarRight />
             </SidebarProvider>
-          </main>
-        </Providers>
+          </ThemeProvider>
+        </main>
       </body>
     </html>
   );
