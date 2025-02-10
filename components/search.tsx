@@ -109,6 +109,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
         open={searchDialogOpen}
         onOpenChange={open => {
           setSearchDialogOpen(open);
+          // onClose
           if (!open) {
             setSearchResult(null);
           }
@@ -130,9 +131,11 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                 return results.map((r: Nodes, idx: number) => (
                   <CommandItem
                     key={`${noteIdx}-${key}-${idx}`}
-                    onSelect={() =>
-                      router.push(`/notes/${getRoutePathFromVaultPath(key)}`)
-                    }
+                    onSelect={() => {
+                      router.push(`/notes/${getRoutePathFromVaultPath(key)}`);
+                      setSearchDialogOpen(false);
+                      setSearchResult(null);
+                    }}
                   >
                     <div className="flex flex-col gap-2">
                       <span className="text-xs text-muted-foreground">
