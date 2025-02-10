@@ -7,69 +7,6 @@ import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const log = logger.child({ module: 'bootstrap' });
 const redis = await createRedisClient();
-// const buildGraphDataset = async (
-//   paths: string[],
-//   noteParserResults: Map<string, NoteParserResult>,
-// ) => {
-//   const mdFilePaths = paths.filter(p => getExt(p) === 'md');
-//   // const pathColorMap = mapPathsToColors(paths);
-//
-//   const referenceCount = new Map<string, number>();
-//   for (const path of mdFilePaths) {
-//     const noteParserResult = noteParserResults.get(path);
-//
-//     if (!noteParserResult) {
-//       continue;
-//     }
-//
-//     const { internalLinkTargets } = noteParserResult;
-//
-//     for (const target of internalLinkTargets) {
-//       const notePath = mapInternalLinkToPath(target, path, paths).notePath;
-//       if (referenceCount.has(notePath)) {
-//         referenceCount.set(notePath, referenceCount.get(notePath)! + 1);
-//       } else {
-//         referenceCount.set(notePath, 1);
-//       }
-//     }
-//   }
-//
-//   const counts = Array.from(referenceCount.values());
-//   const maxCount = max(counts) ?? 1;
-//   const minCount = min(counts) ?? 0;
-//
-//   for (const path of mdFilePaths) {
-//     const noteParserResult = noteParserResults.get(path);
-//
-//     if (!noteParserResult) {
-//       continue;
-//     }
-//
-//     const { frontmatter, internalLinkTargets } = noteParserResult;
-//
-//     const targetPaths = internalLinkTargets.map(
-//       target => mapInternalLinkToPath(target, path, paths).notePath,
-//     );
-//
-//     await redis.hSet(
-//       RK.GRAPH,
-//       path,
-//       JSON.stringify({
-//         key: path,
-//         label: getSimpleFilename(path),
-//         tags: frontmatter.tags,
-//         // TODO: allow other file types
-//         targets: filter(uniq(targetPaths), o => o !== '' && getExt(o) === 'md'),
-//         // color: pathColorMap[path],
-//         color: 'rgb(63, 63, 70)',
-//         score:
-//           (referenceCount.get(path) ?? 0 - minCount) / (maxCount - minCount),
-//         x: Math.random(),
-//         y: Math.random(),
-//       }),
-//     );
-//   }
-// };
 
 const createSearchIndexes = async () => {
   log.info('Creating search indexes');

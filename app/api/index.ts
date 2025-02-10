@@ -1,4 +1,3 @@
-import { Dataset } from '@/components/sigma/types';
 import { TreeViewNode } from '@/components/types';
 import { Root } from 'hast';
 import { ListItem } from 'mdast';
@@ -51,10 +50,6 @@ export const search = async (content: string) => {
     content,
   }).toString();
   return fetch(url).then(res => res.json());
-};
-
-export const getGraphDataset = async (): Promise<Dataset> => {
-  return fetch(`${baseUrl}/api/graph/dataset`).then(res => res.json());
 };
 
 export const getNoteVaultPathByRoutePath = async (

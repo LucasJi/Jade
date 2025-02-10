@@ -8,7 +8,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import ViewGraphButton from '@/components/view-graph-button';
 import WebVitals from '@/components/webVitals';
 import { siteConfig } from '@/config/site';
 import '@/styles/globals.css';
@@ -55,7 +54,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                       <SidebarRouter />
                     </div>
                     <div className="flex items-center gap-2">
-                      <ViewGraphButton />
                       <Search />
                     </div>
                   </div>
