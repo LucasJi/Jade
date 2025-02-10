@@ -8,7 +8,7 @@ import { cacheNotes } from '@/lib/server/server-notes';
 import fs from 'fs';
 import { difference } from 'lodash';
 import { revalidatePath } from 'next/cache';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 
 const log = logger.child({
@@ -48,6 +48,11 @@ interface RebuildReqBody {
 export async function POST(req: NextRequest) {
   const body: RebuildReqBody = await req.json();
   const { files, clearOthers } = body;
+
+  if (!files || files.length === 0) {
+    return NextResponse.json({ msg: 'No files changed' });
+  }
+
   const pathsInVault = files.map(file => file.path);
   const filenames = files.map(file => `${file.md5}.${file.extension}`);
 

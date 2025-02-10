@@ -38,20 +38,29 @@ export async function GET(req: NextRequest) {
   const name = searchParams.get('name');
 
   if (!name) {
-    return NextResponse.json('');
+    return NextResponse.json(
+      { msg: `File with name ${name} not found` },
+      { status: 404 },
+    );
   }
 
   const fileKeys = await redis.hKeys(RK.FILES);
   const found = fileKeys.find(key => key.includes(name));
 
   if (!found) {
-    return NextResponse.json('');
+    return NextResponse.json(
+      { msg: `File with name ${name} not found` },
+      { status: 404 },
+    );
   }
 
   const fileStat = await redis.hGet(RK.FILES, found);
 
   if (!fileStat) {
-    return NextResponse.json('');
+    return NextResponse.json(
+      { msg: `File with name ${name} not found in cache` },
+      { status: 500 },
+    );
   }
 
   const { md5, extension } = JSON.parse(fileStat);

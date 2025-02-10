@@ -6,7 +6,7 @@ export default async function middleware(req: NextRequest) {
   if (req.method !== 'OPTIONS') {
     const authentication = req.headers.get('authentication');
 
-    if (!authentication) {
+    if (authentication !== process.env.ACCESS_TOKEN) {
       res = NextResponse.json(null, { status: 401 });
     }
   }

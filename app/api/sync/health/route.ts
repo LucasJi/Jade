@@ -1,6 +1,6 @@
 export async function GET() {
   return Response.json({
     data: true,
-    msg: 'Ok',
+    msg: 'You Jade service is available',
   });
 }

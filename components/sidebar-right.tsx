@@ -1,6 +1,6 @@
 'use client';
 
-import { getNoteHeadingByPath } from '@/app/api';
+import { getNoteHeadingsByVaultPath } from '@/app/api';
 import Footer from '@/components/footer';
 import {
   Sidebar,
@@ -114,12 +114,12 @@ export function SidebarRight({ ...props }: ComponentProps<typeof Sidebar>) {
     }
 
     if (vaultPath) {
-      getNoteHeadingByPath(vaultPath).then(data => {
+      getNoteHeadingsByVaultPath(vaultPath).then(data => {
         setHeading([...data]);
       });
     } else {
       // Get heading from home note if configured
-      getNoteHeadingByPath('').then(data => {
+      getNoteHeadingsByVaultPath('').then(data => {
         setHeading([...data]);
       });
     }

@@ -3,7 +3,11 @@ import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
-const log = logger.child({ module: 'api', url: '/api/note', method: 'GET' });
+const log = logger.child({
+  module: 'api',
+  url: '/api/note/hast',
+  method: 'GET',
+});
 
 const redis = await createRedisClient();
 

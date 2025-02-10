@@ -4,12 +4,8 @@ import { ListItem } from 'mdast';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const getNotePaths = async (): Promise<string[]> => {
-  return fetch(`${baseUrl}/api/note/paths`).then(resp => resp.json());
-};
-
-export const getHastByPath = async (path: string): Promise<Root> => {
-  const url = new URL(`${baseUrl}/api/note`);
+export const getHastByVaultPath = async (path: string): Promise<Root> => {
+  const url = new URL(`${baseUrl}/api/note/hast`);
   url.search = new URLSearchParams({
     path: path,
   }).toString();
@@ -18,10 +14,10 @@ export const getHastByPath = async (path: string): Promise<Root> => {
   }).then(resp => resp.json());
 };
 
-export const getNoteHeadingByPath = async (
+export const getNoteHeadingsByVaultPath = async (
   path: string,
 ): Promise<ListItem[]> => {
-  const url = new URL(`${baseUrl}/api/note/heading`);
+  const url = new URL(`${baseUrl}/api/note/headings`);
   url.search = new URLSearchParams({
     path: path,
   }).toString();
@@ -30,18 +26,8 @@ export const getNoteHeadingByPath = async (
   }).then(resp => resp.json());
 };
 
-export const revalidate = async (path: string) => {
-  const url = new URL(`${baseUrl}/api/revalidate`);
-  url.search = new URLSearchParams({
-    path: path,
-  }).toString();
-  return fetch(url, {
-    method: 'GET',
-  }).then(resp => resp.json());
-};
-
-export const getFileTree = async (): Promise<TreeViewNode[]> => {
-  return fetch(`${baseUrl}/api/tree`).then(res => res.json());
+export const getTreeView = async (): Promise<TreeViewNode[]> => {
+  return fetch(`${baseUrl}/api/tree-view`).then(res => res.json());
 };
 
 export const search = async (content: string) => {

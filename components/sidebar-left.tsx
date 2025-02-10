@@ -1,5 +1,5 @@
 'use client';
-import { getFileTree } from '@/app/api';
+import { getTreeView } from '@/app/api';
 import { TreeViewNode } from '@/components/types';
 import {
   Collapsible,
@@ -54,7 +54,7 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
 
   useEffect(() => {
     if (!parsingRoute) {
-      getFileTree().then(data => {
+      getTreeView().then(data => {
         setTreeNodes(data);
       });
     }
