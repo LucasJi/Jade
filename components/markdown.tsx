@@ -162,14 +162,9 @@ const components = (
     div: props => {
       if ('data-callout' in props) {
         const type = (props as any)['data-callout-type'];
-        const isFoldable =
-          (props as any)['data-is-foldable'] === undefined
-            ? false
-            : props['data-is-foldable'];
+        const isFoldable = (props as any)['data-is-foldable'] !== undefined;
         const defaultFolded =
-          (props as any)['data-default-folded'] === undefined
-            ? false
-            : props['data-default-folded'];
+          (props as any)['data-default-folded'] !== undefined;
         return (
           <Callout
             variant={type}
@@ -183,10 +178,7 @@ const components = (
 
       if ('data-callout-title' in props) {
         const type = (props as any)['data-callout-type'];
-        const isFoldable =
-          (props as any)['data-is-foldable'] === undefined
-            ? false
-            : props['data-is-foldable'];
+        const isFoldable = (props as any)['data-is-foldable'] !== undefined;
         return (
           <CalloutTitle
             title={props.children as string}
