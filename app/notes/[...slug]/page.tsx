@@ -34,6 +34,7 @@ export default async function Page(props: {
     const vaultPath = await redis.get(`${RK.PATH_MAPPING}${routePath}`);
 
     if (!vaultPath) {
+      log.error(`Failed to get vault path from route path: ${routePath}`);
       notFound();
     }
 

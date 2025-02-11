@@ -3,6 +3,7 @@
 import Pdf from '@/components/pdf';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { isAudio, isImg, isPdf } from '@/lib/file';
+import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
 
 interface EmbedFileProps {
@@ -20,7 +21,8 @@ const _height = 700;
 
 const parseImg = (filename: string) => {
   const [objName, config] = filename.split('|');
-  let width, height;
+  let width,
+    height = undefined;
   if (config) {
     const [w, h] = config.split('x');
     width = w ? Number.parseInt(w) : undefined;
@@ -84,8 +86,8 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
       name = objName;
       setFileType('IMG');
       setConfig({
-        width: width ?? _width,
-        height: height ?? _height,
+        width: width,
+        height: height,
       });
     } else if (isAudio(escapedPath)) {
       setFileType('AUDIO');
@@ -119,7 +121,23 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
       return <Pdf url={url} />;
     }
     case 'IMG': {
-      return url ? <img src={url} alt="Image"></img> : <div>Unknown image</div>;
+      if (!url) {
+        return <div>Unknown image</div>;
+      }
+
+      if (config.height !== undefined && config.width !== undefined) {
+        return (
+          <Image
+            src={url}
+            alt="Image"
+            width={config.width}
+            height={config.height}
+          />
+        );
+      }
+
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img src={url} alt="Image" />;
     }
     case 'AUDIO': {
       return (
@@ -129,7 +147,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
       );
     }
     default: {
-      return <div>not valid file</div>;
+      return <div>Unsupported file type</div>;
     }
   }
 };

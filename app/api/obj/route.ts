@@ -1,4 +1,4 @@
-import { RK } from '@/lib/constants';
+import { FileType, MIME, RK } from '@/lib/constants';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs, { ReadStream } from 'fs';
@@ -67,5 +67,10 @@ export async function GET(req: NextRequest) {
 
   return new NextResponse(
     streamFile(path.join(ASSETS_FOLDER, `${md5}.${extension}`)),
+    {
+      headers: {
+        'Content-Type': MIME[extension as FileType],
+      },
+    },
   );
 }

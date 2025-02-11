@@ -7,8 +7,8 @@ import { pinyin } from 'pinyin-pro';
 export const getRoutePathFromVaultPath = (path: string): string => {
   const _path = path
     .replaceAll('+', '%2B')
-    .replaceAll('-', '%2D')
-    .replaceAll(' ', '+');
+    .replaceAll(' ', '+')
+    .replaceAll('*', '%2A');
 
   const filename = getFilename(_path);
   const ext = getExt(_path);
@@ -33,13 +33,9 @@ export const getRoutePathFromVaultPath = (path: string): string => {
         return `${pre}${cur}`;
       }
 
-      return `${pre}-${cur}`;
+      return `${pre}*${cur}`;
     }) + `.${ext}`
   );
-};
-
-export const decodeNotePath = (encoded: string): string => {
-  return encoded.replaceAll('+', ' ').replaceAll('%2B', '+');
 };
 
 export const getRoutePathFromSlug = (slugs: string[]) => slugs.join('/');
