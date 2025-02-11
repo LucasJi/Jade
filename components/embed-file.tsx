@@ -3,7 +3,6 @@
 import Pdf from '@/components/pdf';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { isAudio, isImg, isPdf } from '@/lib/file';
-import Image from 'next/image';
 import { FC, useEffect, useState } from 'react';
 
 interface EmbedFileProps {
@@ -16,8 +15,8 @@ interface EmbedFileConfig {
   height?: number;
 }
 
-const _width = 100;
-const _height = 100;
+const _width = 768;
+const _height = 700;
 
 const parseImg = (filename: string) => {
   const [objName, config] = filename.split('|');
@@ -120,16 +119,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
       return <Pdf url={url} />;
     }
     case 'IMG': {
-      return url ? (
-        <Image
-          width={config.width}
-          height={config.height}
-          src={url}
-          alt="Picture"
-        />
-      ) : (
-        <div>Unknown image</div>
-      );
+      return url ? <img src={url} alt="Image"></img> : <div>Unknown image</div>;
     }
     case 'AUDIO': {
       return (
