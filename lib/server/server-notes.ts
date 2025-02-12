@@ -1,5 +1,7 @@
 import { RK } from '@/lib/constants';
+import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
+import { getNoteTreeView } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { noteParser } from '@/processor/parser';
@@ -61,4 +63,19 @@ export const cacheNotes = async (
   }
 
   return noteParserResults;
+};
+
+export const rebuildTreeView = async () => {
+  log.info('Rebuild tree view');
+  const allFiles = await redis.hKeys(RK.FILES);
+  const treeView = getNoteTreeView(
+    allFiles.map(file => {
+      return {
+        path: file,
+        ext: getExt(file),
+        lastModified: undefined,
+      };
+    }),
+  );
+  await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
 };

@@ -1,12 +1,13 @@
 import { RK } from '@/lib/constants';
 import { createRedisClient } from '@/lib/redis';
+import { ASSETS_FOLDER } from '@/lib/server/server-constants';
+import { mkdir, rm } from 'fs/promises';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const redis = await createRedisClient();
 
 export async function GET() {
   await redis.flushDb();
-
   await redis.ft.create(
     RK.IDX_HAST_CHILD,
     {
@@ -22,7 +23,6 @@ export async function GET() {
       LANGUAGE: RedisSearchLanguages.CHINESE,
     },
   );
-
   await redis.ft.create(
     RK.IDX_FRONT_MATTER,
     {
@@ -38,8 +38,16 @@ export async function GET() {
     },
   );
 
+  try {
+    await rm(ASSETS_FOLDER, { recursive: true, force: true });
+    await mkdir(ASSETS_FOLDER);
+    console.log(`Folder cleared: ${ASSETS_FOLDER}`);
+  } catch (err) {
+    console.error(`Failed to clear folder: ${err}`);
+  }
+
   return Response.json({
     data: true,
-    msg: 'Caches are reset',
+    msg: 'Flush completed',
   });
 }
