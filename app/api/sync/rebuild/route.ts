@@ -1,6 +1,6 @@
 import { logger } from '@/lib/logger';
 import { buildNoteCaches, buildTreeView } from '@/lib/server/server-notes';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 const log = logger.child({
   module: 'api',
@@ -20,12 +20,11 @@ export async function POST(req: NextRequest) {
   const body: Body = await req.json();
   const { files } = body;
 
-  if (!files || files.length === 0) {
-    return NextResponse.json({ msg: 'No files changed' });
-  }
-
   log.info('Rebuild begins');
-  buildNoteCaches(files);
+
+  if (files && files.length > 0) {
+    buildNoteCaches(files);
+  }
 
   log.info('Build tree view');
   await buildTreeView();
