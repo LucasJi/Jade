@@ -13,6 +13,7 @@ interface Body {
     md5: string;
     extension: string;
     lastModified: string;
+    isDeleted?: boolean;
   }[];
 }
 

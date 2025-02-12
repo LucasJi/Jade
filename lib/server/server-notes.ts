@@ -1,4 +1,4 @@
-import { RK } from '@/lib/constants';
+import { FileType, RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
@@ -18,10 +18,43 @@ export const buildNoteCaches = (
     path: string;
     md5: string;
     extension: string;
+    isDeleted?: boolean;
   }[],
 ) => {
   for (const file of files) {
-    const { extension, md5, path: vaultPath } = file;
+    const { extension, md5, path: vaultPath, isDeleted } = file;
+
+    if (isDeleted) {
+      const ext = getExt(vaultPath);
+
+      if (ext === FileType.MD) {
+        redis.get(RK.HOME).then(home => {
+          if (home === vaultPath) {
+            redis
+              .set(RK.HOME, '')
+              .then(() => log.debug(`Home page ${vaultPath} is deleted`));
+          }
+        });
+        redis.json.del(`${RK.HAST}${vaultPath}`).then(() => {
+          log.debug(`Hast of ${vaultPath} is deleted`);
+          const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
+          log.info(`Revalidate path: ${notePath}`);
+          revalidatePath(notePath);
+        });
+        redis
+          .del(`${RK.HEADING}${vaultPath}`)
+          .then(() => log.debug(`Headings of ${vaultPath} is deleted`));
+        redis.json
+          .del(`${RK.FRONT_MATTER}${vaultPath}`)
+          .then(() => log.debug(`Frontmatter of ${vaultPath} is deleted`));
+      } else {
+        const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
+        log.info(`Revalidate path: ${notePath}`);
+        revalidatePath(notePath);
+      }
+
+      continue;
+    }
 
     if (extension !== 'md') {
       continue;
