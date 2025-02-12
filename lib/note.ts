@@ -81,33 +81,11 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
           isDir: true,
         };
         currentNode.children.push(dirNode);
-
-        // sort all nodes after any new node added
-        currentNode.children.sort((a, b) => {
-          if (a.isDir && !b.isDir) {
-            return -1;
-          } else if (!a.isDir && b.isDir) {
-            return 1;
-          }
-          return a.name.localeCompare(b.name, 'zh');
-        });
       }
 
       currentNode = dirNode;
     });
 
-    // c is a directory
-    // if (noteObject.type === 'dir') {
-    //   const childDir = splits[splits.length - 1];
-    //   currentNode.children.push({
-    //     name: childDir,
-    //     path: childDir,
-    //     children: [],
-    //     isDir: true,
-    //   });
-    // }
-
-    // c is a file
     const filename: string = splits[splits.length - 1];
     currentNode.children.push({
       name: getFilename(filename),
@@ -116,19 +94,26 @@ export const getNoteTreeView = (noteObjects: NoteObject[]): TreeViewNode[] => {
       children: [],
       isDir: false,
     });
-
-    // sort all nodes after any new node added
-    currentNode.children.sort((a, b) => {
-      if (a.isDir && !b.isDir) {
-        return -1;
-      } else if (!a.isDir && b.isDir) {
-        return 1;
-      }
-      return a.name.localeCompare(b.name, 'zh');
-    });
   });
 
+  sort(_root);
+
   return _root.children;
+};
+
+const sort = (node: TreeViewNode) => {
+  node.children.sort((a, b) => {
+    if (a.isDir && !b.isDir) {
+      return -1;
+    } else if (!a.isDir && b.isDir) {
+      return 1;
+    }
+    return a.name.localeCompare(b.name, 'zh');
+  });
+
+  for (const child of node.children) {
+    sort(child);
+  }
 };
 
 export const decodeURISlug = (slug: string[]) =>
