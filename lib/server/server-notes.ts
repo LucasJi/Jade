@@ -1,5 +1,5 @@
 import { RK } from '@/lib/constants';
-import { getExt } from '@/lib/file';
+import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { getNoteTreeView } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
@@ -35,7 +35,7 @@ export const cacheNotes = async (
     log.debug('Read file sync');
     const noteParserResult = noteParser({
       note,
-      plainNoteName: vaultPath,
+      plainNoteName: getFilename(vaultPath),
     });
     log.debug('Parse note');
 
@@ -50,12 +50,12 @@ export const cacheNotes = async (
 
     if (hast.children && hast.children.length > 0) {
       for (let i = 0; i < hast.children.length; i++) {
-        if (toText(hast.children[i]) !== '') {
-          await redis.json.set(
-            `${RK.HAST_CHILD}${vaultPath}:${i}`,
-            '$',
-            hast.children[i] as any,
-          );
+        const text = toText(hast.children[i]);
+        if (text !== '') {
+          await redis.json.set(`${RK.HAST_CHILD}${vaultPath}:${i}`, '$', {
+            type: 'text',
+            value: text,
+          });
         }
       }
     }

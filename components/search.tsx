@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
 import { getRoutePathFromVaultPath } from '@/lib/note';
-import { Nodes } from 'hast';
-import { toText } from 'hast-util-to-text';
+import { Text } from 'hast';
 import { trim } from 'lodash';
 import { CommandIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -132,7 +131,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
             <CommandGroup heading="Notes">
               {Object.keys(searchResult.noteResult).map((key, noteIdx) => {
                 const results = searchResult.noteResult[key];
-                return results.map((r: Nodes, idx: number) => (
+                return results.map((r: Text, idx: number) => (
                   <CommandItem
                     key={`${noteIdx}-${key}-${idx}`}
                     onSelect={() => {
@@ -146,7 +145,7 @@ export function Search({ ...props }: ComponentProps<'div'>) {
                         {key}
                       </span>
                       <span className="font-medium">
-                        {highlight(toText(r), searchContent)}
+                        {highlight(r.value, searchContent)}
                       </span>
                     </div>
                   </CommandItem>
