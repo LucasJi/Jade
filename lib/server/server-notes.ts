@@ -1,29 +1,28 @@
 import { RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import { getNoteTreeView } from '@/lib/note';
+import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { noteParser } from '@/processor/parser';
-import { NoteParserResult } from '@/processor/types';
-import fs from 'fs';
+import { readFile } from 'fs/promises';
 import { toText } from 'hast-util-to-text';
+import { revalidatePath } from 'next/cache';
 import path from 'path';
 
 const log = logger.child({ module: 'lib/server/server-notes' });
 const redis = await createRedisClient();
 
-export const cacheNotes = async (
+export const buildNoteCaches = (
   files: {
     path: string;
     md5: string;
     extension: string;
   }[],
 ) => {
-  const noteParserResults = new Map<string, NoteParserResult>();
-
   for (const file of files) {
     const { extension, md5, path: vaultPath } = file;
+
     if (extension !== 'md') {
       continue;
     }
@@ -31,51 +30,72 @@ export const cacheNotes = async (
     log.debug(`Caching note ${vaultPath}`);
     const diskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
-    const note = fs.readFileSync(diskPath, { encoding: 'utf-8' });
-    log.debug('Read file sync');
-    const noteParserResult = noteParser({
-      note,
-      plainNoteName: getFilename(vaultPath),
-    });
-    log.debug('Parse note');
+    readFile(diskPath, { encoding: 'utf-8' }).then(note => {
+      const noteParserResult = noteParser({
+        note,
+        plainNoteName: getFilename(vaultPath),
+      });
+      log.debug('Parse note');
 
-    const { hast, headings, frontmatter } = noteParserResult;
-    noteParserResults.set(vaultPath, noteParserResult);
+      const { hast, headings, frontmatter } = noteParserResult;
 
-    await redis.json.set(`${RK.HAST}${vaultPath}`, '$', hast as any);
-    await redis.set(`${RK.HEADING}${vaultPath}`, JSON.stringify(headings));
-    await redis.json.set(`${RK.FRONT_MATTER}${vaultPath}`, '$', frontmatter);
+      if (frontmatter.home) {
+        redis
+          .set(RK.HOME, vaultPath)
+          .then(() => {
+            log.debug(`Set ${vaultPath} as home page`);
+            log.info('Revalidate path: /');
+            revalidatePath('/');
+          })
+          .catch(e => log.error(e));
+      }
 
-    log.debug('Update redis');
+      redis.json.set(`${RK.HAST}${vaultPath}`, '$', hast as any).then(() => {
+        log.debug(`Set hast of ${vaultPath}`);
+        const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
+        log.info(`Revalidate path: ${notePath}`);
+        revalidatePath(notePath);
+      });
 
-    if (hast.children && hast.children.length > 0) {
-      for (let i = 0; i < hast.children.length; i++) {
-        const text = toText(hast.children[i]);
-        if (text !== '') {
-          await redis.json.set(`${RK.HAST_CHILD}${vaultPath}:${i}`, '$', {
-            type: 'text',
-            value: text,
-          });
+      redis
+        .set(`${RK.HEADING}${vaultPath}`, JSON.stringify(headings))
+        .then(() => log.debug(`Set heading of ${vaultPath}`));
+      redis.json
+        .set(`${RK.FRONT_MATTER}${vaultPath}`, '$', frontmatter)
+        .then(() => log.debug(`Set frontmatter of ${vaultPath}`));
+
+      log.debug('Update redis');
+
+      if (hast.children && hast.children.length > 0) {
+        for (let i = 0; i < hast.children.length; i++) {
+          const text = toText(hast.children[i]);
+          if (text !== '') {
+            redis.json
+              .set(`${RK.HAST_CHILD}${vaultPath}:${i}`, '$', {
+                type: 'text',
+                value: text,
+              })
+              .then(() => log.debug(`Set hast child ${i} of ${vaultPath}`));
+          }
         }
       }
-    }
-    log.info(`${vaultPath} is cached`);
-  }
 
-  return noteParserResults;
+      log.info(`${vaultPath} is cached`);
+    });
+  }
 };
 
-export const rebuildTreeView = async () => {
-  log.info('Rebuild tree view');
-  const allFiles = await redis.hKeys(RK.FILES);
-  const treeView = getNoteTreeView(
-    allFiles.map(file => {
-      return {
-        path: file,
-        ext: getExt(file),
-        lastModified: undefined,
-      };
-    }),
-  );
-  await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
+export const buildTreeView = async () => {
+  return redis.hKeys(RK.FILES).then(allFiles => {
+    const treeView = getNoteTreeView(
+      allFiles.map(file => {
+        return {
+          path: file,
+          ext: getExt(file),
+          lastModified: undefined,
+        };
+      }),
+    );
+    return redis.json.set(RK.TREE_VIEW, '$', treeView as any);
+  });
 };

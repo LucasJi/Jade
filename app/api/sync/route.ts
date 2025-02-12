@@ -3,7 +3,7 @@ import { logger } from '@/lib/logger';
 import { getRoutePathFromVaultPath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
-import fs from 'fs';
+import { unlink, writeFile } from 'fs/promises';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
@@ -48,92 +48,134 @@ const handleCreatedAndModified = async (params: Params) => {
   const { md5, extension, file, lastModified, vaultPath } = params;
   const diskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
-  file.arrayBuffer().then(async arrayBuffer => {
+  return file.arrayBuffer().then(async arrayBuffer => {
     const buffer = Buffer.from(arrayBuffer);
 
-    fs.writeFileSync(diskPath, buffer, { encoding: 'utf-8' });
+    return writeFile(diskPath, buffer, { encoding: 'utf-8' }).then(() => {
+      log.info(
+        {
+          vaultPath,
+          diskPath,
+        },
+        'File created',
+      );
 
-    log.info(
-      {
-        vaultPath,
-        diskPath,
-      },
-      'File created',
-    );
+      return Promise.all([
+        redis
+          .hSet(
+            RK.FILES,
+            vaultPath,
+            JSON.stringify({
+              md5,
+              extension,
+              diskPath,
+              lastModified,
+            }),
+          )
+          .then(() => log.debug(`Add ${vaultPath} to ${RK.FILES}`)),
+        redis
+          .set(
+            `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
+            vaultPath,
+          )
+          .then(() => log.debug(`Set path mapping of ${vaultPath}`)),
+        redis
+          .sAdd(RK.PATHS, vaultPath)
+          .then(() => log.debug(`Add ${vaultPath} to ${RK.PATHS}`)),
+      ]);
+    });
   });
-
-  await redis.hSet(
-    RK.FILES,
-    vaultPath,
-    JSON.stringify({
-      md5,
-      extension,
-      diskPath,
-      lastModified,
-    }),
-  );
-  await redis.set(
-    `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
-    vaultPath,
-  );
-  await redis.sAdd(RK.PATHS, vaultPath);
 };
 
 const handleDeleted = async (params: Params) => {
   const { vaultPath } = params;
   const fileStat = await redis.hGet(RK.FILES, vaultPath);
+  const promises: Promise<void>[] = [];
 
   if (fileStat) {
     const { diskPath } = JSON.parse(fileStat);
 
-    fs.unlinkSync(diskPath);
-
-    log.info(
-      {
-        vaultPath,
-        diskPath,
-      },
-      'File deleted',
-    );
+    const p1 = unlink(diskPath)
+      .then(() => {
+        log.info(
+          {
+            vaultPath,
+            diskPath,
+          },
+          'File deleted',
+        );
+      })
+      .catch(e => {
+        log.error(`Failed to delete file: ${e}`);
+      });
+    promises.push(p1);
   }
 
-  await redis.hDel(RK.FILES, vaultPath);
-  await redis.del(`${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`);
-  await redis.sRem(RK.PATHS, vaultPath);
+  const p2 = redis
+    .hDel(RK.FILES, vaultPath)
+    .then(() => log.debug(`Remove ${vaultPath} from ${RK.FILES}`));
+  const p3 = redis
+    .del(`${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`)
+    .then(() => log.debug(`Remove ${vaultPath} from ${RK.PATH_MAPPING}`));
+  const p4 = redis
+    .sRem(RK.PATHS, vaultPath)
+    .then(() => log.debug(`Remove ${vaultPath} from ${RK.PATHS}`));
+
+  promises.push(p2, p3, p4);
+
+  return Promise.all(promises);
 };
 
 const handleRenamed = async (params: Params) => {
   const { extension, file, lastModified, vaultPath, oldPath } = params;
 
-  if (oldPath) {
-    const fileStat = await redis.hGet(RK.FILES, oldPath);
+  if (!oldPath) {
+    log.error(
+      'Failed to perform rename sync, file stat of old path not exists',
+    );
+    return;
+  }
 
-    if (fileStat) {
-      const { md5, diskPath } = JSON.parse(fileStat);
-      const newDiskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
+  const fileStat = await redis.hGet(RK.FILES, oldPath);
+  if (!fileStat) {
+    log.error('Failed to perform rename sync, old path not exists');
+    return;
+  }
 
-      file.arrayBuffer().then(async arrayBuffer => {
-        const buffer = Buffer.from(arrayBuffer);
+  const { md5, diskPath } = JSON.parse(fileStat);
+  const newDiskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
-        fs.writeFileSync(newDiskPath, buffer, { encoding: 'utf-8' });
-        fs.unlinkSync(diskPath);
+  return file.arrayBuffer().then(async arrayBuffer => {
+    const promises: Promise<void>[] = [];
 
-        log.info(
-          {
-            oldPath,
-            vaultPath,
-            diskPath,
-          },
-          'File renamed',
-        );
-      });
+    const buffer = Buffer.from(arrayBuffer);
 
-      await redis.hDel(RK.FILES, oldPath);
-      await redis.sRem(RK.PATHS, oldPath);
-      await redis.del(
-        `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(oldPath)}`,
-      );
-      await redis.hSet(
+    const p1 = writeFile(newDiskPath, buffer, { encoding: 'utf-8' }).catch();
+    const p2 = unlink(diskPath).catch();
+
+    log.info(
+      {
+        oldPath,
+        vaultPath,
+        diskPath,
+      },
+      'File renamed',
+    );
+
+    const p3 = redis
+      .hDel(RK.FILES, oldPath)
+      .then(() => {})
+      .catch();
+    const p4 = redis
+      .sRem(RK.PATHS, oldPath)
+      .then(() => {})
+      .catch();
+    const p5 = redis
+      .del(`${RK.PATH_MAPPING}${getRoutePathFromVaultPath(oldPath)}`)
+      .then(() => {})
+      .catch();
+    const p6 = redis
+      .hSet(
         RK.FILES,
         vaultPath,
         JSON.stringify({
@@ -142,21 +184,22 @@ const handleRenamed = async (params: Params) => {
           diskPath: newDiskPath,
           lastModified,
         }),
-      );
-      await redis.set(
+      )
+      .then(() => {})
+      .catch();
+    const p7 = redis
+      .set(
         `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
         vaultPath,
-      );
-      await redis.sAdd(RK.PATHS, vaultPath);
-    } else {
-      const msg =
-        'Failed to perform rename sync, file stat of old path not exists';
-      log.error(msg);
-    }
-  } else {
-    const msg = 'Failed to perform rename sync, old path not exists';
-    log.error(msg);
-  }
+      )
+      .then(() => {})
+      .catch();
+    const p8 = redis.sAdd(RK.PATHS, vaultPath).then(() => {});
+
+    promises.push(p1, p2, p3, p4, p5, p6, p7, p8);
+
+    return Promise.all(promises);
+  });
 };
 
 export async function POST(request: Request) {
