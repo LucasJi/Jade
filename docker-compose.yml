@@ -9,6 +9,8 @@ services:
     volumes:
       - jade_data:/data/redis
     restart: unless-stopped
+    networks:
+      - jade_net
 
   jade:
     build:
@@ -22,6 +24,11 @@ services:
     depends_on:
       - redis
     restart: unless-stopped
+    networks:
+      - jade_net
 
 volumes:
   jade_data:
+
+networks:
+  jade_net:
