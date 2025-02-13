@@ -1,6 +1,6 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:lts AS base
+FROM node:lts-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
