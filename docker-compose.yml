@@ -6,6 +6,8 @@ services:
     container_name: jade
     ports:
       - "3000:3000"
+    volumes:
+      - redis_data:/data/jade
     depends_on:
       - redis
     restart: unless-stopped
@@ -20,7 +22,7 @@ services:
     environment:
       - REDIS_ARGS=--requirepass ${REDIS_PASS}
     volumes:
-      - redis_data:/data
+      - redis_data:/data/redis
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
     restart: unless-stopped
