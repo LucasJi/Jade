@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  Jade:
+  jade:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: Jade
+    container_name: jade
     ports:
       - "3000:3000"
     depends_on:
