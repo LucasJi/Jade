@@ -11,8 +11,6 @@ services:
     depends_on:
       - redis
     restart: unless-stopped
-    networks:
-      - jade_network
 
   redis:
     image: redis/redis-stack-server:latest
@@ -26,11 +24,6 @@ services:
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
     restart: unless-stopped
-    networks:
-      - jade_network
 
 volumes:
   redis_data:
-
-networks:
-  jade_network:
