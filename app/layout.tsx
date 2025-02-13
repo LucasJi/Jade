@@ -39,7 +39,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en" className={font.className}>
-      <GoogleAnalytics gaId={`${process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}`} />
+      {process.env.NEXT_PUBLIC_GOOGLE_TAG_ID && (
+        <GoogleAnalytics gaId={`${process.env.NEXT_PUBLIC_GOOGLE_TAG_ID}`} />
+      )}
       <body className="min-h-screen bg-background antialiased">
         <WebVitals />
         <main>
