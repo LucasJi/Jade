@@ -17,6 +17,7 @@ COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 #  else echo "Lockfile not found." && exit 1; \
 #  fi \
 
+RUN npm install -g corepack@latest
 RUN corepack enable pnpm
 RUN pnpm config set registry https://registry.npmmirror.com
 RUN pnpm i --frozen-lockfile
@@ -39,6 +40,7 @@ COPY . .
 #  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
 #  else echo "Lockfile not found." && exit 1; \
 #  fi \
+RUN npm install -g corepack@latest
 RUN corepack enable pnpm
 RUN pnpm config set registry https://registry.npmmirror.com
 RUN pnpm run build
