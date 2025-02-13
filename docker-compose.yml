@@ -15,12 +15,16 @@ services:
       - jade_network
 
   redis:
-    image: redis/redis-stack:latest
+    image: redis/redis-stack-server:latest
     container_name: redis_stack
     ports:
       - "6379:6379"
+    environment:
+      - REDIS_ARGS=--requirepass ${REDIS_PASS}
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
     restart: unless-stopped
     networks:
       - jade_network
