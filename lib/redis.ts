@@ -4,13 +4,15 @@ import { createClient } from 'redis';
 const log = logger.child({ module: 'lib:redis' });
 
 export const createRedisClient = async () => {
-  const host = process.env.REDIS_HOST || '127.0.0.1';
+  const host = process.env.REDIS_HOST;
   const port = Number.parseInt(process.env.REDIS_PORT || '') || 6379;
   const pass = process.env.REDIS_PASS;
   return await createClient({
     url: `redis://:${pass}@${host}:${port}`,
   })
-    .on('error', err => log.error({ error: err }, 'Redis Client Error'))
+    .on('error', err =>
+      log.error({ host, port }, `Failed to create redis client: ${err}`),
+    )
     .on('ready', () => {})
     .connect();
 };
