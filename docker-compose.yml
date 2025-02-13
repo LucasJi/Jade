@@ -1,17 +1,4 @@
 services:
-  jade:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: jade
-    ports:
-      - "3000:3000"
-    volumes:
-      - redis_data:/data/jade
-    depends_on:
-      - redis
-    restart: unless-stopped
-
   redis:
     image: redis/redis-stack-server:latest
     container_name: redis_stack
@@ -20,10 +7,23 @@ services:
     environment:
       - REDIS_ARGS=--requirepass ${REDIS_PASS}
     volumes:
-      - redis_data:/data/redis
+      - jade_data:/data/redis
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
     restart: unless-stopped
 
+  jade:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jade
+    ports:
+      - "3000:3000"
+    volumes:
+      - jade_data:/data/jade
+    depends_on:
+      - redis
+    restart: unless-stopped
+
 volumes:
-  redis_data:
+  jade_data:
