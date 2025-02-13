@@ -73,7 +73,7 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
 
   useEffect(() => {
     getTreeView().then(data => {
-      setTreeNodes(data);
+      setTreeNodes(data ?? []);
     });
   }, []);
 
