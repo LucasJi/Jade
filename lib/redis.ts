@@ -8,7 +8,11 @@ export const createRedisClient = async () => {
   const port = Number.parseInt(process.env.REDIS_PORT || '') || 6379;
   const pass = process.env.REDIS_PASS;
   return await createClient({
-    url: `redis://:${pass}@${host}:${port}`,
+    socket: {
+      host,
+      port,
+    },
+    password: pass,
   })
     .on('error', err =>
       log.error({ host, port }, `Failed to create redis client: ${err}`),

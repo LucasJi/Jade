@@ -8,8 +8,6 @@ services:
       - REDIS_ARGS=--requirepass ${REDIS_PASS}
     volumes:
       - jade_data:/data/redis
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
     restart: unless-stopped
 
   jade:
