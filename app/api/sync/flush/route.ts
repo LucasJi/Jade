@@ -1,13 +1,24 @@
 import { RK } from '@/lib/constants';
+import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { mkdir, rm } from 'fs/promises';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
 const redis = await createRedisClient();
+const log = logger.child({ module: 'api', path: '/sync/flush' });
 
 export async function GET() {
-  await redis.flushDb();
+  const luaScript = `
+            local keys = redis.call('SCAN', 0, 'MATCH', ARGV[1], 'COUNT', 1000)
+            for _, key in ipairs(keys[2]) do
+                redis.call('DEL', key)
+            end
+            return #keys[2]
+        `;
+  const deleted = await redis.eval(luaScript, { arguments: ['jade:*'] });
+  log.info(`Deleted ${deleted} keys using Lua script`);
+
   await redis.ft.create(
     RK.IDX_HAST_CHILD,
     {

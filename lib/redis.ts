@@ -17,6 +17,6 @@ export const createRedisClient = async () => {
     .on('error', err =>
       log.error({ host, port }, `Failed to create redis client: ${err}`),
     )
-    .on('ready', () => {})
+    .on('ready', () => log.debug('Create redis client successfully'))
     .connect();
 };

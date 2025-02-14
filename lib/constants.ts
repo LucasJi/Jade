@@ -11,29 +11,29 @@ export const OB_COMMENT_REG = new RegExp(/[^`]?%%(.*?)%%[^`]?/g);
 // Redis keys
 export enum RK {
   // set
-  PATHS = 'jade-test:paths',
+  PATHS = 'jade:paths',
   // hast
-  FILES = 'jade-test:files',
+  FILES = 'jade:files',
   // string
-  HEADING = 'jade-test:heading:',
+  HEADING = 'jade:heading:',
   // set
-  FRONT_MATTER = 'jade-test:frontmatter:',
+  FRONT_MATTER = 'jade:frontmatter:',
   // json
-  HAST = 'jade-test:hast:',
+  HAST = 'jade:hast:',
   // json
-  HAST_CHILD = 'jade-test:hChld:',
+  HAST_CHILD = 'jade:hChld:',
   // idx
-  IDX_HAST_CHILD = 'jade-test:idx:hChld',
+  IDX_HAST_CHILD = 'jade:idx:hChld',
   // idx
-  IDX_FRONT_MATTER = 'jade-test:idx:frontmatter',
+  IDX_FRONT_MATTER = 'jade:idx:frontmatter',
   // json
-  GRAPH = 'jade-test:graph',
+  GRAPH = 'jade:graph',
   // string
-  HOME = 'jade-test:home',
+  HOME = 'jade:home',
   // json
-  TREE_VIEW = 'jade-test:tree-view',
+  TREE_VIEW = 'jade:tree-view',
   // string
-  PATH_MAPPING = 'jade-test:path-mapping:',
+  PATH_MAPPING = 'jade:path-mapping:',
 }
 
 // allowed file types
