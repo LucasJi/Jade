@@ -19,6 +19,9 @@ export async function GET() {
   const deleted = await redis.eval(luaScript, { arguments: ['jade:*'] });
   log.info(`Deleted ${deleted} keys using Lua script`);
 
+  await redis.ft.dropIndex(RK.IDX_HAST_CHILD);
+  await redis.ft.dropIndex(RK.IDX_FRONT_MATTER);
+
   await redis.ft.create(
     RK.IDX_HAST_CHILD,
     {
