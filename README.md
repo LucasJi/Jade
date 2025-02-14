@@ -44,7 +44,7 @@ Before installing Jade, ensure you have the following:
    cp .env.example .env
    ```
 6. Edit `.env` to setup required environment variables
-    - **NEXT_PUBLIC_BASE_URL**: The base url of your Jade server
+    - **NEXT_PUBLIC_BASE_URL**: The base url of your Jade service
     - **ACCESS_TOKEN**: Used to protect synchronize related APIs
     - **REDIS_HOST**: Redis stack server host
     - **REDIS_PORT**: Redis stack server port
@@ -67,7 +67,7 @@ Before installing Jade, ensure you have the following:
    cp .env.example .env
    ```
 3. Edit `.env` to setup required environment variables
-    - **NEXT_PUBLIC_BASE_URL**: The base url of your Jade server
+    - **NEXT_PUBLIC_BASE_URL**: The base url of your Jade service
     - **ACCESS_TOKEN**: Used to protect synchronize related APIs
     - **REDIS_PASS**: Redis stack server password
 4. Build & Run
@@ -77,9 +77,9 @@ Before installing Jade, ensure you have the following:
 
 ## Usage
 
-1. Run your Jade server
+1. Run your Jade service
 2. Config the Obsidian2Jade plugin in your Obsidian vault
-3. Synchronize your vault to Jade server
+3. Synchronize your vault to Jade service
 4. Visit `NEXT_PUBLIC_BASE_URL` to enjoy your vault online
 
 ## Contribution
