@@ -10,7 +10,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import WebVitals from '@/components/webVitals';
-import { siteConfig } from '@/config/site';
 import '@/styles/globals.css';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Viewport } from 'next';
@@ -22,13 +21,27 @@ const font = localFont({
   display: 'swap',
 });
 
+const DEFAULT_METADATA_TITLE = 'Jade';
+const DEFAULT_METADATA_DESCRIPTION =
+  'Jade is a kind of Obsidian publishing and syncing solution. It publishes your Obsidian vault to a public website which strives to support various wonderful features of Obsidian, such as Obsidian flavored markdown, wiki-links, graph view, and more, as much as possible.';
+const DEFAULT_METADATA_KEYWORDS = [
+  'Obsidian Publish Alternative',
+  'Obsidian Publish',
+  'Obsidian Sync',
+  'Obsidian Sync Alternative',
+  'Personal Blog',
+  'Open Source Obsidian Publish Alternative',
+  'Next.js',
+  'React',
+];
+
 export const metadata = {
-  title: siteConfig.name,
-  description: siteConfig.description,
-  keywords: siteConfig.keywords,
-  authors: siteConfig.authors,
-  creator: siteConfig.creator,
-  openGraph: siteConfig.openGraph,
+  title: process.env.NEXT_PUBLIC_METADATA_TITLE ?? DEFAULT_METADATA_TITLE,
+  description:
+    process.env.NEXT_PUBLIC_METADATA_DESCRIPTION ??
+    DEFAULT_METADATA_DESCRIPTION,
+  keywords:
+    process.env.NEXT_PUBLIC_METADATA_KEYWORDS ?? DEFAULT_METADATA_KEYWORDS,
 };
 
 export const viewport: Viewport = {
