@@ -3,6 +3,7 @@ import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { Nodes } from 'hast';
+import { notFound } from 'next/navigation';
 
 const redis = await createRedisClient();
 
@@ -17,8 +18,7 @@ export default async function Home() {
   );
 
   if (!home) {
-    // TODO: Show all note when there is no home page note configured.
-    return <div>Home page note is not configured</div>;
+    notFound();
   }
 
   const paths = await redis.sMembers(RK.PATHS);
