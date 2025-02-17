@@ -27,12 +27,4 @@ const baseSiteConfig = {
 
 export const siteConfig = {
   ...baseSiteConfig,
-  openGraph: {
-    type: 'website',
-    locale: 'zh',
-    url: baseSiteConfig.url,
-    title: baseSiteConfig.name,
-    description: baseSiteConfig.description,
-    siteName: baseSiteConfig.name,
-  },
 };
