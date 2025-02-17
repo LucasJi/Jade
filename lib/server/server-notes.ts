@@ -72,22 +72,22 @@ export const buildNoteCaches = (
 
       const { hast, headings, frontmatter } = noteParserResult;
 
-      if (frontmatter.home) {
-        redis
-          .set(RK.HOME, vaultPath)
-          .then(() => {
-            log.debug(`Set ${vaultPath} as home page`);
-            log.info('Revalidate path: /');
-            revalidatePath('/');
-          })
-          .catch(e => log.error(e));
-      }
-
       redis.json.set(`${RK.HAST}${vaultPath}`, '$', hast as any).then(() => {
         log.debug(`Set hast of ${vaultPath}`);
         const notePath = `/notes/${getRoutePathFromVaultPath(vaultPath)}`;
         log.info(`Revalidate path: ${notePath}`);
         revalidatePath(notePath);
+
+        if (frontmatter.home === true) {
+          redis
+            .set(RK.HOME, vaultPath)
+            .then(() => {
+              log.info(`Set ${vaultPath} as home page`);
+              log.info('Revalidate path: /');
+              revalidatePath('/');
+            })
+            .catch(e => log.error(e));
+        }
       });
 
       redis
