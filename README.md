@@ -23,7 +23,7 @@ For more details about features, please read the documentation: https://jade.luc
 Before installing Jade, ensure you have the following:
 
 1. [Obsidian](https://obsidian.md/) installed on your device.
-2. The [Obsidian2Jade](https://github.com/LucasJi/Obsidian2Jade) plugin installed in Obsidian to
+2. The [Jade Publisher](https://github.com/LucasJi/jade-publisher) plugin installed in Obsidian to
    facilitate note publish.
 
 ### Manual Installation
