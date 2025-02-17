@@ -29,7 +29,7 @@ Before installing Jade, ensure you have the following:
 ### Manual Installation
 
 1. Install [Node.js(v22 or higher)](https://nodejs.org/en)
-2. Install **and run** [Redis Stack](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)
+2. Install **and run** [Redis Stack Server](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)
 3. Clone the Repository
    ```shell
    git clone git@github.com:LucasJi/Jade.git
