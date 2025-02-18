@@ -127,22 +127,22 @@ const handleDeleted = async (params: Params) => {
 };
 
 const handleRenamed = async (params: Params) => {
-  const { extension, file, lastModified, vaultPath, oldPath } = params;
+  const { extension, file, lastModified, vaultPath, oldPath, md5 } = params;
 
   if (!oldPath) {
+    log.error('Failed to perform rename sync, old path not exists');
+    return;
+  }
+
+  const fileStat = await redis.hGet(RK.FILES, oldPath);
+  if (!fileStat) {
     log.error(
       'Failed to perform rename sync, file stat of old path not exists',
     );
     return;
   }
 
-  const fileStat = await redis.hGet(RK.FILES, oldPath);
-  if (!fileStat) {
-    log.error('Failed to perform rename sync, old path not exists');
-    return;
-  }
-
-  const { md5, diskPath } = JSON.parse(fileStat);
+  const { diskPath } = JSON.parse(fileStat);
   const newDiskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
   return file.arrayBuffer().then(async arrayBuffer => {
@@ -150,8 +150,15 @@ const handleRenamed = async (params: Params) => {
 
     const buffer = Buffer.from(arrayBuffer);
 
-    const p1 = writeFile(newDiskPath, buffer, { encoding: 'utf-8' }).catch();
-    const p2 = unlink(diskPath).catch();
+    if (newDiskPath !== diskPath) {
+      const p1 = unlink(diskPath)
+        .then(() => log.debug(`Unlink ${diskPath}`))
+        .catch();
+      const p2 = writeFile(newDiskPath, buffer, { encoding: 'utf-8' })
+        .then(() => log.debug(`Write file to ${newDiskPath}`))
+        .catch();
+      promises.push(p1, p2);
+    }
 
     log.info(
       {
@@ -196,7 +203,7 @@ const handleRenamed = async (params: Params) => {
       .catch();
     const p8 = redis.sAdd(RK.PATHS, vaultPath).then(() => {});
 
-    promises.push(p1, p2, p3, p4, p5, p6, p7, p8);
+    promises.push(p3, p4, p5, p6, p7, p8);
 
     return Promise.all(promises);
   });
