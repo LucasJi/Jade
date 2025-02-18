@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   log.info('Rebuild begins');
 
   if (files && files.length > 0) {
-    buildNoteCaches(files);
+    await buildNoteCaches(files);
   }
 
   log.info('Build tree view');
