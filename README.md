@@ -58,7 +58,7 @@ Before installing Jade, ensure you have the following:
 ## Usage
 
 1. Run your Jade service
-2. Config the Obsidian2Jade plugin in your Obsidian vault
+2. Config the [Jade Publisher](https://github.com/LucasJi/jade-publisher) plugin in your Obsidian vault
 3. Synchronize your vault to Jade service
 4. Visit `NEXT_PUBLIC_BASE_URL` to view your vault online
 
