@@ -324,8 +324,7 @@ const Markdown = ({
         'prose-li:my-0',
         'prose-hr:my-4',
         'prose-img:my-0',
-        'max-w-[400px] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg',
-        'md:prose-md sm:prose-sm lg:prose-lg',
+        'max-w-[360px] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg',
         className,
       )}
     >
