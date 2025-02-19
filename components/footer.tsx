@@ -27,13 +27,13 @@ const Footer = () => {
               <span className="text-obsidian">Jade</span>
             </a>
           </span>
-          {process.env.NEXT_PUBLIC_BEIAN && (
+          {process.env.NEXT_PUBLIC_ICP && (
             <a
               className="text-xs underline "
               href="https://beian.miit.gov.cn/"
               target="_blank"
             >
-              {process.env.NEXT_PUBLIC_BEIAN}
+              {process.env.NEXT_PUBLIC_ICP}
             </a>
           )}
         </div>
