@@ -27,23 +27,27 @@ const Footer = () => {
               <span className="text-obsidian">Jade</span>
             </a>
           </span>
-          <a
-            className="text-xs underline "
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-          >
-            苏ICP备2023055488号
-          </a>
+          {process.env.NEXT_PUBLIC_BEIAN && (
+            <a
+              className="text-xs underline "
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+            >
+              {process.env.NEXT_PUBLIC_BEIAN}
+            </a>
+          )}
         </div>
-        <div>
-          <a
-            href="https://github.com/LucasJi"
-            target="_blank"
-            color="foreground"
-          >
-            <Github />
-          </a>
-        </div>
+        {process.env.NEXT_PUBLIC_GITHUB_PROFILE_URL && (
+          <div>
+            <a
+              href={process.env.NEXT_PUBLIC_GITHUB_PROFILE_URL}
+              target="_blank"
+              color="foreground"
+            >
+              <Github />
+            </a>
+          </div>
+        )}
       </div>
     </footer>
   );
