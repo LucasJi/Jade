@@ -30,22 +30,30 @@ Before installing Jade, ensure you have the following:
 
 1. Install [Node.js(v22 or higher)](https://nodejs.org/en)
 2. Install **and run** [Redis Stack Server](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)
+   
    ```shell
    docker run -d --name redis-stack-server -p 6379:6379 -v /root/data/redis/:/data -e REDIS_ARGS="--requirepass ${REDIS_PASS}" redis/redis-stack-server:latest
    ```
-3. Clone the Repository
+   
+3. Clone the Repository  
+
    ```shell
    git clone git@github.com:LucasJi/Jade.git
    cd Jade
    ```
+   
 4. Install Dependencies
+
    ```shell
    pnpm install
    ```
-5. Create `.env` file
+   
+5. Create `.env` file  
+
    ```shell
    cp .env.example .env
    ```
+   
 6. Edit `.env` to config required environment variables
     - **NEXT_PUBLIC_BASE_URL**: The base url of your Jade service
     - **ACCESS_TOKEN**: Used to protect synchronize related APIs
@@ -53,6 +61,7 @@ Before installing Jade, ensure you have the following:
     - **REDIS_PORT**: Redis stack server port
     - **REDIS_PASS**: Redis stack server password
 7. Build & Run(make sure redis stack server is running)
+
    ```sh
    pnpm run build
    pnpm start
