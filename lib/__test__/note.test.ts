@@ -1,5 +1,5 @@
 import { assert, describe, test } from 'vitest';
-import { decodeNotePath, getRoutePathFromVaultPath } from '../note';
+import { getRoutePathFromVaultPath } from '../note';
 
 describe('lib:note', () => {
   test('encodeNoteName', () => {
@@ -14,15 +14,6 @@ describe('lib:note', () => {
     assert.equal(
       getRoutePathFromVaultPath('/folder/some note++.md'),
       '/folder/some+note%2B%2B.md',
-    );
-  });
-
-  test('decodeNoteName', () => {
-    assert.equal(decodeNotePath('/folder/some+note'), '/folder/some note');
-    assert.equal(decodeNotePath('/folder/something'), '/folder/something');
-    assert.equal(
-      decodeNotePath('/folder/some+note%2B%2B'),
-      '/folder/some note++',
     );
   });
 

@@ -1,10 +1,9 @@
 import { RK } from '@/lib/constants';
-import { getExt } from '@/lib/file';
 import { logger } from '@/lib/logger';
-import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
+import { getRoutePathFromVaultPath } from '@/lib/note';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
-import fs from 'fs';
+import { unlink, writeFile } from 'fs/promises';
 import { NextResponse } from 'next/server';
 import path from 'path';
 
@@ -15,169 +14,224 @@ const log = logger.child({
 
 const redis = await createRedisClient();
 
-export async function POST(request: Request) {
-  const formData = await request.formData();
+interface Params {
+  status: string;
+  vaultPath: string;
+  md5: string;
+  extension: string;
+  file: File;
+  oldPath: string;
+  lastModified: string;
+}
 
-  const status = formData.get('status');
-
-  if (!status) {
-    return NextResponse.json({
-      msg: 'Status is null, do nothing',
-    });
-  }
-
+const getParamsFromFormData = (formData: FormData): Params => {
+  const status = formData.get('status') as string;
   const vaultPath = formData.get('path') as string;
+  const md5 = formData.get('md5') as string;
+  const extension = formData.get('extension') as string;
+  const file = formData.get('file') as File;
+  const lastModified = formData.get('lastModified') as string;
+  const oldPath = formData.get('oldPath') as string;
 
-  if (status === 'created' || status === 'modified') {
-    const md5 = formData.get('md5') as string;
-    const extension = formData.get('extension') as string;
-    const file = formData.get('file') as File;
-    const lastModified = formData.get('lastModified') as string;
+  return {
+    status,
+    vaultPath,
+    md5,
+    extension,
+    file,
+    lastModified,
+    oldPath,
+  };
+};
 
-    const diskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
-    file.arrayBuffer().then(async arrayBuffer => {
-      const buffer = Buffer.from(arrayBuffer);
-      fs.writeFileSync(diskPath, buffer, { encoding: 'utf-8' });
+const handleCreatedAndModified = async (params: Params) => {
+  const { md5, extension, file, lastModified, vaultPath } = params;
+  const diskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
+  return file.arrayBuffer().then(async arrayBuffer => {
+    const buffer = Buffer.from(arrayBuffer);
+
+    return writeFile(diskPath, buffer, { encoding: 'utf-8' }).then(() => {
       log.info(
         {
           vaultPath,
-          md5,
           diskPath,
         },
         'File created',
       );
-    });
 
-    await redis.hSet(
-      RK.FILES,
-      vaultPath,
-      JSON.stringify({
-        md5,
-        extension,
-        diskPath,
-        lastModified,
-      }),
-    );
-
-    await redis.set(
-      `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
-      vaultPath,
-    );
-
-    await redis.sAdd(RK.PATHS, vaultPath);
-  } else if (status === 'deleted') {
-    const fileStat = await redis.hGet(RK.FILES, vaultPath);
-
-    if (fileStat) {
-      const { md5, diskPath } = JSON.parse(fileStat);
-      await redis.hDel(RK.FILES, vaultPath);
-      fs.unlinkSync(diskPath);
-
-      log.info(
-        {
-          vaultPath,
-          md5: md5,
-          diskPath,
-        },
-        'File deleted',
-      );
-    }
-
-    await redis.del(
-      `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
-    );
-
-    await redis.sRem(RK.PATHS, vaultPath);
-  } else if (status === 'renamed') {
-    const oldPath = formData.get('oldPath') as string;
-    const file = formData.get('file') as File;
-    const lastModified = formData.get('lastModified') as string;
-    const extension = formData.get('extension') as string;
-
-    if (oldPath) {
-      const fileStat = await redis.hGet(RK.FILES, oldPath);
-
-      if (fileStat) {
-        const { md5, diskPath } = JSON.parse(fileStat);
-        const newDiskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
-        file.arrayBuffer().then(async arrayBuffer => {
-          const buffer = Buffer.from(arrayBuffer);
-          fs.writeFileSync(newDiskPath, buffer, { encoding: 'utf-8' });
-          log.info(
-            {
-              vaultPath,
+      return Promise.all([
+        redis
+          .hSet(
+            RK.FILES,
+            vaultPath,
+            JSON.stringify({
               md5,
+              extension,
               diskPath,
-            },
-            'Renamed file created',
-          );
-        });
+              lastModified,
+            }),
+          )
+          .then(() => log.debug(`Add ${vaultPath} to ${RK.FILES}`)),
+        redis
+          .set(
+            `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
+            vaultPath,
+          )
+          .then(() => log.debug(`Set path mapping of ${vaultPath}`)),
+        redis
+          .sAdd(RK.PATHS, vaultPath)
+          .then(() => log.debug(`Add ${vaultPath} to ${RK.PATHS}`)),
+      ]);
+    });
+  });
+};
 
-        fs.unlinkSync(diskPath);
-        await redis.hDel(RK.FILES, oldPath);
-        await redis.sRem(RK.PATHS, oldPath);
-        await redis.del(
-          `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(oldPath)}`,
-        );
-        await redis.hSet(
-          RK.FILES,
-          vaultPath,
-          JSON.stringify({
-            md5,
-            extension,
-            diskPath: newDiskPath,
-            lastModified,
-          }),
-        );
-        await redis.set(
-          `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
-          vaultPath,
-        );
-        await redis.sAdd(RK.PATHS, vaultPath);
+const handleDeleted = async (params: Params) => {
+  const { vaultPath } = params;
+  const fileStat = await redis.hGet(RK.FILES, vaultPath);
+  const promises: Promise<void>[] = [];
 
+  if (fileStat) {
+    const { diskPath } = JSON.parse(fileStat);
+
+    const p1 = unlink(diskPath)
+      .then(() => {
         log.info(
           {
             vaultPath,
-            oldPath,
+            diskPath,
           },
-          'File renamed',
+          'File deleted',
         );
-      } else {
-        const msg =
-          'Failed to perform rename sync, file stat of old path not exists';
-        log.error(msg);
-        return NextResponse.json({
-          msg: msg,
-        });
-      }
-    } else {
-      const msg = 'Failed to perform rename sync, old path not exists';
-      log.error(msg);
-      return NextResponse.json({
-        msg: msg,
+      })
+      .catch(e => {
+        log.error(`Failed to delete file: ${e}`);
       });
-    }
-  } else {
-    return NextResponse.json({
-      msg: 'Unknown behavior',
-    });
+    promises.push(p1);
   }
 
-  log.info('Rebuild tree view');
-  const allFiles = await redis.hKeys(RK.FILES);
-  const treeView = getNoteTreeView(
-    allFiles.map(file => {
-      return {
-        path: file,
-        ext: getExt(file),
-        lastModified: undefined,
-      };
-    }),
-  );
-  await redis.json.set(RK.TREE_VIEW, '$', treeView as any);
+  const p2 = redis
+    .hDel(RK.FILES, vaultPath)
+    .then(() => log.debug(`Remove ${vaultPath} from ${RK.FILES}`));
+  const p3 = redis
+    .del(`${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`)
+    .then(() => log.debug(`Remove ${vaultPath} from ${RK.PATH_MAPPING}`));
+  const p4 = redis
+    .sRem(RK.PATHS, vaultPath)
+    .then(() => log.debug(`Remove ${vaultPath} from ${RK.PATHS}`));
+
+  promises.push(p2, p3, p4);
+
+  return Promise.all(promises);
+};
+
+const handleRenamed = async (params: Params) => {
+  const { extension, file, lastModified, vaultPath, oldPath, md5 } = params;
+
+  if (!oldPath) {
+    log.error('Failed to perform rename sync, old path not exists');
+    return;
+  }
+
+  const fileStat = await redis.hGet(RK.FILES, oldPath);
+  if (!fileStat) {
+    log.error(
+      'Failed to perform rename sync, file stat of old path not exists',
+    );
+    return;
+  }
+
+  const { diskPath } = JSON.parse(fileStat);
+  const newDiskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
+
+  return file.arrayBuffer().then(async arrayBuffer => {
+    const promises: Promise<void>[] = [];
+
+    const buffer = Buffer.from(arrayBuffer);
+
+    if (newDiskPath !== diskPath) {
+      const p1 = unlink(diskPath)
+        .then(() => log.debug(`Unlink ${diskPath}`))
+        .catch();
+      const p2 = writeFile(newDiskPath, buffer, { encoding: 'utf-8' })
+        .then(() => log.debug(`Write file to ${newDiskPath}`))
+        .catch();
+      promises.push(p1, p2);
+    }
+
+    log.info(
+      {
+        oldPath,
+        vaultPath,
+        diskPath,
+      },
+      'File renamed',
+    );
+
+    const p3 = redis
+      .hDel(RK.FILES, oldPath)
+      .then(() => {})
+      .catch();
+    const p4 = redis
+      .sRem(RK.PATHS, oldPath)
+      .then(() => {})
+      .catch();
+    const p5 = redis
+      .del(`${RK.PATH_MAPPING}${getRoutePathFromVaultPath(oldPath)}`)
+      .then(() => {})
+      .catch();
+    const p6 = redis
+      .hSet(
+        RK.FILES,
+        vaultPath,
+        JSON.stringify({
+          md5,
+          extension,
+          diskPath: newDiskPath,
+          lastModified,
+        }),
+      )
+      .then(() => {})
+      .catch();
+    const p7 = redis
+      .set(
+        `${RK.PATH_MAPPING}${getRoutePathFromVaultPath(vaultPath)}`,
+        vaultPath,
+      )
+      .then(() => {})
+      .catch();
+    const p8 = redis.sAdd(RK.PATHS, vaultPath).then(() => {});
+
+    promises.push(p3, p4, p5, p6, p7, p8);
+
+    return Promise.all(promises);
+  });
+};
+
+export async function POST(request: Request) {
+  const formData = await request.formData();
+  const params = getParamsFromFormData(formData);
+  const { status } = params;
+
+  switch (status) {
+    case 'created':
+    case 'modified':
+      await handleCreatedAndModified(params);
+      break;
+    case 'deleted':
+      await handleDeleted(params);
+      break;
+    case 'renamed':
+      await handleRenamed(params);
+      break;
+    default:
+      return NextResponse.json({
+        msg: 'Unknown status',
+      });
+  }
 
   return NextResponse.json({
-    msg: 'Sync successfully',
+    msg: 'Sync completed',
   });
 }

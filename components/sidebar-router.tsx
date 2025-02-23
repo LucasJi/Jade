@@ -1,6 +1,5 @@
 'use client';
 
-import { getNoteVaultPathByRoutePath } from '@/app/api';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,24 +7,20 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { getRoutePathFromURIComponentSlug } from '@/lib/note';
-import { useParams } from 'next/navigation';
+import { useSidebar } from '@/components/ui/sidebar';
 import { FC, Fragment, useEffect, useState } from 'react';
 
 const SidebarRouter: FC = () => {
-  const { slug } = useParams<{ slug: string[] }>();
   const [paths, setPaths] = useState<string[]>([]);
+  const { vaultPath } = useSidebar();
 
   useEffect(() => {
-    const noteRoutePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
-    if (noteRoutePath) {
-      getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
-        setPaths(resp.data.split('/'));
-      });
+    if (vaultPath) {
+      setPaths(vaultPath.split('/'));
     }
-  }, [slug]);
+  }, [vaultPath]);
 
-  if (!slug) {
+  if (!vaultPath) {
     return <div />;
   }
 

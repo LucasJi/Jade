@@ -1,5 +1,5 @@
 'use client';
-import { getFileTree, getNoteVaultPathByRoutePath } from '@/app/api';
+import { getTreeView } from '@/app/api';
 import { TreeViewNode } from '@/components/types';
 import {
   Collapsible,
@@ -17,9 +17,9 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { isAudio, isImg, isMd, isPdf, isVideo } from '@/lib/file';
-import { getRoutePathFromURIComponentSlug } from '@/lib/note';
 import {
   ChevronRight,
   File,
@@ -30,10 +30,11 @@ import {
   FileVideo,
   Folder,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   ComponentProps,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -41,36 +42,49 @@ import {
 
 const TreeViewContext = createContext<{
   noteRoutePath: string;
-  folders: string[];
+  folders: Set<string>;
+  openFolders: (opened: string[]) => void;
+  closeFolder: (closed: string) => void;
 }>({
   noteRoutePath: '',
-  folders: [],
+  folders: new Set(),
+  openFolders: () => {},
+  closeFolder: () => {},
 });
 
 export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
   const [treeNodes, setTreeNodes] = useState<TreeViewNode[]>([]);
-  const { slug } = useParams<{ slug: string[] }>();
-  const [folders, setFolders] = useState<string[]>([]);
-  const noteRoutePath = slug ? getRoutePathFromURIComponentSlug(slug) : '';
+  const { routePath, vaultPath } = useSidebar();
+  const [folders, setFolders] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    getFileTree().then(data => {
-      setTreeNodes(data);
+  const openFolders = useCallback((opened: string[]) => {
+    setFolders(pre => {
+      opened.forEach(f => pre.add(f));
+      return new Set(pre);
+    });
+  }, []);
+
+  const closeFolder = useCallback((closed: string) => {
+    setFolders(pre => {
+      pre.delete(closed);
+      return new Set(pre);
     });
   }, []);
 
   useEffect(() => {
-    if (noteRoutePath) {
-      getNoteVaultPathByRoutePath(noteRoutePath).then(resp => {
-        const [_, ...folders] = resp.data.split('/').reverse();
-        setFolders([...folders]);
-      });
-    }
-  }, [noteRoutePath]);
+    getTreeView().then(data => {
+      setTreeNodes(data ?? []);
+    });
+  }, []);
+
+  useEffect(() => {
+    const [_, ...folders] = vaultPath.split('/').reverse();
+    openFolders(folders);
+    console.log(vaultPath);
+  }, [vaultPath, openFolders]);
 
   return (
     <Sidebar {...props}>
-      {/*<SidebarHeader>Omni Note</SidebarHeader>*/}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Files</SidebarGroupLabel>
@@ -78,8 +92,10 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               <TreeViewContext.Provider
                 value={{
-                  noteRoutePath,
+                  noteRoutePath: routePath,
                   folders,
+                  openFolders,
+                  closeFolder,
                 }}
               >
                 {treeNodes.map((item, index) => (
@@ -97,7 +113,8 @@ export function SidebarLeft({ ...props }: ComponentProps<typeof Sidebar>) {
 
 function Tree({ item }: { item: TreeViewNode }) {
   const router = useRouter();
-  const { folders, noteRoutePath } = useContext(TreeViewContext);
+  const { folders, noteRoutePath, openFolders, closeFolder } =
+    useContext(TreeViewContext);
   if (!item.isDir) {
     let Icon;
     if (isMd(item.path)) {
@@ -117,11 +134,11 @@ function Tree({ item }: { item: TreeViewNode }) {
     return (
       <SidebarMenuButton
         isActive={item.path === noteRoutePath}
-        className="data-[active=true]:bg-transparent data-[active=true]:text-black"
+        className="data-[active=true]:text-black"
         onClick={() => router.push(`/notes/${item.path || ''}`)}
       >
         <Icon />
-        <span className="truncate" title={item.path}>
+        <span className="truncate" title={item.name}>
           {item.name}
         </span>
       </SidebarMenuButton>
@@ -132,13 +149,20 @@ function Tree({ item }: { item: TreeViewNode }) {
     <SidebarMenuItem>
       <Collapsible
         className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        defaultOpen={folders.includes(item.name)}
+        open={folders.has(item.name)}
+        onOpenChange={open => {
+          if (open) {
+            openFolders([item.name]);
+          } else {
+            closeFolder(item.name);
+          }
+        }}
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
             <ChevronRight className="transition-transform" />
             <Folder />
-            <span className="truncate" title={item.path}>
+            <span className="truncate" title={item.name}>
               {item.name}
             </span>
           </SidebarMenuButton>

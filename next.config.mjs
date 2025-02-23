@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'jade-doc.lucasji.cn',
+        hostname: 'jade.lucasji.cn',
         pathname: '**',
       },
     ],

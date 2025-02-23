@@ -1,15 +1,17 @@
-import { getNotePaths } from '@/app/api';
 import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
-const log = logger.child({ module: 'api', url: '/api/note', method: 'GET' });
+const log = logger.child({
+  module: 'api',
+  url: '/api/note/hast',
+  method: 'GET',
+});
 
 const redis = await createRedisClient();
 
 export async function GET(req: NextRequest) {
-  log.info('Api /api/note called');
   const searchParams = req.nextUrl.searchParams;
   const path = searchParams.get('path');
 
@@ -20,7 +22,14 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const paths = await getNotePaths();
+  const paths = await redis.sMembers(RK.PATHS);
+
+  if (!paths) {
+    return new Response('', {
+      status: 500,
+      statusText: `Cache ${RK.PATHS} not exists`,
+    });
+  }
 
   const found = paths.find(e => e.includes(path));
 

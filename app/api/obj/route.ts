@@ -1,4 +1,4 @@
-import { RK } from '@/lib/constants';
+import { FileType, MIME, RK } from '@/lib/constants';
 import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import fs, { ReadStream } from 'fs';
@@ -38,25 +38,39 @@ export async function GET(req: NextRequest) {
   const name = searchParams.get('name');
 
   if (!name) {
-    return NextResponse.json('');
+    return NextResponse.json(
+      { msg: `File with name ${name} not found` },
+      { status: 404 },
+    );
   }
 
   const fileKeys = await redis.hKeys(RK.FILES);
   const found = fileKeys.find(key => key.includes(name));
 
   if (!found) {
-    return NextResponse.json('');
+    return NextResponse.json(
+      { msg: `File with name ${name} not found` },
+      { status: 404 },
+    );
   }
 
   const fileStat = await redis.hGet(RK.FILES, found);
 
   if (!fileStat) {
-    return NextResponse.json('');
+    return NextResponse.json(
+      { msg: `File with name ${name} not found in cache` },
+      { status: 500 },
+    );
   }
 
   const { md5, extension } = JSON.parse(fileStat);
 
   return new NextResponse(
     streamFile(path.join(ASSETS_FOLDER, `${md5}.${extension}`)),
+    {
+      headers: {
+        'Content-Type': MIME[extension as FileType],
+      },
+    },
   );
 }

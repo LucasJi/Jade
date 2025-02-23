@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
       tagResult,
     });
   } catch (e) {
-    log.error('Error occurs when searching...', e);
+    log.error(e, 'Error occurs when searching');
     return NextResponse.json(null);
   }
 }

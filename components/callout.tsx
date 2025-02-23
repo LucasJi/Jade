@@ -58,7 +58,7 @@ const CalloutTitle: FC<CalloutTitleProps> = ({
   }
 
   const _className = cn(
-    'flex select-none items-center font-bold',
+    'flex select-none items-center text-base font-bold',
     { 'cursor-pointer': isFoldable },
     className,
   );

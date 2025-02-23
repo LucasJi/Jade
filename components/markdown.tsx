@@ -162,14 +162,9 @@ const components = (
     div: props => {
       if ('data-callout' in props) {
         const type = (props as any)['data-callout-type'];
-        const isFoldable =
-          (props as any)['data-is-foldable'] === undefined
-            ? false
-            : props['data-is-foldable'];
+        const isFoldable = (props as any)['data-is-foldable'] !== undefined;
         const defaultFolded =
-          (props as any)['data-default-folded'] === undefined
-            ? false
-            : props['data-default-folded'];
+          (props as any)['data-default-folded'] !== undefined;
         return (
           <Callout
             variant={type}
@@ -183,10 +178,7 @@ const components = (
 
       if ('data-callout-title' in props) {
         const type = (props as any)['data-callout-type'];
-        const isFoldable =
-          (props as any)['data-is-foldable'] === undefined
-            ? false
-            : props['data-is-foldable'];
+        const isFoldable = (props as any)['data-is-foldable'] !== undefined;
         return (
           <CalloutTitle
             title={props.children as string}
@@ -331,8 +323,8 @@ const Markdown = ({
         'prose-ul:my-2',
         'prose-li:my-0',
         'prose-hr:my-4',
-        'max-w-[400px] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg',
-        'md:prose-md sm:prose-sm lg:prose-lg',
+        'prose-img:my-0',
+        'max-w-[360px] sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg',
         className,
       )}
     >

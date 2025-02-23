@@ -1,19 +1,11 @@
 import { FC } from 'react';
 
-const Pdf: FC = () => {
+const Pdf: FC<{ url: string }> = ({ url }) => {
   return (
     <div className="flex w-full justify-center">
-      <iframe
-        src={`${process.env.NEXT_PUBLIC_BASE_URL}/api/pdf-sample`}
-        className="border-0"
-        width="95%"
-        height="600px"
-      >
+      <iframe src={url} className="border-0" width="95%" height="600px">
         This browser does not support PDFs. Please download the PDF to view it:{' '}
-        <a href={`${process.env.NEXT_PUBLIC_BASE_URL}/api/pdf-sample`}>
-          Download PDF
-        </a>
-        .
+        <a href={url}>Download PDF</a>.
       </iframe>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { getHastByPath } from '@/app/api';
+import { getHastByVaultPath } from '@/app/api';
 import { useIsMobile } from '@/components/hooks/use-mobile';
 import Markdown from '@/components/markdown';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ export default function InternalLink({
   const handleOpenChange = (open: boolean) => {
     // TODO: Handle not markdown files and block link
     if (open && vaultPath && ext !== 'pdf' && !link.includes('#^')) {
-      getHastByPath(vaultPath).then(data => {
+      getHastByVaultPath(vaultPath).then(data => {
         truncateHast(data, subHeadings);
         setHast(data);
         setIsLoading(false);

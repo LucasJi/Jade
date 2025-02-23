@@ -1,147 +1,80 @@
 # Jade
 
-Jade is a kind of [Obsidian](https://obsidian.md/) publishing solution. It publishes your Obsidian
-vault to a public website which strives to support various wonderful features of Obsidian, such as
-Obsidian flavored markdown, wiki-links, graph view, and more, as much as possible.
-
-## Getting Started
-
-1. Clone this repository
-
-   ```bash
-   git clone https://github.com/LucasJi/Jade.git
-   ```
-
-2. Install dependencies
-
-   ```bash
-   cd Jade
-   npm install
-   ```
-
-3. Config environment variables in `.config` file
-
-   ```config
-   # Website
-   NEXT_PUBLIC_BASE_URL=http://localhost:3000
-   NEXT_PUBLIC_SITE_TITLE="Jade"
-   NEXT_PUBLIC_SITE_DESCRIPTION="A personal blog, publishing notes written by Obsidian."
-
-   REPO_ACCESS_TOKEN=
-   REPO_NAME=
-   REPO_OWNER=
-   REPO_BRANCH=
-
-   DIRS_INCLUDED=
-   DIRS_EXCLUDED=
-   DIRS_ROOT=
-   
-   REDIS_HOST=
-   REDIS_PORT=
-   REDIS_PASS=
-   
-   S3_ENDPOINT=
-   S3_PORT=
-   S3_ACCESS_KEY=
-   S3_SECRET_KEY=
-   S3_BUCKET=
-   ```
-
-    - `GITHUB_REPO_ACCESS_TOKEN`: When generating
-      your [GitHub API access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token),
-      the **Read-Only** permission of **Contents** must be selected.
-    - `GITHUB_REPO`: The repository where your notes are stored. If you haven't created a note
-      repository yet, you can fork
-      my [feature test note repository](https://github.com/LucasJi/obsidian-feature-demo-notes).
-    - `GITHUB_OWNER`: The owner of the repository.
-
-4. Start the server
-
-   ```bash
-   npm run dev
-   ```
-
-5. Open `http://localhost:3000` in your browser
+Jade is an open-source publishing solution for [Obsidian](https://obsidian.md), allowing you to turn
+your Obsidian vault into an online website easily. With full support for Obsidian-flavored Markdown
+and wiki-style internal links, Jade offers a seamless experience for publishing and browsing your
+notes online.
 
 ## Features
 
-> Please visit jade documentation(published by Jade written in Obsidian) for more details.
+- **Obsidian-Flavored Markdown**: Supports Obsidian's extended Markdown syntax, including callouts,
+  footnotes, comments, and embedded content.
+- **Wiki-Style Internal Links**: Enables seamless navigation using `[[WikiLinks]]`, just like in
+  Obsidian.
+- **Responsive Layout**: Optimized for desktop and mobile devices with a fully responsive design.
+- **Built-in Search**: Allows users to quickly find content within the published site.
 
-### Note tile
+For more details about features, please read the documentation: https://jade.lucasji.cn
 
-This project now supports three types of note title definitions:
+## Installation
 
-1. The `title` key in frontmatter
+### Prerequisites
 
-   ```md
-   ---
-   title: Note Title
-   ---
+Before installing Jade, ensure you have the following:
 
-   ## Heading 2
+1. [Obsidian](https://obsidian.md/) installed on your device.
+2. The [Jade Publisher](https://github.com/LucasJi/jade-publisher) plugin installed in Obsidian to
+   facilitate note publish.
 
-   More contents
+### Manual Installation
+
+1. Install [Node.js(v22 or higher)](https://nodejs.org/en)
+2. Install **and run** [Redis Stack Server](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)
+   
+   ```shell
+   docker run -d --name redis-stack-server -p 6379:6379 -v /root/data/redis/:/data -e REDIS_ARGS="--requirepass ${REDIS_PASS}" redis/redis-stack-server:latest
+   ```
+   
+3. Clone the Repository  
+
+   ```shell
+   git clone git@github.com:LucasJi/Jade.git
+   cd Jade
+   ```
+   
+4. Install Dependencies
+
+   ```shell
+   pnpm install
+   ```
+   
+5. Create `.env` file  
+
+   ```shell
+   cp .env.example .env
+   ```
+   
+6. Edit `.env` to config required environment variables
+    - **NEXT_PUBLIC_BASE_URL**: The base url of your Jade service
+    - **ACCESS_TOKEN**: Used to protect synchronize related APIs
+    - **REDIS_HOST**: Redis stack server host
+    - **REDIS_PORT**: Redis stack server port
+    - **REDIS_PASS**: Redis stack server password
+7. Build & Run(make sure redis stack server is running)
+
+   ```sh
+   pnpm run build
+   pnpm start
    ```
 
-2. The heading starts with number sign `#`
+## Usage
 
-   ```md
-   # Note Title
+1. Run your Jade service
+2. Config the [Jade Publisher](https://github.com/LucasJi/jade-publisher) plugin in your Obsidian vault
+3. Synchronize your vault to Jade service
+4. Visit `NEXT_PUBLIC_BASE_URL` to view your vault online
 
-   ## Heading 2
+## Contribution
 
-   More contents
-   ```
-
-3. The filename of note, just like what Obsidian does.
-
-The first type(title defined in the front matter) takes highest precedence over others.
-
-### InternalLink
-
-Jade supports displaying all kinds of Obsidian's wiki-links:
-
-- [Link to a file](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link+to+a+file)
-- [Link to a heading in a note](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link+to+a+heading+in+a+note)
-- [Link to a note using an alias](https://help.obsidian.md/Linking+notes+and+files/Aliases#Link+to+a+note+using+an+alias)
-
-**_not supported yet:_**
-
-- [Link to a block in a note](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link+to+a+block+in+a+note)
-
-### Graph View
-
-Jade generates a graph view just like what Obsidian does.
-
-### File explorer
-
-Jade shows the directory structure of your notes on the left side of the page.
-
-### Table of Content
-
-Jade generates a table of content for each note. It will be displayed on the right side of the note
-page.
-
-### Frontmatter
-
-Jade only supports `yaml` style frontmatter now. For example:
-
-```yaml
----
-title: Note Title
-created: 2023-01-01
-tags:
-  - tag1
-  - tag2
----
-```
-
-For now, only the `title`, `tags` and `aliases` keys are supported. The values of them will be
-resolved and friendly displayed in the note page.
-
-## Tech Stack
-
-- [Next.js](https://nextjs.org/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [remarkjs](https://github.com/remarkjs)
+We welcome contributions! Feel free to submit issues, feature requests, or pull requests
+on [GitHub](https://github.com/LucasJi/Jade).

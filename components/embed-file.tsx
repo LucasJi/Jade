@@ -16,12 +16,13 @@ interface EmbedFileConfig {
   height?: number;
 }
 
-const _width = 100;
-const _height = 100;
+const _width = 768;
+const _height = 700;
 
 const parseImg = (filename: string) => {
   const [objName, config] = filename.split('|');
-  let width, height;
+  let width,
+    height = undefined;
   if (config) {
     const [w, h] = config.split('x');
     width = w ? Number.parseInt(w) : undefined;
@@ -85,8 +86,8 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
       name = objName;
       setFileType('IMG');
       setConfig({
-        width: width ?? _width,
-        height: height ?? _height,
+        width: width,
+        height: height,
       });
     } else if (isAudio(escapedPath)) {
       setFileType('AUDIO');
@@ -117,19 +118,26 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
 
   switch (fileType) {
     case 'PDF': {
-      return <Pdf />;
+      return <Pdf url={url} />;
     }
     case 'IMG': {
-      return url ? (
-        <Image
-          width={config.width}
-          height={config.height}
-          src={url}
-          alt="Picture"
-        />
-      ) : (
-        <div>Unknown image</div>
-      );
+      if (!url) {
+        return <div>Unknown image</div>;
+      }
+
+      if (config.height !== undefined && config.width !== undefined) {
+        return (
+          <Image
+            src={url}
+            alt="Image"
+            width={config.width}
+            height={config.height}
+          />
+        );
+      }
+
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img src={url} alt="Image" />;
     }
     case 'AUDIO': {
       return (
@@ -139,7 +147,7 @@ const EmbedFile: FC<EmbedFileProps> = ({ path }) => {
       );
     }
     default: {
-      return <div>not valid file</div>;
+      return <div>Unsupported file type</div>;
     }
   }
 };
