@@ -5,7 +5,7 @@ import fs, { ReadStream } from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 
-const redis = await createRedisClient();
+let redis: Awaited<ReturnType<typeof createRedisClient>> | null = null;
 
 // https://www.ericburel.tech/blog/nextjs-stream-files
 async function* nodeStreamToIterator(stream: ReadStream) {
@@ -42,6 +42,10 @@ export async function GET(req: NextRequest) {
       { msg: `File with name ${name} not found` },
       { status: 404 },
     );
+  }
+
+  if (!redis) {
+    redis = await createRedisClient();
   }
 
   const fileKeys = await redis.hKeys(RK.FILES);

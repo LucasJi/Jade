@@ -5,7 +5,8 @@ import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { mkdir, rm } from 'fs/promises';
 import { RedisSearchLanguages, SchemaFieldTypes } from 'redis';
 
-const redis = await createRedisClient();
+let redis: Awaited<ReturnType<typeof createRedisClient>> | null = null;
+
 const log = logger.child({ module: 'api', path: '/sync/flush' });
 
 export async function GET() {
@@ -24,6 +25,9 @@ export async function GET() {
             until cursor == "0"  -- 游标为 "0" 时，表示扫描结束
             return "Deleted all matching keys"
         `;
+  if (!redis) {
+    redis = await createRedisClient();
+  }
   const deleted = await redis.eval(luaScript, { arguments: ['jade:*'] });
   log.info(deleted);
 

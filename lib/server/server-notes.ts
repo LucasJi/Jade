@@ -2,18 +2,17 @@ import { FileType, RK } from '@/lib/constants';
 import { getExt, getFilename } from '@/lib/file';
 import { logger } from '@/lib/logger';
 import { getNoteTreeView, getRoutePathFromVaultPath } from '@/lib/note';
-import { createRedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { noteParser } from '@/processor/parser';
 import fs from 'fs';
 import { toText } from 'hast-util-to-text';
 import { revalidatePath } from 'next/cache';
 import path from 'path';
+import { RedisClient } from '../redis';
 
 const log = logger.child({ module: 'lib/server/server-notes' });
-const redis = await createRedisClient();
-
 export const buildNoteCaches = async (
+  redis: RedisClient,
   files: {
     path: string;
     md5: string;
@@ -102,7 +101,7 @@ export const buildNoteCaches = async (
   }
 };
 
-export const buildTreeView = async () => {
+export const buildTreeView = async (redis: RedisClient) => {
   return redis.hKeys(RK.FILES).then(allFiles => {
     const treeView = getNoteTreeView(
       allFiles.map(file => {

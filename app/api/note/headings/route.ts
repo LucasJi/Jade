@@ -2,9 +2,13 @@ import { RK } from '@/lib/constants';
 import { createRedisClient } from '@/lib/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
-const redis = await createRedisClient();
+let redis: Awaited<ReturnType<typeof createRedisClient>> | null = null;
 
 export async function GET(req: NextRequest) {
+  if (!redis) {
+    redis = await createRedisClient();
+  }
+
   const searchParams = req.nextUrl.searchParams;
   let path = searchParams.get('path');
 

@@ -10,7 +10,7 @@ const log = logger.child({
   route: 'api/search',
 });
 
-const redis = await createRedisClient();
+let redis: Awaited<ReturnType<typeof createRedisClient>> | null = null;
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -27,7 +27,9 @@ export async function GET(req: NextRequest) {
   tagQuery = `@tag:{${tagQuery}}`;
 
   log.info({ contentQuery, tagQuery }, 'Searching with content...');
-
+  if (!redis) {
+    redis = await createRedisClient();
+  }
   try {
     const contentSearchResult = await redis.ft.search(
       RK.IDX_HAST_CHILD,

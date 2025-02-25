@@ -11,6 +11,7 @@ export const createRedisClient = async () => {
     socket: {
       host,
       port,
+      reconnectStrategy: false,
     },
     password: pass,
   })
@@ -20,3 +21,5 @@ export const createRedisClient = async () => {
     .on('ready', () => log.debug('Create redis client successfully'))
     .connect();
 };
+
+export type RedisClient = Awaited<ReturnType<typeof createRedisClient>>;

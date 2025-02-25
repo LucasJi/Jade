@@ -9,9 +9,13 @@ const log = logger.child({
   method: 'GET',
 });
 
-const redis = await createRedisClient();
+let redis: Awaited<ReturnType<typeof createRedisClient>> | null = null;
 
 export async function GET(req: NextRequest) {
+  if (!redis) {
+    redis = await createRedisClient();
+  }
+
   const searchParams = req.nextUrl.searchParams;
   const path = searchParams.get('path');
 

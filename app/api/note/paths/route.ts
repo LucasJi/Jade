@@ -3,18 +3,19 @@ import { logger } from '@/lib/logger';
 import { createRedisClient } from '@/lib/redis';
 import { NextResponse } from 'next/server';
 
-const redis = await createRedisClient();
 const log = logger.child({
   module: 'api',
   url: '/api/note/paths',
   method: 'GET',
 });
 
-/**
- * Get objects paths from redis
- */
+let redis: Awaited<ReturnType<typeof createRedisClient>> | null = null;
+
 export async function GET() {
-  log.debug('Api /api/note/paths called');
+  if (!redis) {
+    redis = await createRedisClient();
+  }
+
   const paths = await redis.sMembers(RK.PATHS);
   return NextResponse.json(paths);
 }

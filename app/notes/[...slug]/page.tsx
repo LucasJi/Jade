@@ -8,8 +8,6 @@ import { createRedisClient } from '@/lib/redis';
 import { Nodes } from 'hast';
 import { notFound } from 'next/navigation';
 
-const redis = await createRedisClient();
-
 export const dynamicParams = true;
 export const dynamic = 'force-static';
 
@@ -28,6 +26,7 @@ export default async function Page(props: {
 
   const { slug: uriSlug } = params;
   const slug = decodeURISlug(uriSlug);
+  const redis = await createRedisClient();
 
   try {
     const routePath = getRoutePathFromSlug(slug);

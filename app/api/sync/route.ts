@@ -1,7 +1,7 @@
 import { RK } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 import { getRoutePathFromVaultPath } from '@/lib/note';
-import { createRedisClient } from '@/lib/redis';
+import { createRedisClient, RedisClient } from '@/lib/redis';
 import { ASSETS_FOLDER } from '@/lib/server/server-constants';
 import { unlink, writeFile } from 'fs/promises';
 import { NextResponse } from 'next/server';
@@ -12,7 +12,7 @@ const log = logger.child({
   route: '/api/sync',
 });
 
-const redis = await createRedisClient();
+let redis: RedisClient | null = null;
 
 interface Params {
   status: string;
@@ -44,14 +44,14 @@ const getParamsFromFormData = (formData: FormData): Params => {
   };
 };
 
-const handleCreatedAndModified = async (params: Params) => {
+const handleCreatedAndModified = async (params: Params, redis: RedisClient) => {
   const { md5, extension, file, lastModified, vaultPath } = params;
   const diskPath = path.join(ASSETS_FOLDER, `${md5}.${extension}`);
 
   return file.arrayBuffer().then(async arrayBuffer => {
     const buffer = Buffer.from(arrayBuffer);
 
-    return writeFile(diskPath, buffer, { encoding: 'utf-8' }).then(() => {
+    return writeFile(diskPath, buffer as any).then(() => {
       log.info(
         {
           vaultPath,
@@ -87,7 +87,7 @@ const handleCreatedAndModified = async (params: Params) => {
   });
 };
 
-const handleDeleted = async (params: Params) => {
+const handleDeleted = async (params: Params, redis: RedisClient) => {
   const { vaultPath } = params;
   const fileStat = await redis.hGet(RK.FILES, vaultPath);
   const promises: Promise<void>[] = [];
@@ -126,7 +126,7 @@ const handleDeleted = async (params: Params) => {
   return Promise.all(promises);
 };
 
-const handleRenamed = async (params: Params) => {
+const handleRenamed = async (params: Params, redis: RedisClient) => {
   const { extension, file, lastModified, vaultPath, oldPath, md5 } = params;
 
   if (!oldPath) {
@@ -154,7 +154,7 @@ const handleRenamed = async (params: Params) => {
       const p1 = unlink(diskPath)
         .then(() => log.debug(`Unlink ${diskPath}`))
         .catch();
-      const p2 = writeFile(newDiskPath, buffer, { encoding: 'utf-8' })
+      const p2 = writeFile(newDiskPath, buffer as any)
         .then(() => log.debug(`Write file to ${newDiskPath}`))
         .catch();
       promises.push(p1, p2);
@@ -214,16 +214,20 @@ export async function POST(request: Request) {
   const params = getParamsFromFormData(formData);
   const { status } = params;
 
+  if (!redis) {
+    redis = await createRedisClient();
+  }
+
   switch (status) {
     case 'created':
     case 'modified':
-      await handleCreatedAndModified(params);
+      await handleCreatedAndModified(params, redis);
       break;
     case 'deleted':
-      await handleDeleted(params);
+      await handleDeleted(params, redis);
       break;
     case 'renamed':
-      await handleRenamed(params);
+      await handleRenamed(params, redis);
       break;
     default:
       return NextResponse.json({
